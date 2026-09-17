@@ -1,0 +1,14 @@
+{
+  "numeric_columns": [
+    "temperature",
+    "response"
+  ],
+  "feature_columns": [
+    "temperature"
+  ],
+  "target_column": "response",
+  "provenance_columns": [
+    "source_id",
+    "group_id"
+  ]
+}

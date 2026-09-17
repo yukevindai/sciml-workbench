@@ -1,0 +1,13 @@
+{
+  "strategy": "composition",
+  "columns": [
+    "group_id"
+  ],
+  "group_columns": [
+    "group_id"
+  ],
+  "target_column": "response",
+  "validation_size": 0.2,
+  "test_size": 0.2,
+  "seed": 42
+}
