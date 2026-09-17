@@ -60,6 +60,9 @@ services:
       WB_API_URL: http://api:8000
       WB_API_TOKEN: ${WB_API_TOKEN:?Set WB_API_TOKEN}
       WB_PUBLIC_ORIGIN: ${WB_PUBLIC_ORIGIN:-http://localhost:3000}
+      WB_REQUIRE_LOGIN: ${WB_REQUIRE_LOGIN:-1}
+      WB_LOGIN_USERNAME: ${WB_LOGIN_USERNAME:-workbench}
+      WB_LOGIN_PASSWORD: ${WB_LOGIN_PASSWORD:?Set WB_LOGIN_PASSWORD}
     ports:
       - "127.0.0.1:3000:3000"
     depends_on:

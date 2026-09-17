@@ -4,20 +4,22 @@ A unified local web interface for four independent scientific Python projects. N
 
 **Working MVP:** project → CSV → ChemData Auditor → SciSplit → ChemE baseline → Failure Memory → reproducible report.
 
+For a hosted private workspace, follow the [Render setup walkthrough](docs/render-setup.md).
+
 ## Start with Docker Compose
 
 Requires Docker Engine with Compose v2 and network access to GitHub/PyPI/npm during the build. No external model API keys are required.
 
 ```bash
 cp .env.example .env
-# Replace WB_API_TOKEN, WB_EFM_PASSWORD and POSTGRES_PASSWORD with independent random values.
+# Replace WB_API_TOKEN, WB_EFM_PASSWORD, WB_LOGIN_PASSWORD and POSTGRES_PASSWORD with independent random values.
 # Generate each value with: python -c 'import secrets; print(secrets.token_urlsafe(48))'
 docker compose up --build -d
 ```
 
-Open **http://localhost:3000**. Setup applies PostgreSQL migrations and provisions a private Failure Memory service account using the upstream operator CLI. The API, worker, database and files are internal; only the web interface is published, bound to loopback.
+Open **http://localhost:3000** and sign in with `WB_LOGIN_USERNAME` / `WB_LOGIN_PASSWORD` from your `.env`. Setup applies PostgreSQL migrations and provisions a private Failure Memory service account using the upstream operator CLI. The API, worker, database and files are internal; only the web interface is published, bound to loopback.
 
-This MVP is a **single trusted operator workspace**. All projects are accessible to that operator. The frontend does not have user accounts or per-user roles. Do not expose its port publicly or through a shared tunnel. A shared deployment requires user authentication, per-project authorization and TLS before publication. The independent Failure Memory package retains its own access controls; the workbench service account is server-side only.
+This MVP is a **single trusted operator workspace**. All projects are accessible to that operator. The hosted frontend has an HTTP Basic password gate, but does not have separate user accounts or per-user roles. The Render guide keeps the backend private and uses HTTPS for the public password-protected frontend. Inviting independent users requires per-project authorization and proper account management. The independent Failure Memory package retains its own access controls; the workbench service account is server-side only.
 
 ## Try the complete workflow
 
@@ -54,7 +56,7 @@ In another terminal with the same environment and activated virtualenv:
 python -m workbench.worker
 ```
 
-For the UI, copy **only** `WB_API_TOKEN`, `WB_API_URL=http://localhost:8000` and `WB_PUBLIC_ORIGIN=http://localhost:3000` into `frontend/.env.local`, then:
+For the UI, copy **only** `WB_API_TOKEN`, `WB_API_URL=http://localhost:8000`, `WB_PUBLIC_ORIGIN=http://localhost:3000`, `WB_REQUIRE_LOGIN=1`, `WB_LOGIN_USERNAME` and `WB_LOGIN_PASSWORD` into `frontend/.env.local`, then:
 
 ```bash
 cd frontend

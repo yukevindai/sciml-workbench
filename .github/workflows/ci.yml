@@ -21,6 +21,9 @@ jobs:
       WB_EFM_PASSWORD: ci-only-password-at-least-twelve
       WB_STORAGE_ROOT: /tmp/workbench-ci
       WB_PUBLIC_ORIGIN: http://localhost:3000
+      WB_REQUIRE_LOGIN: '1'
+      WB_LOGIN_USERNAME: ci-user
+      WB_LOGIN_PASSWORD: ci-only-private-workspace-password
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -40,7 +43,7 @@ jobs:
           uvicorn workbench.api:create_app --factory --port 8000 > /tmp/api.log 2>&1 &
           python -m workbench.worker > /tmp/worker.log 2>&1 &
           npm --prefix frontend run start > /tmp/web.log 2>&1 &
-          for i in $(seq 1 60); do curl -fsS http://localhost:3000 >/dev/null && break || sleep 1; done
+          for i in $(seq 1 60); do curl -fsS http://localhost:3000/healthz >/dev/null && break || sleep 1; done
           npm --prefix frontend run test:e2e
       - uses: actions/upload-artifact@v4
         if: failure()
@@ -57,10 +60,14 @@ jobs:
       POSTGRES_PASSWORD: compose-test-password
       WB_API_TOKEN: compose-test-token-at-least-32-characters
       WB_EFM_PASSWORD: compose-test-failure-memory-password
+      WB_LOGIN_PASSWORD: compose-test-private-workspace-password
     steps:
       - uses: actions/checkout@v4
       - run: docker compose config --quiet
       - run: docker compose up --build -d --wait
-      - run: curl --fail http://localhost:3000
+      - run: |
+          curl --fail http://localhost:3000/healthz
+          test "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:3000/)" = "401"
+          curl --fail -u "workbench:$WB_LOGIN_PASSWORD" http://localhost:3000/
       - if: always()
         run: docker compose logs --no-color && docker compose down -v

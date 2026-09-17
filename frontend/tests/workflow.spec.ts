@@ -50,3 +50,16 @@ test('server proxy rejects cross-origin mutations and keeps tokens out of HTML',
   expect(html).not.toContain('WB_API_TOKEN');
   expect(html).not.toContain(process.env.WB_API_TOKEN || 'workbench-test-secret-that-must-not-appear');
 });
+
+
+test('hosted password gate covers pages, data and downloads', async ({ playwright }) => {
+  test.skip(!process.env.WB_LOGIN_PASSWORD, 'Enable hosted login environment variables');
+  const anonymous = await playwright.request.newContext({ baseURL: process.env.E2E_BASE_URL || 'http://localhost:3000' });
+  for (const url of ['/', '/projects', '/api/projects', '/api/projects/example/artifacts/example/download']) {
+    expect((await anonymous.get(url)).status()).toBe(401);
+  }
+  expect((await anonymous.get('/healthz')).status()).toBe(200);
+  const bad = await anonymous.get('/api/projects', { headers: { Authorization: 'Basic ' + Buffer.from('wrong:wrong').toString('base64') } });
+  expect(bad.status()).toBe(401);
+  await anonymous.dispose();
+});

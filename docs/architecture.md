@@ -40,7 +40,7 @@ Dataset SHA-256 describes the exact uploaded bytes, while upstream reports may a
 
 ## Security boundary and limits
 
-- Single trusted local operator. There is no web login, SSO or per-user project authorization yet. Project-scoped API checks prevent accidental cross-project artifact use, not access by different users of this workspace.
+- Single trusted local operator. The hosted frontend has a shared HTTP Basic access gate; there is no SSO or per-user project authorization yet. Project-scoped API checks prevent accidental cross-project artifact use, not access by different users of this workspace.
 - Compose publishes only `127.0.0.1:3000`. API, worker and PostgreSQL have no host port mapping.
 - Next.js adds a bearer token server-side. Only the API token goes to the web server process; EFM and database credentials stay in the backend. No `NEXT_PUBLIC_` credentials, browser credential storage, or provider keys.
 - Mutating browser calls require the configured exact origin. Proxy paths and headers are allowlisted. Uploads are capped at 10 MiB; CSV parsing rejects duplicate/blank headers, ragged rows, over 200 columns or over 20,000 rows. Maximum 400 rows are drawn in the split preview, but all assignments remain in the artifact.

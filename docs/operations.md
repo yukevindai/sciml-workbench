@@ -40,4 +40,4 @@ The Failure Memory CLI can serve the same stopped SQLite store independently for
 
 ## Scope
 
-This implementation is a local MVP, not a multi-tenant public service. Production sharing needs identity, project-level authorization across all routes, HTTPS, resource quotas, operational telemetry and a security review. Scientific interpretation remains the researcher's responsibility. Audit findings and group splits do not prove independence that was never documented in the input.
+This implementation is a single-operator MVP with an optional private Render deployment, not a multi-tenant public service. See `render-setup.md` for the hosted access gate and configuration. Production sharing needs identity, project-level authorization across all routes, HTTPS, resource quotas, operational telemetry and a security review. Scientific interpretation remains the researcher's responsibility. Audit findings and group splits do not prove independence that was never documented in the input.

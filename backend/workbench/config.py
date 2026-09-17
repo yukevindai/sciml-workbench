@@ -1,5 +1,5 @@
 from pathlib import Path
-from pydantic import SecretStr
+from pydantic import SecretStr, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -15,6 +15,16 @@ class Settings(BaseSettings):
     max_upload_bytes: int = 10 * 1024 * 1024
     max_rows: int = 20000
     job_timeout_seconds: int = 900
+
+    @field_validator("database_url", mode="before")
+    @classmethod
+    def use_psycopg3(cls, value):
+        # Accept Render's internal connection URL without manual editing.
+        if isinstance(value, str):
+            for prefix in ("postgres://", "postgresql://"):
+                if value.startswith(prefix):
+                    return "postgresql+psycopg://" + value[len(prefix) :]
+        return value
 
     def validate_secrets(self):
         if (
