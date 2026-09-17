@@ -1,0 +1,66 @@
+name: Validate workbench
+on: [push, pull_request]
+jobs:
+  integration:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: workbench
+          POSTGRES_USER: workbench
+          POSTGRES_PASSWORD: testing-only
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U workbench" --health-interval 3s
+          --health-timeout 3s --health-retries 20
+    env:
+      WB_DATABASE_URL: postgresql+psycopg://workbench:testing-only@localhost:5432/workbench
+      TEST_DATABASE_URL: postgresql+psycopg://workbench:testing-only@localhost:5432/workbench
+      WB_API_TOKEN: ci-only-token-at-least-32-characters-long
+      WB_EFM_PASSWORD: ci-only-password-at-least-twelve
+      WB_STORAGE_ROOT: /tmp/workbench-ci
+      WB_PUBLIC_ORIGIN: http://localhost:3000
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - uses: actions/setup-node@v4
+        with: {node-version: '22', cache: npm, cache-dependency-path: frontend/package-lock.json}
+      - run: pip install -c backend/constraints.txt -e 'backend[dev]'
+      - run: alembic -c backend/alembic.ini upgrade head
+      - run: pytest backend/tests -q
+      - run: python scripts/export_schemas.py && git diff --exit-code contracts
+      - run: npm ci && npm run build
+        working-directory: frontend
+      - run: npx playwright install --with-deps chromium
+        working-directory: frontend
+      - run: |
+          python -m workbench.bootstrap
+          uvicorn workbench.api:create_app --factory --port 8000 > /tmp/api.log 2>&1 &
+          python -m workbench.worker > /tmp/worker.log 2>&1 &
+          npm --prefix frontend run start > /tmp/web.log 2>&1 &
+          for i in $(seq 1 60); do curl -fsS http://localhost:3000 >/dev/null && break || sleep 1; done
+          npm --prefix frontend run test:e2e
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: test-diagnostics
+          path: |
+            frontend/test-results
+            /tmp/api.log
+            /tmp/worker.log
+            /tmp/web.log
+  compose:
+    runs-on: ubuntu-latest
+    env:
+      POSTGRES_PASSWORD: compose-test-password
+      WB_API_TOKEN: compose-test-token-at-least-32-characters
+      WB_EFM_PASSWORD: compose-test-failure-memory-password
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker compose config --quiet
+      - run: docker compose up --build -d --wait
+      - run: curl --fail http://localhost:3000
+      - if: always()
+        run: docker compose logs --no-color && docker compose down -v

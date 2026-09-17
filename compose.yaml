@@ -1,0 +1,71 @@
+x-backend: &backend
+  build:
+    context: .
+    dockerfile: backend/Dockerfile
+  environment: &backend-env
+    WB_DATABASE_URL: postgresql+psycopg://workbench:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}@postgres:5432/workbench
+    WB_STORAGE_ROOT: /data
+    WB_API_TOKEN: ${WB_API_TOKEN:?Set WB_API_TOKEN}
+    WB_EFM_USERNAME: ${WB_EFM_USERNAME:-workbench}
+    WB_EFM_PASSWORD: ${WB_EFM_PASSWORD:?Set WB_EFM_PASSWORD}
+    WB_JOB_TIMEOUT_SECONDS: ${WB_JOB_TIMEOUT_SECONDS:-900}
+  volumes:
+    - workbench-data:/data
+  init: true
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: workbench
+      POSTGRES_USER: workbench
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U workbench -d workbench"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+  setup:
+    <<: *backend
+    command: ["sh", "-c", "alembic -c backend/alembic.ini upgrade head && python -m workbench.bootstrap"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+  api:
+    <<: *backend
+    depends_on:
+      setup:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+  worker:
+    <<: *backend
+    command: ["python", "-m", "workbench.worker"]
+    depends_on:
+      setup:
+        condition: service_completed_successfully
+    restart: unless-stopped
+    stop_grace_period: 20s
+  web:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    environment:
+      WB_API_URL: http://api:8000
+      WB_API_TOKEN: ${WB_API_TOKEN:?Set WB_API_TOKEN}
+      WB_PUBLIC_ORIGIN: ${WB_PUBLIC_ORIGIN:-http://localhost:3000}
+    ports:
+      - "127.0.0.1:3000:3000"
+    depends_on:
+      api:
+        condition: service_healthy
+    restart: unless-stopped
+volumes:
+  postgres-data:
+  workbench-data:

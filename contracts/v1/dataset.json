@@ -1,0 +1,132 @@
+{
+  "$defs": {
+    "Source": {
+      "additionalProperties": false,
+      "properties": {
+        "citation": {
+          "maxLength": 2000,
+          "minLength": 1,
+          "title": "Citation",
+          "type": "string"
+        },
+        "url": {
+          "default": "Not supplied",
+          "maxLength": 2000,
+          "title": "Url",
+          "type": "string"
+        },
+        "license": {
+          "maxLength": 200,
+          "minLength": 1,
+          "title": "License",
+          "type": "string"
+        },
+        "data_kind": {
+          "enum": [
+            "empirical",
+            "synthetic"
+          ],
+          "title": "Data Kind",
+          "type": "string"
+        },
+        "transformations": {
+          "maxLength": 3000,
+          "minLength": 1,
+          "title": "Transformations",
+          "type": "string"
+        }
+      },
+      "required": [
+        "citation",
+        "license",
+        "data_kind",
+        "transformations"
+      ],
+      "title": "Source",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "id": {
+      "title": "Id",
+      "type": "string"
+    },
+    "project_id": {
+      "title": "Project Id",
+      "type": "string"
+    },
+    "created_at": {
+      "format": "date-time",
+      "title": "Created At",
+      "type": "string"
+    },
+    "parents": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Parents",
+      "type": "array"
+    },
+    "software": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "title": "Software",
+      "type": "object"
+    },
+    "kind": {
+      "const": "dataset",
+      "default": "dataset",
+      "title": "Kind",
+      "type": "string"
+    },
+    "filename": {
+      "title": "Filename",
+      "type": "string"
+    },
+    "blob_key": {
+      "title": "Blob Key",
+      "type": "string"
+    },
+    "sha256": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Sha256",
+      "type": "string"
+    },
+    "rows": {
+      "exclusiveMinimum": 0,
+      "title": "Rows",
+      "type": "integer"
+    },
+    "columns": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Columns",
+      "type": "array"
+    },
+    "source": {
+      "$ref": "#/$defs/Source"
+    }
+  },
+  "required": [
+    "project_id",
+    "filename",
+    "blob_key",
+    "sha256",
+    "rows",
+    "columns",
+    "source"
+  ],
+  "title": "Dataset",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sciml-workbench.local/contracts/v1/dataset.json"
+}

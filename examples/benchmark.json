@@ -1,0 +1,26 @@
+{
+  "target": "response",
+  "numeric_features": [
+    "temperature"
+  ],
+  "categorical_features": [],
+  "row_id": "row_id",
+  "group_columns": [
+    "group_id"
+  ],
+  "units": {
+    "temperature": "kelvin",
+    "response": "dimensionless"
+  },
+  "independence_unit": "Generated family",
+  "independence_status": "synthetic",
+  "independence_rationale": "Each family is held entirely within a partition.",
+  "generalization": "Held-out generated families only.",
+  "limitations": [
+    "Synthetic software fixture; not experimental evidence."
+  ],
+  "domain": "materials",
+  "accepted_warnings": {},
+  "model": "ridge",
+  "seed": 0
+}

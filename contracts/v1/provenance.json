@@ -1,0 +1,78 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "id": {
+      "title": "Id",
+      "type": "string"
+    },
+    "project_id": {
+      "title": "Project Id",
+      "type": "string"
+    },
+    "created_at": {
+      "format": "date-time",
+      "title": "Created At",
+      "type": "string"
+    },
+    "parents": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Parents",
+      "type": "array"
+    },
+    "software": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "title": "Software",
+      "type": "object"
+    },
+    "kind": {
+      "const": "provenance",
+      "default": "provenance",
+      "title": "Kind",
+      "type": "string"
+    },
+    "activity": {
+      "title": "Activity",
+      "type": "string"
+    },
+    "inputs": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Inputs",
+      "type": "array"
+    },
+    "outputs": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Outputs",
+      "type": "array"
+    },
+    "parameters": {
+      "additionalProperties": true,
+      "title": "Parameters",
+      "type": "object"
+    }
+  },
+  "required": [
+    "project_id",
+    "activity",
+    "inputs",
+    "outputs",
+    "parameters"
+  ],
+  "title": "Provenance",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sciml-workbench.local/contracts/v1/provenance.json"
+}

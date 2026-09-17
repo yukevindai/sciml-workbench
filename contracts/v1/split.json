@@ -1,0 +1,87 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "id": {
+      "title": "Id",
+      "type": "string"
+    },
+    "project_id": {
+      "title": "Project Id",
+      "type": "string"
+    },
+    "created_at": {
+      "format": "date-time",
+      "title": "Created At",
+      "type": "string"
+    },
+    "parents": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Parents",
+      "type": "array"
+    },
+    "software": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "title": "Software",
+      "type": "object"
+    },
+    "kind": {
+      "const": "split",
+      "default": "split",
+      "title": "Kind",
+      "type": "string"
+    },
+    "dataset_id": {
+      "title": "Dataset Id",
+      "type": "string"
+    },
+    "audit_id": {
+      "title": "Audit Id",
+      "type": "string"
+    },
+    "config": {
+      "additionalProperties": true,
+      "title": "Config",
+      "type": "object"
+    },
+    "assignments": {
+      "items": {
+        "enum": [
+          "train",
+          "validation",
+          "test",
+          "excluded"
+        ],
+        "type": "string"
+      },
+      "title": "Assignments",
+      "type": "array"
+    },
+    "result": {
+      "additionalProperties": true,
+      "title": "Result",
+      "type": "object"
+    }
+  },
+  "required": [
+    "project_id",
+    "dataset_id",
+    "audit_id",
+    "config",
+    "assignments",
+    "result"
+  ],
+  "title": "Split",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sciml-workbench.local/contracts/v1/split.json"
+}

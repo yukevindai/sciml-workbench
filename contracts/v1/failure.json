@@ -1,0 +1,77 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "id": {
+      "title": "Id",
+      "type": "string"
+    },
+    "project_id": {
+      "title": "Project Id",
+      "type": "string"
+    },
+    "created_at": {
+      "format": "date-time",
+      "title": "Created At",
+      "type": "string"
+    },
+    "parents": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Parents",
+      "type": "array"
+    },
+    "software": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "title": "Software",
+      "type": "object"
+    },
+    "kind": {
+      "const": "failure",
+      "default": "failure",
+      "title": "Kind",
+      "type": "string"
+    },
+    "benchmark_id": {
+      "title": "Benchmark Id",
+      "type": "string"
+    },
+    "external_project_id": {
+      "title": "External Project Id",
+      "type": "string"
+    },
+    "external_record_id": {
+      "title": "External Record Id",
+      "type": "string"
+    },
+    "reason": {
+      "title": "Reason",
+      "type": "string"
+    },
+    "record": {
+      "additionalProperties": true,
+      "title": "Record",
+      "type": "object"
+    }
+  },
+  "required": [
+    "project_id",
+    "benchmark_id",
+    "external_project_id",
+    "external_record_id",
+    "reason",
+    "record"
+  ],
+  "title": "Failure",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sciml-workbench.local/contracts/v1/failure.json"
+}

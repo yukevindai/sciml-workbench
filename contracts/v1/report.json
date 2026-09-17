@@ -1,0 +1,69 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "id": {
+      "title": "Id",
+      "type": "string"
+    },
+    "project_id": {
+      "title": "Project Id",
+      "type": "string"
+    },
+    "created_at": {
+      "format": "date-time",
+      "title": "Created At",
+      "type": "string"
+    },
+    "parents": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Parents",
+      "type": "array"
+    },
+    "software": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "title": "Software",
+      "type": "object"
+    },
+    "kind": {
+      "const": "report",
+      "default": "report",
+      "title": "Kind",
+      "type": "string"
+    },
+    "blob_key": {
+      "title": "Blob Key",
+      "type": "string"
+    },
+    "sha256": {
+      "title": "Sha256",
+      "type": "string"
+    },
+    "artifact_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Artifact Ids",
+      "type": "array"
+    }
+  },
+  "required": [
+    "project_id",
+    "blob_key",
+    "sha256",
+    "artifact_ids"
+  ],
+  "title": "Report",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sciml-workbench.local/contracts/v1/report.json"
+}
