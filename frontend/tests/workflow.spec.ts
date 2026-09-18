@@ -54,7 +54,14 @@ test('server proxy rejects cross-origin mutations and keeps tokens out of HTML',
 
 test('hosted password gate covers pages, data and downloads', async ({ playwright }) => {
   test.skip(!process.env.WB_LOGIN_PASSWORD, 'Enable hosted login environment variables');
-  const anonymous = await playwright.request.newContext({ baseURL: process.env.E2E_BASE_URL || 'http://localhost:3000' });
+  // This test only runs when WB_LOGIN_PASSWORD is set, which is also when the
+  // config supplies use.httpCredentials. Contexts made from the playwright
+  // fixture inherit those, so the credentials have to be cleared explicitly or
+  // this "anonymous" client is signed in and every gated URL answers 200.
+  const anonymous = await playwright.request.newContext({
+    baseURL: process.env.E2E_BASE_URL || 'http://localhost:3000',
+    httpCredentials: undefined,
+  });
   for (const url of ['/', '/projects', '/api/projects', '/api/projects/example/artifacts/example/download']) {
     expect((await anonymous.get(url)).status()).toBe(401);
   }

@@ -1,0 +1,198 @@
+/* ==========================================================================
+   Design tokens
+   Two tiers: primitives name a value and are never used by a component;
+   semantic tokens name a role and are the only tier components reference.
+   Ramps are generated in OKLCH (constant hue, perceptual lightness steps,
+   chroma as a proportion of each hue's own sRGB maximum) and written here as
+   sRGB hex to match the notation used throughout this project.
+   Every foreground/background pair below was measured against WCAG 2.1 AA.
+   ========================================================================== */
+
+:root {
+  /* ---- primitives: neutral (hue 160, near-achromatic) ---- */
+  --n-0: #fdfefd;  --n-1: #f9fbf9;  --n-2: #f2f5f4;  --n-3: #eaeeec;
+  --n-4: #dee2e0;  --n-5: #cdd2cf;  --n-6: #b3b9b5;  --n-7: #8d9490;
+  --n-8: #6a726e;  --n-9: #4c534f;  --n-10: #313733; --n-11: #1a201c;
+  --n-12: #0b0f0d; --n-tertiary: #626a65; --n-boundary: #878e8a;
+
+  /* ---- primitives: neutral, dark theme (widened dark end) ---- */
+  --dn-canvas: #0a0d0b;  --dn-surface: #131714; --dn-subtle: #1e2320;
+  --dn-inset: #060706;   --dn-line: #272c29;    --dn-line-mid: #363c39;
+  --dn-boundary: #5f6561;
+  --dn-text-1: #eef1ef;  --dn-text-2: #b7bcb9;  --dn-text-3: #8e9490;
+
+  /* ---- primitives: accent, hue 162 ---- */
+  --a-1: #eefaf4; --a-2: #ddf5e8; --a-3: #c2ebd5; --a-4: #a2debf;
+  --a-5: #78caa3; --a-6: #4eb185; --a-7: #22966a; --a-8: #137c55;
+  --a-9: #126646; --a-10: #104e36; --a-11: #0a3725; --a-12: #052015;
+  --a-dk-text: #52cb97; --a-dk-bg: #172b22; --a-dk-border: #264536;
+  --a-dk-solid: #30a375; --a-dk-solid-hover: #3cb785; --a-dk-ring: #41be8a;
+
+  /* ---- primitives: status ---- */
+  --d-1: #fef4f3; --d-3: #f9d6d2; --d-4: #f2c0b9; --d-8: #c2161c; --d-9: #a11518;
+  --d-dk-text: #f19489; --d-dk-bg: #35201e; --d-dk-border: #523430;
+  --w-1: #fef5ea; --w-3: #f9dab1; --w-4: #f2c588; --w-8: #8b5f0f; --w-9: #734e0f;
+  --w-dk-text: #e0a449; --w-dk-bg: #302414; --w-dk-border: #4b3a21;
+  --i-1: #f1f8fe; --i-3: #cce3f9; --i-4: #b1d2f2; --i-8: #116db1; --i-9: #115a92;
+  --i-dk-text: #7ab7f0; --i-dk-bg: #1a2835; --i-dk-border: #2a3f54;
+
+  /* ---- primitives: partition categories ----
+     A categorical set held away from the accent hue, so green keeps its single
+     meaning of "interactive". Lightness separates them for colour-vision
+     deficiency; counts and labels never depend on hue alone. */
+  --p-train: #3079b7; --p-validation: #8d52db; --p-test: #a86313; --p-excluded: #6e7772;
+  --p-dk-train: #408bcd; --p-dk-validation: #b59ce3; --p-dk-test: #f3993e; --p-dk-excluded: #6e7772;
+
+  /* ---- type scale (dense professional tool) ---- */
+  --text-2xs: 0.6875rem; /* 11px - micro labels, uppercase only */
+  --text-xs:  0.75rem;   /* 12px - captions, meta */
+  --text-sm:  0.8125rem; /* 13px - dense UI, table cells */
+  --text-base:0.875rem;  /* 14px - default UI body */
+  --text-md:  1rem;      /* 16px - emphasised body, inputs */
+  --text-lg:  1.125rem;  /* 18px - h3 */
+  --text-xl:  1.3125rem; /* 21px - h2 */
+  --text-2xl: 1.625rem;  /* 26px - h1 */
+  --text-3xl: 2.0625rem; /* 33px - display */
+
+  --leading-tight: 1.15;
+  --leading-snug: 1.3;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.65;
+
+  --tracking-display: -0.022em;
+  --tracking-tight: -0.012em;
+  --tracking-normal: 0;
+  --tracking-label: 0.08em;
+
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+
+  /* ---- space scale (4px base) ---- */
+  --space-1: 0.125rem; --space-2: 0.25rem;  --space-3: 0.375rem; --space-4: 0.5rem;
+  --space-5: 0.75rem;  --space-6: 1rem;     --space-7: 1.25rem;  --space-8: 1.5rem;
+  --space-9: 2rem;     --space-10: 2.5rem;  --space-11: 3rem;    --space-12: 4rem;
+
+  /* ---- radii (concentric: outer = inner + padding) ---- */
+  --radius-xs: 4px; --radius-sm: 6px; --radius-md: 8px;
+  --radius-lg: 12px; --radius-xl: 16px; --radius-full: 999px;
+
+  /* ---- motion ---- */
+  --ease-out: cubic-bezier(0.2, 0, 0, 1);
+  --duration-fast: 120ms;
+  --duration-base: 180ms;
+
+  /* ---- layout ---- */
+  --sidebar-width: 17rem;
+  --topbar-height: 3.5rem;
+  --content-max: 88rem;
+  --measure: 68ch;
+
+  color-scheme: light;
+
+  /* ====================== semantic tokens: light ====================== */
+  --color-bg-canvas: var(--n-2);
+  --color-bg-surface: var(--n-0);
+  --color-bg-subtle: var(--n-3);
+  --color-bg-inset: var(--n-1);
+  --color-bg-chrome: var(--n-0);
+
+  --color-border-subtle: var(--n-4);
+  --color-border: var(--n-5);
+  --color-border-strong: var(--n-boundary);
+
+  --color-text-primary: var(--n-11);
+  --color-text-secondary: var(--n-9);
+  --color-text-tertiary: var(--n-tertiary);
+  --color-text-on-solid: #ffffff;
+
+  --color-accent-text: var(--a-9);
+  --color-accent-solid: var(--a-8);
+  --color-accent-solid-hover: var(--a-9);
+  --color-accent-bg: var(--a-1);
+  --color-accent-bg-hover: var(--a-2);
+  --color-accent-border: var(--a-3);
+  --color-accent-on-solid: #ffffff;
+  --color-focus-ring: var(--a-7);
+
+  --color-danger-text: var(--d-9);
+  --color-danger-bg: var(--d-1);
+  --color-danger-border: var(--d-3);
+  --color-danger-solid: var(--d-8);
+  --color-warning-text: var(--w-9);
+  --color-warning-bg: var(--w-1);
+  --color-warning-border: var(--w-3);
+  --color-warning-solid: var(--w-8);
+  --color-info-text: var(--i-9);
+  --color-info-bg: var(--i-1);
+  --color-info-border: var(--i-3);
+  --color-info-solid: var(--i-8);
+
+  --color-partition-train: var(--p-train);
+  --color-partition-validation: var(--p-validation);
+  --color-partition-test: var(--p-test);
+  --color-partition-excluded: var(--p-excluded);
+  --color-partition-label: #ffffff;
+
+  --color-image-outline: oklch(0 0 0 / 0.1);
+  --shadow-sm: 0 1px 2px oklch(0.165 0.0085 160 / 0.05), 0 1px 1px oklch(0.165 0.0085 160 / 0.04);
+  --shadow-md: 0 2px 4px oklch(0.165 0.0085 160 / 0.05), 0 4px 12px oklch(0.165 0.0085 160 / 0.06);
+  --shadow-lg: 0 4px 8px oklch(0.165 0.0085 160 / 0.06), 0 12px 32px oklch(0.165 0.0085 160 / 0.10);
+}
+
+/* ======================= semantic tokens: dark =======================
+   Not a mechanical inversion: vividness is reduced, the dark end widened,
+   and every pair re-measured. A single switching mechanism (data-theme,
+   always written explicitly by the boot script) sets every token. */
+:root[data-theme='dark'] {
+  color-scheme: dark;
+
+  --color-bg-canvas: var(--dn-canvas);
+  --color-bg-surface: var(--dn-surface);
+  --color-bg-subtle: var(--dn-subtle);
+  --color-bg-inset: var(--dn-inset);
+  --color-bg-chrome: var(--dn-surface);
+
+  --color-border-subtle: var(--dn-line);
+  --color-border: var(--dn-line-mid);
+  --color-border-strong: var(--dn-boundary);
+
+  --color-text-primary: var(--dn-text-1);
+  --color-text-secondary: var(--dn-text-2);
+  --color-text-tertiary: var(--dn-text-3);
+  --color-text-on-solid: var(--dn-inset);
+
+  --color-accent-text: var(--a-dk-text);
+  --color-accent-solid: var(--a-dk-solid);
+  --color-accent-solid-hover: var(--a-dk-solid-hover);
+  --color-accent-bg: var(--a-dk-bg);
+  --color-accent-bg-hover: var(--a-dk-border);
+  --color-accent-border: var(--a-dk-border);
+  --color-accent-on-solid: var(--dn-inset);
+  --color-focus-ring: var(--a-dk-ring);
+
+  --color-danger-text: var(--d-dk-text);
+  --color-danger-bg: var(--d-dk-bg);
+  --color-danger-border: var(--d-dk-border);
+  --color-danger-solid: var(--d-dk-text);
+  --color-warning-text: var(--w-dk-text);
+  --color-warning-bg: var(--w-dk-bg);
+  --color-warning-border: var(--w-dk-border);
+  --color-warning-solid: var(--w-dk-text);
+  --color-info-text: var(--i-dk-text);
+  --color-info-bg: var(--i-dk-bg);
+  --color-info-border: var(--i-dk-border);
+  --color-info-solid: var(--i-dk-text);
+
+  --color-partition-train: var(--p-dk-train);
+  --color-partition-validation: var(--p-dk-validation);
+  --color-partition-test: var(--p-dk-test);
+  --color-partition-excluded: var(--p-dk-excluded);
+  --color-partition-label: var(--dn-inset);
+
+  --color-image-outline: oklch(1 0 0 / 0.1);
+  --shadow-sm: 0 1px 2px oklch(0 0 0 / 0.5);
+  --shadow-md: 0 2px 4px oklch(0 0 0 / 0.4), 0 4px 12px oklch(0 0 0 / 0.5);
+  --shadow-lg: 0 4px 8px oklch(0 0 0 / 0.4), 0 12px 32px oklch(0 0 0 / 0.6);
+}
