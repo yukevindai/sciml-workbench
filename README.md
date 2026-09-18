@@ -50,6 +50,14 @@ python -m workbench.bootstrap
 uvicorn workbench.api:create_app --factory --host 127.0.0.1 --port 8000
 ```
 
+On Windows, disable Git's CRLF conversion before installing. Git for Windows enables `core.autocrlf` by default, which rewrites the line endings of the upstream sources pip clones from GitHub. The benchmark protocol hashes those source bytes, so a converted checkout fails admission with `Installed ChemData Auditor/SciSplit source differs from the pinned official implementation`. Prefix the install with:
+
+```bash
+GIT_CONFIG_COUNT=2 GIT_CONFIG_KEY_0=core.autocrlf GIT_CONFIG_VALUE_0=false GIT_CONFIG_KEY_1=core.eol GIT_CONFIG_VALUE_1=lf pip install -c backend/constraints.txt -e 'backend[dev]'
+```
+
+These variables apply only to the clones pip performs; your global Git configuration is unchanged. If the packages are already installed with converted line endings, add `--force-reinstall --no-deps` and the four Git requirements from `backend/pyproject.toml` to reinstall them in place.
+
 In another terminal with the same environment and activated virtualenv:
 
 ```bash
