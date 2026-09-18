@@ -69,7 +69,13 @@ export function BenchmarkView({ wb }: { wb: Workbench }) {
               hint="What the baseline predicts. It cannot also be a feature."
               columns={columns}
               value={config.target}
-              onChange={value => setConfig({ ...config, target: value })}
+              onChange={value => setConfig({
+                ...config,
+                target: value,
+                // The API rejects a task card whose target is also a feature.
+                numeric_features: config.numeric_features.filter(c => c !== value),
+                categorical_features: config.categorical_features.filter(c => c !== value),
+              })}
             />
 
             <ColumnToggles

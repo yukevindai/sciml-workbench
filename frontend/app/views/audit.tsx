@@ -189,7 +189,11 @@ export function AuditView({ wb }: { wb: Workbench }) {
                 hint="The quantity you eventually want to predict."
                 columns={columns}
                 value={config.target_column}
-                onChange={value => setConfig({ ...config, target_column: value })}
+                onChange={value => setConfig({
+                  ...config,
+                  target_column: value,
+                  feature_columns: config.feature_columns.filter(c => c !== value),
+                })}
               />
 
               <ColumnToggles

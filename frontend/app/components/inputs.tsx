@@ -30,15 +30,25 @@ export function ColumnToggles({
       ) : (
         <div className="token-grid">
           {columns.map(column => {
-            const isDisabled = disabledColumns.includes(column);
+            const isTarget = disabledColumns.includes(column);
+            const isSelected = selected.includes(column);
             return (
               <button
                 key={column}
                 type="button"
                 className="token"
-                aria-pressed={selected.includes(column)}
-                disabled={isDisabled}
-                title={isDisabled ? 'Already used as the target' : undefined}
+                aria-pressed={isSelected}
+                /* Blocked only for adding the target to this list. A column
+                   already in it stays clickable, or choosing it as the target
+                   would strand a selection the API then rejects. */
+                disabled={isTarget && !isSelected}
+                title={
+                  isTarget
+                    ? isSelected
+                      ? 'Also selected as the target. Click to remove it from this list.'
+                      : 'Already used as the target'
+                    : undefined
+                }
                 onClick={() => toggle(column)}
               >
                 <Check size={12} className="token-check" aria-hidden="true" />
@@ -276,6 +286,33 @@ export function JustificationEditor({
 
 /* --------------------------- advanced JSON view --------------------------- */
 
+/** Distinguishes the value shapes the form dereferences differently: an array
+ *  is not a plain object, and null is not either. */
+function kindOf(value: unknown): string {
+  if (value === null) return 'null';
+  if (Array.isArray(value)) return 'array';
+  return typeof value;
+}
+
+/** The editor is generic, so the configuration currently held is the schema:
+ *  every key it has must still be present, with the same kind. Without this a
+ *  syntactically valid `null` or `{}` would be installed as form state and the
+ *  parent would dereference a missing field, taking the whole view down. */
+function shapeError(reference: unknown, candidate: unknown): string {
+  if (kindOf(candidate) !== 'object') {
+    return `Expected a JSON object, received ${kindOf(candidate)}.`;
+  }
+  const expected = reference as Record<string, unknown>;
+  const actual = candidate as Record<string, unknown>;
+  for (const key of Object.keys(expected)) {
+    if (!(key in actual)) return `Missing required field "${key}".`;
+    const want = kindOf(expected[key]);
+    const got = kindOf(actual[key]);
+    if (want !== got) return `Field "${key}" should be ${want}, received ${got}.`;
+  }
+  return '';
+}
+
 /** The same configuration the form builds, editable as raw JSON. Edits flow
  *  back into the form, so neither view is a dead end. */
 export function AdvancedJson<T>({
@@ -306,9 +343,11 @@ export function AdvancedJson<T>({
           onChange={event => {
             setText(event.target.value);
             try {
-              const parsed = JSON.parse(event.target.value) as T;
+              const parsed: unknown = JSON.parse(event.target.value);
+              const problem = shapeError(value, parsed);
+              if (problem) { setError(problem); return; }
               setError('');
-              onChange(parsed);
+              onChange(parsed as T);
             } catch (e) {
               setError(e instanceof Error ? e.message : 'Invalid JSON');
             }
