@@ -5,9 +5,10 @@ import json
 import sys
 import zipfile
 from pathlib import Path
-from .adapters import encoded, run_audit, run_benchmark, run_split
+from .adapters import encoded, frame, run_audit, run_benchmark, run_split
 from .contracts import BenchmarkInput
 from .contract_registry import read_artifact
+from .split_integrity import validate_dataset, validate_split
 
 
 def replay(archive, destination):
@@ -39,8 +40,10 @@ def replay(archive, destination):
             data = lookup[a.dataset_id]
             csv = raw[f"blobs/{data.blob_key}"]
             if a.kind == "audit":
-                result = run_audit(csv, a.config)
+                result = run_audit(csv, a.config).result.model_dump(mode="json")
             elif a.kind == "split":
+                validate_dataset(csv, data, frame(csv))
+                validate_split(a.assignments, a.result, data.rows, a.config)
                 assignments, result = run_split(csv, a.config)
                 if assignments != a.assignments:
                     raise ValueError("Replayed split differs")

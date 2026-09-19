@@ -1,13 +1,12 @@
 """Storage errors and temporary workspaces across the consuming boundaries."""
 
 from concurrent.futures import ThreadPoolExecutor
-from datetime import datetime, timezone
-import hashlib
 import io
 import json
 import os
 from pathlib import Path
 import stat
+import shutil
 from threading import Barrier
 from types import SimpleNamespace
 import zipfile
@@ -136,19 +135,36 @@ def test_adapter_workspaces_are_private_isolated_and_cleaned(tmp_path, monkeypat
         return {"identity": identity}
 
     if adapter == "evidence":
+        from reportlab.pdfgen.canvas import Canvas
+        real_ingest = adapters.ingest_paper
+        pdfs = []
+        references = []
+        records = []
+        for i in range(2):
+            stream = io.BytesIO()
+            canvas = Canvas(stream)
+            canvas.drawString(40, 700, f"Isolation fixture {i}")
+            canvas.save()
+            pdfs.append(stream.getvalue())
+            source = tmp_path / f"reference-{i}.pdf"
+            source.write_bytes(pdfs[i])
+            references.append(tmp_path / f"reference-{i}")
+            records.append(real_ingest(source, references[i], {"title": str(i)}))
         def ingest(input_path, output, metadata):
             inspect_workspace(input_path.parent)
             identity = int(metadata["title"])
-            assert input_path.read_bytes() == f"pdf-{identity}".encode()
-            return result(input_path.parent, identity, output)
+            assert input_path.read_bytes() == pdfs[identity]
+            if fail_second and identity == 1:
+                raise RuntimeError("Injected upstream failure")
+            # Overlap filesystem workspaces, not PDFium calls inside one process.
+            # Production scientific jobs execute in separate compute processes.
+            shutil.copytree(references[identity], output)
+            return records[identity]
         monkeypatch.setattr(adapters, "ingest_paper", ingest)
-        invoke = lambda i: adapters.ingest_pdf(f"pdf-{i}".encode(), str(i))
+        invoke = lambda i: adapters.ingest_pdf(pdfs[i], str(i))
     else:
-        raw = (EXAMPLES / "demo.csv").read_bytes()
-        data = SimpleNamespace(schema_version="1.0", id="dataset", sha256=hashlib.sha256(raw).hexdigest(), filename="demo.csv", rows=60,
-                               source=SimpleNamespace(**json.loads((EXAMPLES / "source.json").read_text())),
-                               created_at=datetime.now(timezone.utc))
-        partition = SimpleNamespace(config=json.loads((EXAMPLES / "split.json").read_text()), assignments=["train"] * 60)
+        from test_split_integrity import inputs
+        raw, data, partition = inputs()
         def prepare(card, output):
             inspect_workspace(card.parent)
             assert (card.parent / "data.csv").read_bytes() == raw
@@ -157,7 +173,7 @@ def test_adapter_workspaces_are_private_isolated_and_cleaned(tmp_path, monkeypat
         monkeypatch.setattr(adapters, "run_baseline", lambda prepared, model, output, seed: result(prepared.parent, seed, output))
         def invoke(i):
             request = BenchmarkInput(**{**json.loads((EXAMPLES / "benchmark.json").read_text()),
-                                        "dataset_id": "dataset", "split_id": "split", "seed": i})
+                                        "dataset_id": data.id, "split_id": partition.id, "seed": i})
             return adapters.run_benchmark(raw, data, partition, request, {})
 
     with ThreadPoolExecutor(max_workers=2) as pool:
@@ -168,9 +184,13 @@ def test_adapter_workspaces_are_private_isolated_and_cleaned(tmp_path, monkeypat
                     future.result()
             else:
                 value, bundle = future.result()
-                assert value == {"identity": i}
                 with zipfile.ZipFile(io.BytesIO(bundle)) as archive:
-                    names = [n for n in archive.namelist() if n.endswith("identity.txt")]
-                    assert len(names) == 1 and archive.read(names[0]) == str(i).encode()
+                    if adapter == "evidence":
+                        assert value["metadata"]["title"] == str(i)
+                        assert archive.read(f"papers/{value['paper_id']}/original.pdf") == pdfs[i]
+                    else:
+                        assert value == {"identity": i}
+                        names = [n for n in archive.namelist() if n.endswith("identity.txt")]
+                        assert len(names) == 1 and archive.read(names[0]) == str(i).encode()
     assert len(roots) == len(set(roots)) == 2
     assert not list(scratch.iterdir())

@@ -192,6 +192,7 @@ def test_full_real_upstream_workflow(env, tmp_path):
         assert b"a-strong-test-password" not in z.read("artifacts.json")
     replay(archive, tmp_path / "replayed")
     assert (tmp_path / "replayed" / f"{baseline['id']}.json").exists()
+    assert json.loads((tmp_path / "replayed" / f"{audited['id']}.json").read_text()) == audited["result"]
 
 
 def test_auth_project_boundaries_validation_and_idempotency(env):

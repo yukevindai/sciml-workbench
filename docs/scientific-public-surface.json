@@ -1,0 +1,458 @@
+{
+  "configs": {
+    "AuditConfig": {
+      "bounds": {
+        "default": {},
+        "required": false
+      },
+      "check_missing": {
+        "default": true,
+        "required": false
+      },
+      "compositions": {
+        "default": [],
+        "required": false
+      },
+      "conflict_columns": {
+        "default": [],
+        "required": false
+      },
+      "conflict_tolerance": {
+        "default": 0.0,
+        "required": false
+      },
+      "correlation_threshold": {
+        "default": 0.995,
+        "required": false
+      },
+      "density_columns": {
+        "default": [],
+        "required": false
+      },
+      "density_radius": {
+        "default": 1.0,
+        "required": false
+      },
+      "density_scales": {
+        "default": {},
+        "required": false
+      },
+      "duplicate_columns": {
+        "default": null,
+        "required": false
+      },
+      "feature_columns": {
+        "default": [],
+        "required": false
+      },
+      "group_columns": {
+        "default": [],
+        "required": false
+      },
+      "identifier_columns": {
+        "default": [],
+        "required": false
+      },
+      "identity_columns": {
+        "default": [],
+        "required": false
+      },
+      "max_pair_comparisons": {
+        "default": 2000000,
+        "required": false
+      },
+      "min_bin_count": {
+        "default": 3,
+        "required": false
+      },
+      "min_neighbors": {
+        "default": 3,
+        "required": false
+      },
+      "molecular_similarity": {
+        "default": null,
+        "required": false
+      },
+      "near_duplicates": {
+        "default": {},
+        "required": false
+      },
+      "numeric_columns": {
+        "default": [],
+        "required": false
+      },
+      "provenance_columns": {
+        "default": [],
+        "required": false
+      },
+      "provenance_patterns": {
+        "default": {},
+        "required": false
+      },
+      "rules": {
+        "default": [],
+        "required": false
+      },
+      "smiles_column": {
+        "default": null,
+        "required": false
+      },
+      "sparse_bins": {
+        "default": {},
+        "required": false
+      },
+      "split_column": {
+        "default": null,
+        "required": false
+      },
+      "target_column": {
+        "default": null,
+        "required": false
+      },
+      "unavailable_features": {
+        "default": [],
+        "required": false
+      },
+      "unit_aliases": {
+        "default": {},
+        "required": false
+      },
+      "units": {
+        "default": {},
+        "required": false
+      }
+    },
+    "SplitConfig": {
+      "allow_target_in_split": {
+        "default": false,
+        "required": false
+      },
+      "cluster_scales": {
+        "default": {},
+        "required": false
+      },
+      "columns": {
+        "default": [],
+        "required": false
+      },
+      "composition_decimals": {
+        "default": null,
+        "required": false
+      },
+      "crossing_policy": {
+        "default": "error",
+        "required": false
+      },
+      "cutoff": {
+        "default": null,
+        "required": false
+      },
+      "diagnostics": {
+        "default": {},
+        "required": false
+      },
+      "direction": {
+        "default": "high",
+        "required": false
+      },
+      "extrapolation_bounds": {
+        "default": {},
+        "required": false
+      },
+      "group_columns": {
+        "default": [],
+        "required": false
+      },
+      "group_molecular_similarity": {
+        "default": null,
+        "required": false
+      },
+      "group_near_duplicates": {
+        "default": {},
+        "required": false
+      },
+      "group_smiles_column": {
+        "default": null,
+        "required": false
+      },
+      "holdout_values": {
+        "default": null,
+        "required": false
+      },
+      "max_pair_comparisons": {
+        "default": 2000000,
+        "required": false
+      },
+      "n_clusters": {
+        "default": 5,
+        "required": false
+      },
+      "seed": {
+        "default": 0,
+        "required": false
+      },
+      "strategy": {
+        "default": null,
+        "required": true
+      },
+      "target_column": {
+        "default": null,
+        "required": false
+      },
+      "test_size": {
+        "default": 0.2,
+        "required": false
+      },
+      "threshold": {
+        "default": null,
+        "required": false
+      },
+      "validation_bounds": {
+        "default": {},
+        "required": false
+      },
+      "validation_cutoff": {
+        "default": null,
+        "required": false
+      },
+      "validation_size": {
+        "default": 0.0,
+        "required": false
+      },
+      "validation_threshold": {
+        "default": null,
+        "required": false
+      },
+      "validation_values": {
+        "default": null,
+        "required": false
+      }
+    }
+  },
+  "failure_memory_routes": {
+    "/api/labs": {
+      "get": {
+        "parameters": [],
+        "requestBody": null
+      },
+      "post": {
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Name"
+              }
+            }
+          },
+          "required": true
+        }
+      }
+    },
+    "/api/login": {
+      "post": {
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Login"
+              }
+            }
+          },
+          "required": true
+        }
+      }
+    },
+    "/api/logout": {
+      "post": {
+        "parameters": [],
+        "requestBody": null
+      }
+    },
+    "/api/projects": {
+      "get": {
+        "parameters": [],
+        "requestBody": null
+      }
+    },
+    "/api/projects/{project_id}/import": {
+      "post": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "project_id",
+            "required": true,
+            "schema": {
+              "title": "Project Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Import"
+              }
+            }
+          },
+          "required": true
+        }
+      }
+    },
+    "/api/records/{record_id}": {
+      "get": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "record_id",
+            "required": true,
+            "schema": {
+              "title": "Record Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": null
+      },
+      "put": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "record_id",
+            "required": true,
+            "schema": {
+              "title": "Record Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Edit"
+              }
+            }
+          },
+          "required": true
+        }
+      }
+    },
+    "/api/search": {
+      "get": {
+        "parameters": [
+          {
+            "in": "query",
+            "name": "q",
+            "required": false,
+            "schema": {
+              "default": "",
+              "maxLength": 1000,
+              "title": "Q",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "project_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Project Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "status",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Status"
+            }
+          },
+          {
+            "in": "query",
+            "name": "archived",
+            "required": false,
+            "schema": {
+              "default": false,
+              "title": "Archived",
+              "type": "boolean"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 50,
+              "maximum": 200,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": null
+      }
+    }
+  },
+  "packages": {
+    "chemdata-auditor": {
+      "commit": "eff3ed3c43ec71e9ceecabc1f04d1dfb5c91c116",
+      "entry_points": {
+        "chemdata_auditor.AuditConfig": "(duplicate_columns: list[str] | None = None, group_columns: list[str] = <factory>, split_column: str | None = None, bounds: dict[str, list[float | None]] = <factory>, units: dict[str, dict[str, str]] = <factory>, provenance_columns: list[str] = <factory>, sparse_bins: dict[str, list[float]] = <factory>, min_bin_count: int = 3, feature_columns: list[str] = <factory>, unavailable_features: list[str] = <factory>, target_column: str | None = None, check_missing: bool = True, numeric_columns: list[str] = <factory>, identity_columns: list[str] = <factory>, conflict_columns: list[str] = <factory>, conflict_tolerance: float = 0.0, identifier_columns: list[str] = <factory>, correlation_threshold: float = 0.995, unit_aliases: dict[str, str] = <factory>, compositions: list[dict] = <factory>, rules: list[dict] = <factory>, near_duplicates: dict[str, float] = <factory>, smiles_column: str | None = None, molecular_similarity: float | None = None, density_columns: list[str] = <factory>, density_scales: dict[str, float] = <factory>, density_radius: float = 1.0, min_neighbors: int = 3, max_pair_comparisons: int = 2000000, provenance_patterns: dict[str, str] = <factory>) -> None",
+        "chemdata_auditor.SplitConfig": "(strategy: str, columns: list[str] = <factory>, group_columns: list[str] = <factory>, test_size: float = 0.2, validation_size: float = 0.0, seed: int = 0, holdout_values: list | None = None, validation_values: list | None = None, cutoff: str | None = None, validation_cutoff: str | None = None, threshold: float | None = None, validation_threshold: float | None = None, direction: str = 'high', extrapolation_bounds: dict[str, list[float]] = <factory>, validation_bounds: dict[str, list[float]] = <factory>, crossing_policy: str = 'error', composition_decimals: int | None = None, n_clusters: int = 5, cluster_scales: dict[str, float] = <factory>, group_near_duplicates: dict[str, float] = <factory>, group_smiles_column: str | None = None, group_molecular_similarity: float | None = None, target_column: str | None = None, allow_target_in_split: bool = False, max_pair_comparisons: int = 2000000, diagnostics: dict = <factory>) -> None",
+        "chemdata_auditor.audit": "(data, config=None)",
+        "chemdata_auditor.split": "(data, config)"
+      },
+      "version": "0.3.0"
+    },
+    "cheme-ml-benchmarks": {
+      "commit": "db02d8963725a1d406b9b07eb6f4cc3436fbb082",
+      "entry_points": {
+        "cheme_benchmarks.leaderboard": "(prepared, run_directories, destination=None)",
+        "cheme_benchmarks.load_prepared": "(directory)",
+        "cheme_benchmarks.prepare": "(spec_path, destination)",
+        "cheme_benchmarks.run_baseline": "(prepared, name, destination, seed=0)",
+        "cheme_benchmarks.score_predictions": "(spec, frame, frozen, raw)",
+        "cheme_benchmarks.submit": "(prepared, predictions_path, method_path, destination)"
+      },
+      "version": "0.1.0"
+    },
+    "experiment-failure-memory": {
+      "commit": "63492787cbbea6d03662db63f2d958a6eec8d804",
+      "entry_points": {
+        "failure_memory.app.create_app": "(database_path='data/memory.sqlite', origin='https://localhost:8000', secure_cookies=True)"
+      },
+      "version": "0.1.0"
+    },
+    "scientific-evidence-engine": {
+      "commit": "09f5ec810e8f04bf8d233ec12eb9448342ee5121",
+      "entry_points": {
+        "scientific_evidence_engine.digitize": "(store, figure_id, config)",
+        "scientific_evidence_engine.export_dataset": "(result, store, destination)",
+        "scientific_evidence_engine.ingest_paper": "(pdf_path, store, metadata)",
+        "scientific_evidence_engine.render_figure": "(store, paper_id, page, label, scale=2.0, crop=None)",
+        "scientific_evidence_engine.verify_export": "(directory, store=None)"
+      },
+      "version": "0.1.0"
+    }
+  }
+}

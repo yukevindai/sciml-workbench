@@ -1,0 +1,5 @@
+{
+  "numeric_columns": ["x"],
+  "bounds": {"x": [0, 10]},
+  "provenance_columns": ["source"]
+}

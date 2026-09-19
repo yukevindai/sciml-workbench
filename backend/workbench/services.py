@@ -25,6 +25,7 @@ from .contracts import (
 from .db import ArtifactRow, JobRow, ProjectRow, MaterialRow
 from .contract_registry import read_artifact
 from .storage import StorageError
+from .split_integrity import SplitIntegrityError, validate_dataset
 from .execution import Work
 from .errors import DomainError
 from .artifacts import ArtifactResolver, operation_inputs, resolve_material
@@ -220,14 +221,16 @@ def execute(store, settings, work):
         data = inputs[p["dataset_id"]]
         raw = store.get(data.blob_key)
     if work.kind == "audit":
+        audited = adapters.run_audit(raw, p["config"])
         value = Audit(
             **common,
             parents=[data.id],
             dataset_id=data.id,
-            config=p["config"],
-            result=adapters.run_audit(raw, p["config"]),
+            config=audited.config,
+            result=audited.result.model_dump(mode="json"),
         )
     elif work.kind == "split":
+        validate_dataset(raw, data, adapters.frame(raw))
         assignments, result = adapters.run_split(raw, p["config"])
         value = Split(
             **common,
@@ -257,8 +260,8 @@ def execute(store, settings, work):
             )
             value.bundle_key = store.put(bundle)
             value.status = "succeeded"
-        except StorageError:
-            # Storage failure is operational, not a scientific admission result.
+        except (StorageError, SplitIntegrityError):
+            # Input corruption/storage failure is not a scientific admission result.
             raise
         except (ValueError, TypeError, KeyError) as exc:
             value.error = safe_error(exc, settings)
@@ -293,17 +296,17 @@ def execute(store, settings, work):
                 "notes": "Computational run; unsuccessful is a researcher assessment, not a physical experiment.",
             },
         }
-        external_pid, result = adapters.FailureMemory(settings).save(
+        receipt = adapters.FailureMemory(settings).save(
             SimpleNamespace(**work.project), work.job_id, record
         )
         value = Failure(
             **common,
             parents=[run.id],
             benchmark_id=run.id,
-            external_project_id=external_pid,
-            external_record_id=result["id"],
+            external_project_id=receipt.external_project_id,
+            external_record_id=receipt.external_record_id,
             reason=p["reason"],
-            record=result,
+            record=receipt.record,
         )
     elif work.kind == "report":
         raw, ids = report_bundle(work.report, store)

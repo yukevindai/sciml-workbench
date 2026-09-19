@@ -108,6 +108,12 @@ Replay validates every archived file against the manifest, regenerates audit and
 - [Artifact lineage and authenticated downloads](docs/artifact-resolution.md)
 - [Frozen project and run report captures](docs/report-capture.md)
 - [Inspected public integration points and exact pins](docs/integrations.md)
+- [Verified scientific options, public surfaces and limitations (C01)](docs/scientific-public-surface.md)
+- [Typed audit integration and acceptance semantics (C02)](docs/audit-integration.md)
+- [SciSplit publication and exchange integrity (C03)](docs/split-integrity.md)
+- [ChemE baseline admission and complete run bundles (C04)](docs/benchmark-integration.md)
+- [PDF ingestion, source bundles and text availability (C05)](docs/evidence-ingestion.md)
+- [Failure Memory receipts and scoped live search (C06)](docs/failure-memory-integration.md)
 - [Operations, backups and troubleshooting](docs/operations.md)
 - [Versioned JSON Schemas](contracts/v1/)
 

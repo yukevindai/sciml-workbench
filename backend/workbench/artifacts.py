@@ -218,6 +218,10 @@ def validate_result(value, work):
             or set(value.parents) != set(parents) or len(value.parents) != len(parents)
             or any(getattr(value, field) != accepted for field, accepted in expected.items())):
         raise integrity("Task result lineage does not match its accepted operation")
+    if work.kind == "split":
+        from .split_integrity import validate_split
+        data = read_artifact(work.artifacts[p["dataset_id"]])
+        validate_split(value.assignments, value.result, data.rows, value.config)
 
 
 @dataclass(frozen=True)
