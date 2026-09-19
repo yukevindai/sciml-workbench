@@ -1,2 +1,5 @@
 import Workbench from './workbench';
-export default function Page() { return <Workbench view="projects" />; }
+
+export default function Page() {
+  return <Workbench view="projects" />;
+}
