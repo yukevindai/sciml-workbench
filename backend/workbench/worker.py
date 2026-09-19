@@ -109,15 +109,23 @@ def publish_result(db, claimed, work, result):
     if (value.id, value.project_id, value.kind) != (work.result_id, work.project_id, work.kind):
         raise TaskFailure("Task result does not match its accepted operation.")
     with db.session.begin() as session:
+        from .barriers import lock_project
+        lock_project(session, work.project_id)
         lock_claim(session, claimed)
         job = session.get(JobRow, claimed.job_id)
         if (work.job_id, work.project_id, work.kind, work.payload) != (job.id, job.project_id, job.kind, job.payload):
             raise TaskFailure("Task snapshot does not match its accepted operation.")
         ensure_lineage(session, work.project_id, work.kind, work.payload)
+        if work.kind == "report":
+            from .reports import read_snapshot
+            if work.report != read_snapshot(job.payload):
+                raise TaskFailure("Task report differs from its accepted capture.", "INTEGRITY_FAILED")
         validate_result(value, work)
         save(session, value)
         save(session, Provenance(project_id=work.project_id, software=value.software, parents=value.parents,
-                                 activity=work.kind, inputs=value.parents, outputs=[value.id], parameters=work.payload))
+                                 activity=work.kind, inputs=value.parents, outputs=[value.id],
+                                 parameters=({"request": work.payload["request"], "snapshot_digest": work.payload["snapshot_digest"]}
+                                             if work.kind == "report" else work.payload)))
         failed = value.kind == "benchmark" and value.status == "failed"
         finish_claim(session, claimed, state="failed" if failed else "succeeded", result_id=value.id,
                      error=value.error if failed else None, error_code="VALIDATION_FAILED" if failed else None)

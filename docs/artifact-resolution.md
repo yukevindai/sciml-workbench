@@ -21,7 +21,7 @@ The runtime supports the eight current artifact kinds at 1.0 plus Dataset 2.0. B
 
 Worker publication additionally binds result IDs, kind, project, parent set, typed input references and operation-owned configuration to the accepted detached work. A result cannot substitute another valid same-project dataset, alter audit/split configuration, change benchmark selection, or return a PDF/report for different inputs. Failure rolls back candidate/provenance publication. Existing D03 fences/transactions are preserved; B08 still owns the full cross-operation publication protocol.
 
-Reports validate included artifact graphs and material bindings before reading blobs. B06/C08/C09 still own selected run capture, archive closure and replay semantics; B05 does not change the existing report's execution-time capture or rewrite old archives.
+Reports validate included artifact graphs and material bindings before reading blobs. B06 now provides [frozen project and selected-run capture](report-capture.md); C08/C09 own further archive validation and replay semantics. Old archives are not rewritten.
 
 ## Authenticated downloads
 

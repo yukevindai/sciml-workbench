@@ -25,7 +25,7 @@ job = service.submit(
 
 Scope, action identities, policy and project identity must never be taken from provider-proposed arguments. B11/E03 must resolve the persisted run, authorize capabilities and policy, and record the action before calling this service. B04 supplies this internal interface; it does not enable a provider, an HTTP tool endpoint or autonomous execution.
 
-Artifact/material allowlists are checked on every call, including replay. Benchmark scope includes the split's parent audit because execution consumes it. Cross-project references fail even when a caller's allowlist contains their IDs. Evidence tools must reference an allowed PDF material; arbitrary blob keys and raw uploads are not tool arguments. Agent failure recording is unavailable until the actor-aware failure service exists, and restricted reports are unavailable until B06 implements run-scoped capture. Neither silently falls back to a broader legacy operation.
+Artifact/material allowlists are checked on every call, including replay. Benchmark scope includes the split's parent audit because execution consumes it. Cross-project references fail even when a caller's allowlist contains their IDs. Evidence tools must reference an allowed PDF material; arbitrary blob keys and raw uploads are not tool arguments. Agent failure recording is unavailable until the actor-aware failure service exists. Restricted reports require an explicit trusted `ReportSelection`; see the [capture contract](report-capture.md) and its B11/E03 integration boundary.
 
 ## Acceptance transaction
 
@@ -39,7 +39,7 @@ The unique database key remains the final arbiter of concurrent inserts. `job_me
 
 Canonical identity version 1 is unchanged. Typed defaults are expanded before hashing, object-key order is insignificant and array order remains significant. Stored requests/digests are never rewritten. For a valid existing request, newer busy state or new admission policy does not create a new operation; scope checks still apply.
 
-New report requests reject active non-report project jobs with `PROJECT_BUSY`. A previously accepted report key returns its existing job even when newer work is active. The barrier serializes submission admission only: B06/B08 still own report snapshot/publication coordination. B04 does not turn execution-time project capture into a request-time immutable snapshot.
+New project-wide reports reject active non-report project jobs with `PROJECT_BUSY`; selected run captures require only their included producers to be terminal. B06 freezes the metadata snapshot and digest under the shared publication barrier before committing the report job. A previously accepted report key returns its original capture even when newer work is active. Explicit report retries copy the failed attempt's capture rather than recapturing current state. See [report capture](report-capture.md).
 
 For Dataset 2.0, benchmark submission rejects unresolved or inferred source fields required by the upstream source card with `ADMISSION_REJECTED` (422). Descriptive audit and split submission do not require those source facts. Detailed scientific configuration/admission and fitting remain in the bounded worker; later rejection remains a durable job outcome.
 

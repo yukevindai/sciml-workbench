@@ -9,16 +9,18 @@ import hashlib
 import json
 
 from pydantic import Field, ValidationError
-from sqlalchemy import select, update
+from sqlalchemy import select
 
 from .contract_core import ContractModel, Digest, Identifier, finite_json
 from .contracts import AuditInput, BenchmarkInput, FailureInput, SplitInput
-from .db import JobRow, ProjectRow
+from .db import JobRow
 from .intake import material
 from .job_metadata import submit_job
 from .request_identity import request_digest
 from .services import DomainError, artifact, ensure_lineage, project
 from .artifacts import operation_inputs
+from .barriers import lock_project
+from .reports import ReportSelection, report_request, read_snapshot, authorize_snapshot, freeze
 
 
 @dataclass(frozen=True)
@@ -27,6 +29,7 @@ class SubmissionScope:
     artifact_ids: frozenset[str] | None = None
     material_ids: frozenset[str] | None = None
     run_id: str | None = None
+    report_selection: ReportSelection | None = None
 
     def __post_init__(self):
         if not isinstance(self.project_id, str) or not self.project_id.strip():
@@ -40,6 +43,8 @@ class SubmissionScope:
         if self.run_id is not None and (not isinstance(self.run_id, str) or not self.run_id.strip()
                                         or len(self.run_id) > 160 or self.artifact_ids is None or self.material_ids is None):
             raise DomainError("Tool submission requires a run and explicit input scope", 403)
+        if self.report_selection is not None and (not isinstance(self.report_selection, ReportSelection) or self.run_id is None):
+            raise DomainError("Report selection requires a trusted run scope", 403)
 
 
 class EvidenceInput(ContractModel):
@@ -74,17 +79,6 @@ def identity_key(scope, request_key, action_id, attempt_id):
     if request_key.startswith(ACTION_PREFIX):
         raise DomainError("This request-key namespace is reserved for tool actions")
     return request_key
-
-
-def lock_project(session, pid):
-    # PostgreSQL is the production barrier. SQLite needs an actual write to
-    # serialize submitters because SELECT FOR UPDATE is ignored there.
-    if session.bind.dialect.name == "sqlite":
-        found = session.execute(update(ProjectRow).where(ProjectRow.id == pid).values(name=ProjectRow.name)).rowcount
-    else:
-        found = session.scalar(select(ProjectRow.id).where(ProjectRow.id == pid).with_for_update())
-    if not found:
-        raise DomainError("Project not found", 404, "PROJECT_NOT_FOUND")
 
 
 class SubmissionService:
@@ -137,6 +131,28 @@ class SubmissionService:
             accepted = dict(canonical)
             self._scope(scope, kind, canonical)
             old = session.scalar(select(JobRow).where(JobRow.project_id == scope.project_id, JobRow.request_key == key))
+            if kind == "report":
+                request = report_request(scope)
+                if old is not None:
+                    if old.kind != kind or old.payload.get("request", old.payload) != request or old.retry_of_job_id != retry_of_job_id:
+                        raise DomainError("Idempotency key was used for a different request", 409)
+                    # Pre-B06 jobs have no capture. Replay preserves their identity;
+                    # execution fails closed rather than recapturing newer state.
+                    if "snapshot" in old.payload:
+                        authorize_snapshot(read_snapshot(old.payload), scope)
+                    return old.payload, old
+                if retry_of_job_id is not None:
+                    prior = session.get(JobRow, retry_of_job_id)
+                    if prior is None or prior.project_id != scope.project_id:
+                        raise DomainError("Retry job not found in this project", 404, "JOB_NOT_FOUND")
+                    if prior.kind != "report" or prior.payload.get("request") != request:
+                        raise DomainError("Retry must preserve the original report selection", 422, "LINEAGE_MISMATCH")
+                    if prior.state != "failed":
+                        raise DomainError("Only a failed terminal job can be retried")
+                    authorize_snapshot(read_snapshot(prior.payload), scope)
+                    return prior.payload, None
+                self._admit(session, scope, kind, request, None)
+                return freeze(session, scope, request), None
             if old is not None:
                 same_input = (old.payload.get("material_id") == canonical["material_id"]
                               if kind == "evidence" and raw_pdf is None
@@ -178,7 +194,7 @@ class SubmissionService:
     def _scope(self, scope, kind, payload):
         if scope.run_id is not None and kind == "failure":
             raise DomainError("Agent outcome recording requires the actor-aware failure service", 422, "UNSUPPORTED_CAPABILITY")
-        if kind == "report" and (scope.run_id is not None or scope.artifact_ids is not None or scope.material_ids is not None):
+        if kind == "report" and scope.report_selection is None and (scope.run_id is not None or scope.artifact_ids is not None or scope.material_ids is not None):
             raise DomainError("Restricted reports require run-scoped report capture", 422, "UNSUPPORTED_CAPABILITY")
         for field in ("dataset_id", "audit_id", "split_id", "benchmark_id"):
             aid = payload.get(field)
@@ -204,7 +220,7 @@ class SubmissionService:
                 benchmark_source(data)
             except ValueError:
                 raise DomainError("Benchmark requires resolved source declarations", 422, "ADMISSION_REJECTED") from None
-        if kind == "report":
+        if kind == "report" and scope.report_selection is None:
             active = session.scalar(select(JobRow.id).where(JobRow.project_id == scope.project_id,
                 JobRow.state.in_(["queued", "running"]), JobRow.kind != "report").limit(1))
             if active:

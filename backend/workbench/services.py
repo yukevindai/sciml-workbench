@@ -46,6 +46,8 @@ def artifact(session, project_id, artifact_id, kind=None):
 
 
 def save(session, value):
+    from .barriers import lock_project
+    lock_project(session, value.project_id)
     checked = ArtifactResolver(session, value.project_id).validate(value)
     session.add(
         ArtifactRow(
@@ -98,41 +100,15 @@ def ensure_lineage(session, pid, kind, payload):
 
 
 def capture_report(session, pid):
-    proj = project(session, pid)
-    rows = session.scalars(
-        select(ArtifactRow)
-        .where(ArtifactRow.project_id == pid)
-        .order_by(ArtifactRow.created_at, ArtifactRow.id)
-    ).all()
-    resolver = ArtifactResolver(session, pid)
-    artifacts = [resolver.resolve(x.id).model_dump(mode="json") for x in rows if x.kind != "report"]
-    jobs = session.scalars(select(JobRow).where(JobRow.project_id == pid)).all()
-    materials = [resolve_material(session, pid, mid) for mid in session.scalars(
-        select(MaterialRow.id).where(MaterialRow.project_id == pid).order_by(MaterialRow.id))]
-    return deepcopy({
-        "materials": [{key: getattr(m, key)
-                       for key in ("id", "project_id", "filename", "media_type", "blob_key", "sha256", "dataset_id")}
-                      for m in materials],
-        "artifacts": artifacts,
-        "project": {"id": proj.id, "name": proj.name, "description": proj.description},
-        "jobs": [
-                {
-                    "id": j.id,
-                    "kind": j.kind,
-                    "state": j.state,
-                    "error": j.error,
-                    "result_id": j.result_id,
-                }
-                for j in jobs
-                if j.kind != "report"
-            ],
-    })
+    from .reports import capture
+    return capture(session, pid)
 
 
 def report_bundle(snapshot, store):
     artifacts = snapshot["artifacts"]
     proj = SimpleNamespace(**snapshot["project"])
     files = {
+        "snapshot.json": adapters.encoded(snapshot),
         "materials.json": adapters.encoded(snapshot.get("materials", [])),
         "artifacts.json": adapters.encoded(artifacts),
         "project.json": adapters.encoded(snapshot["project"]),
@@ -230,7 +206,8 @@ def prepare_execution(session, job):
         proj = project(session, pid)
         work.project = {"id": proj.id, "name": proj.name, "description": proj.description}
     elif job.kind == "report":
-        work.report = capture_report(session, pid)
+        from .reports import read_snapshot
+        work.report = read_snapshot(p)
     return work
 
 

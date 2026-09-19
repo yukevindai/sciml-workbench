@@ -100,6 +100,8 @@ def attach(session, store, settings, pid, raw, name, media_type, source, request
             data = dataset(session, store, settings, pid, raw, name, source) if media_type == "text/csv" else None
             if data is None:
                 store.put(raw)  # Full PDF parsing belongs to the bounded evidence worker.
+            from .barriers import lock_project
+            lock_project(session, pid)
             session.flush()
             material = MaterialRow(project_id=pid, request_key=request_key, request_digest=identity,
                                    filename=name, media_type=media_type, blob_key=digest, sha256=digest,
