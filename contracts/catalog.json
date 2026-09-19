@@ -3161,6 +3161,63 @@
       "title": "MaterialQuestion",
       "type": "object"
     },
+    "MaterialResponse": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "project_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Project Id",
+          "type": "string"
+        },
+        "filename": {
+          "title": "Filename",
+          "type": "string"
+        },
+        "media_type": {
+          "enum": [
+            "text/csv",
+            "application/pdf"
+          ],
+          "title": "Media Type",
+          "type": "string"
+        },
+        "sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        },
+        "dataset_id": {
+          "anyOf": [
+            {
+              "maxLength": 160,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Dataset Id"
+        }
+      },
+      "required": [
+        "id",
+        "project_id",
+        "filename",
+        "media_type",
+        "sha256",
+        "dataset_id"
+      ],
+      "title": "MaterialResponse",
+      "type": "object"
+    },
     "MetricReference": {
       "additionalProperties": false,
       "properties": {
@@ -6482,7 +6539,21 @@
       "items": {
         "oneOf": [
           {
-            "$ref": "#/$defs/Dataset"
+            "oneOf": [
+              {
+                "$ref": "#/$defs/Dataset"
+              },
+              {
+                "$ref": "#/$defs/DatasetV2"
+              }
+            ],
+            "discriminator": {
+              "propertyName": "schema_version",
+              "mapping": {
+                "1.0": "#/$defs/Dataset",
+                "2.0": "#/$defs/DatasetV2"
+              }
+            }
           },
           {
             "$ref": "#/$defs/Audit"
@@ -6509,7 +6580,23 @@
         "discriminator": {
           "propertyName": "kind",
           "mapping": {
-            "dataset": "#/$defs/Dataset",
+            "dataset": {
+              "oneOf": [
+                {
+                  "$ref": "#/$defs/Dataset"
+                },
+                {
+                  "$ref": "#/$defs/DatasetV2"
+                }
+              ],
+              "discriminator": {
+                "propertyName": "schema_version",
+                "mapping": {
+                  "1.0": "#/$defs/Dataset",
+                  "2.0": "#/$defs/DatasetV2"
+                }
+              }
+            },
             "audit": "#/$defs/Audit",
             "split": "#/$defs/Split",
             "benchmark": "#/$defs/Benchmark",
@@ -6518,6 +6605,77 @@
             "provenance": "#/$defs/Provenance",
             "report": "#/$defs/Report"
           }
+        }
+      }
+    },
+    "IntakeArtifact": {
+      "oneOf": [
+        {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/Dataset"
+            },
+            {
+              "$ref": "#/$defs/DatasetV2"
+            }
+          ],
+          "discriminator": {
+            "propertyName": "schema_version",
+            "mapping": {
+              "1.0": "#/$defs/Dataset",
+              "2.0": "#/$defs/DatasetV2"
+            }
+          }
+        },
+        {
+          "$ref": "#/$defs/Audit"
+        },
+        {
+          "$ref": "#/$defs/Split"
+        },
+        {
+          "$ref": "#/$defs/Benchmark"
+        },
+        {
+          "$ref": "#/$defs/Evidence"
+        },
+        {
+          "$ref": "#/$defs/Failure"
+        },
+        {
+          "$ref": "#/$defs/Provenance"
+        },
+        {
+          "$ref": "#/$defs/Report"
+        }
+      ],
+      "discriminator": {
+        "propertyName": "kind",
+        "mapping": {
+          "dataset": {
+            "oneOf": [
+              {
+                "$ref": "#/$defs/Dataset"
+              },
+              {
+                "$ref": "#/$defs/DatasetV2"
+              }
+            ],
+            "discriminator": {
+              "propertyName": "schema_version",
+              "mapping": {
+                "1.0": "#/$defs/Dataset",
+                "2.0": "#/$defs/DatasetV2"
+              }
+            }
+          },
+          "audit": "#/$defs/Audit",
+          "split": "#/$defs/Split",
+          "benchmark": "#/$defs/Benchmark",
+          "evidence": "#/$defs/Evidence",
+          "failure": "#/$defs/Failure",
+          "provenance": "#/$defs/Provenance",
+          "report": "#/$defs/Report"
         }
       }
     }
@@ -6632,6 +6790,9 @@
       "$ref": "#/$defs/JobResponse"
     },
     {
+      "$ref": "#/$defs/MaterialResponse"
+    },
+    {
       "$ref": "#/$defs/LegacyArtifact"
     },
     {
@@ -6645,6 +6806,9 @@
     },
     {
       "$ref": "#/$defs/ArtifactsResponse"
+    },
+    {
+      "$ref": "#/$defs/IntakeArtifact"
     },
     {
       "$ref": "#/$defs/ProjectInput"

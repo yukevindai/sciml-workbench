@@ -1,7 +1,14 @@
 /* Generated from Pydantic JSON schemas. Do not edit; run npm run contracts:generate. */
 
 export type HttpResponse =
-  ProjectResponse | ProjectsResponse | LegacyJobResponse | JobsResponse | LegacyArtifact | ArtifactsResponse;
+  | ProjectResponse
+  | ProjectsResponse
+  | LegacyJobResponse
+  | JobsResponse
+  | LegacyArtifact
+  | ArtifactsResponse
+  | IntakeArtifact
+  | MaterialResponse;
 export type Id = string;
 export type Name = string;
 export type Description = string;
@@ -100,7 +107,209 @@ export type Kind8 = 'report';
 export type BlobKey1 = string;
 export type Sha2562 = string;
 export type ArtifactIds = string[];
-export type ArtifactsResponse = (Dataset | Audit | Split | Benchmark | Evidence | Failure | Provenance | Report)[];
+export type SchemaVersion8 = '2.0';
+export type Id10 = string;
+export type ProjectId9 = string;
+export type CreatedAt9 = string;
+export type Parents8 = string[];
+export type Kind9 = 'dataset';
+export type Filename1 = string;
+export type BlobKey2 = string;
+export type Sha2563 = string;
+export type Rows1 = number;
+/**
+ * @minItems 1
+ * @maxItems 200
+ */
+export type Columns1 = string[];
+export type Declaration_AnnotatedStr__StringConstraints__ =
+  | UnknownDeclaration
+  | UserDeclarationAnnotatedStrStringConstraints
+  | SourceDeclarationAnnotatedStrStringConstraints
+  | InferredDeclarationAnnotatedStrStringConstraints;
+export type Origin = 'unknown';
+export type Value = null;
+export type Kind10 = 'user_message' | 'operator_assertion' | 'source_span' | 'artifact';
+export type Id11 = string;
+export type SupportingReferences = DeclarationReference[];
+export type Uncertainty = string | null;
+export type Origin1 = 'user_supplied';
+export type Value1 = string;
+/**
+ * @minItems 1
+ */
+export type SupportingReferences1 = DeclarationReference[];
+export type Uncertainty1 = string | null;
+export type Origin2 = 'source_derived';
+export type Value2 = string;
+/**
+ * @minItems 1
+ */
+export type SupportingReferences2 = DeclarationReference[];
+export type Uncertainty2 = string | null;
+export type Origin3 = 'inferred';
+export type Value3 = string;
+/**
+ * @minItems 1
+ */
+export type SupportingReferences3 = DeclarationReference[];
+export type Rationale = string;
+export type Uncertainty3 = string;
+export type Confidence = number | null;
+export type Declaration_Literal_Empirical___Synthetic___ =
+  | UnknownDeclaration
+  | UserDeclarationLiteralEmpiricalSynthetic
+  | SourceDeclarationLiteralEmpiricalSynthetic
+  | InferredDeclarationLiteralEmpiricalSynthetic;
+export type Origin4 = 'user_supplied';
+export type Value4 = 'empirical' | 'synthetic';
+/**
+ * @minItems 1
+ */
+export type SupportingReferences4 = DeclarationReference[];
+export type Uncertainty4 = string | null;
+export type Origin5 = 'source_derived';
+export type Value5 = 'empirical' | 'synthetic';
+/**
+ * @minItems 1
+ */
+export type SupportingReferences5 = DeclarationReference[];
+export type Uncertainty5 = string | null;
+export type Origin6 = 'inferred';
+export type Value6 = 'empirical' | 'synthetic';
+/**
+ * @minItems 1
+ */
+export type SupportingReferences6 = DeclarationReference[];
+export type Rationale1 = string;
+export type Uncertainty6 = string;
+export type Confidence1 = number | null;
+export type DeclarationList_AnnotatedStr__StringConstraints___ =
+  | UnknownDeclaration
+  | UserDeclarationListAnnotatedStrStringConstraints
+  | SourceDeclarationListAnnotatedStrStringConstraints
+  | InferredDeclarationListAnnotatedStrStringConstraints;
+export type Origin7 = 'user_supplied';
+export type Value7 = string[];
+/**
+ * @minItems 1
+ */
+export type SupportingReferences7 = DeclarationReference[];
+export type Uncertainty7 = string | null;
+export type Origin8 = 'source_derived';
+export type Value8 = string[];
+/**
+ * @minItems 1
+ */
+export type SupportingReferences8 = DeclarationReference[];
+export type Uncertainty8 = string | null;
+export type Origin9 = 'inferred';
+export type Value9 = string[];
+/**
+ * @minItems 1
+ */
+export type SupportingReferences9 = DeclarationReference[];
+export type Rationale2 = string;
+export type Uncertainty9 = string;
+export type Confidence2 = number | null;
+export type Declaration_AnnotatedDict_AnnotatedStr__FieldInfoAnnotation_NoneType_Required_True_Metadata__MinLenMinLength_1____PydanticGeneralMetadataPattern____S_______AnnotatedStr__StringConstraints____FieldInfoAnnotation_NoneType_Required_True_Metadata__MinLenMinLength_1_____ =
+  | UnknownDeclaration
+  | UserDeclarationAnnotatedDictAnnotatedStrFieldInfoAnnotationNoneTypeRequiredTrueMetadataMinLenMinLength1_PydanticGeneralMetadataPatternSAnnotatedStrStringConstraintsFieldInfoAnnotationNoneTypeRequiredTrueMetadataMinLenMinLength1
+  | SourceDeclarationAnnotatedDictAnnotatedStrFieldInfoAnnotationNoneTypeRequiredTrueMetadataMinLenMinLength1_PydanticGeneralMetadataPatternSAnnotatedStrStringConstraintsFieldInfoAnnotationNoneTypeRequiredTrueMetadataMinLenMinLength1
+  | InferredDeclarationAnnotatedDictAnnotatedStrFieldInfoAnnotationNoneTypeRequiredTrueMetadataMinLenMinLength1_PydanticGeneralMetadataPatternSAnnotatedStrStringConstraintsFieldInfoAnnotationNoneTypeRequiredTrueMetadataMinLenMinLength1;
+export type Origin10 = 'user_supplied';
+/**
+ * @minItems 1
+ */
+export type SupportingReferences10 = DeclarationReference[];
+export type Uncertainty10 = string | null;
+export type Origin11 = 'source_derived';
+/**
+ * @minItems 1
+ */
+export type SupportingReferences11 = DeclarationReference[];
+export type Uncertainty11 = string | null;
+export type Origin12 = 'inferred';
+/**
+ * @minItems 1
+ */
+export type SupportingReferences12 = DeclarationReference[];
+export type Rationale3 = string;
+export type Uncertainty12 = string;
+export type Confidence3 = number | null;
+export type Declaration_AnnotatedStr__FieldInfoAnnotation_NoneType_Required_True_Metadata__MinLenMinLength_1____PydanticGeneralMetadataPattern____S______ =
+  | UnknownDeclaration
+  | UserDeclarationAnnotatedStrFieldInfoAnnotationNoneTypeRequiredTrueMetadataMinLenMinLength1_PydanticGeneralMetadataPatternS
+  | SourceDeclarationAnnotatedStrFieldInfoAnnotationNoneTypeRequiredTrueMetadataMinLenMinLength1_PydanticGeneralMetadataPatternS
+  | InferredDeclarationAnnotatedStrFieldInfoAnnotationNoneTypeRequiredTrueMetadataMinLenMinLength1_PydanticGeneralMetadataPatternS;
+export type Origin13 = 'user_supplied';
+export type Value13 = string;
+/**
+ * @minItems 1
+ */
+export type SupportingReferences13 = DeclarationReference[];
+export type Uncertainty13 = string | null;
+export type Origin14 = 'source_derived';
+export type Value14 = string;
+/**
+ * @minItems 1
+ */
+export type SupportingReferences14 = DeclarationReference[];
+export type Uncertainty14 = string | null;
+export type Origin15 = 'inferred';
+export type Value15 = string;
+/**
+ * @minItems 1
+ */
+export type SupportingReferences15 = DeclarationReference[];
+export type Rationale4 = string;
+export type Uncertainty15 = string;
+export type Confidence4 = number | null;
+export type Declaration_IndependentUnit_ =
+  | UnknownDeclaration
+  | UserDeclarationIndependentUnit
+  | SourceDeclarationIndependentUnit
+  | InferredDeclarationIndependentUnit;
+export type Origin16 = 'user_supplied';
+export type Name1 = string;
+/**
+ * @minItems 1
+ */
+export type GroupColumns = string[];
+export type Rationale5 = string;
+/**
+ * @minItems 1
+ */
+export type SupportingReferences16 = DeclarationReference[];
+export type Uncertainty16 = string | null;
+export type Origin17 = 'source_derived';
+/**
+ * @minItems 1
+ */
+export type SupportingReferences17 = DeclarationReference[];
+export type Uncertainty17 = string | null;
+export type Origin18 = 'inferred';
+/**
+ * @minItems 1
+ */
+export type SupportingReferences18 = DeclarationReference[];
+export type Rationale6 = string;
+export type Uncertainty18 = string;
+export type Confidence5 = number | null;
+export type UnresolvedFields = (
+  'citation' | 'url' | 'license' | 'data_kind' | 'transformations' | 'units' | 'target' | 'independent_unit'
+)[];
+export type ArtifactsResponse = (
+  (Dataset | DatasetV2) | Audit | Split | Benchmark | Evidence | Failure | Provenance | Report
+)[];
+export type IntakeArtifact =
+  (Dataset | DatasetV2) | Audit | Split | Benchmark | Evidence | Failure | Provenance | Report;
+export type Id12 = string;
+export type ProjectId10 = string;
+export type Filename2 = string;
+export type MediaType = 'text/csv' | 'application/pdf';
+export type Sha2564 = string;
+export type DatasetId3 = string | null;
 
 export interface ProjectResponse {
   id: Id;
@@ -287,4 +496,197 @@ export interface Report {
 }
 export interface Software7 {
   [k: string]: string;
+}
+export interface DatasetV2 {
+  schema_version: SchemaVersion8;
+  id: Id10;
+  project_id: ProjectId9;
+  created_at: CreatedAt9;
+  parents: Parents8;
+  software: Software8;
+  kind: Kind9;
+  filename: Filename1;
+  blob_key: BlobKey2;
+  sha256: Sha2563;
+  rows: Rows1;
+  columns: Columns1;
+  source: SourceDeclarations;
+  unresolved_fields: UnresolvedFields;
+}
+export interface Software8 {
+  [k: string]: string;
+}
+export interface SourceDeclarations {
+  citation: Declaration_AnnotatedStr__StringConstraints__;
+  url: Declaration_AnnotatedStr__StringConstraints__;
+  license: Declaration_AnnotatedStr__StringConstraints__;
+  data_kind: Declaration_Literal_Empirical___Synthetic___;
+  transformations: DeclarationList_AnnotatedStr__StringConstraints___;
+  units: Declaration_AnnotatedDict_AnnotatedStr__FieldInfoAnnotation_NoneType_Required_True_Metadata__MinLenMinLength_1____PydanticGeneralMetadataPattern____S_______AnnotatedStr__StringConstraints____FieldInfoAnnotation_NoneType_Required_True_Metadata__MinLenMinLength_1_____;
+  target: Declaration_AnnotatedStr__FieldInfoAnnotation_NoneType_Required_True_Metadata__MinLenMinLength_1____PydanticGeneralMetadataPattern____S______;
+  independent_unit: Declaration_IndependentUnit_;
+}
+export interface UnknownDeclaration {
+  origin: Origin;
+  value: Value;
+  supporting_references: SupportingReferences;
+  uncertainty: Uncertainty;
+}
+export interface DeclarationReference {
+  kind: Kind10;
+  id: Id11;
+}
+export interface UserDeclarationAnnotatedStrStringConstraints {
+  origin: Origin1;
+  value: Value1;
+  supporting_references: SupportingReferences1;
+  uncertainty: Uncertainty1;
+}
+export interface SourceDeclarationAnnotatedStrStringConstraints {
+  origin: Origin2;
+  value: Value2;
+  supporting_references: SupportingReferences2;
+  uncertainty: Uncertainty2;
+}
+export interface InferredDeclarationAnnotatedStrStringConstraints {
+  origin: Origin3;
+  value: Value3;
+  supporting_references: SupportingReferences3;
+  rationale: Rationale;
+  uncertainty: Uncertainty3;
+  confidence: Confidence;
+}
+export interface UserDeclarationLiteralEmpiricalSynthetic {
+  origin: Origin4;
+  value: Value4;
+  supporting_references: SupportingReferences4;
+  uncertainty: Uncertainty4;
+}
+export interface SourceDeclarationLiteralEmpiricalSynthetic {
+  origin: Origin5;
+  value: Value5;
+  supporting_references: SupportingReferences5;
+  uncertainty: Uncertainty5;
+}
+export interface InferredDeclarationLiteralEmpiricalSynthetic {
+  origin: Origin6;
+  value: Value6;
+  supporting_references: SupportingReferences6;
+  rationale: Rationale1;
+  uncertainty: Uncertainty6;
+  confidence: Confidence1;
+}
+export interface UserDeclarationListAnnotatedStrStringConstraints {
+  origin: Origin7;
+  value: Value7;
+  supporting_references: SupportingReferences7;
+  uncertainty: Uncertainty7;
+}
+export interface SourceDeclarationListAnnotatedStrStringConstraints {
+  origin: Origin8;
+  value: Value8;
+  supporting_references: SupportingReferences8;
+  uncertainty: Uncertainty8;
+}
+export interface InferredDeclarationListAnnotatedStrStringConstraints {
+  origin: Origin9;
+  value: Value9;
+  supporting_references: SupportingReferences9;
+  rationale: Rationale2;
+  uncertainty: Uncertainty9;
+  confidence: Confidence2;
+}
+export interface UserDeclarationAnnotatedDictAnnotatedStrFieldInfoAnnotationNoneTypeRequiredTrueMetadataMinLenMinLength1_PydanticGeneralMetadataPatternSAnnotatedStrStringConstraintsFieldInfoAnnotationNoneTypeRequiredTrueMetadataMinLenMinLength1 {
+  origin: Origin10;
+  value: Value10;
+  supporting_references: SupportingReferences10;
+  uncertainty: Uncertainty10;
+}
+export interface Value10 {
+  /**
+   * This interface was referenced by `Value10`'s JSON-Schema definition
+   * via the `patternProperty` "\S".
+   */
+  [k: string]: string;
+}
+export interface SourceDeclarationAnnotatedDictAnnotatedStrFieldInfoAnnotationNoneTypeRequiredTrueMetadataMinLenMinLength1_PydanticGeneralMetadataPatternSAnnotatedStrStringConstraintsFieldInfoAnnotationNoneTypeRequiredTrueMetadataMinLenMinLength1 {
+  origin: Origin11;
+  value: Value11;
+  supporting_references: SupportingReferences11;
+  uncertainty: Uncertainty11;
+}
+export interface Value11 {
+  /**
+   * This interface was referenced by `Value11`'s JSON-Schema definition
+   * via the `patternProperty` "\S".
+   */
+  [k: string]: string;
+}
+export interface InferredDeclarationAnnotatedDictAnnotatedStrFieldInfoAnnotationNoneTypeRequiredTrueMetadataMinLenMinLength1_PydanticGeneralMetadataPatternSAnnotatedStrStringConstraintsFieldInfoAnnotationNoneTypeRequiredTrueMetadataMinLenMinLength1 {
+  origin: Origin12;
+  value: Value12;
+  supporting_references: SupportingReferences12;
+  rationale: Rationale3;
+  uncertainty: Uncertainty12;
+  confidence: Confidence3;
+}
+export interface Value12 {
+  /**
+   * This interface was referenced by `Value12`'s JSON-Schema definition
+   * via the `patternProperty` "\S".
+   */
+  [k: string]: string;
+}
+export interface UserDeclarationAnnotatedStrFieldInfoAnnotationNoneTypeRequiredTrueMetadataMinLenMinLength1_PydanticGeneralMetadataPatternS {
+  origin: Origin13;
+  value: Value13;
+  supporting_references: SupportingReferences13;
+  uncertainty: Uncertainty13;
+}
+export interface SourceDeclarationAnnotatedStrFieldInfoAnnotationNoneTypeRequiredTrueMetadataMinLenMinLength1_PydanticGeneralMetadataPatternS {
+  origin: Origin14;
+  value: Value14;
+  supporting_references: SupportingReferences14;
+  uncertainty: Uncertainty14;
+}
+export interface InferredDeclarationAnnotatedStrFieldInfoAnnotationNoneTypeRequiredTrueMetadataMinLenMinLength1_PydanticGeneralMetadataPatternS {
+  origin: Origin15;
+  value: Value15;
+  supporting_references: SupportingReferences15;
+  rationale: Rationale4;
+  uncertainty: Uncertainty15;
+  confidence: Confidence4;
+}
+export interface UserDeclarationIndependentUnit {
+  origin: Origin16;
+  value: IndependentUnit;
+  supporting_references: SupportingReferences16;
+  uncertainty: Uncertainty16;
+}
+export interface IndependentUnit {
+  name: Name1;
+  group_columns: GroupColumns;
+  rationale: Rationale5;
+}
+export interface SourceDeclarationIndependentUnit {
+  origin: Origin17;
+  value: IndependentUnit;
+  supporting_references: SupportingReferences17;
+  uncertainty: Uncertainty17;
+}
+export interface InferredDeclarationIndependentUnit {
+  origin: Origin18;
+  value: IndependentUnit;
+  supporting_references: SupportingReferences18;
+  rationale: Rationale6;
+  uncertainty: Uncertainty18;
+  confidence: Confidence5;
+}
+export interface MaterialResponse {
+  id: Id12;
+  project_id: ProjectId10;
+  filename: Filename2;
+  media_type: MediaType;
+  sha256: Sha2564;
+  dataset_id: DatasetId3;
 }

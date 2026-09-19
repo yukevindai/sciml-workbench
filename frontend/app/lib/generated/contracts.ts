@@ -36,11 +36,13 @@ export type WorkbenchContract =
   | ErrorResponse
   | ProjectResponse
   | JobResponse
+  | MaterialResponse
   | LegacyArtifact
   | VersionedArtifact
   | ProjectsResponse
   | JobsResponse
   | ArtifactsResponse
+  | IntakeArtifact
   | ProjectInput
   | Source
   | AuditInput
@@ -962,6 +964,12 @@ export type ErrorCode4 =
   | null;
 export type RetryOfJobId = string | null;
 export type DeadlineAt1 = string | null;
+export type Id27 = string;
+export type ProjectId18 = string;
+export type Filename2 = string;
+export type MediaType = 'text/csv' | 'application/pdf';
+export type Sha2566 = string;
+export type DatasetId4 = string | null;
 export type LegacyArtifact = Dataset | Audit | Split | Benchmark | Evidence | Failure | Provenance | Report;
 export type VersionedArtifact =
   | (Dataset | DatasetV2)
@@ -976,8 +984,8 @@ export type VersionedArtifact =
   | EvaluationProtocol
   | AgentExecutionRecord;
 export type ProjectsResponse = ProjectResponse[];
-export type Id27 = string;
-export type ProjectId18 = string;
+export type Id28 = string;
+export type ProjectId19 = string;
 export type Kind21 = 'audit' | 'split' | 'benchmark' | 'evidence' | 'failure' | 'report';
 export type State7 = 'queued' | 'running' | 'succeeded' | 'failed';
 export type ResultId1 = string | null;
@@ -986,13 +994,17 @@ export type CreatedAt19 = string;
 export type StartedAt1 = string | null;
 export type FinishedAt2 = string | null;
 export type JobsResponse = LegacyJobResponse[];
-export type ArtifactsResponse = (Dataset | Audit | Split | Benchmark | Evidence | Failure | Provenance | Report)[];
+export type ArtifactsResponse = (
+  (Dataset | DatasetV2) | Audit | Split | Benchmark | Evidence | Failure | Provenance | Report
+)[];
+export type IntakeArtifact =
+  (Dataset | DatasetV2) | Audit | Split | Benchmark | Evidence | Failure | Provenance | Report;
 export type Name4 = string;
 export type Description1 = string;
-export type DatasetId4 = string;
 export type DatasetId5 = string;
-export type AuditId1 = string;
 export type DatasetId6 = string;
+export type AuditId1 = string;
+export type DatasetId7 = string;
 export type SplitId3 = string;
 export type Target1 = string;
 /**
@@ -1923,9 +1935,17 @@ export interface JobResponse {
   retry_of_job_id?: RetryOfJobId;
   deadline_at?: DeadlineAt1;
 }
-export interface LegacyJobResponse {
+export interface MaterialResponse {
   id: Id27;
   project_id: ProjectId18;
+  filename: Filename2;
+  media_type: MediaType;
+  sha256: Sha2566;
+  dataset_id: DatasetId4;
+}
+export interface LegacyJobResponse {
+  id: Id28;
+  project_id: ProjectId19;
   kind: Kind21;
   state: State7;
   result_id: ResultId1;
@@ -1939,14 +1959,14 @@ export interface ProjectInput {
   description?: Description1;
 }
 export interface AuditInput {
-  dataset_id: DatasetId4;
+  dataset_id: DatasetId5;
   config?: Config3;
 }
 export interface Config3 {
   [k: string]: unknown;
 }
 export interface SplitInput {
-  dataset_id: DatasetId5;
+  dataset_id: DatasetId6;
   audit_id: AuditId1;
   config: Config4;
 }
@@ -1954,7 +1974,7 @@ export interface Config4 {
   [k: string]: unknown;
 }
 export interface BenchmarkInput {
-  dataset_id: DatasetId6;
+  dataset_id: DatasetId7;
   split_id: SplitId3;
   target: Target1;
   numeric_features: NumericFeatures;

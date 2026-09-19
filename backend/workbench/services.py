@@ -1,4 +1,3 @@
-import csv
 import hashlib
 import io
 import json
@@ -21,10 +20,10 @@ from .contracts import (
     Provenance,
     Report,
     Split,
-    artifact_adapter,
     uid,
 )
-from .db import ArtifactRow, JobRow, ProjectRow
+from .db import ArtifactRow, JobRow, ProjectRow, MaterialRow
+from .contract_registry import read_artifact
 from .storage import StorageError
 from .execution import Work
 
@@ -55,14 +54,14 @@ def artifact(session, project_id, artifact_id, kind=None):
     row = session.get(ArtifactRow, artifact_id)
     if not row or row.project_id != project_id:
         raise DomainError("Artifact not found in this project", 404)
-    result = artifact_adapter.validate_python(row.payload)
+    result = read_artifact(row.payload)
     if kind and result.kind != kind:
         raise DomainError(f"Expected a {kind} artifact")
     return result
 
 
 def save(session, value):
-    checked = artifact_adapter.validate_python(value.model_dump(mode="json"))
+    checked = read_artifact(value.model_dump(mode="json"))
     session.add(
         ArtifactRow(
             id=checked.id,
@@ -76,22 +75,9 @@ def save(session, value):
 
 def upload_csv(session, store, settings, project_id, raw, filename, source):
     project(session, project_id)
-    try:
-        rows = list(csv.reader(io.StringIO(raw.decode("utf-8-sig")), strict=True))
-    except (UnicodeError, csv.Error) as e:
-        raise DomainError("Upload a valid UTF-8 CSV") from e
-    if len(rows) < 4 or len(rows) > settings.max_rows + 1:
-        raise DomainError(f"CSV must contain 3–{settings.max_rows} data rows")
-    header = rows[0]
-    if (
-        not header
-        or len(header) > 200
-        or any(not x.strip() for x in header)
-        or len(set(header)) != len(header)
-    ):
-        raise DomainError("CSV needs 1–200 unique, nonblank column names")
-    if any(len(row) != len(header) for row in rows[1:]):
-        raise DomainError("CSV has ragged or blank rows")
+    from .intake import inspect_csv, filename as checked_filename
+    header, count = inspect_csv(raw, settings)
+    filename = checked_filename(filename)
     key = store.put(raw)
     data = save(
         session,
@@ -100,7 +86,7 @@ def upload_csv(session, store, settings, project_id, raw, filename, source):
             filename=Path(filename).name[:200],
             blob_key=key,
             sha256=key,
-            rows=len(rows) - 1,
+            rows=count,
             columns=header,
             source=source,
             software=software(),
@@ -135,6 +121,11 @@ def ensure_lineage(session, pid, kind, payload):
                 raise DomainError("Split belongs to another dataset", 422, "LINEAGE_MISMATCH")
     elif kind == "failure":
         artifact(session, pid, payload["benchmark_id"], "benchmark")
+    elif kind == "evidence" and payload.get("material_id"):
+        from .intake import material
+        source = material(session, pid, payload["material_id"])
+        if source.media_type != "application/pdf" or source.blob_key != payload["pdf_key"]:
+            raise DomainError("Evidence input does not match its attachment", 422, "LINEAGE_MISMATCH")
 
 
 def capture_report(session, pid):
@@ -147,6 +138,8 @@ def capture_report(session, pid):
     artifacts = [x.payload for x in rows if x.kind != "report"]
     jobs = session.scalars(select(JobRow).where(JobRow.project_id == pid)).all()
     return deepcopy({
+        "materials": [{key: getattr(m, key) for key in ("id", "project_id", "filename", "media_type", "blob_key", "sha256", "dataset_id")}
+                      for m in session.scalars(select(MaterialRow).where(MaterialRow.project_id == pid).order_by(MaterialRow.id))],
         "artifacts": artifacts,
         "project": {"id": proj.id, "name": proj.name, "description": proj.description},
         "jobs": [
@@ -167,6 +160,7 @@ def report_bundle(snapshot, store):
     artifacts = snapshot["artifacts"]
     proj = SimpleNamespace(**snapshot["project"])
     files = {
+        "materials.json": adapters.encoded(snapshot.get("materials", [])),
         "artifacts.json": adapters.encoded(artifacts),
         "project.json": adapters.encoded(snapshot["project"]),
         "jobs.json": adapters.encoded(snapshot["jobs"]),
@@ -184,6 +178,10 @@ def report_bundle(snapshot, store):
         for field in ("blob_key", "bundle_key", "pdf_key"):
             if a.get(field):
                 files[f"blobs/{a[field]}"] = store.get(a[field])
+    for material in snapshot.get("materials", []):
+        files[f"blobs/{material['blob_key']}"] = store.get(material["blob_key"])
+    from .scientific_contracts import DatasetV2
+    files["contracts/v2/dataset.json"] = adapters.encoded(DatasetV2.model_json_schema())
     from . import contracts
 
     for model in (
@@ -202,7 +200,7 @@ def report_bundle(snapshot, store):
     files["README.md"] = (
         "# Reproducible SciML Workbench report\n\n"
         "All results are local task results; no official leaderboard admission is implied.\n"
-        "Dataset provenance is user supplied. Audit findings do not certify validity.\n"
+        "Dataset declarations may be unresolved; supplied declarations are assertions. Audit findings do not certify validity.\n"
         "Failed runs are retained; software failure is not an experimental outcome.\n\n"
         "## Replay\nInstall the workbench backend at version 0.1.0 using its pinned dependencies.\n"
         "Run `python -m workbench.replay /path/to/report.zip /new/output-directory`.\n"
@@ -267,7 +265,7 @@ def execute(store, settings, work):
     """Compute from a detached snapshot. No session, engine or metadata writes."""
     pid, p = work.project_id, work.payload
     common = {"id": work.result_id, "project_id": pid, "software": software()}
-    inputs = {key: artifact_adapter.validate_python(value) for key, value in work.artifacts.items()}
+    inputs = {key: read_artifact(value) for key, value in work.artifacts.items()}
     if work.kind in {"audit", "split", "benchmark"}:
         data = inputs[p["dataset_id"]]
         raw = store.get(data.blob_key)

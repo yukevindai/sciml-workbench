@@ -9,6 +9,7 @@ test('real CSV → audit → split → baseline → failure memory → report', 
   await expect(page.getByRole('status')).toContainText('Project created');
   await page.getByRole('link', { name: 'Dataset audit', exact: true }).click();
   await page.getByLabel('CSV file').setInputFiles(path.join(examples, 'demo.csv'));
+  await page.getByRole('button', { name: 'Use bundled synthetic demo declarations' }).click();
   await page.getByRole('button', { name: 'Upload dataset' }).click();
   await expect(page.getByRole('status')).toContainText('Dataset uploaded');
   await page.getByRole('button', { name: 'Run audit', exact: true }).click();

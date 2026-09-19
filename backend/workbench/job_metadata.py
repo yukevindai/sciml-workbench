@@ -14,6 +14,11 @@ from .services import DomainError, ensure_lineage
 
 
 def submit_job(session, project_id, kind, payload, request_key, *, retry_of_job_id=None):
+    """Persistence primitive; external callers use SubmissionService for admission.
+
+    The caller owns this transaction. Retained for migration/runtime fixtures and
+    the shared service; it is not an authenticated tool or HTTP entry point.
+    """
     if not request_key or len(request_key) > 100:
         raise DomainError("Provide an Idempotency-Key of 1–100 characters")
     digest = request_digest(kind, payload)

@@ -6,6 +6,7 @@ import addFormats from 'ajv-formats';
 import {
   validateArtifactsResponse, validateLegacyArtifact, validateLegacyJobResponse,
   validateProjectsResponse,
+  validateIntakeArtifact, validateMaterialResponse,
 } from '../app/lib/generated/validators.cjs';
 
 const fixtures = JSON.parse(await readFile(new URL('../../backend/tests/fixtures/contracts/legacy-v1.json', import.meta.url), 'utf8'));
@@ -14,6 +15,18 @@ const ajv = new Ajv2020({ strict: true });
 ajv.addKeyword('discriminator');
 addFormats(ajv);
 ajv.addSchema(catalog);
+
+test('intake accepts unresolved Dataset 2.0 without changing the legacy boundary', () => {
+  const data = { ...fixtures[0], schema_version: '2.0', source: {},
+    unresolved_fields: ['citation', 'url', 'license', 'data_kind', 'transformations', 'units', 'target', 'independent_unit'] };
+  for (const field of data.unresolved_fields) data.source[field] = { origin: 'unknown', value: null, supporting_references: [], uncertainty: null };
+  assert.equal(validateIntakeArtifact(data), true);
+  assert.equal(validateArtifactsResponse([data, ...fixtures]), true);
+  assert.equal(validateLegacyArtifact(data), false);
+  assert.equal(validateIntakeArtifact({ ...data, schema_version: '3.0' }), false);
+  assert.equal(validateMaterialResponse({ id: 'material', project_id: 'p', filename: 'source.pdf',
+    media_type: 'application/pdf', sha256: 'a'.repeat(64), dataset_id: null }), true);
+});
 
 test('all eight legacy payloads pass the generated browser validators unchanged', () => {
   const original = structuredClone(fixtures);

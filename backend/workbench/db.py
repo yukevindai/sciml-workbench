@@ -38,6 +38,26 @@ class ArtifactRow(Base):
     created_at: Mapped[object] = mapped_column(DateTime(timezone=True), default=now)
 
 
+class MaterialRow(Base):
+    __tablename__ = "research_materials"
+    __table_args__ = (
+        UniqueConstraint("project_id", "request_key", name="uq_materials_project_request"),
+        ForeignKeyConstraint(["project_id", "dataset_id"], ["artifacts.project_id", "artifacts.id"], name="fk_materials_scoped_dataset"),
+        CheckConstraint("media_type IN ('text/csv', 'application/pdf')", name="ck_materials_media_type"),
+        CheckConstraint("blob_key = sha256 AND length(sha256) = 64", name="ck_materials_digest"),
+        CheckConstraint("(media_type = 'text/csv' AND dataset_id IS NOT NULL) OR (media_type = 'application/pdf' AND dataset_id IS NULL)", name="ck_materials_dataset"),
+    )
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=uid)
+    project_id: Mapped[str] = mapped_column(ForeignKey("projects.id"), index=True)
+    request_key: Mapped[str] = mapped_column(String(100))
+    request_digest: Mapped[str] = mapped_column(String(64))
+    filename: Mapped[str] = mapped_column(String(200))
+    media_type: Mapped[str] = mapped_column(String(32))
+    blob_key: Mapped[str] = mapped_column(String(64))
+    sha256: Mapped[str] = mapped_column(String(64))
+    dataset_id: Mapped[str | None] = mapped_column(String(36), nullable=True)
+
+
 class JobRow(Base):
     __tablename__ = "jobs"
     __table_args__ = (
@@ -108,3 +128,5 @@ def install_metadata_guards(metadata, connection, **kwargs):
     from .metadata_guards_v2 import install, uninstall
     uninstall(connection)
     install(connection)
+    from .material_guards_v3 import install as install_materials
+    install_materials(connection)

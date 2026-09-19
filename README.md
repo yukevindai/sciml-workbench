@@ -30,7 +30,7 @@ This MVP is a **single trusted operator workspace**. All projects are accessible
 ## Try the complete workflow
 
 1. **Projects:** create a project and describe its research question.
-2. **Dataset audit:** upload `examples/demo.csv`. The prefilled source metadata describes this synthetic fixture; replace it for your own data. Click **Run audit** using the prefilled configuration.
+2. **Dataset audit:** upload `examples/demo.csv`, then explicitly choose **Use bundled synthetic demo declarations** for this fixture. Ordinary uploads start with unknown source metadata and can be audited without a license declaration. Click **Run audit** using the prefilled configuration.
 3. **Split designer:** click **Generate partition**. SciSplit produces a 60/20/20 requested train/validation/test split by generated family; actual group-constrained counts are visualized.
 4. **Benchmarks:** run the prefilled ridge baseline. All 60 CSV rows are used by the upstream admission and evaluation protocol; the frontend shows test metrics. The complete record includes validation results and model configuration.
 5. **Failure memory:** select the run, explain why it was unsuccessful for your research objective, and record uncertainty. For this fixture, a valid example is “The synthetic demonstration cannot establish empirical predictive performance.” This assessment does not change execution status or claim an experimental failure.
@@ -103,6 +103,8 @@ Replay validates every archived file against the manifest, regenerates audit and
 ## Architecture and contracts
 
 - [Architecture, trust boundary and limits](docs/architecture.md)
+- [Project input intake](docs/intake.md)
+- [Durable operation submission](docs/submission.md)
 - [Inspected public integration points and exact pins](docs/integrations.md)
 - [Operations, backups and troubleshooting](docs/operations.md)
 - [Versioned JSON Schemas](contracts/v1/)

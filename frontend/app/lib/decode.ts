@@ -1,5 +1,5 @@
 import {
-  validateArtifactsResponse, validateLegacyArtifact, validateLegacyJobResponse,
+  validateArtifactsResponse, validateIntakeArtifact, validateMaterialResponse, validateLegacyJobResponse,
   validateJobsResponse, validateProjectResponse, validateProjectsResponse,
 } from './generated/validators.cjs';
 
@@ -20,6 +20,8 @@ function decoder<T>(validate: (value: unknown) => value is T): (value: unknown) 
 export const parseProjects = decoder(validateProjectsResponse);
 export const parseProject = decoder(validateProjectResponse);
 export const parseArtifacts = decoder(validateArtifactsResponse);
-export const parseArtifact = decoder(validateLegacyArtifact);
+export const parseArtifact = decoder(validateIntakeArtifact);
 export const parseJobs = decoder(validateJobsResponse);
 export const parseJob = decoder(validateLegacyJobResponse);
+
+export const parseMaterial = decoder(validateMaterialResponse);

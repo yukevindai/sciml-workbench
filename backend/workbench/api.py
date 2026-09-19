@@ -3,11 +3,10 @@ from datetime import datetime, timezone
 from fastapi import Depends, FastAPI, Header, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse, Response
+from starlette.concurrency import run_in_threadpool
 from sqlalchemy import select, text
 from .config import load_settings
 from .contracts import (
-    Artifact,
-    Dataset,
     AuditInput,
     BenchmarkInput,
     FailureInput,
@@ -20,9 +19,13 @@ from .contracts import uid
 from .http_contracts import LegacyJobResponse as JobResponse, ProjectResponse
 from .schema_catalog import add_openapi_contracts
 from .db import ArtifactRow, Database, JobRow, ProjectRow
-from .job_metadata import submit_job
+from .submission import SubmissionScope, SubmissionService
 from .services import DomainError, artifact, project, upload_csv
 from .storage import LocalStore, StorageError, StorageIntegrityError
+from .http_contracts import IntakeArtifact, IntakeDataset, MaterialResponse
+from .scientific_contracts import SourceDeclarations
+from . import intake
+from .db import MaterialRow
 
 
 def job_json(j):
@@ -62,6 +65,8 @@ def create_app(settings=None):
     )
     db, store = Database(settings.database_url), LocalStore(settings.storage_root)
     app.state.db, app.state.store = db, store
+    submissions = SubmissionService(db, store, settings)
+    app.state.submissions = submissions
 
     original_openapi = app.openapi
 
@@ -173,7 +178,7 @@ def create_app(settings=None):
         s.flush()
         return {"id": p.id, "name": p.name, "description": p.description}
 
-    @app.get("/api/v1/projects/{pid}/artifacts", dependencies=protected, response_model=list[Artifact])
+    @app.get("/api/v1/projects/{pid}/artifacts", dependencies=protected, response_model=list[IntakeArtifact])
     def artifacts(pid: str, s=Depends(session)):
         project(s, pid)
         return [
@@ -185,20 +190,22 @@ def create_app(settings=None):
             )
         ]
 
-    @app.get("/api/v1/projects/{pid}/artifacts/{aid}", dependencies=protected, response_model=Artifact)
+    @app.get("/api/v1/projects/{pid}/artifacts/{aid}", dependencies=protected, response_model=IntakeArtifact)
     def get_artifact(pid: str, aid: str, s=Depends(session)):
         return artifact(s, pid, aid)
 
     @app.post(
-        "/api/v1/projects/{pid}/datasets", dependencies=protected, status_code=201, response_model=Dataset
+        "/api/v1/projects/{pid}/datasets", dependencies=protected, status_code=201, response_model=IntakeDataset
     )
     async def upload(
         pid: str,
         request: Request,
         x_filename: str = Header(default="dataset.csv"),
-        x_source: str = Header(),
+        x_source: str | None = Header(default=None),
         s=Depends(session),
     ):
+        if x_source is None:
+            return intake.dataset(s, store, settings, pid, await request.body(), x_filename)
         try:
             source = Source.model_validate_json(x_source)
         except ValueError as exc:
@@ -209,26 +216,58 @@ def create_app(settings=None):
             s, store, settings, pid, await request.body(), x_filename, source
         )
 
-    def queue(s, pid, kind, payload, key):
-        return job_json(submit_job(s, pid, kind, payload, key))
+    def material_json(value):
+        return {field: getattr(value, field) for field in MaterialResponse.model_fields}
+
+    @app.post("/api/v1/projects/{pid}/research-materials", dependencies=protected,
+              status_code=201, response_model=MaterialResponse)
+    async def attach(pid: str, request: Request, x_filename: str = Header(),
+                     content_type: str = Header(), idempotency_key: str = Header(),
+                     x_source: str | None = Header(default=None), s=Depends(session)):
+        try:
+            source = SourceDeclarations.model_validate_json(x_source) if x_source is not None else None
+        except ValueError as exc:
+            raise DomainError("X-Source must contain valid source declarations JSON") from exc
+        value = intake.attach(s, store, settings, pid, await request.body(), x_filename,
+                              content_type.split(";", 1)[0].strip().lower(), source, idempotency_key)
+        return material_json(value)
+
+    @app.get("/api/v1/projects/{pid}/research-materials", dependencies=protected,
+             response_model=list[MaterialResponse])
+    def materials(pid: str, s=Depends(session)):
+        project(s, pid)
+        return [material_json(value) for value in s.scalars(select(MaterialRow).where(MaterialRow.project_id == pid))]
+
+    @app.get("/api/v1/projects/{pid}/research-materials/{mid}/download", dependencies=protected)
+    def download_material(pid: str, mid: str, s=Depends(session)):
+        value = intake.material(s, pid, mid)
+        ext = "csv" if value.media_type == "text/csv" else "pdf"
+        return Response(store.get(value.blob_key), media_type=value.media_type,
+                        headers={"Content-Disposition": f'attachment; filename="attachment-{value.id}.{ext}"'})
+
+    @app.post("/api/v1/projects/{pid}/research-materials/{mid}/ingest", dependencies=protected,
+              status_code=202, response_model=JobResponse, response_model_exclude_unset=True)
+    def ingest_material(pid: str, mid: str, idempotency_key: str = Header()):
+        return queue(pid, "evidence", {"material_id": mid}, idempotency_key)
+
+    def queue(pid, kind, payload, key):
+        return job_json(submissions.submit(SubmissionScope(pid), kind, payload, request_key=key))
 
     @app.post("/api/v1/projects/{pid}/audit", dependencies=protected, status_code=202, response_model=JobResponse, response_model_exclude_unset=True)
     def audit(
         pid: str,
         payload: AuditInput,
         idempotency_key: str = Header(),
-        s=Depends(session),
     ):
-        return queue(s, pid, "audit", payload.model_dump(), idempotency_key)
+        return queue(pid, "audit", payload.model_dump(), idempotency_key)
 
     @app.post("/api/v1/projects/{pid}/split", dependencies=protected, status_code=202, response_model=JobResponse, response_model_exclude_unset=True)
     def split(
         pid: str,
         payload: SplitInput,
         idempotency_key: str = Header(),
-        s=Depends(session),
     ):
-        return queue(s, pid, "split", payload.model_dump(), idempotency_key)
+        return queue(pid, "split", payload.model_dump(), idempotency_key)
 
     @app.post(
         "/api/v1/projects/{pid}/benchmark", dependencies=protected, status_code=202, response_model=JobResponse, response_model_exclude_unset=True
@@ -237,18 +276,16 @@ def create_app(settings=None):
         pid: str,
         payload: BenchmarkInput,
         idempotency_key: str = Header(),
-        s=Depends(session),
     ):
-        return queue(s, pid, "benchmark", payload.model_dump(), idempotency_key)
+        return queue(pid, "benchmark", payload.model_dump(), idempotency_key)
 
     @app.post("/api/v1/projects/{pid}/failure", dependencies=protected, status_code=202, response_model=JobResponse, response_model_exclude_unset=True)
     def failure(
         pid: str,
         payload: FailureInput,
         idempotency_key: str = Header(),
-        s=Depends(session),
     ):
-        return queue(s, pid, "failure", payload.model_dump(), idempotency_key)
+        return queue(pid, "failure", payload.model_dump(), idempotency_key)
 
     @app.post(
         "/api/v1/projects/{pid}/evidence", dependencies=protected, status_code=202, response_model=JobResponse, response_model_exclude_unset=True
@@ -258,34 +295,14 @@ def create_app(settings=None):
         request: Request,
         x_title: str = Header(),
         idempotency_key: str = Header(),
-        s=Depends(session),
     ):
-        project(s, pid)
-        if not x_title.strip() or len(x_title) > 500:
-            raise DomainError("Provide a title of 1–500 characters")
         raw = await request.body()
-        if not raw.startswith(b"%PDF-"):
-            raise DomainError("Upload a PDF document")
-        key = store.put(raw)
-        return queue(
-            s, pid, "evidence", {"pdf_key": key, "title": x_title}, idempotency_key
-        )
+        job = await run_in_threadpool(submissions.submit_pdf, SubmissionScope(pid), raw, x_title, request_key=idempotency_key)
+        return job_json(job)
 
     @app.post("/api/v1/projects/{pid}/report", dependencies=protected, status_code=202, response_model=JobResponse, response_model_exclude_unset=True)
-    def report(pid: str, idempotency_key: str = Header(), s=Depends(session)):
-        # A reproducible export must describe settled work, not partial tasks.
-        active = s.scalar(
-            select(JobRow)
-            .where(
-                JobRow.project_id == pid,
-                JobRow.state.in_(["queued", "running"]),
-                JobRow.kind != "report",
-            )
-            .limit(1)
-        )
-        if active:
-            raise DomainError("Wait for active jobs before exporting a report", 409, "PROJECT_BUSY")
-        return queue(s, pid, "report", {}, idempotency_key)
+    def report(pid: str, idempotency_key: str = Header()):
+        return queue(pid, "report", {}, idempotency_key)
 
     @app.get("/api/v1/projects/{pid}/jobs", dependencies=protected, response_model=list[JobResponse], response_model_exclude_unset=True)
     def jobs(pid: str, s=Depends(session)):

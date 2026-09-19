@@ -1,0 +1,59 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "maxLength": 160,
+      "minLength": 1,
+      "title": "Id",
+      "type": "string"
+    },
+    "project_id": {
+      "maxLength": 160,
+      "minLength": 1,
+      "title": "Project Id",
+      "type": "string"
+    },
+    "filename": {
+      "title": "Filename",
+      "type": "string"
+    },
+    "media_type": {
+      "enum": [
+        "text/csv",
+        "application/pdf"
+      ],
+      "title": "Media Type",
+      "type": "string"
+    },
+    "sha256": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Sha256",
+      "type": "string"
+    },
+    "dataset_id": {
+      "anyOf": [
+        {
+          "maxLength": 160,
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Dataset Id"
+    }
+  },
+  "required": [
+    "id",
+    "project_id",
+    "filename",
+    "media_type",
+    "sha256",
+    "dataset_id"
+  ],
+  "title": "MaterialResponse",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sciml-workbench.local/contracts/records/v1/material_response.json"
+}

@@ -1,4 +1,4 @@
-# Scientific metadata and migration 0002
+# Scientific metadata and migrations
 
 B02 adds database invariants and claim/publication primitives while retaining the existing projects, artifacts, jobs, and four job states. The public job response remains the B01 legacy projection; internal claim tokens, worker identities, request digests, and payloads are not exposed by that response. No new environment variable or scientific artifact version is introduced.
 
@@ -7,7 +7,9 @@ B02 adds database invariants and claim/publication primitives while retaining th
 1. Take the coordinated database/storage backup described in the [operations guide](operations.md).
 2. Stop API submission and all scientific workers, including their child processes. Revision 0002 requires a maintenance window; it is not a rolling upgrade alongside old writers.
 3. Deploy the matching application code and run `alembic -c backend/alembic.ini upgrade head` from the repository root with the existing backend configuration. On Windows, use `.venv\Scripts\python.exe -m alembic -c backend/alembic.ini upgrade head`.
-4. Verify `alembic -c backend/alembic.ini current` reports `0002`, inspect interrupted attempts, then restart the services. A retry is an explicitly authorized new job with a new request key, not a mutation or automatic replay of the old attempt.
+4. Verify `alembic -c backend/alembic.ini current` reports `0003`, inspect interrupted attempts, then restart the services. A retry is an explicitly authorized new job with a new request key, not a mutation or automatic replay of the old attempt.
+
+Revision 0003 adds `research_materials` for [B03 attachment intake](intake.md). It does not rewrite existing records. Bindings have project-scoped request-key uniqueness and dataset foreign keys, byte-digest/type constraints, and database update/delete guards. Apply it before running the new API or report worker. Downgrade to 0002 is permitted only when the material table is empty; populated bindings require a coordinated backup restore or forward migration.
 
 The migration validates existing artifact identity/project/kind alignment and job project/result references before changing tables. Inconsistent legacy rows abort the migration with a fixed diagnostic; they are not silently reassigned or repaired. PostgreSQL runs the migration transactionally. SQLite uses an explicit transaction for batch table rebuilding, checks foreign keys before commit, and restores the connection's foreign-key setting afterward.
 
@@ -30,7 +32,7 @@ JSON parent references and scientific lineage still require application validati
 
 Canonical identity v1 hashes UTF-8 JSON containing `identity_version: 1`, the operation `kind`, and the accepted `payload`, using sorted object keys, compact separators, unescaped Unicode, and no non-finite numbers. Arrays retain their order. Numeric representations such as `1` and `1.0` remain distinct; callers should submit the typed, default-expanded request as the current API does. Project/key uniqueness is enforced separately, and a replay must also retain its retry origin.
 
-`submit_job()` resolves an existing key before mutable admission checks, and uses a savepoint plus the unique index to arbitrate concurrent inserts under PostgreSQL READ COMMITTED isolation. Compatible retries return the committed original; incompatible requests return an idempotency conflict. Unrelated integrity violations are not mislabeled as successful replays. The report route's earlier active-work check remains B04/B06 work.
+`submit_job()` is the persistence primitive: it uses a savepoint plus the unique index to arbitrate concurrent inserts under PostgreSQL READ COMMITTED isolation. Compatible replays return the committed original; incompatible requests return an idempotency conflict. Unrelated integrity violations are not mislabeled as successful replays. B04's [shared submission service](submission.md) owns the transaction, project barrier, typed normalization, scoped admission and replay-before-busy ordering for all HTTP operations and future tool callers. B06 still owns request-time report snapshots.
 
 The runtime encoder and revision-0002 backfill algorithm have the same fixed identity format. A future identity algorithm needs an explicit migration/version policy; do not recompute stored digests in place. The application computes digests; the database protects accepted values from updates rather than independently reimplementing the Python encoder.
 
@@ -40,7 +42,7 @@ The runtime encoder and revision-0002 backfill algorithm have the same fixed ide
 
 | Helper | Transaction boundary and purpose |
 |---|---|
-| `submit_job(session, ...)` | Caller-owned transaction; durable identity and admission before insertion. |
+| `submit_job(session, ...)` | Persistence primitive in a caller-owned transaction; external callers use `SubmissionService`. |
 | `claim_next(db, timeout_seconds, worker_id)` | Own short transaction; uses `FOR UPDATE SKIP LOCKED` on PostgreSQL, records database start/deadline, increments the token, returns an immutable `JobClaim`. |
 | `claim_is_current(session, claim)` | Read-only authority/deadline check before execution; does not substitute for publication fencing. |
 | `lock_claim(session, claim)` | Acquires the scientific job lock, then checks the current token, owner, running state, and database time before pending artifacts flush. |

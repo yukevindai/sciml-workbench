@@ -1,9 +1,9 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ArrowUpRight, Database, FileSpreadsheet, ShieldCheck } from 'lucide-react';
 import { api } from '../lib/api';
-import { parseArtifact } from '../lib/decode';
+import { parseMaterial } from '../lib/decode';
 import { auditFindings } from '../lib/result-projections';
 import { readPreview, looksNumeric, type CsvPreview } from '../lib/csv';
 import { auditDefault, sourceDefault } from '../lib/defaults';
@@ -19,7 +19,8 @@ import { DatasetSelect } from './shared';
 export function AuditView({ wb }: { wb: Workbench }) {
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<CsvPreview | null>(null);
-  const [source, setSource] = useState<SourceMetadata>(sourceDefault);
+  const [source, setSource] = useState<Omit<SourceMetadata, 'data_kind'> & { data_kind: SourceMetadata['data_kind'] | '' }>({ citation: '', url: '', license: '', data_kind: '', transformations: '' });
+  const uploadRequest = useRef<{ signature: string; key: string } | null>(null);
   const [config, setConfig] = useState<AuditConfig>(auditDefault);
 
   const stage = wb.workflow.stages.find(s => s.view === 'dataset-audit');
@@ -61,7 +62,7 @@ export function AuditView({ wb }: { wb: Workbench }) {
                   className="input-file"
                   type="file"
                   accept=".csv,text/csv"
-                  onChange={event => setFile(event.target.files?.[0] ?? null)}
+                  onChange={event => { setFile(event.target.files?.[0] ?? null); uploadRequest.current = null; setSource({ citation: '', url: '', license: '', data_kind: '', transformations: '' }); }}
                   {...props}
                 />
               </div>
@@ -101,11 +102,12 @@ export function AuditView({ wb }: { wb: Workbench }) {
           )}
 
           <div className="panel-section">
-            <span className="panel-section-title">Where this data came from</span>
+            <span className="panel-section-title">Where this data came from (optional)</span>
             <p className="field-hint">
-              These declarations travel with the dataset into every downstream result. They are your assertions; nothing here is verified.
+              Leave unknown fields blank. These declarations are your assertions; nothing here is verified.
             </p>
 
+            <button className="button" type="button" onClick={() => setSource(sourceDefault)}>Use bundled synthetic demo declarations</button>
             <Field label="Citation" hint="Paper, dataset release or internal record this data comes from.">
               {props => (
                 <input className="input" value={source.citation}
@@ -132,6 +134,7 @@ export function AuditView({ wb }: { wb: Workbench }) {
                 {props => (
                   <select className="select" value={source.data_kind}
                     onChange={e => setSource({ ...source, data_kind: e.target.value as SourceMetadata['data_kind'] })} {...props}>
+                    <option value="">Unknown</option>
                     <option value="empirical">Empirical (measured)</option>
                     <option value="synthetic">Synthetic (generated)</option>
                   </select>
@@ -160,16 +163,24 @@ export function AuditView({ wb }: { wb: Workbench }) {
               className="button"
               disabled={wb.busy || !wb.projectId || !file}
               onClick={() => wb.act(async () => {
-                await api(`projects/${wb.projectId}/datasets`, parseArtifact, {
+                const signature = JSON.stringify({ project: wb.projectId, source });
+                if (uploadRequest.current?.signature !== signature) uploadRequest.current = { signature, key: crypto.randomUUID() };
+                const key = uploadRequest.current.key;
+                const declarations = Object.fromEntries(Object.entries(source).filter(([, value]) => value.trim()).map(([name, value]) => [name, {
+                  origin: 'user_supplied', value: name === 'transformations' ? [value] : value,
+                  supporting_references: [{ kind: 'operator_assertion', id: key }],
+                }]));
+                await api(`projects/${wb.projectId}/research-materials`, parseMaterial, {
                   method: 'POST',
                   headers: {
                     'Content-Type': 'text/csv',
                     'X-Filename': file!.name,
-                    'X-Source': JSON.stringify(source),
+                    'X-Source': JSON.stringify(declarations),
+                    'Idempotency-Key': key,
                   },
                   body: file,
                 });
-                wb.setNotice('Dataset uploaded with its source metadata. Configure the audit next.');
+                wb.setNotice('Dataset uploaded. Blank declarations remain unknown. Configure the audit next.');
               })}
             >
               Upload dataset <ArrowUpRight size={15} aria-hidden="true" />

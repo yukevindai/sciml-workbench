@@ -89,7 +89,7 @@ def test_bundle_storage_failure_is_not_a_scientific_failure(monkeypatch):
     data = SimpleNamespace(blob_key="a" * 64)
     part = SimpleNamespace(audit_id="audit")
     audit = SimpleNamespace(config={})
-    monkeypatch.setattr(services.artifact_adapter, "validate_python", lambda value: value)
+    monkeypatch.setattr(services, "read_artifact", lambda value: value)
     monkeypatch.setattr(services.adapters, "run_benchmark", lambda *args: ({"metrics": {}}, b"bundle"))
     monkeypatch.setattr(services, "save", lambda *args: pytest.fail("Storage failure must not publish a scientific result"))
 
@@ -145,7 +145,7 @@ def test_adapter_workspaces_are_private_isolated_and_cleaned(tmp_path, monkeypat
         invoke = lambda i: adapters.ingest_pdf(f"pdf-{i}".encode(), str(i))
     else:
         raw = (EXAMPLES / "demo.csv").read_bytes()
-        data = SimpleNamespace(id="dataset", sha256=hashlib.sha256(raw).hexdigest(), filename="demo.csv", rows=60,
+        data = SimpleNamespace(schema_version="1.0", id="dataset", sha256=hashlib.sha256(raw).hexdigest(), filename="demo.csv", rows=60,
                                source=SimpleNamespace(**json.loads((EXAMPLES / "source.json").read_text())),
                                created_at=datetime.now(timezone.utc))
         partition = SimpleNamespace(config=json.loads((EXAMPLES / "split.json").read_text()), assignments=["train"] * 60)

@@ -7,7 +7,7 @@ from . import research_contracts as r
 from . import scientific_contracts as s
 from .contract_core import ErrorResponse
 from .contract_registry import LEGACY_MODELS, NEW_ARTIFACT_MODELS, VersionedArtifact
-from .http_contracts import JobResponse, LegacyJobResponse, ProjectResponse
+from .http_contracts import JobResponse, LegacyJobResponse, ProjectResponse, IntakeArtifact, MaterialResponse
 
 BASE_URI = "https://sciml-workbench.local/contracts"
 RECORD_TYPES = {
@@ -33,6 +33,7 @@ RECORD_TYPES = {
     "error_response": ErrorResponse,
     "project_response": ProjectResponse,
     "job_response": JobResponse,
+    "material_response": MaterialResponse,
 }
 CATALOG_TYPES = {
     **{m.__name__: m for m in (*LEGACY_MODELS, *NEW_ARTIFACT_MODELS)},
@@ -43,7 +44,8 @@ CATALOG_TYPES = {
     "VersionedArtifact": VersionedArtifact,
     "ProjectsResponse": list[ProjectResponse],
     "JobsResponse": list[LegacyJobResponse],
-    "ArtifactsResponse": list[legacy.Artifact],
+    "ArtifactsResponse": list[IntakeArtifact],
+    "IntakeArtifact": IntakeArtifact,
     **{m.__name__: m for m in (legacy.ProjectInput, legacy.Source, legacy.AuditInput,
                              legacy.SplitInput, legacy.BenchmarkInput, legacy.FailureInput)},
 }
@@ -54,7 +56,9 @@ HTTP_RESPONSE_TYPES = {
     "LegacyJobResponse": LegacyJobResponse,
     "JobsResponse": list[LegacyJobResponse],
     "LegacyArtifact": legacy.Artifact,
-    "ArtifactsResponse": list[legacy.Artifact],
+    "ArtifactsResponse": list[IntakeArtifact],
+    "IntakeArtifact": IntakeArtifact,
+    "MaterialResponse": MaterialResponse,
 }
 
 

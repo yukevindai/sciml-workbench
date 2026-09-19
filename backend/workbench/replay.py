@@ -6,7 +6,8 @@ import sys
 import zipfile
 from pathlib import Path
 from .adapters import encoded, run_audit, run_benchmark, run_split
-from .contracts import BenchmarkInput, artifact_adapter
+from .contracts import BenchmarkInput
+from .contract_registry import read_artifact
 
 
 def replay(archive, destination):
@@ -30,7 +31,7 @@ def replay(archive, destination):
             if hashlib.sha256(raw[name]).hexdigest() != expected:
                 raise ValueError(f"Digest mismatch: {name}")
     artifacts = [
-        artifact_adapter.validate_python(a) for a in json.loads(raw["artifacts.json"])
+        read_artifact(a) for a in json.loads(raw["artifacts.json"])
     ]
     lookup = {a.id: a for a in artifacts}
     for a in artifacts:

@@ -42,6 +42,20 @@ def run_split(raw, config):
     return result.assignments(), result.to_dict()
 
 
+def benchmark_source(dataset):
+    """Project resolved declarations without inventing an upstream source card."""
+    source = dataset.source
+    if dataset.schema_version == "2.0":
+        from types import SimpleNamespace
+        required = ("citation", "url", "license", "data_kind", "transformations")
+        unresolved = [name for name in required if getattr(source, name).origin not in {"user_supplied", "source_derived"}]
+        if unresolved:
+            raise ValueError("Benchmark requires resolved source declarations: " + ", ".join(unresolved))
+        source = SimpleNamespace(**{name: getattr(source, name).value for name in required})
+        source.transformations = "; ".join(source.transformations)
+    return source
+
+
 def run_benchmark(raw, dataset, partition, req, audit_config):
     """Build the documented admission card and frozen partitions; upstream owns
     admission, preprocessing, fitting, prediction and all metric computation.
@@ -60,7 +74,7 @@ def run_benchmark(raw, dataset, partition, req, audit_config):
         ],
     }
     frozen_raw = encoded(frozen)
-    source = dataset.source
+    source = benchmark_source(dataset)
     spec = {
         "schema_version": "1.0",
         "id": "local-" + dataset.id,

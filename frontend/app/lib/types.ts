@@ -9,9 +9,9 @@ export type JobState = Job['state'];
 export type Partition = 'train' | 'validation' | 'test' | 'excluded';
 export const PARTITIONS: Partition[] = ['train', 'validation', 'test', 'excluded'];
 
-export type Artifact = Wire.LegacyArtifact;
+export type Artifact = Wire.IntakeArtifact;
 export type ArtifactKind = Artifact['kind'];
-export type DatasetArtifact = Wire.Dataset;
+export type DatasetArtifact = Wire.Dataset | Wire.DatasetV2;
 export type AuditArtifact = Wire.Audit;
 export type SplitArtifact = Wire.Split;
 export type BenchmarkArtifact = Wire.Benchmark;

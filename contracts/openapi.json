@@ -476,7 +476,21 @@
                   "items": {
                     "oneOf": [
                       {
-                        "$ref": "#/components/schemas/Dataset"
+                        "oneOf": [
+                          {
+                            "$ref": "#/components/schemas/Dataset"
+                          },
+                          {
+                            "$ref": "#/components/schemas/DatasetV2"
+                          }
+                        ],
+                        "discriminator": {
+                          "propertyName": "schema_version",
+                          "mapping": {
+                            "1.0": "#/components/schemas/Dataset",
+                            "2.0": "#/components/schemas/DatasetV2"
+                          }
+                        }
                       },
                       {
                         "$ref": "#/components/schemas/Audit"
@@ -503,7 +517,23 @@
                     "discriminator": {
                       "propertyName": "kind",
                       "mapping": {
-                        "dataset": "#/components/schemas/Dataset",
+                        "dataset": {
+                          "oneOf": [
+                            {
+                              "$ref": "#/components/schemas/Dataset"
+                            },
+                            {
+                              "$ref": "#/components/schemas/DatasetV2"
+                            }
+                          ],
+                          "discriminator": {
+                            "propertyName": "schema_version",
+                            "mapping": {
+                              "1.0": "#/components/schemas/Dataset",
+                              "2.0": "#/components/schemas/DatasetV2"
+                            }
+                          }
+                        },
                         "audit": "#/components/schemas/Audit",
                         "split": "#/components/schemas/Split",
                         "benchmark": "#/components/schemas/Benchmark",
@@ -644,7 +674,21 @@
                 "schema": {
                   "oneOf": [
                     {
-                      "$ref": "#/components/schemas/Dataset"
+                      "oneOf": [
+                        {
+                          "$ref": "#/components/schemas/Dataset"
+                        },
+                        {
+                          "$ref": "#/components/schemas/DatasetV2"
+                        }
+                      ],
+                      "discriminator": {
+                        "propertyName": "schema_version",
+                        "mapping": {
+                          "1.0": "#/components/schemas/Dataset",
+                          "2.0": "#/components/schemas/DatasetV2"
+                        }
+                      }
                     },
                     {
                       "$ref": "#/components/schemas/Audit"
@@ -671,7 +715,23 @@
                   "discriminator": {
                     "propertyName": "kind",
                     "mapping": {
-                      "dataset": "#/components/schemas/Dataset",
+                      "dataset": {
+                        "oneOf": [
+                          {
+                            "$ref": "#/components/schemas/Dataset"
+                          },
+                          {
+                            "$ref": "#/components/schemas/DatasetV2"
+                          }
+                        ],
+                        "discriminator": {
+                          "propertyName": "schema_version",
+                          "mapping": {
+                            "1.0": "#/components/schemas/Dataset",
+                            "2.0": "#/components/schemas/DatasetV2"
+                          }
+                        }
+                      },
                       "audit": "#/components/schemas/Audit",
                       "split": "#/components/schemas/Split",
                       "benchmark": "#/components/schemas/Benchmark",
@@ -796,9 +856,16 @@
           {
             "name": "x-source",
             "in": "header",
-            "required": true,
+            "required": false,
             "schema": {
-              "type": "string",
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
               "title": "X-Source"
             }
           },
@@ -819,7 +886,568 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Dataset"
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/Dataset"
+                    },
+                    {
+                      "$ref": "#/components/schemas/DatasetV2"
+                    }
+                  ],
+                  "discriminator": {
+                    "propertyName": "schema_version",
+                    "mapping": {
+                      "1.0": "#/components/schemas/Dataset",
+                      "2.0": "#/components/schemas/DatasetV2"
+                    }
+                  },
+                  "title": "Response Upload Api V1 Projects  Pid  Datasets Post"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Content Too Large"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Content"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        }
+      }
+    },
+    "/api/v1/projects/{pid}/research-materials": {
+      "post": {
+        "summary": "Attach",
+        "operationId": "attach_api_v1_projects__pid__research_materials_post",
+        "parameters": [
+          {
+            "name": "pid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Pid"
+            }
+          },
+          {
+            "name": "x-filename",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Filename"
+            }
+          },
+          {
+            "name": "content-type",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Content-Type"
+            }
+          },
+          {
+            "name": "idempotency-key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Idempotency-Key"
+            }
+          },
+          {
+            "name": "x-source",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Source"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MaterialResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Content Too Large"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Content"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        }
+      },
+      "get": {
+        "summary": "Materials",
+        "operationId": "materials_api_v1_projects__pid__research_materials_get",
+        "parameters": [
+          {
+            "name": "pid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Pid"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MaterialResponse"
+                  },
+                  "title": "Response Materials Api V1 Projects  Pid  Research Materials Get"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Content Too Large"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Content"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        }
+      }
+    },
+    "/api/v1/projects/{pid}/research-materials/{mid}/download": {
+      "get": {
+        "summary": "Download Material",
+        "operationId": "download_material_api_v1_projects__pid__research_materials__mid__download_get",
+        "parameters": [
+          {
+            "name": "pid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Pid"
+            }
+          },
+          {
+            "name": "mid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Mid"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Content Too Large"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Content"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        }
+      }
+    },
+    "/api/v1/projects/{pid}/research-materials/{mid}/ingest": {
+      "post": {
+        "summary": "Ingest Material",
+        "operationId": "ingest_material_api_v1_projects__pid__research_materials__mid__ingest_post",
+        "parameters": [
+          {
+            "name": "pid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Pid"
+            }
+          },
+          {
+            "name": "mid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Mid"
+            }
+          },
+          {
+            "name": "idempotency-key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Idempotency-Key"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LegacyJobResponse"
                 }
               }
             }
@@ -2399,6 +3027,303 @@
         ],
         "title": "Dataset"
       },
+      "DatasetV2": {
+        "properties": {
+          "schema_version": {
+            "type": "string",
+            "const": "2.0",
+            "title": "Schema Version",
+            "default": "2.0"
+          },
+          "id": {
+            "type": "string",
+            "maxLength": 160,
+            "minLength": 1,
+            "title": "Id"
+          },
+          "project_id": {
+            "type": "string",
+            "maxLength": 160,
+            "minLength": 1,
+            "title": "Project Id"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "parents": {
+            "items": {
+              "type": "string",
+              "maxLength": 160,
+              "minLength": 1
+            },
+            "type": "array",
+            "title": "Parents"
+          },
+          "software": {
+            "additionalProperties": {
+              "type": "string",
+              "maxLength": 4000,
+              "minLength": 1
+            },
+            "propertyNames": {
+              "maxLength": 160,
+              "minLength": 1
+            },
+            "type": "object",
+            "title": "Software"
+          },
+          "kind": {
+            "type": "string",
+            "const": "dataset",
+            "title": "Kind",
+            "default": "dataset"
+          },
+          "filename": {
+            "type": "string",
+            "maxLength": 4000,
+            "minLength": 1,
+            "title": "Filename"
+          },
+          "blob_key": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Blob Key"
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Sha256"
+          },
+          "rows": {
+            "type": "integer",
+            "minimum": 3.0,
+            "title": "Rows"
+          },
+          "columns": {
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "\\S"
+            },
+            "type": "array",
+            "maxItems": 200,
+            "minItems": 1,
+            "title": "Columns"
+          },
+          "source": {
+            "$ref": "#/components/schemas/SourceDeclarations"
+          },
+          "unresolved_fields": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "citation",
+                "url",
+                "license",
+                "data_kind",
+                "transformations",
+                "units",
+                "target",
+                "independent_unit"
+              ]
+            },
+            "type": "array",
+            "title": "Unresolved Fields"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "project_id",
+          "filename",
+          "blob_key",
+          "sha256",
+          "rows",
+          "columns",
+          "source",
+          "unresolved_fields"
+        ],
+        "title": "DatasetV2"
+      },
+      "DeclarationReference": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "user_message",
+              "operator_assertion",
+              "source_span",
+              "artifact"
+            ],
+            "title": "Kind"
+          },
+          "id": {
+            "type": "string",
+            "maxLength": 160,
+            "minLength": 1,
+            "title": "Id"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "kind",
+          "id"
+        ],
+        "title": "DeclarationReference"
+      },
+      "Declaration_Annotated_dict_Annotated_str__FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1____PydanticGeneralMetadata_pattern____S_______Annotated_str__StringConstraints____FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1_____": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/UnknownDeclaration"
+          },
+          {
+            "$ref": "#/components/schemas/UserDeclaration_Annotated_dict_Annotated_str__FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1____PydanticGeneralMetadata_pattern____S_______Annotated_str__StringConstraints____FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1_____"
+          },
+          {
+            "$ref": "#/components/schemas/SourceDeclaration_Annotated_dict_Annotated_str__FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1____PydanticGeneralMetadata_pattern____S_______Annotated_str__StringConstraints____FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1_____"
+          },
+          {
+            "$ref": "#/components/schemas/InferredDeclaration_Annotated_dict_Annotated_str__FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1____PydanticGeneralMetadata_pattern____S_______Annotated_str__StringConstraints____FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1_____"
+          }
+        ],
+        "discriminator": {
+          "propertyName": "origin",
+          "mapping": {
+            "inferred": "#/components/schemas/InferredDeclaration_Annotated_dict_Annotated_str__FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1____PydanticGeneralMetadata_pattern____S_______Annotated_str__StringConstraints____FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1_____",
+            "source_derived": "#/components/schemas/SourceDeclaration_Annotated_dict_Annotated_str__FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1____PydanticGeneralMetadata_pattern____S_______Annotated_str__StringConstraints____FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1_____",
+            "unknown": "#/components/schemas/UnknownDeclaration",
+            "user_supplied": "#/components/schemas/UserDeclaration_Annotated_dict_Annotated_str__FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1____PydanticGeneralMetadata_pattern____S_______Annotated_str__StringConstraints____FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1_____"
+          }
+        }
+      },
+      "Declaration_Annotated_str__FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1____PydanticGeneralMetadata_pattern____S______": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/UnknownDeclaration"
+          },
+          {
+            "$ref": "#/components/schemas/UserDeclaration_Annotated_str__FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1____PydanticGeneralMetadata_pattern____S______"
+          },
+          {
+            "$ref": "#/components/schemas/SourceDeclaration_Annotated_str__FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1____PydanticGeneralMetadata_pattern____S______"
+          },
+          {
+            "$ref": "#/components/schemas/InferredDeclaration_Annotated_str__FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1____PydanticGeneralMetadata_pattern____S______"
+          }
+        ],
+        "discriminator": {
+          "propertyName": "origin",
+          "mapping": {
+            "inferred": "#/components/schemas/InferredDeclaration_Annotated_str__FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1____PydanticGeneralMetadata_pattern____S______",
+            "source_derived": "#/components/schemas/SourceDeclaration_Annotated_str__FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1____PydanticGeneralMetadata_pattern____S______",
+            "unknown": "#/components/schemas/UnknownDeclaration",
+            "user_supplied": "#/components/schemas/UserDeclaration_Annotated_str__FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1____PydanticGeneralMetadata_pattern____S______"
+          }
+        }
+      },
+      "Declaration_Annotated_str__StringConstraints__": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/UnknownDeclaration"
+          },
+          {
+            "$ref": "#/components/schemas/UserDeclaration_Annotated_str__StringConstraints__"
+          },
+          {
+            "$ref": "#/components/schemas/SourceDeclaration_Annotated_str__StringConstraints__"
+          },
+          {
+            "$ref": "#/components/schemas/InferredDeclaration_Annotated_str__StringConstraints__"
+          }
+        ],
+        "discriminator": {
+          "propertyName": "origin",
+          "mapping": {
+            "inferred": "#/components/schemas/InferredDeclaration_Annotated_str__StringConstraints__",
+            "source_derived": "#/components/schemas/SourceDeclaration_Annotated_str__StringConstraints__",
+            "unknown": "#/components/schemas/UnknownDeclaration",
+            "user_supplied": "#/components/schemas/UserDeclaration_Annotated_str__StringConstraints__"
+          }
+        }
+      },
+      "Declaration_IndependentUnit_": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/UnknownDeclaration"
+          },
+          {
+            "$ref": "#/components/schemas/UserDeclaration_IndependentUnit_"
+          },
+          {
+            "$ref": "#/components/schemas/SourceDeclaration_IndependentUnit_"
+          },
+          {
+            "$ref": "#/components/schemas/InferredDeclaration_IndependentUnit_"
+          }
+        ],
+        "discriminator": {
+          "propertyName": "origin",
+          "mapping": {
+            "inferred": "#/components/schemas/InferredDeclaration_IndependentUnit_",
+            "source_derived": "#/components/schemas/SourceDeclaration_IndependentUnit_",
+            "unknown": "#/components/schemas/UnknownDeclaration",
+            "user_supplied": "#/components/schemas/UserDeclaration_IndependentUnit_"
+          }
+        }
+      },
+      "Declaration_Literal__empirical____synthetic___": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/UnknownDeclaration"
+          },
+          {
+            "$ref": "#/components/schemas/UserDeclaration_Literal__empirical____synthetic___"
+          },
+          {
+            "$ref": "#/components/schemas/SourceDeclaration_Literal__empirical____synthetic___"
+          },
+          {
+            "$ref": "#/components/schemas/InferredDeclaration_Literal__empirical____synthetic___"
+          }
+        ],
+        "discriminator": {
+          "propertyName": "origin",
+          "mapping": {
+            "inferred": "#/components/schemas/InferredDeclaration_Literal__empirical____synthetic___",
+            "source_derived": "#/components/schemas/SourceDeclaration_Literal__empirical____synthetic___",
+            "unknown": "#/components/schemas/UnknownDeclaration",
+            "user_supplied": "#/components/schemas/UserDeclaration_Literal__empirical____synthetic___"
+          }
+        }
+      },
+      "Declaration_list_Annotated_str__StringConstraints___": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/UnknownDeclaration"
+          },
+          {
+            "$ref": "#/components/schemas/UserDeclaration_list_Annotated_str__StringConstraints___"
+          },
+          {
+            "$ref": "#/components/schemas/SourceDeclaration_list_Annotated_str__StringConstraints___"
+          },
+          {
+            "$ref": "#/components/schemas/InferredDeclaration_list_Annotated_str__StringConstraints___"
+          }
+        ],
+        "discriminator": {
+          "propertyName": "origin",
+          "mapping": {
+            "inferred": "#/components/schemas/InferredDeclaration_list_Annotated_str__StringConstraints___",
+            "source_derived": "#/components/schemas/SourceDeclaration_list_Annotated_str__StringConstraints___",
+            "unknown": "#/components/schemas/UnknownDeclaration",
+            "user_supplied": "#/components/schemas/UserDeclaration_list_Annotated_str__StringConstraints___"
+          }
+        }
+      },
       "ErrorResponse": {
         "properties": {
           "error": {
@@ -2645,6 +3570,399 @@
         ],
         "title": "FailureInput"
       },
+      "IndependentUnit": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 4000,
+            "minLength": 1,
+            "title": "Name"
+          },
+          "group_columns": {
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "\\S"
+            },
+            "type": "array",
+            "minItems": 1,
+            "title": "Group Columns"
+          },
+          "rationale": {
+            "type": "string",
+            "maxLength": 4000,
+            "minLength": 1,
+            "title": "Rationale"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "name",
+          "group_columns",
+          "rationale"
+        ],
+        "title": "IndependentUnit"
+      },
+      "InferredDeclaration_Annotated_dict_Annotated_str__FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1____PydanticGeneralMetadata_pattern____S_______Annotated_str__StringConstraints____FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1_____": {
+        "properties": {
+          "origin": {
+            "type": "string",
+            "const": "inferred",
+            "title": "Origin"
+          },
+          "value": {
+            "patternProperties": {
+              "\\S": {
+                "type": "string",
+                "maxLength": 4000,
+                "minLength": 1
+              }
+            },
+            "propertyNames": {
+              "minLength": 1
+            },
+            "type": "object",
+            "minProperties": 1,
+            "title": "Value"
+          },
+          "supporting_references": {
+            "items": {
+              "$ref": "#/components/schemas/DeclarationReference"
+            },
+            "type": "array",
+            "minItems": 1,
+            "title": "Supporting References"
+          },
+          "rationale": {
+            "type": "string",
+            "maxLength": 4000,
+            "minLength": 1,
+            "title": "Rationale"
+          },
+          "uncertainty": {
+            "type": "string",
+            "maxLength": 4000,
+            "minLength": 1,
+            "title": "Uncertainty"
+          },
+          "confidence": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 1.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confidence"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "origin",
+          "value",
+          "supporting_references",
+          "rationale",
+          "uncertainty"
+        ],
+        "title": "InferredDeclaration[Annotated[dict[Annotated[str, FieldInfo(annotation=NoneType, required=True, metadata=[MinLen(min_length=1), _PydanticGeneralMetadata(pattern='\\\\S')])], Annotated[str, StringConstraints]], FieldInfo(annotation=NoneType, required=True, metadata=[MinLen(min_length=1)])]]"
+      },
+      "InferredDeclaration_Annotated_str__FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1____PydanticGeneralMetadata_pattern____S______": {
+        "properties": {
+          "origin": {
+            "type": "string",
+            "const": "inferred",
+            "title": "Origin"
+          },
+          "value": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S",
+            "title": "Value"
+          },
+          "supporting_references": {
+            "items": {
+              "$ref": "#/components/schemas/DeclarationReference"
+            },
+            "type": "array",
+            "minItems": 1,
+            "title": "Supporting References"
+          },
+          "rationale": {
+            "type": "string",
+            "maxLength": 4000,
+            "minLength": 1,
+            "title": "Rationale"
+          },
+          "uncertainty": {
+            "type": "string",
+            "maxLength": 4000,
+            "minLength": 1,
+            "title": "Uncertainty"
+          },
+          "confidence": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 1.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confidence"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "origin",
+          "value",
+          "supporting_references",
+          "rationale",
+          "uncertainty"
+        ],
+        "title": "InferredDeclaration[Annotated[str, FieldInfo(annotation=NoneType, required=True, metadata=[MinLen(min_length=1), _PydanticGeneralMetadata(pattern='\\\\S')])]]"
+      },
+      "InferredDeclaration_Annotated_str__StringConstraints__": {
+        "properties": {
+          "origin": {
+            "type": "string",
+            "const": "inferred",
+            "title": "Origin"
+          },
+          "value": {
+            "type": "string",
+            "maxLength": 4000,
+            "minLength": 1,
+            "title": "Value"
+          },
+          "supporting_references": {
+            "items": {
+              "$ref": "#/components/schemas/DeclarationReference"
+            },
+            "type": "array",
+            "minItems": 1,
+            "title": "Supporting References"
+          },
+          "rationale": {
+            "type": "string",
+            "maxLength": 4000,
+            "minLength": 1,
+            "title": "Rationale"
+          },
+          "uncertainty": {
+            "type": "string",
+            "maxLength": 4000,
+            "minLength": 1,
+            "title": "Uncertainty"
+          },
+          "confidence": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 1.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confidence"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "origin",
+          "value",
+          "supporting_references",
+          "rationale",
+          "uncertainty"
+        ],
+        "title": "InferredDeclaration[Annotated[str, StringConstraints]]"
+      },
+      "InferredDeclaration_IndependentUnit_": {
+        "properties": {
+          "origin": {
+            "type": "string",
+            "const": "inferred",
+            "title": "Origin"
+          },
+          "value": {
+            "$ref": "#/components/schemas/IndependentUnit"
+          },
+          "supporting_references": {
+            "items": {
+              "$ref": "#/components/schemas/DeclarationReference"
+            },
+            "type": "array",
+            "minItems": 1,
+            "title": "Supporting References"
+          },
+          "rationale": {
+            "type": "string",
+            "maxLength": 4000,
+            "minLength": 1,
+            "title": "Rationale"
+          },
+          "uncertainty": {
+            "type": "string",
+            "maxLength": 4000,
+            "minLength": 1,
+            "title": "Uncertainty"
+          },
+          "confidence": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 1.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confidence"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "origin",
+          "value",
+          "supporting_references",
+          "rationale",
+          "uncertainty"
+        ],
+        "title": "InferredDeclaration[IndependentUnit]"
+      },
+      "InferredDeclaration_Literal__empirical____synthetic___": {
+        "properties": {
+          "origin": {
+            "type": "string",
+            "const": "inferred",
+            "title": "Origin"
+          },
+          "value": {
+            "type": "string",
+            "enum": [
+              "empirical",
+              "synthetic"
+            ],
+            "title": "Value"
+          },
+          "supporting_references": {
+            "items": {
+              "$ref": "#/components/schemas/DeclarationReference"
+            },
+            "type": "array",
+            "minItems": 1,
+            "title": "Supporting References"
+          },
+          "rationale": {
+            "type": "string",
+            "maxLength": 4000,
+            "minLength": 1,
+            "title": "Rationale"
+          },
+          "uncertainty": {
+            "type": "string",
+            "maxLength": 4000,
+            "minLength": 1,
+            "title": "Uncertainty"
+          },
+          "confidence": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 1.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confidence"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "origin",
+          "value",
+          "supporting_references",
+          "rationale",
+          "uncertainty"
+        ],
+        "title": "InferredDeclaration[Literal['empirical', 'synthetic']]"
+      },
+      "InferredDeclaration_list_Annotated_str__StringConstraints___": {
+        "properties": {
+          "origin": {
+            "type": "string",
+            "const": "inferred",
+            "title": "Origin"
+          },
+          "value": {
+            "items": {
+              "type": "string",
+              "maxLength": 4000,
+              "minLength": 1
+            },
+            "type": "array",
+            "title": "Value"
+          },
+          "supporting_references": {
+            "items": {
+              "$ref": "#/components/schemas/DeclarationReference"
+            },
+            "type": "array",
+            "minItems": 1,
+            "title": "Supporting References"
+          },
+          "rationale": {
+            "type": "string",
+            "maxLength": 4000,
+            "minLength": 1,
+            "title": "Rationale"
+          },
+          "uncertainty": {
+            "type": "string",
+            "maxLength": 4000,
+            "minLength": 1,
+            "title": "Uncertainty"
+          },
+          "confidence": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 1.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confidence"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "origin",
+          "value",
+          "supporting_references",
+          "rationale",
+          "uncertainty"
+        ],
+        "title": "InferredDeclaration[list[Annotated[str, StringConstraints]]]"
+      },
       "LegacyJobResponse": {
         "properties": {
           "id": {
@@ -2749,6 +4067,63 @@
           "finished_at"
         ],
         "title": "LegacyJobResponse"
+      },
+      "MaterialResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "maxLength": 160,
+            "minLength": 1,
+            "title": "Id"
+          },
+          "project_id": {
+            "type": "string",
+            "maxLength": 160,
+            "minLength": 1,
+            "title": "Project Id"
+          },
+          "filename": {
+            "type": "string",
+            "title": "Filename"
+          },
+          "media_type": {
+            "type": "string",
+            "enum": [
+              "text/csv",
+              "application/pdf"
+            ],
+            "title": "Media Type"
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Sha256"
+          },
+          "dataset_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 160,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dataset Id"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "project_id",
+          "filename",
+          "media_type",
+          "sha256",
+          "dataset_id"
+        ],
+        "title": "MaterialResponse"
       },
       "ProjectInput": {
         "properties": {
@@ -2986,6 +4361,312 @@
         ],
         "title": "Source"
       },
+      "SourceDeclaration_Annotated_dict_Annotated_str__FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1____PydanticGeneralMetadata_pattern____S_______Annotated_str__StringConstraints____FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1_____": {
+        "properties": {
+          "origin": {
+            "type": "string",
+            "const": "source_derived",
+            "title": "Origin"
+          },
+          "value": {
+            "patternProperties": {
+              "\\S": {
+                "type": "string",
+                "maxLength": 4000,
+                "minLength": 1
+              }
+            },
+            "propertyNames": {
+              "minLength": 1
+            },
+            "type": "object",
+            "minProperties": 1,
+            "title": "Value"
+          },
+          "supporting_references": {
+            "items": {
+              "$ref": "#/components/schemas/DeclarationReference"
+            },
+            "type": "array",
+            "minItems": 1,
+            "title": "Supporting References"
+          },
+          "uncertainty": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 4000,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Uncertainty"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "origin",
+          "value",
+          "supporting_references"
+        ],
+        "title": "SourceDeclaration[Annotated[dict[Annotated[str, FieldInfo(annotation=NoneType, required=True, metadata=[MinLen(min_length=1), _PydanticGeneralMetadata(pattern='\\\\S')])], Annotated[str, StringConstraints]], FieldInfo(annotation=NoneType, required=True, metadata=[MinLen(min_length=1)])]]"
+      },
+      "SourceDeclaration_Annotated_str__FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1____PydanticGeneralMetadata_pattern____S______": {
+        "properties": {
+          "origin": {
+            "type": "string",
+            "const": "source_derived",
+            "title": "Origin"
+          },
+          "value": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S",
+            "title": "Value"
+          },
+          "supporting_references": {
+            "items": {
+              "$ref": "#/components/schemas/DeclarationReference"
+            },
+            "type": "array",
+            "minItems": 1,
+            "title": "Supporting References"
+          },
+          "uncertainty": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 4000,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Uncertainty"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "origin",
+          "value",
+          "supporting_references"
+        ],
+        "title": "SourceDeclaration[Annotated[str, FieldInfo(annotation=NoneType, required=True, metadata=[MinLen(min_length=1), _PydanticGeneralMetadata(pattern='\\\\S')])]]"
+      },
+      "SourceDeclaration_Annotated_str__StringConstraints__": {
+        "properties": {
+          "origin": {
+            "type": "string",
+            "const": "source_derived",
+            "title": "Origin"
+          },
+          "value": {
+            "type": "string",
+            "maxLength": 4000,
+            "minLength": 1,
+            "title": "Value"
+          },
+          "supporting_references": {
+            "items": {
+              "$ref": "#/components/schemas/DeclarationReference"
+            },
+            "type": "array",
+            "minItems": 1,
+            "title": "Supporting References"
+          },
+          "uncertainty": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 4000,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Uncertainty"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "origin",
+          "value",
+          "supporting_references"
+        ],
+        "title": "SourceDeclaration[Annotated[str, StringConstraints]]"
+      },
+      "SourceDeclaration_IndependentUnit_": {
+        "properties": {
+          "origin": {
+            "type": "string",
+            "const": "source_derived",
+            "title": "Origin"
+          },
+          "value": {
+            "$ref": "#/components/schemas/IndependentUnit"
+          },
+          "supporting_references": {
+            "items": {
+              "$ref": "#/components/schemas/DeclarationReference"
+            },
+            "type": "array",
+            "minItems": 1,
+            "title": "Supporting References"
+          },
+          "uncertainty": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 4000,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Uncertainty"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "origin",
+          "value",
+          "supporting_references"
+        ],
+        "title": "SourceDeclaration[IndependentUnit]"
+      },
+      "SourceDeclaration_Literal__empirical____synthetic___": {
+        "properties": {
+          "origin": {
+            "type": "string",
+            "const": "source_derived",
+            "title": "Origin"
+          },
+          "value": {
+            "type": "string",
+            "enum": [
+              "empirical",
+              "synthetic"
+            ],
+            "title": "Value"
+          },
+          "supporting_references": {
+            "items": {
+              "$ref": "#/components/schemas/DeclarationReference"
+            },
+            "type": "array",
+            "minItems": 1,
+            "title": "Supporting References"
+          },
+          "uncertainty": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 4000,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Uncertainty"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "origin",
+          "value",
+          "supporting_references"
+        ],
+        "title": "SourceDeclaration[Literal['empirical', 'synthetic']]"
+      },
+      "SourceDeclaration_list_Annotated_str__StringConstraints___": {
+        "properties": {
+          "origin": {
+            "type": "string",
+            "const": "source_derived",
+            "title": "Origin"
+          },
+          "value": {
+            "items": {
+              "type": "string",
+              "maxLength": 4000,
+              "minLength": 1
+            },
+            "type": "array",
+            "title": "Value"
+          },
+          "supporting_references": {
+            "items": {
+              "$ref": "#/components/schemas/DeclarationReference"
+            },
+            "type": "array",
+            "minItems": 1,
+            "title": "Supporting References"
+          },
+          "uncertainty": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 4000,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Uncertainty"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "origin",
+          "value",
+          "supporting_references"
+        ],
+        "title": "SourceDeclaration[list[Annotated[str, StringConstraints]]]"
+      },
+      "SourceDeclarations": {
+        "properties": {
+          "citation": {
+            "$ref": "#/components/schemas/Declaration_Annotated_str__StringConstraints__"
+          },
+          "url": {
+            "$ref": "#/components/schemas/Declaration_Annotated_str__StringConstraints__"
+          },
+          "license": {
+            "$ref": "#/components/schemas/Declaration_Annotated_str__StringConstraints__"
+          },
+          "data_kind": {
+            "$ref": "#/components/schemas/Declaration_Literal__empirical____synthetic___"
+          },
+          "transformations": {
+            "$ref": "#/components/schemas/Declaration_list_Annotated_str__StringConstraints___"
+          },
+          "units": {
+            "$ref": "#/components/schemas/Declaration_Annotated_dict_Annotated_str__FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1____PydanticGeneralMetadata_pattern____S_______Annotated_str__StringConstraints____FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1_____"
+          },
+          "target": {
+            "$ref": "#/components/schemas/Declaration_Annotated_str__FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1____PydanticGeneralMetadata_pattern____S______"
+          },
+          "independent_unit": {
+            "$ref": "#/components/schemas/Declaration_IndependentUnit_"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "SourceDeclarations"
+      },
       "Split": {
         "properties": {
           "schema_version": {
@@ -3095,6 +4776,318 @@
           "config"
         ],
         "title": "SplitInput"
+      },
+      "UnknownDeclaration": {
+        "properties": {
+          "origin": {
+            "type": "string",
+            "const": "unknown",
+            "title": "Origin",
+            "default": "unknown"
+          },
+          "value": {
+            "type": "null",
+            "title": "Value"
+          },
+          "supporting_references": {
+            "items": {
+              "$ref": "#/components/schemas/DeclarationReference"
+            },
+            "type": "array",
+            "title": "Supporting References"
+          },
+          "uncertainty": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 4000,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Uncertainty"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "UnknownDeclaration"
+      },
+      "UserDeclaration_Annotated_dict_Annotated_str__FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1____PydanticGeneralMetadata_pattern____S_______Annotated_str__StringConstraints____FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1_____": {
+        "properties": {
+          "origin": {
+            "type": "string",
+            "const": "user_supplied",
+            "title": "Origin"
+          },
+          "value": {
+            "patternProperties": {
+              "\\S": {
+                "type": "string",
+                "maxLength": 4000,
+                "minLength": 1
+              }
+            },
+            "propertyNames": {
+              "minLength": 1
+            },
+            "type": "object",
+            "minProperties": 1,
+            "title": "Value"
+          },
+          "supporting_references": {
+            "items": {
+              "$ref": "#/components/schemas/DeclarationReference"
+            },
+            "type": "array",
+            "minItems": 1,
+            "title": "Supporting References"
+          },
+          "uncertainty": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 4000,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Uncertainty"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "origin",
+          "value",
+          "supporting_references"
+        ],
+        "title": "UserDeclaration[Annotated[dict[Annotated[str, FieldInfo(annotation=NoneType, required=True, metadata=[MinLen(min_length=1), _PydanticGeneralMetadata(pattern='\\\\S')])], Annotated[str, StringConstraints]], FieldInfo(annotation=NoneType, required=True, metadata=[MinLen(min_length=1)])]]"
+      },
+      "UserDeclaration_Annotated_str__FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1____PydanticGeneralMetadata_pattern____S______": {
+        "properties": {
+          "origin": {
+            "type": "string",
+            "const": "user_supplied",
+            "title": "Origin"
+          },
+          "value": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "\\S",
+            "title": "Value"
+          },
+          "supporting_references": {
+            "items": {
+              "$ref": "#/components/schemas/DeclarationReference"
+            },
+            "type": "array",
+            "minItems": 1,
+            "title": "Supporting References"
+          },
+          "uncertainty": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 4000,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Uncertainty"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "origin",
+          "value",
+          "supporting_references"
+        ],
+        "title": "UserDeclaration[Annotated[str, FieldInfo(annotation=NoneType, required=True, metadata=[MinLen(min_length=1), _PydanticGeneralMetadata(pattern='\\\\S')])]]"
+      },
+      "UserDeclaration_Annotated_str__StringConstraints__": {
+        "properties": {
+          "origin": {
+            "type": "string",
+            "const": "user_supplied",
+            "title": "Origin"
+          },
+          "value": {
+            "type": "string",
+            "maxLength": 4000,
+            "minLength": 1,
+            "title": "Value"
+          },
+          "supporting_references": {
+            "items": {
+              "$ref": "#/components/schemas/DeclarationReference"
+            },
+            "type": "array",
+            "minItems": 1,
+            "title": "Supporting References"
+          },
+          "uncertainty": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 4000,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Uncertainty"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "origin",
+          "value",
+          "supporting_references"
+        ],
+        "title": "UserDeclaration[Annotated[str, StringConstraints]]"
+      },
+      "UserDeclaration_IndependentUnit_": {
+        "properties": {
+          "origin": {
+            "type": "string",
+            "const": "user_supplied",
+            "title": "Origin"
+          },
+          "value": {
+            "$ref": "#/components/schemas/IndependentUnit"
+          },
+          "supporting_references": {
+            "items": {
+              "$ref": "#/components/schemas/DeclarationReference"
+            },
+            "type": "array",
+            "minItems": 1,
+            "title": "Supporting References"
+          },
+          "uncertainty": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 4000,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Uncertainty"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "origin",
+          "value",
+          "supporting_references"
+        ],
+        "title": "UserDeclaration[IndependentUnit]"
+      },
+      "UserDeclaration_Literal__empirical____synthetic___": {
+        "properties": {
+          "origin": {
+            "type": "string",
+            "const": "user_supplied",
+            "title": "Origin"
+          },
+          "value": {
+            "type": "string",
+            "enum": [
+              "empirical",
+              "synthetic"
+            ],
+            "title": "Value"
+          },
+          "supporting_references": {
+            "items": {
+              "$ref": "#/components/schemas/DeclarationReference"
+            },
+            "type": "array",
+            "minItems": 1,
+            "title": "Supporting References"
+          },
+          "uncertainty": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 4000,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Uncertainty"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "origin",
+          "value",
+          "supporting_references"
+        ],
+        "title": "UserDeclaration[Literal['empirical', 'synthetic']]"
+      },
+      "UserDeclaration_list_Annotated_str__StringConstraints___": {
+        "properties": {
+          "origin": {
+            "type": "string",
+            "const": "user_supplied",
+            "title": "Origin"
+          },
+          "value": {
+            "items": {
+              "type": "string",
+              "maxLength": 4000,
+              "minLength": 1
+            },
+            "type": "array",
+            "title": "Value"
+          },
+          "supporting_references": {
+            "items": {
+              "$ref": "#/components/schemas/DeclarationReference"
+            },
+            "type": "array",
+            "minItems": 1,
+            "title": "Supporting References"
+          },
+          "uncertainty": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 4000,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Uncertainty"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "origin",
+          "value",
+          "supporting_references"
+        ],
+        "title": "UserDeclaration[list[Annotated[str, StringConstraints]]]"
       },
       "ValidationIssue": {
         "properties": {
@@ -3831,126 +5824,6 @@
         "title": "CriterionFailure",
         "type": "object"
       },
-      "DatasetV2": {
-        "additionalProperties": false,
-        "properties": {
-          "schema_version": {
-            "const": "2.0",
-            "default": "2.0",
-            "title": "Schema Version",
-            "type": "string"
-          },
-          "id": {
-            "maxLength": 160,
-            "minLength": 1,
-            "title": "Id",
-            "type": "string"
-          },
-          "project_id": {
-            "maxLength": 160,
-            "minLength": 1,
-            "title": "Project Id",
-            "type": "string"
-          },
-          "created_at": {
-            "format": "date-time",
-            "title": "Created At",
-            "type": "string"
-          },
-          "parents": {
-            "items": {
-              "maxLength": 160,
-              "minLength": 1,
-              "type": "string"
-            },
-            "title": "Parents",
-            "type": "array"
-          },
-          "software": {
-            "additionalProperties": {
-              "maxLength": 4000,
-              "minLength": 1,
-              "type": "string"
-            },
-            "propertyNames": {
-              "maxLength": 160,
-              "minLength": 1
-            },
-            "title": "Software",
-            "type": "object"
-          },
-          "kind": {
-            "const": "dataset",
-            "default": "dataset",
-            "title": "Kind",
-            "type": "string"
-          },
-          "filename": {
-            "maxLength": 4000,
-            "minLength": 1,
-            "title": "Filename",
-            "type": "string"
-          },
-          "blob_key": {
-            "pattern": "^[a-f0-9]{64}$",
-            "title": "Blob Key",
-            "type": "string"
-          },
-          "sha256": {
-            "pattern": "^[a-f0-9]{64}$",
-            "title": "Sha256",
-            "type": "string"
-          },
-          "rows": {
-            "minimum": 3,
-            "title": "Rows",
-            "type": "integer"
-          },
-          "columns": {
-            "items": {
-              "minLength": 1,
-              "pattern": "\\S",
-              "type": "string"
-            },
-            "maxItems": 200,
-            "minItems": 1,
-            "title": "Columns",
-            "type": "array"
-          },
-          "source": {
-            "$ref": "#/components/schemas/SourceDeclarations"
-          },
-          "unresolved_fields": {
-            "items": {
-              "enum": [
-                "citation",
-                "url",
-                "license",
-                "data_kind",
-                "transformations",
-                "units",
-                "target",
-                "independent_unit"
-              ],
-              "type": "string"
-            },
-            "title": "Unresolved Fields",
-            "type": "array"
-          }
-        },
-        "required": [
-          "project_id",
-          "filename",
-          "blob_key",
-          "sha256",
-          "rows",
-          "columns",
-          "source",
-          "unresolved_fields"
-        ],
-        "title": "DatasetV2",
-        "type": "object"
-      },
       "DecisionSummary": {
         "additionalProperties": false,
         "properties": {
@@ -3988,183 +5861,6 @@
         ],
         "title": "DecisionSummary",
         "type": "object"
-      },
-      "DeclarationReference": {
-        "additionalProperties": false,
-        "properties": {
-          "kind": {
-            "enum": [
-              "user_message",
-              "operator_assertion",
-              "source_span",
-              "artifact"
-            ],
-            "title": "Kind",
-            "type": "string"
-          },
-          "id": {
-            "maxLength": 160,
-            "minLength": 1,
-            "title": "Id",
-            "type": "string"
-          }
-        },
-        "required": [
-          "kind",
-          "id"
-        ],
-        "title": "DeclarationReference",
-        "type": "object"
-      },
-      "Declaration_Annotated_dict_Annotated_str__FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1____PydanticGeneralMetadata_pattern____S_______Annotated_str__StringConstraints____FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1_____": {
-        "discriminator": {
-          "mapping": {
-            "inferred": "#/components/schemas/InferredDeclaration_Annotated_dict_Annotated_str__FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1____PydanticGeneralMetadata_pattern____S_______Annotated_str__StringConstraints____FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1_____",
-            "source_derived": "#/components/schemas/SourceDeclaration_Annotated_dict_Annotated_str__FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1____PydanticGeneralMetadata_pattern____S_______Annotated_str__StringConstraints____FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1_____",
-            "unknown": "#/components/schemas/UnknownDeclaration",
-            "user_supplied": "#/components/schemas/UserDeclaration_Annotated_dict_Annotated_str__FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1____PydanticGeneralMetadata_pattern____S_______Annotated_str__StringConstraints____FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1_____"
-          },
-          "propertyName": "origin"
-        },
-        "oneOf": [
-          {
-            "$ref": "#/components/schemas/UnknownDeclaration"
-          },
-          {
-            "$ref": "#/components/schemas/UserDeclaration_Annotated_dict_Annotated_str__FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1____PydanticGeneralMetadata_pattern____S_______Annotated_str__StringConstraints____FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1_____"
-          },
-          {
-            "$ref": "#/components/schemas/SourceDeclaration_Annotated_dict_Annotated_str__FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1____PydanticGeneralMetadata_pattern____S_______Annotated_str__StringConstraints____FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1_____"
-          },
-          {
-            "$ref": "#/components/schemas/InferredDeclaration_Annotated_dict_Annotated_str__FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1____PydanticGeneralMetadata_pattern____S_______Annotated_str__StringConstraints____FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1_____"
-          }
-        ]
-      },
-      "Declaration_Annotated_str__FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1____PydanticGeneralMetadata_pattern____S______": {
-        "discriminator": {
-          "mapping": {
-            "inferred": "#/components/schemas/InferredDeclaration_Annotated_str__FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1____PydanticGeneralMetadata_pattern____S______",
-            "source_derived": "#/components/schemas/SourceDeclaration_Annotated_str__FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1____PydanticGeneralMetadata_pattern____S______",
-            "unknown": "#/components/schemas/UnknownDeclaration",
-            "user_supplied": "#/components/schemas/UserDeclaration_Annotated_str__FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1____PydanticGeneralMetadata_pattern____S______"
-          },
-          "propertyName": "origin"
-        },
-        "oneOf": [
-          {
-            "$ref": "#/components/schemas/UnknownDeclaration"
-          },
-          {
-            "$ref": "#/components/schemas/UserDeclaration_Annotated_str__FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1____PydanticGeneralMetadata_pattern____S______"
-          },
-          {
-            "$ref": "#/components/schemas/SourceDeclaration_Annotated_str__FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1____PydanticGeneralMetadata_pattern____S______"
-          },
-          {
-            "$ref": "#/components/schemas/InferredDeclaration_Annotated_str__FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1____PydanticGeneralMetadata_pattern____S______"
-          }
-        ]
-      },
-      "Declaration_Annotated_str__StringConstraints__": {
-        "discriminator": {
-          "mapping": {
-            "inferred": "#/components/schemas/InferredDeclaration_Annotated_str__StringConstraints__",
-            "source_derived": "#/components/schemas/SourceDeclaration_Annotated_str__StringConstraints__",
-            "unknown": "#/components/schemas/UnknownDeclaration",
-            "user_supplied": "#/components/schemas/UserDeclaration_Annotated_str__StringConstraints__"
-          },
-          "propertyName": "origin"
-        },
-        "oneOf": [
-          {
-            "$ref": "#/components/schemas/UnknownDeclaration"
-          },
-          {
-            "$ref": "#/components/schemas/UserDeclaration_Annotated_str__StringConstraints__"
-          },
-          {
-            "$ref": "#/components/schemas/SourceDeclaration_Annotated_str__StringConstraints__"
-          },
-          {
-            "$ref": "#/components/schemas/InferredDeclaration_Annotated_str__StringConstraints__"
-          }
-        ]
-      },
-      "Declaration_IndependentUnit_": {
-        "discriminator": {
-          "mapping": {
-            "inferred": "#/components/schemas/InferredDeclaration_IndependentUnit_",
-            "source_derived": "#/components/schemas/SourceDeclaration_IndependentUnit_",
-            "unknown": "#/components/schemas/UnknownDeclaration",
-            "user_supplied": "#/components/schemas/UserDeclaration_IndependentUnit_"
-          },
-          "propertyName": "origin"
-        },
-        "oneOf": [
-          {
-            "$ref": "#/components/schemas/UnknownDeclaration"
-          },
-          {
-            "$ref": "#/components/schemas/UserDeclaration_IndependentUnit_"
-          },
-          {
-            "$ref": "#/components/schemas/SourceDeclaration_IndependentUnit_"
-          },
-          {
-            "$ref": "#/components/schemas/InferredDeclaration_IndependentUnit_"
-          }
-        ]
-      },
-      "Declaration_Literal__empirical____synthetic___": {
-        "discriminator": {
-          "mapping": {
-            "inferred": "#/components/schemas/InferredDeclaration_Literal__empirical____synthetic___",
-            "source_derived": "#/components/schemas/SourceDeclaration_Literal__empirical____synthetic___",
-            "unknown": "#/components/schemas/UnknownDeclaration",
-            "user_supplied": "#/components/schemas/UserDeclaration_Literal__empirical____synthetic___"
-          },
-          "propertyName": "origin"
-        },
-        "oneOf": [
-          {
-            "$ref": "#/components/schemas/UnknownDeclaration"
-          },
-          {
-            "$ref": "#/components/schemas/UserDeclaration_Literal__empirical____synthetic___"
-          },
-          {
-            "$ref": "#/components/schemas/SourceDeclaration_Literal__empirical____synthetic___"
-          },
-          {
-            "$ref": "#/components/schemas/InferredDeclaration_Literal__empirical____synthetic___"
-          }
-        ]
-      },
-      "Declaration_list_Annotated_str__StringConstraints___": {
-        "discriminator": {
-          "mapping": {
-            "inferred": "#/components/schemas/InferredDeclaration_list_Annotated_str__StringConstraints___",
-            "source_derived": "#/components/schemas/SourceDeclaration_list_Annotated_str__StringConstraints___",
-            "unknown": "#/components/schemas/UnknownDeclaration",
-            "user_supplied": "#/components/schemas/UserDeclaration_list_Annotated_str__StringConstraints___"
-          },
-          "propertyName": "origin"
-        },
-        "oneOf": [
-          {
-            "$ref": "#/components/schemas/UnknownDeclaration"
-          },
-          {
-            "$ref": "#/components/schemas/UserDeclaration_list_Annotated_str__StringConstraints___"
-          },
-          {
-            "$ref": "#/components/schemas/SourceDeclaration_list_Annotated_str__StringConstraints___"
-          },
-          {
-            "$ref": "#/components/schemas/InferredDeclaration_list_Annotated_str__StringConstraints___"
-          }
-        ]
       },
       "EstimatedCost": {
         "additionalProperties": false,
@@ -4804,405 +6500,6 @@
           "operator_session_reference"
         ],
         "title": "HumanActor",
-        "type": "object"
-      },
-      "IndependentUnit": {
-        "additionalProperties": false,
-        "properties": {
-          "name": {
-            "maxLength": 4000,
-            "minLength": 1,
-            "title": "Name",
-            "type": "string"
-          },
-          "group_columns": {
-            "items": {
-              "minLength": 1,
-              "pattern": "\\S",
-              "type": "string"
-            },
-            "minItems": 1,
-            "title": "Group Columns",
-            "type": "array"
-          },
-          "rationale": {
-            "maxLength": 4000,
-            "minLength": 1,
-            "title": "Rationale",
-            "type": "string"
-          }
-        },
-        "required": [
-          "name",
-          "group_columns",
-          "rationale"
-        ],
-        "title": "IndependentUnit",
-        "type": "object"
-      },
-      "InferredDeclaration_Annotated_dict_Annotated_str__FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1____PydanticGeneralMetadata_pattern____S_______Annotated_str__StringConstraints____FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1_____": {
-        "additionalProperties": false,
-        "properties": {
-          "origin": {
-            "const": "inferred",
-            "title": "Origin",
-            "type": "string"
-          },
-          "value": {
-            "minProperties": 1,
-            "patternProperties": {
-              "\\S": {
-                "maxLength": 4000,
-                "minLength": 1,
-                "type": "string"
-              }
-            },
-            "propertyNames": {
-              "minLength": 1
-            },
-            "title": "Value",
-            "type": "object"
-          },
-          "supporting_references": {
-            "items": {
-              "$ref": "#/components/schemas/DeclarationReference"
-            },
-            "minItems": 1,
-            "title": "Supporting References",
-            "type": "array"
-          },
-          "rationale": {
-            "maxLength": 4000,
-            "minLength": 1,
-            "title": "Rationale",
-            "type": "string"
-          },
-          "uncertainty": {
-            "maxLength": 4000,
-            "minLength": 1,
-            "title": "Uncertainty",
-            "type": "string"
-          },
-          "confidence": {
-            "anyOf": [
-              {
-                "maximum": 1,
-                "minimum": 0,
-                "type": "number"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null,
-            "title": "Confidence"
-          }
-        },
-        "required": [
-          "origin",
-          "value",
-          "supporting_references",
-          "rationale",
-          "uncertainty"
-        ],
-        "title": "InferredDeclaration[Annotated[dict[Annotated[str, FieldInfo(annotation=NoneType, required=True, metadata=[MinLen(min_length=1), _PydanticGeneralMetadata(pattern='\\\\S')])], Annotated[str, StringConstraints]], FieldInfo(annotation=NoneType, required=True, metadata=[MinLen(min_length=1)])]]",
-        "type": "object"
-      },
-      "InferredDeclaration_Annotated_str__FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1____PydanticGeneralMetadata_pattern____S______": {
-        "additionalProperties": false,
-        "properties": {
-          "origin": {
-            "const": "inferred",
-            "title": "Origin",
-            "type": "string"
-          },
-          "value": {
-            "minLength": 1,
-            "pattern": "\\S",
-            "title": "Value",
-            "type": "string"
-          },
-          "supporting_references": {
-            "items": {
-              "$ref": "#/components/schemas/DeclarationReference"
-            },
-            "minItems": 1,
-            "title": "Supporting References",
-            "type": "array"
-          },
-          "rationale": {
-            "maxLength": 4000,
-            "minLength": 1,
-            "title": "Rationale",
-            "type": "string"
-          },
-          "uncertainty": {
-            "maxLength": 4000,
-            "minLength": 1,
-            "title": "Uncertainty",
-            "type": "string"
-          },
-          "confidence": {
-            "anyOf": [
-              {
-                "maximum": 1,
-                "minimum": 0,
-                "type": "number"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null,
-            "title": "Confidence"
-          }
-        },
-        "required": [
-          "origin",
-          "value",
-          "supporting_references",
-          "rationale",
-          "uncertainty"
-        ],
-        "title": "InferredDeclaration[Annotated[str, FieldInfo(annotation=NoneType, required=True, metadata=[MinLen(min_length=1), _PydanticGeneralMetadata(pattern='\\\\S')])]]",
-        "type": "object"
-      },
-      "InferredDeclaration_Annotated_str__StringConstraints__": {
-        "additionalProperties": false,
-        "properties": {
-          "origin": {
-            "const": "inferred",
-            "title": "Origin",
-            "type": "string"
-          },
-          "value": {
-            "maxLength": 4000,
-            "minLength": 1,
-            "title": "Value",
-            "type": "string"
-          },
-          "supporting_references": {
-            "items": {
-              "$ref": "#/components/schemas/DeclarationReference"
-            },
-            "minItems": 1,
-            "title": "Supporting References",
-            "type": "array"
-          },
-          "rationale": {
-            "maxLength": 4000,
-            "minLength": 1,
-            "title": "Rationale",
-            "type": "string"
-          },
-          "uncertainty": {
-            "maxLength": 4000,
-            "minLength": 1,
-            "title": "Uncertainty",
-            "type": "string"
-          },
-          "confidence": {
-            "anyOf": [
-              {
-                "maximum": 1,
-                "minimum": 0,
-                "type": "number"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null,
-            "title": "Confidence"
-          }
-        },
-        "required": [
-          "origin",
-          "value",
-          "supporting_references",
-          "rationale",
-          "uncertainty"
-        ],
-        "title": "InferredDeclaration[Annotated[str, StringConstraints]]",
-        "type": "object"
-      },
-      "InferredDeclaration_IndependentUnit_": {
-        "additionalProperties": false,
-        "properties": {
-          "origin": {
-            "const": "inferred",
-            "title": "Origin",
-            "type": "string"
-          },
-          "value": {
-            "$ref": "#/components/schemas/IndependentUnit"
-          },
-          "supporting_references": {
-            "items": {
-              "$ref": "#/components/schemas/DeclarationReference"
-            },
-            "minItems": 1,
-            "title": "Supporting References",
-            "type": "array"
-          },
-          "rationale": {
-            "maxLength": 4000,
-            "minLength": 1,
-            "title": "Rationale",
-            "type": "string"
-          },
-          "uncertainty": {
-            "maxLength": 4000,
-            "minLength": 1,
-            "title": "Uncertainty",
-            "type": "string"
-          },
-          "confidence": {
-            "anyOf": [
-              {
-                "maximum": 1,
-                "minimum": 0,
-                "type": "number"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null,
-            "title": "Confidence"
-          }
-        },
-        "required": [
-          "origin",
-          "value",
-          "supporting_references",
-          "rationale",
-          "uncertainty"
-        ],
-        "title": "InferredDeclaration[IndependentUnit]",
-        "type": "object"
-      },
-      "InferredDeclaration_Literal__empirical____synthetic___": {
-        "additionalProperties": false,
-        "properties": {
-          "origin": {
-            "const": "inferred",
-            "title": "Origin",
-            "type": "string"
-          },
-          "value": {
-            "enum": [
-              "empirical",
-              "synthetic"
-            ],
-            "title": "Value",
-            "type": "string"
-          },
-          "supporting_references": {
-            "items": {
-              "$ref": "#/components/schemas/DeclarationReference"
-            },
-            "minItems": 1,
-            "title": "Supporting References",
-            "type": "array"
-          },
-          "rationale": {
-            "maxLength": 4000,
-            "minLength": 1,
-            "title": "Rationale",
-            "type": "string"
-          },
-          "uncertainty": {
-            "maxLength": 4000,
-            "minLength": 1,
-            "title": "Uncertainty",
-            "type": "string"
-          },
-          "confidence": {
-            "anyOf": [
-              {
-                "maximum": 1,
-                "minimum": 0,
-                "type": "number"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null,
-            "title": "Confidence"
-          }
-        },
-        "required": [
-          "origin",
-          "value",
-          "supporting_references",
-          "rationale",
-          "uncertainty"
-        ],
-        "title": "InferredDeclaration[Literal['empirical', 'synthetic']]",
-        "type": "object"
-      },
-      "InferredDeclaration_list_Annotated_str__StringConstraints___": {
-        "additionalProperties": false,
-        "properties": {
-          "origin": {
-            "const": "inferred",
-            "title": "Origin",
-            "type": "string"
-          },
-          "value": {
-            "items": {
-              "maxLength": 4000,
-              "minLength": 1,
-              "type": "string"
-            },
-            "title": "Value",
-            "type": "array"
-          },
-          "supporting_references": {
-            "items": {
-              "$ref": "#/components/schemas/DeclarationReference"
-            },
-            "minItems": 1,
-            "title": "Supporting References",
-            "type": "array"
-          },
-          "rationale": {
-            "maxLength": 4000,
-            "minLength": 1,
-            "title": "Rationale",
-            "type": "string"
-          },
-          "uncertainty": {
-            "maxLength": 4000,
-            "minLength": 1,
-            "title": "Uncertainty",
-            "type": "string"
-          },
-          "confidence": {
-            "anyOf": [
-              {
-                "maximum": 1,
-                "minimum": 0,
-                "type": "number"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null,
-            "title": "Confidence"
-          }
-        },
-        "required": [
-          "origin",
-          "value",
-          "supporting_references",
-          "rationale",
-          "uncertainty"
-        ],
-        "title": "InferredDeclaration[list[Annotated[str, StringConstraints]]]",
         "type": "object"
       },
       "InputScope": {
@@ -6592,318 +7889,6 @@
         "title": "SemanticReview",
         "type": "object"
       },
-      "SourceDeclaration_Annotated_dict_Annotated_str__FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1____PydanticGeneralMetadata_pattern____S_______Annotated_str__StringConstraints____FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1_____": {
-        "additionalProperties": false,
-        "properties": {
-          "origin": {
-            "const": "source_derived",
-            "title": "Origin",
-            "type": "string"
-          },
-          "value": {
-            "minProperties": 1,
-            "patternProperties": {
-              "\\S": {
-                "maxLength": 4000,
-                "minLength": 1,
-                "type": "string"
-              }
-            },
-            "propertyNames": {
-              "minLength": 1
-            },
-            "title": "Value",
-            "type": "object"
-          },
-          "supporting_references": {
-            "items": {
-              "$ref": "#/components/schemas/DeclarationReference"
-            },
-            "minItems": 1,
-            "title": "Supporting References",
-            "type": "array"
-          },
-          "uncertainty": {
-            "anyOf": [
-              {
-                "maxLength": 4000,
-                "minLength": 1,
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null,
-            "title": "Uncertainty"
-          }
-        },
-        "required": [
-          "origin",
-          "value",
-          "supporting_references"
-        ],
-        "title": "SourceDeclaration[Annotated[dict[Annotated[str, FieldInfo(annotation=NoneType, required=True, metadata=[MinLen(min_length=1), _PydanticGeneralMetadata(pattern='\\\\S')])], Annotated[str, StringConstraints]], FieldInfo(annotation=NoneType, required=True, metadata=[MinLen(min_length=1)])]]",
-        "type": "object"
-      },
-      "SourceDeclaration_Annotated_str__FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1____PydanticGeneralMetadata_pattern____S______": {
-        "additionalProperties": false,
-        "properties": {
-          "origin": {
-            "const": "source_derived",
-            "title": "Origin",
-            "type": "string"
-          },
-          "value": {
-            "minLength": 1,
-            "pattern": "\\S",
-            "title": "Value",
-            "type": "string"
-          },
-          "supporting_references": {
-            "items": {
-              "$ref": "#/components/schemas/DeclarationReference"
-            },
-            "minItems": 1,
-            "title": "Supporting References",
-            "type": "array"
-          },
-          "uncertainty": {
-            "anyOf": [
-              {
-                "maxLength": 4000,
-                "minLength": 1,
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null,
-            "title": "Uncertainty"
-          }
-        },
-        "required": [
-          "origin",
-          "value",
-          "supporting_references"
-        ],
-        "title": "SourceDeclaration[Annotated[str, FieldInfo(annotation=NoneType, required=True, metadata=[MinLen(min_length=1), _PydanticGeneralMetadata(pattern='\\\\S')])]]",
-        "type": "object"
-      },
-      "SourceDeclaration_Annotated_str__StringConstraints__": {
-        "additionalProperties": false,
-        "properties": {
-          "origin": {
-            "const": "source_derived",
-            "title": "Origin",
-            "type": "string"
-          },
-          "value": {
-            "maxLength": 4000,
-            "minLength": 1,
-            "title": "Value",
-            "type": "string"
-          },
-          "supporting_references": {
-            "items": {
-              "$ref": "#/components/schemas/DeclarationReference"
-            },
-            "minItems": 1,
-            "title": "Supporting References",
-            "type": "array"
-          },
-          "uncertainty": {
-            "anyOf": [
-              {
-                "maxLength": 4000,
-                "minLength": 1,
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null,
-            "title": "Uncertainty"
-          }
-        },
-        "required": [
-          "origin",
-          "value",
-          "supporting_references"
-        ],
-        "title": "SourceDeclaration[Annotated[str, StringConstraints]]",
-        "type": "object"
-      },
-      "SourceDeclaration_IndependentUnit_": {
-        "additionalProperties": false,
-        "properties": {
-          "origin": {
-            "const": "source_derived",
-            "title": "Origin",
-            "type": "string"
-          },
-          "value": {
-            "$ref": "#/components/schemas/IndependentUnit"
-          },
-          "supporting_references": {
-            "items": {
-              "$ref": "#/components/schemas/DeclarationReference"
-            },
-            "minItems": 1,
-            "title": "Supporting References",
-            "type": "array"
-          },
-          "uncertainty": {
-            "anyOf": [
-              {
-                "maxLength": 4000,
-                "minLength": 1,
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null,
-            "title": "Uncertainty"
-          }
-        },
-        "required": [
-          "origin",
-          "value",
-          "supporting_references"
-        ],
-        "title": "SourceDeclaration[IndependentUnit]",
-        "type": "object"
-      },
-      "SourceDeclaration_Literal__empirical____synthetic___": {
-        "additionalProperties": false,
-        "properties": {
-          "origin": {
-            "const": "source_derived",
-            "title": "Origin",
-            "type": "string"
-          },
-          "value": {
-            "enum": [
-              "empirical",
-              "synthetic"
-            ],
-            "title": "Value",
-            "type": "string"
-          },
-          "supporting_references": {
-            "items": {
-              "$ref": "#/components/schemas/DeclarationReference"
-            },
-            "minItems": 1,
-            "title": "Supporting References",
-            "type": "array"
-          },
-          "uncertainty": {
-            "anyOf": [
-              {
-                "maxLength": 4000,
-                "minLength": 1,
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null,
-            "title": "Uncertainty"
-          }
-        },
-        "required": [
-          "origin",
-          "value",
-          "supporting_references"
-        ],
-        "title": "SourceDeclaration[Literal['empirical', 'synthetic']]",
-        "type": "object"
-      },
-      "SourceDeclaration_list_Annotated_str__StringConstraints___": {
-        "additionalProperties": false,
-        "properties": {
-          "origin": {
-            "const": "source_derived",
-            "title": "Origin",
-            "type": "string"
-          },
-          "value": {
-            "items": {
-              "maxLength": 4000,
-              "minLength": 1,
-              "type": "string"
-            },
-            "title": "Value",
-            "type": "array"
-          },
-          "supporting_references": {
-            "items": {
-              "$ref": "#/components/schemas/DeclarationReference"
-            },
-            "minItems": 1,
-            "title": "Supporting References",
-            "type": "array"
-          },
-          "uncertainty": {
-            "anyOf": [
-              {
-                "maxLength": 4000,
-                "minLength": 1,
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null,
-            "title": "Uncertainty"
-          }
-        },
-        "required": [
-          "origin",
-          "value",
-          "supporting_references"
-        ],
-        "title": "SourceDeclaration[list[Annotated[str, StringConstraints]]]",
-        "type": "object"
-      },
-      "SourceDeclarations": {
-        "additionalProperties": false,
-        "properties": {
-          "citation": {
-            "$ref": "#/components/schemas/Declaration_Annotated_str__StringConstraints__"
-          },
-          "url": {
-            "$ref": "#/components/schemas/Declaration_Annotated_str__StringConstraints__"
-          },
-          "license": {
-            "$ref": "#/components/schemas/Declaration_Annotated_str__StringConstraints__"
-          },
-          "data_kind": {
-            "$ref": "#/components/schemas/Declaration_Literal__empirical____synthetic___"
-          },
-          "transformations": {
-            "$ref": "#/components/schemas/Declaration_list_Annotated_str__StringConstraints___"
-          },
-          "units": {
-            "$ref": "#/components/schemas/Declaration_Annotated_dict_Annotated_str__FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1____PydanticGeneralMetadata_pattern____S_______Annotated_str__StringConstraints____FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1_____"
-          },
-          "target": {
-            "$ref": "#/components/schemas/Declaration_Annotated_str__FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1____PydanticGeneralMetadata_pattern____S______"
-          },
-          "independent_unit": {
-            "$ref": "#/components/schemas/Declaration_IndependentUnit_"
-          }
-        },
-        "title": "SourceDeclarations",
-        "type": "object"
-      },
       "SpecialistAssignment": {
         "additionalProperties": false,
         "properties": {
@@ -7856,45 +8841,6 @@
         "title": "UnknownCost",
         "type": "object"
       },
-      "UnknownDeclaration": {
-        "additionalProperties": false,
-        "properties": {
-          "origin": {
-            "const": "unknown",
-            "default": "unknown",
-            "title": "Origin",
-            "type": "string"
-          },
-          "value": {
-            "default": null,
-            "title": "Value",
-            "type": "null"
-          },
-          "supporting_references": {
-            "items": {
-              "$ref": "#/components/schemas/DeclarationReference"
-            },
-            "title": "Supporting References",
-            "type": "array"
-          },
-          "uncertainty": {
-            "anyOf": [
-              {
-                "maxLength": 4000,
-                "minLength": 1,
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null,
-            "title": "Uncertainty"
-          }
-        },
-        "title": "UnknownDeclaration",
-        "type": "object"
-      },
       "UsageSnapshot": {
         "additionalProperties": false,
         "properties": {
@@ -7980,287 +8926,6 @@
           "cost"
         ],
         "title": "UsageSnapshot",
-        "type": "object"
-      },
-      "UserDeclaration_Annotated_dict_Annotated_str__FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1____PydanticGeneralMetadata_pattern____S_______Annotated_str__StringConstraints____FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1_____": {
-        "additionalProperties": false,
-        "properties": {
-          "origin": {
-            "const": "user_supplied",
-            "title": "Origin",
-            "type": "string"
-          },
-          "value": {
-            "minProperties": 1,
-            "patternProperties": {
-              "\\S": {
-                "maxLength": 4000,
-                "minLength": 1,
-                "type": "string"
-              }
-            },
-            "propertyNames": {
-              "minLength": 1
-            },
-            "title": "Value",
-            "type": "object"
-          },
-          "supporting_references": {
-            "items": {
-              "$ref": "#/components/schemas/DeclarationReference"
-            },
-            "minItems": 1,
-            "title": "Supporting References",
-            "type": "array"
-          },
-          "uncertainty": {
-            "anyOf": [
-              {
-                "maxLength": 4000,
-                "minLength": 1,
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null,
-            "title": "Uncertainty"
-          }
-        },
-        "required": [
-          "origin",
-          "value",
-          "supporting_references"
-        ],
-        "title": "UserDeclaration[Annotated[dict[Annotated[str, FieldInfo(annotation=NoneType, required=True, metadata=[MinLen(min_length=1), _PydanticGeneralMetadata(pattern='\\\\S')])], Annotated[str, StringConstraints]], FieldInfo(annotation=NoneType, required=True, metadata=[MinLen(min_length=1)])]]",
-        "type": "object"
-      },
-      "UserDeclaration_Annotated_str__FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1____PydanticGeneralMetadata_pattern____S______": {
-        "additionalProperties": false,
-        "properties": {
-          "origin": {
-            "const": "user_supplied",
-            "title": "Origin",
-            "type": "string"
-          },
-          "value": {
-            "minLength": 1,
-            "pattern": "\\S",
-            "title": "Value",
-            "type": "string"
-          },
-          "supporting_references": {
-            "items": {
-              "$ref": "#/components/schemas/DeclarationReference"
-            },
-            "minItems": 1,
-            "title": "Supporting References",
-            "type": "array"
-          },
-          "uncertainty": {
-            "anyOf": [
-              {
-                "maxLength": 4000,
-                "minLength": 1,
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null,
-            "title": "Uncertainty"
-          }
-        },
-        "required": [
-          "origin",
-          "value",
-          "supporting_references"
-        ],
-        "title": "UserDeclaration[Annotated[str, FieldInfo(annotation=NoneType, required=True, metadata=[MinLen(min_length=1), _PydanticGeneralMetadata(pattern='\\\\S')])]]",
-        "type": "object"
-      },
-      "UserDeclaration_Annotated_str__StringConstraints__": {
-        "additionalProperties": false,
-        "properties": {
-          "origin": {
-            "const": "user_supplied",
-            "title": "Origin",
-            "type": "string"
-          },
-          "value": {
-            "maxLength": 4000,
-            "minLength": 1,
-            "title": "Value",
-            "type": "string"
-          },
-          "supporting_references": {
-            "items": {
-              "$ref": "#/components/schemas/DeclarationReference"
-            },
-            "minItems": 1,
-            "title": "Supporting References",
-            "type": "array"
-          },
-          "uncertainty": {
-            "anyOf": [
-              {
-                "maxLength": 4000,
-                "minLength": 1,
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null,
-            "title": "Uncertainty"
-          }
-        },
-        "required": [
-          "origin",
-          "value",
-          "supporting_references"
-        ],
-        "title": "UserDeclaration[Annotated[str, StringConstraints]]",
-        "type": "object"
-      },
-      "UserDeclaration_IndependentUnit_": {
-        "additionalProperties": false,
-        "properties": {
-          "origin": {
-            "const": "user_supplied",
-            "title": "Origin",
-            "type": "string"
-          },
-          "value": {
-            "$ref": "#/components/schemas/IndependentUnit"
-          },
-          "supporting_references": {
-            "items": {
-              "$ref": "#/components/schemas/DeclarationReference"
-            },
-            "minItems": 1,
-            "title": "Supporting References",
-            "type": "array"
-          },
-          "uncertainty": {
-            "anyOf": [
-              {
-                "maxLength": 4000,
-                "minLength": 1,
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null,
-            "title": "Uncertainty"
-          }
-        },
-        "required": [
-          "origin",
-          "value",
-          "supporting_references"
-        ],
-        "title": "UserDeclaration[IndependentUnit]",
-        "type": "object"
-      },
-      "UserDeclaration_Literal__empirical____synthetic___": {
-        "additionalProperties": false,
-        "properties": {
-          "origin": {
-            "const": "user_supplied",
-            "title": "Origin",
-            "type": "string"
-          },
-          "value": {
-            "enum": [
-              "empirical",
-              "synthetic"
-            ],
-            "title": "Value",
-            "type": "string"
-          },
-          "supporting_references": {
-            "items": {
-              "$ref": "#/components/schemas/DeclarationReference"
-            },
-            "minItems": 1,
-            "title": "Supporting References",
-            "type": "array"
-          },
-          "uncertainty": {
-            "anyOf": [
-              {
-                "maxLength": 4000,
-                "minLength": 1,
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null,
-            "title": "Uncertainty"
-          }
-        },
-        "required": [
-          "origin",
-          "value",
-          "supporting_references"
-        ],
-        "title": "UserDeclaration[Literal['empirical', 'synthetic']]",
-        "type": "object"
-      },
-      "UserDeclaration_list_Annotated_str__StringConstraints___": {
-        "additionalProperties": false,
-        "properties": {
-          "origin": {
-            "const": "user_supplied",
-            "title": "Origin",
-            "type": "string"
-          },
-          "value": {
-            "items": {
-              "maxLength": 4000,
-              "minLength": 1,
-              "type": "string"
-            },
-            "title": "Value",
-            "type": "array"
-          },
-          "supporting_references": {
-            "items": {
-              "$ref": "#/components/schemas/DeclarationReference"
-            },
-            "minItems": 1,
-            "title": "Supporting References",
-            "type": "array"
-          },
-          "uncertainty": {
-            "anyOf": [
-              {
-                "maxLength": 4000,
-                "minLength": 1,
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null,
-            "title": "Uncertainty"
-          }
-        },
-        "required": [
-          "origin",
-          "value",
-          "supporting_references"
-        ],
-        "title": "UserDeclaration[list[Annotated[str, StringConstraints]]]",
         "type": "object"
       }
     }
