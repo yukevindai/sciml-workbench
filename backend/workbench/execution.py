@@ -18,6 +18,8 @@ class Work(BaseModel):
     artifacts: dict[str, dict] = Field(default_factory=dict)
     project: dict | None = None
     report: dict | None = None
+    external_import: str | None = None
+    external_project_id: str | None = None
 
 
 class TaskSettings(BaseModel):
@@ -30,14 +32,26 @@ class TaskSettings(BaseModel):
 class TaskResult(BaseModel):
     model_config = ConfigDict(extra="forbid")
     artifact: dict | None = None
+    receipt: dict | None = None
+    external_project_id: str | None = None
     error: str | None = Field(default=None, max_length=1500)
     error_code: ErrorCode | None = None
 
     @model_validator(mode="after")
     def one_outcome(self):
-        if self.artifact is not None:
+        if self.external_project_id is not None and (self.artifact is not None or self.receipt is not None):
+            raise ValueError("Conflicting task outcomes")
+        if self.receipt is not None and self.artifact is None:
+            raise ValueError("Receipt requires an import result")
+        if self.artifact is not None or self.external_project_id is not None:
             if self.error is not None or self.error_code is not None:
                 raise ValueError("Conflicting task outcomes")
         elif not self.error or not self.error_code:
             raise ValueError("Missing task outcome")
         return self
+
+
+class TaskFailure(ValueError):
+    def __init__(self, message, code="WORKER_INTERRUPTED"):
+        super().__init__(message)
+        self.error_code = code

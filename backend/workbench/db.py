@@ -7,6 +7,7 @@ from sqlalchemy import (
     ForeignKeyConstraint,
     Index,
     String,
+    Text,
     UniqueConstraint,
     create_engine,
     event,
@@ -100,6 +101,38 @@ class JobRow(Base):
     )
 
 
+class ExternalProjectRow(Base):
+    __tablename__ = "external_projects"
+    project_id: Mapped[str] = mapped_column(ForeignKey("projects.id"), primary_key=True)
+    external_project_id: Mapped[str] = mapped_column(String(160), unique=True)
+
+
+class ExternalOperationRow(Base):
+    __tablename__ = "external_operations"
+    __table_args__ = (
+        ForeignKeyConstraint(["project_id", "job_id"], ["jobs.project_id", "jobs.id"], name="fk_external_job"),
+        ForeignKeyConstraint(["project_id", "artifact_id"], ["artifacts.project_id", "artifacts.id"], name="fk_external_artifact"),
+        CheckConstraint("state IN ('prepared', 'unknown', 'confirmed')", name="ck_external_state"),
+        CheckConstraint("length(body_sha256) = 64 AND length(request_sha256) = 64", name="ck_external_digest"),
+        CheckConstraint("attempts >= 0", name="ck_external_attempts"),
+        CheckConstraint("(state = 'confirmed' AND receipt IS NOT NULL) OR (state <> 'confirmed' AND receipt IS NULL AND artifact_id IS NULL)", name="ck_external_receipt"),
+        CheckConstraint("state = 'prepared' OR (external_project_id IS NOT NULL AND attempts > 0)", name="ck_external_submitted"),
+    )
+    job_id: Mapped[str] = mapped_column(String(36), primary_key=True)
+    project_id: Mapped[str] = mapped_column(String(36), index=True)
+    connector: Mapped[str] = mapped_column(String(40), default="sciml-workbench")
+    body: Mapped[str] = mapped_column(Text)
+    body_sha256: Mapped[str] = mapped_column(String(64))
+    request_sha256: Mapped[str] = mapped_column(String(64))
+    state: Mapped[str] = mapped_column(String(24), default="prepared")
+    attempts: Mapped[int] = mapped_column(BigInteger, default=0)
+    external_project_id: Mapped[str | None] = mapped_column(String(160), nullable=True)
+    receipt: Mapped[dict | None] = mapped_column(JSON(none_as_null=True), nullable=True)
+    artifact_id: Mapped[str | None] = mapped_column(String(36), nullable=True)
+    created_at: Mapped[object] = mapped_column(DateTime(timezone=True), default=now)
+    submitted_at: Mapped[object | None] = mapped_column(DateTime(timezone=True), nullable=True)
+
+
 class Database:
     def __init__(self, url):
         self.engine = create_engine(url, pool_pre_ping=True)
@@ -130,3 +163,5 @@ def install_metadata_guards(metadata, connection, **kwargs):
     install(connection)
     from .material_guards_v3 import install as install_materials
     install_materials(connection)
+    from .external_guards_v4 import install as install_external
+    install_external(connection)

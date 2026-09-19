@@ -12,19 +12,15 @@ import threading
 import time
 
 from .config import ConfigurationError, load_settings
-from .contracts import Provenance, artifact_adapter, uid
+from .contracts import uid
 from .db import Database, JobRow
-from .execution import MAX_RESULT_BYTES, TaskResult
+from .execution import MAX_RESULT_BYTES, TaskFailure, TaskResult
+from .publication import publish_result
+from .storage import LocalStore
 from .job_metadata import (JobClaim, StaleClaim, claim_is_current, claim_next, database_now,
-                           fail_claim, finish_claim, lock_claim)
+                           fail_claim)
 from .processes import ProcessInterrupted, ProcessTimedOut, run_bounded
-from .services import artifact, ensure_lineage, prepare_execution, safe_error, save
-
-
-class TaskFailure(ValueError):
-    def __init__(self, message, code="WORKER_INTERRUPTED"):
-        super().__init__(message)
-        self.error_code = code
+from .services import prepare_execution, safe_error
 
 
 def claim(db, timeout):
@@ -44,6 +40,9 @@ def prepare_claim(db, claimed):
             deadline = deadline.replace(tzinfo=timezone.utc)
         end = started + (deadline - stamp).total_seconds()
         work = prepare_execution(session, job)
+        if work.kind == "failure":
+            from .external_operations import prepare
+            prepare(session, work)
     return work, end
 
 
@@ -98,39 +97,6 @@ def run_task(settings, work, deadline, stopped):
         return read_result(workspace / "output.json")
 
 
-def publish_result(db, claimed, work, result):
-    from .artifacts import validate_result
-    if result.error is not None:
-        raise TaskFailure(result.error, result.error_code)
-    try:
-        value = artifact_adapter.validate_python(result.artifact)
-    except ValueError:
-        raise TaskFailure("Task returned an invalid artifact.") from None
-    if (value.id, value.project_id, value.kind) != (work.result_id, work.project_id, work.kind):
-        raise TaskFailure("Task result does not match its accepted operation.")
-    with db.session.begin() as session:
-        from .barriers import lock_project
-        lock_project(session, work.project_id)
-        lock_claim(session, claimed)
-        job = session.get(JobRow, claimed.job_id)
-        if (work.job_id, work.project_id, work.kind, work.payload) != (job.id, job.project_id, job.kind, job.payload):
-            raise TaskFailure("Task snapshot does not match its accepted operation.")
-        ensure_lineage(session, work.project_id, work.kind, work.payload)
-        if work.kind == "report":
-            from .reports import read_snapshot
-            if work.report != read_snapshot(job.payload):
-                raise TaskFailure("Task report differs from its accepted capture.", "INTEGRITY_FAILED")
-        validate_result(value, work)
-        save(session, value)
-        save(session, Provenance(project_id=work.project_id, software=value.software, parents=value.parents,
-                                 activity=work.kind, inputs=value.parents, outputs=[value.id],
-                                 parameters=({"request": work.payload["request"], "snapshot_digest": work.payload["snapshot_digest"]}
-                                             if work.kind == "report" else work.payload)))
-        failed = value.kind == "benchmark" and value.status == "failed"
-        finish_claim(session, claimed, state="failed" if failed else "succeeded", result_id=value.id,
-                     error=value.error if failed else None, error_code="VALIDATION_FAILED" if failed else None)
-
-
 def process_job(settings, claimed, *, db=None, stopped=lambda: False):
     if not isinstance(claimed, JobClaim):
         raise TypeError("Scientific execution requires the original JobClaim, not a job ID")
@@ -138,12 +104,16 @@ def process_job(settings, claimed, *, db=None, stopped=lambda: False):
     db = db or Database(settings.database_url)
     try:
         work, deadline = prepare_claim(db, claimed)
-        result = run_task(settings, work, deadline, stopped)
+        if work.kind == "failure":
+            from .external_operations import run_import
+            result = run_import(db, settings, work, deadline, stopped, run_task)
+        else:
+            result = run_task(settings, work, deadline, stopped)
         if stopped():
             raise ProcessInterrupted()
         if time.monotonic() >= deadline:
             raise ProcessTimedOut()
-        publish_result(db, claimed, work, result)
+        publish_result(db, claimed, work, result, store=LocalStore(settings.storage_root), stopped=stopped)
     except StaleClaim:
         fail_claim(db, claimed, error="Claim expired before publication; retry explicitly.", error_code="JOB_TIMED_OUT")
     except ProcessTimedOut:

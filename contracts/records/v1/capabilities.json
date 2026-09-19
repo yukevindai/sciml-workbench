@@ -1,0 +1,159 @@
+{
+  "$defs": {
+    "CapabilityLimits": {
+      "additionalProperties": false,
+      "properties": {
+        "max_upload_bytes": {
+          "exclusiveMinimum": 0,
+          "title": "Max Upload Bytes",
+          "type": "integer"
+        },
+        "max_rows": {
+          "exclusiveMinimum": 0,
+          "title": "Max Rows",
+          "type": "integer"
+        },
+        "job_timeout_seconds": {
+          "exclusiveMinimum": 0,
+          "title": "Job Timeout Seconds",
+          "type": "integer"
+        },
+        "max_page_size": {
+          "const": 100,
+          "default": 100,
+          "title": "Max Page Size",
+          "type": "integer"
+        },
+        "max_detail_bytes": {
+          "const": 33554432,
+          "default": 33554432,
+          "title": "Max Detail Bytes",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "max_upload_bytes",
+        "max_rows",
+        "job_timeout_seconds"
+      ],
+      "title": "CapabilityLimits",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "operations": {
+      "items": {
+        "type": "string"
+      },
+      "maxItems": 20,
+      "title": "Operations",
+      "type": "array"
+    },
+    "benchmark_models": {
+      "items": {
+        "type": "string"
+      },
+      "maxItems": 20,
+      "title": "Benchmark Models",
+      "type": "array"
+    },
+    "split_strategies": {
+      "items": {
+        "type": "string"
+      },
+      "maxItems": 20,
+      "title": "Split Strategies",
+      "type": "array"
+    },
+    "artifact_read_versions": {
+      "additionalProperties": {
+        "items": {
+          "type": "string"
+        },
+        "type": "array"
+      },
+      "title": "Artifact Read Versions",
+      "type": "object"
+    },
+    "artifact_write_versions": {
+      "additionalProperties": {
+        "items": {
+          "type": "string"
+        },
+        "type": "array"
+      },
+      "title": "Artifact Write Versions",
+      "type": "object"
+    },
+    "dependency_pins": {
+      "additionalProperties": {
+        "pattern": "^[a-f0-9]{40}$",
+        "type": "string"
+      },
+      "title": "Dependency Pins",
+      "type": "object"
+    },
+    "limits": {
+      "$ref": "#/$defs/CapabilityLimits"
+    },
+    "agent_reads_available": {
+      "const": false,
+      "default": false,
+      "title": "Agent Reads Available",
+      "type": "boolean"
+    },
+    "evaluation_exposure": {
+      "const": "unavailable_pending_C12",
+      "default": "unavailable_pending_C12",
+      "title": "Evaluation Exposure",
+      "type": "string"
+    },
+    "validation_only_execution": {
+      "const": false,
+      "default": false,
+      "title": "Validation Only Execution",
+      "type": "boolean"
+    },
+    "ocr": {
+      "const": false,
+      "default": false,
+      "title": "Ocr",
+      "type": "boolean"
+    },
+    "failure_search": {
+      "const": "project_scoped_lexical",
+      "default": "project_scoped_lexical",
+      "title": "Failure Search",
+      "type": "string"
+    },
+    "limitations": {
+      "items": {
+        "type": "string"
+      },
+      "maxItems": 20,
+      "title": "Limitations",
+      "type": "array"
+    }
+  },
+  "required": [
+    "operations",
+    "benchmark_models",
+    "split_strategies",
+    "artifact_read_versions",
+    "artifact_write_versions",
+    "dependency_pins",
+    "limits",
+    "limitations"
+  ],
+  "title": "Capabilities",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sciml-workbench.local/contracts/records/v1/capabilities.json"
+}

@@ -1,7 +1,6 @@
 import hmac
 from typing import Literal
-from datetime import datetime, timezone
-from fastapi import Depends, FastAPI, Header, Request
+from fastapi import Depends, FastAPI, Header, Request, Query
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse, Response
 from starlette.concurrency import run_in_threadpool
@@ -21,36 +20,23 @@ from .http_contracts import LegacyJobResponse as JobResponse, ProjectResponse
 from .schema_catalog import add_openapi_contracts
 from .db import ArtifactRow, Database, JobRow, ProjectRow
 from .submission import SubmissionScope, SubmissionService
-from .services import DomainError, artifact, project, upload_csv
+from .services import DomainError, project, upload_csv
 from .storage import LocalStore, StorageError, StorageIntegrityError
 from .http_contracts import IntakeArtifact, IntakeDataset, MaterialResponse
 from .scientific_contracts import SourceDeclarations
 from . import intake
 from .db import MaterialRow
-from .artifacts import ArtifactResolver, artifact_download, material_download
+from .artifacts import ArtifactResolver
+
+from .capabilities import capabilities
+from .projections import ReadScope, ReadService, safe_job_fields
+from .read_contracts import Capabilities, JobDetail, JobPage, ArtifactPage
 
 
 def job_json(j):
-    value = {
-        k: getattr(j, k)
-        for k in (
-            "id",
-            "project_id",
-            "kind",
-            "state",
-            "result_id",
-            "error",
-            "created_at",
-            "started_at",
-            "finished_at",
-        )
-    }
-    # These columns are written in UTC; SQLite drops their timezone on read.
-    for key in ("created_at", "started_at", "finished_at"):
-        stamp = value[key]
-        if isinstance(stamp, datetime) and stamp.tzinfo is None:
-            value[key] = stamp.replace(tzinfo=timezone.utc)
-    return value
+    safe = safe_job_fields(j)
+    return {field: safe[field] for field in JobResponse.model_fields}
+
 
 
 def create_app(settings=None):
@@ -69,6 +55,8 @@ def create_app(settings=None):
     app.state.db, app.state.store = db, store
     submissions = SubmissionService(db, store, settings)
     app.state.submissions = submissions
+    reads = ReadService(settings.api_token.get_secret_value())
+    app.state.reads = reads
 
     original_openapi = app.openapi
 
@@ -164,6 +152,24 @@ def create_app(settings=None):
     def schema():
         return app.openapi()
 
+    @app.get("/api/v1/capabilities", dependencies=protected, response_model=Capabilities)
+    def get_capabilities():
+        return capabilities(settings)
+
+    @app.get("/api/v1/projects/{pid}/artifact-index", dependencies=protected, response_model=ArtifactPage)
+    def artifact_index(pid: str, after: str | None = Query(default=None, max_length=2048),
+                       limit: int = Query(default=50, ge=1, le=100), kind: str | None = Query(default=None, max_length=40), s=Depends(session)):
+        return reads.artifact_index(s, ReadScope(pid), after=after, limit=limit, kind=kind)
+
+    @app.get("/api/v1/projects/{pid}/job-index", dependencies=protected, response_model=JobPage)
+    def job_index(pid: str, after: str | None = Query(default=None, max_length=2048),
+                  limit: int = Query(default=50, ge=1, le=100), kind: str | None = Query(default=None, max_length=40), s=Depends(session)):
+        return reads.job_index(s, ReadScope(pid), after=after, limit=limit, kind=kind)
+
+    @app.get("/api/v1/projects/{pid}/jobs/{jid}", dependencies=protected, response_model=JobDetail)
+    def get_job(pid: str, jid: str, s=Depends(session)):
+        return reads.job(s, ReadScope(pid), jid)
+
     @app.get("/api/v1/projects", dependencies=protected, response_model=list[ProjectResponse])
     def projects(s=Depends(session)):
         return [
@@ -195,7 +201,7 @@ def create_app(settings=None):
 
     @app.get("/api/v1/projects/{pid}/artifacts/{aid}", dependencies=protected, response_model=IntakeArtifact)
     def get_artifact(pid: str, aid: str, s=Depends(session)):
-        return artifact(s, pid, aid)
+        return reads.artifact(s, ReadScope(pid), aid)
 
     @app.post(
         "/api/v1/projects/{pid}/datasets", dependencies=protected, status_code=201, response_model=IntakeDataset
@@ -243,7 +249,7 @@ def create_app(settings=None):
 
     @app.get("/api/v1/projects/{pid}/research-materials/{mid}/download", dependencies=protected)
     def download_material(pid: str, mid: str, s=Depends(session)):
-        value = material_download(s, pid, mid)
+        value = reads.download(s, ReadScope(pid), mid, material=True)
         return Response(store.get(value.key), media_type=value.media_type,
                         headers={"Content-Disposition": f'attachment; filename="{value.filename}"'})
 
@@ -320,7 +326,7 @@ def create_app(settings=None):
 
     @app.get("/api/v1/projects/{pid}/artifacts/{aid}/download", dependencies=protected)
     def download(pid: str, aid: str, representation: Literal["default", "original", "bundle"] = "default", s=Depends(session)):
-        value = artifact_download(s, pid, aid, representation)
+        value = reads.download(s, ReadScope(pid), aid, representation=representation)
         return Response(
             store.get(value.key),
             media_type=value.media_type,

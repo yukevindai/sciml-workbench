@@ -10,7 +10,7 @@ The digest uses workbench request-identity version 1 with kind `failure_import`,
 
 The returned record is a snapshot. Independent upstream edits do not rewrite saved workbench artifacts. Replaying an original import after a native edit resolves the same ID but returns its current upstream snapshot, while the original request digest stays unchanged. A receipt does not mean that upstream content can never change.
 
-Import/provisioning calls retain the existing single-host shared file lock and run outside workbench database transactions. Exact replay does not solve a lost-response/commit gap by itself: B07/D04 still own durable operation journaling, binding and reconciliation. This ticket does not switch outcomes to Failure 2.0 or implement C07 actor/criterion semantics.
+Import/provisioning calls retain the existing single-host shared file lock and run outside workbench database transactions. The [B07 journal](external-operations.md) now wraps worker imports with durable identity, destination binding, receipt persistence and trusted reconciliation. D04 still owns automatic recovery policy and recovery publication. This ticket does not switch outcomes to Failure 2.0 or implement C07 actor/criterion semantics.
 
 ## Scoped live search
 
@@ -26,7 +26,7 @@ The public API supports lexical terms, outcome status, archived state, and a lim
 
 The existing remote convention is the `SciML Workbench` lab and a project name ending in ` [<workbench-project-id>]`. Resolution now uses the stable suffix within that lab, rather than the mutable workbench display name. Workbench renames therefore preserve the destination. Identical display names in different workbench projects remain separate. Multiple matching labs/projects fail explicitly; the adapter never arbitrarily picks one.
 
-This convention is not a durable external-ID registry. If an operator independently renames the remote lab or removes the project-ID suffix, automatic resolution cannot recover that mapping: search reports no mapping, and import may provision a new destination. Preserve those markers until B07/D04 provide durable binding/reconciliation. Native record creation, edits, archives, reads and searches remain supported and are exercised in C06 tests; no native routes or permissions were changed.
+This convention is not a durable external-ID registry. If an operator independently renames the remote lab or removes the project-ID suffix, automatic resolution cannot recover that mapping: search reports no mapping, and import may provision a new destination. B07 worker imports persist a destination binding before submission and reuse that ID on subsequent jobs/reconciliation. The standalone adapter and live search still resolve names; preserve those markers for these callers. Native record creation, edits, archives, reads and searches remain supported and are exercised in C06 tests; no native routes or permissions were changed.
 
 Each session uses public login, cookies, `X-EFM-Request` and CSRF headers and checks logout. Logout is attempted after body errors without replacing the primary import/search error. A failed logout after an otherwise successful operation still raises; callers must reconcile/replay rather than assume an unreturned receipt exists. Receipts/search results contain no login token, CSRF token or configured credentials.
 

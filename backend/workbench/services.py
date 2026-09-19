@@ -278,26 +278,10 @@ def execute(store, settings, work):
         )
     elif work.kind == "failure":
         run = inputs[p["benchmark_id"]]
-        record = {
-            "title": f"Unsuccessful {run.model} benchmark",
-            "performed_at": run.created_at.isoformat(),
-            "status": "failed",
-            "summary": p["reason"],
-            "outcomes": run.error or json.dumps(run.result.get("metrics", {})),
-            "uncertainty_notes": p["uncertainty_notes"],
-            "tags": ["computational-run", "sciml-workbench"],
-            "procedure": [
-                f"Run {run.model} with seed {run.seed}",
-                f"Dataset {run.dataset_id}; split {run.split_id}",
-            ],
-            "source": {
-                "kind": "file",
-                "reference": f"workbench:{pid}/artifacts/{run.id}",
-                "notes": "Computational run; unsuccessful is a researcher assessment, not a physical experiment.",
-            },
-        }
-        receipt = adapters.FailureMemory(settings).save(
-            SimpleNamespace(**work.project), work.job_id, record
+        if work.external_import is None or work.external_project_id is None:
+            raise ValueError("Failure import requires a durable journal and destination")
+        receipt = adapters.FailureMemory(settings).import_exact(
+            work.project_id, work.external_project_id, work.external_import
         )
         value = Failure(
             **common,
@@ -316,7 +300,7 @@ def execute(store, settings, work):
         )
     else:
         raise DomainError("Unsupported job kind")
-    return value
+    return (value, receipt) if work.kind == "failure" else value
 
 
 def safe_error(exc, settings):
@@ -338,3 +322,27 @@ def httpx_error_types():
     import httpx
 
     return httpx.HTTPError
+
+
+def failure_record(work):
+    run = read_artifact(work.artifacts[work.payload["benchmark_id"]])
+    pid, p = work.project_id, work.payload
+    record = {
+        "title": f"Unsuccessful {run.model} benchmark",
+        "performed_at": run.created_at.isoformat(),
+        "status": "failed",
+        "summary": p["reason"],
+        "outcomes": run.error or json.dumps(run.result.get("metrics", {})),
+        "uncertainty_notes": p["uncertainty_notes"],
+        "tags": ["computational-run", "sciml-workbench"],
+        "procedure": [
+            f"Run {run.model} with seed {run.seed}",
+            f"Dataset {run.dataset_id}; split {run.split_id}",
+        ],
+        "source": {
+            "kind": "file",
+            "reference": f"workbench:{pid}/artifacts/{run.id}",
+            "notes": "Computational run; unsuccessful is a researcher assessment, not a physical experiment.",
+        },
+    }
+    return record

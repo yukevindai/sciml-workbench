@@ -123,7 +123,7 @@ def test_worker_rejects_changed_capture_and_corrupt_digest(runtime):
     work.report["project"]["name"] = "Changed detached work"
     value = execute(LocalStore(settings.storage_root), settings, work)
     with pytest.raises(ValueError, match="differs from its accepted capture"):
-        publish_result(db, claimed, work, TaskResult(artifact=value.model_dump(mode="json")))
+        publish_result(db, claimed, work, TaskResult(artifact=value.model_dump(mode="json")), store=LocalStore(settings.storage_root))
     with db.session() as s:
         assert s.get(JobRow, accepted.id).state == "running"
         assert s.get(ArtifactRow, value.id) is None
@@ -145,7 +145,7 @@ def test_repeated_exports_do_not_embed_prior_report_or_capture_payload(runtime):
     claimed = claim_next(db, 60, "worker")
     work, _ = prepare_claim(db, claimed)
     result = execute(LocalStore(settings.storage_root), settings, work)
-    publish_result(db, claimed, work, TaskResult(artifact=result.model_dump(mode="json")))
+    publish_result(db, claimed, work, TaskResult(artifact=result.model_dump(mode="json")), store=LocalStore(settings.storage_root))
     second = submit(runtime, key="next")
     assert second.payload["snapshot"]["artifacts"] == first.payload["snapshot"]["artifacts"]
     with db.session() as s:

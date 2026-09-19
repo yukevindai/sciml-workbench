@@ -7,7 +7,9 @@ B02 adds database invariants and claim/publication primitives while retaining th
 1. Take the coordinated database/storage backup described in the [operations guide](operations.md).
 2. Stop API submission and all scientific workers, including their child processes. Revision 0002 requires a maintenance window; it is not a rolling upgrade alongside old writers.
 3. Deploy the matching application code and run `alembic -c backend/alembic.ini upgrade head` from the repository root with the existing backend configuration. On Windows, use `.venv\Scripts\python.exe -m alembic -c backend/alembic.ini upgrade head`.
-4. Verify `alembic -c backend/alembic.ini current` reports `0003`, inspect interrupted attempts, then restart the services. A retry is an explicitly authorized new job with a new request key, not a mutation or automatic replay of the old attempt.
+4. Verify `alembic -c backend/alembic.ini current` reports `0004`, inspect interrupted attempts, then restart the services. A retry is an explicitly authorized new job with a new request key, not a mutation or automatic replay of the old attempt.
+
+Revision 0004 adds `external_operations` and `external_projects` for the [B07 journal](external-operations.md). It preserves existing records, freezes import identities/destinations, and protects confirmed receipts and artifact links. Downgrade refuses to discard populated journals or bindings. Apply it before starting the new workers; no historical external outcome is inferred or backfilled.
 
 Revision 0003 adds `research_materials` for [B03 attachment intake](intake.md). It does not rewrite existing records. Bindings have project-scoped request-key uniqueness and dataset foreign keys, byte-digest/type constraints, and database update/delete guards. Apply it before running the new API or report worker. Downgrade to 0002 is permitted only when the material table is empty; populated bindings require a coordinated backup restore or forward migration.
 
@@ -51,7 +53,7 @@ The runtime encoder and revision-0002 backfill algorithm have the same fixed ide
 
 Deadlines are fixed when work is claimed. Queue time does not consume the allowance, changing the configured timeout does not extend an existing attempt, and a new authorized attempt gets its own deadline. Expired claims are terminalized using their saved deadline; they are never silently reclaimed for another execution.
 
-The existing worker now records and carries these claims and uses guarded publication/error updates. Its scientific `execute()` call still holds a database transaction, and the child still performs publication. D03/B08 must complete the immutable-input, transaction-free computation, parent-authorized publication, and monotonic process-wait refactor. B02 does not claim those later acceptance gates, receipt reconciliation, or cancellation ownership are finished.
+The D03 worker carries these claims through transaction-free subprocess execution. The [B08 publication service](publication.md) verifies output bytes outside metadata transactions, then atomically publishes under project-before-job locks and final claim/deadline checks. Its trusted cancellation primitive uses the existing terminal-state and token guards; B08 adds no migration. B11/D12 retain run ownership and control generations.
 
 ## Reproducing acceptance checks
 

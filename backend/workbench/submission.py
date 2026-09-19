@@ -213,6 +213,10 @@ class SubmissionService:
                 raise DomainError("Retry must preserve the original operation and payload", 422, "LINEAGE_MISMATCH")
             if old.state != "failed":
                 raise DomainError("Only a failed terminal job can be retried", 422, "VALIDATION_FAILED")
+            if kind == "failure":
+                from .db import ExternalOperationRow
+                if session.get(ExternalOperationRow, old.id) is not None:
+                    raise DomainError("Reconcile the original external operation before making a new assessment", 409)
         if kind == "benchmark":
             from .adapters import benchmark_source
             data = artifact(session, scope.project_id, payload["dataset_id"], "dataset")

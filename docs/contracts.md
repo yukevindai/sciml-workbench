@@ -83,3 +83,8 @@ The manual routes now declare response models. Project/artifact/job shapes remai
 Errors preserve the original string `error` and validation `details` array. They add stable `error_code` and a server-generated `request_id`; normal API responses also include `X-Request-ID`. Codes cover authorization, lookup, validation, lineage, idempotency, runtime, integrity, and future agent failures. The error schema publishes the vocabulary; a future code does not imply its service exists. Validation errors omit input values; unexpected failures use a fixed safe message. Diagnostic IDs are correlation references, not credentials.
 
 Future run/control contracts contain expected revisions, not writable checkpoints, leases, or arbitrary tool permissions. Tool arguments/results remain bounded by the eventual typed E03 dispatcher; their transport envelopes are not permission to execute arbitrary JSON. E01 owns policy semantics/defaults, E05 owns atomic accounting, B12 owns route/state transitions, and E14 owns exposure/redaction. B01 schemas provide shared shapes for those services.
+
+
+## B09 additive read projections
+
+Capabilities, artifact/job index pages, job detail and external-receipt projections are defined in `read_contracts.py` and exported through the common catalog. See the [read contract](read-projections.md) for cursor semantics, safe operational fields and the explicit C12 agent gate. Existing artifact records and legacy array shapes are unchanged; raw worker errors now use a fixed safe public message.

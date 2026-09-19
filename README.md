@@ -114,6 +114,9 @@ Replay validates every archived file against the manifest, regenerates audit and
 - [ChemE baseline admission and complete run bundles (C04)](docs/benchmark-integration.md)
 - [PDF ingestion, source bundles and text availability (C05)](docs/evidence-ingestion.md)
 - [Failure Memory receipts and scoped live search (C06)](docs/failure-memory-integration.md)
+- [Durable external operation journal and reconciliation (B07)](docs/external-operations.md)
+- [Fenced result publication and cancellation barrier (B08)](docs/publication.md)
+- [Capabilities, bounded reads and receipt projections (B09)](docs/read-projections.md)
 - [Operations, backups and troubleshooting](docs/operations.md)
 - [Versioned JSON Schemas](contracts/v1/)
 

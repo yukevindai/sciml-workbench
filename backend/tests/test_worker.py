@@ -279,14 +279,15 @@ def test_publication_rollback_keeps_no_result_or_provenance(runtime, monkeypatch
     db, settings, _ = runtime
     job_id = queue(runtime)
     claimed = claim_next(db, 30, "worker")
-    original = worker.finish_claim
+    from workbench import publication
+    original = publication.finish_claim
 
     def reject_after_flush(*args, **kwargs):
         original(*args, **kwargs)
         raise ValueError("Injected publication rollback")
 
     monkeypatch.setattr(worker, "run_task", lambda settings, work, *args: result_for(work))
-    monkeypatch.setattr(worker, "finish_claim", reject_after_flush)
+    monkeypatch.setattr(publication, "finish_claim", reject_after_flush)
     worker.process_job(settings, claimed, db=db)
     row, audits = outcome(db, job_id)
     assert row.state == "failed" and row.result_id is None and audits == 0

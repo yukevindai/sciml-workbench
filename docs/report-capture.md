@@ -50,4 +50,4 @@ Preparation verifies the snapshot digest and detaches the stored capture. Public
 
 Already accepted pre-B06 report jobs with payload `{}` retain their identity on replay. They cannot reconstruct their historical request-time state: execution fails with `INTEGRITY_FAILED` rather than exporting newer data. Submit a new report key for a new capture after the legacy job settles. Completed legacy report downloads are unchanged. No old rows are rewritten.
 
-No migration, environment variable, dependency or HTTP schema change is required. B08 owns broader publication fencing; C08/C09 own additional scientific archive validation/replay; B11/E03 own persisted run authorization and agent integration. No automatic retries, agent runtime or deployment are enabled here.
+No migration, environment variable, dependency or HTTP schema change is required. [B08](publication.md) supplies shared publication fencing and output-byte verification; C08/C09 own additional scientific archive validation/replay; B11/E03 own persisted run authorization and agent integration. No automatic retries, agent runtime or deployment are enabled here.

@@ -3,6 +3,7 @@ import asyncio
 from contextlib import asynccontextmanager
 from copy import deepcopy
 import os
+import json
 from typing import Literal
 
 import httpx
@@ -102,6 +103,9 @@ class FailureMemory:
                                   external_project_id=remote["id"], external_record_id=snapshot["id"], record=snapshot)
 
     def save(self, project, external_id, record) -> FailureReceipt:
+        return self._locked(self._save_async, project, external_id, record)
+
+    def _locked(self, operation, *args):
         # Serialize provisioning/import in the supported single-host topology.
         with (self.settings.storage_root / ".failure-memory.lock").open("a+b") as lock:
             if os.name == "posix":
@@ -114,7 +118,31 @@ class FailureMemory:
                     lock.flush()
                 lock.seek(0)
                 msvcrt.locking(lock.fileno(), msvcrt.LK_LOCK, 1)
-            return asyncio.run(self._save_async(project, external_id, record))
+            return asyncio.run(operation(*args))
+
+    async def _resolve(self, project):
+        async with self.session() as client:
+            return (await self.remote_project(client, project, create=True))["id"]
+
+    def resolve(self, project):
+        return self._locked(self._resolve, project)
+
+    async def _import_exact(self, project_id, remote_id, body):
+        payload = json.loads(body)
+        digest = request_digest("failure_import", {"project_id": project_id, "import": payload})
+        async with self.session() as client:
+            response = await client.post(f"/api/projects/{remote_id}/import", content=body.encode("utf-8"),
+                                         headers={"Content-Type": "application/json"})
+            response.raise_for_status()
+            snapshot = response.json()["record"]
+            if snapshot["project_id"] != remote_id:
+                raise ValueError("Failure Memory returned a record outside the selected project")
+            return FailureReceipt(external_id=payload["external_id"], request_sha256=digest,
+                                  external_project_id=remote_id, external_record_id=snapshot["id"], record=snapshot)
+
+    def import_exact(self, project_id, remote_id, body):
+        """Trusted journal caller supplies the persisted destination and exact body."""
+        return self._locked(self._import_exact, project_id, remote_id, body)
 
     async def search_async(self, project, query="", *, status=None, archived=False, limit=50) -> FailureSearchResult:
         # Validate before authentication or any possible upstream IO.

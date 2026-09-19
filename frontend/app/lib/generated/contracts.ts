@@ -37,6 +37,12 @@ export type WorkbenchContract =
   | ProjectResponse
   | JobResponse
   | MaterialResponse
+  | Capabilities
+  | ExternalReceiptProjection
+  | JobDetail
+  | JobPage
+  | ArtifactSummary
+  | ArtifactPage
   | LegacyArtifact
   | VersionedArtifact
   | ProjectsResponse
@@ -970,6 +976,105 @@ export type Filename2 = string;
 export type MediaType = 'text/csv' | 'application/pdf';
 export type Sha2566 = string;
 export type DatasetId4 = string | null;
+export type SchemaVersion25 = '1.0';
+/**
+ * @maxItems 20
+ */
+export type Operations = string[];
+/**
+ * @maxItems 20
+ */
+export type BenchmarkModels = string[];
+/**
+ * @maxItems 20
+ */
+export type SplitStrategies = string[];
+export type MaxUploadBytes = number;
+export type MaxRows = number;
+export type JobTimeoutSeconds = number;
+export type MaxPageSize = 100;
+export type MaxDetailBytes = 33554432;
+export type AgentReadsAvailable = false;
+export type EvaluationExposure = 'unavailable_pending_C12';
+export type ValidationOnlyExecution = false;
+export type Ocr = false;
+export type FailureSearch = 'project_scoped_lexical';
+/**
+ * @maxItems 20
+ */
+export type Limitations1 = string[];
+export type ExternalId1 = string;
+export type Connector1 = 'sciml-workbench';
+export type State7 = 'prepared' | 'unknown' | 'confirmed';
+export type RequestSha2563 = string;
+export type BodySha256 = string;
+export type Attempts = number;
+export type SubmittedAt = string | null;
+export type ExternalProjectId2 = string | null;
+export type ExternalRecordId2 = string | null;
+export type ArtifactId1 = string | null;
+export type ReconciliationRequired = boolean;
+export type Id28 = string;
+export type ProjectId19 = string;
+export type Kind21 =
+  'audit' | 'split' | 'benchmark' | 'evidence' | 'failure' | 'report' | 'report_verify' | 'scientific_replay';
+export type State8 = 'queued' | 'running' | 'succeeded' | 'failed';
+export type ResultId1 = string | null;
+export type Error4 = string | null;
+export type CreatedAt19 = string;
+export type StartedAt1 = string | null;
+export type FinishedAt2 = string | null;
+export type ErrorCode5 =
+  | (
+      | 'UNAUTHORIZED'
+      | 'ORIGIN_REJECTED'
+      | 'PROJECT_NOT_FOUND'
+      | 'ARTIFACT_NOT_FOUND'
+      | 'JOB_NOT_FOUND'
+      | 'IDEMPOTENCY_CONFLICT'
+      | 'PROJECT_BUSY'
+      | 'VALIDATION_FAILED'
+      | 'LINEAGE_MISMATCH'
+      | 'UPLOAD_TOO_LARGE'
+      | 'STORAGE_UNAVAILABLE'
+      | 'DEPENDENCY_UNAVAILABLE'
+      | 'INTERNAL_ERROR'
+      | 'ADMISSION_REJECTED'
+      | 'JOB_TIMED_OUT'
+      | 'WORKER_INTERRUPTED'
+      | 'INTEGRITY_FAILED'
+      | 'EXTERNAL_OUTCOME_UNKNOWN'
+      | 'AGENT_UNAVAILABLE'
+      | 'POLICY_DENIED'
+      | 'DATA_EXPOSURE_DENIED'
+      | 'RUN_REVISION_CHANGED'
+      | 'QUESTION_STALE'
+      | 'BUDGET_EXHAUSTED'
+      | 'PROVIDER_UNAVAILABLE'
+      | 'TOOL_SCHEMA_INVALID'
+      | 'UNSUPPORTED_CAPABILITY'
+      | 'REFERENCE_INVALID'
+      | 'TEST_PROTOCOL_SEALED'
+      | 'RUN_CANCELLED'
+    )
+  | null;
+export type RetryOfJobId1 = string | null;
+export type DeadlineAt2 = string | null;
+/**
+ * @maxItems 100
+ */
+export type Items = JobDetail[];
+export type NextCursor = string | null;
+export type Id29 = string;
+export type ProjectId20 = string;
+export type Kind22 = string;
+export type SchemaVersion26 = string;
+export type CreatedAt20 = string;
+/**
+ * @maxItems 100
+ */
+export type Items1 = ArtifactSummary[];
+export type NextCursor1 = string | null;
 export type LegacyArtifact = Dataset | Audit | Split | Benchmark | Evidence | Failure | Provenance | Report;
 export type VersionedArtifact =
   | (Dataset | DatasetV2)
@@ -984,15 +1089,15 @@ export type VersionedArtifact =
   | EvaluationProtocol
   | AgentExecutionRecord;
 export type ProjectsResponse = ProjectResponse[];
-export type Id28 = string;
-export type ProjectId19 = string;
-export type Kind21 = 'audit' | 'split' | 'benchmark' | 'evidence' | 'failure' | 'report';
-export type State7 = 'queued' | 'running' | 'succeeded' | 'failed';
-export type ResultId1 = string | null;
-export type Error4 = string | null;
-export type CreatedAt19 = string;
-export type StartedAt1 = string | null;
-export type FinishedAt2 = string | null;
+export type Id30 = string;
+export type ProjectId21 = string;
+export type Kind23 = 'audit' | 'split' | 'benchmark' | 'evidence' | 'failure' | 'report';
+export type State9 = 'queued' | 'running' | 'succeeded' | 'failed';
+export type ResultId2 = string | null;
+export type Error5 = string | null;
+export type CreatedAt21 = string;
+export type StartedAt2 = string | null;
+export type FinishedAt3 = string | null;
 export type JobsResponse = LegacyJobResponse[];
 export type ArtifactsResponse = (
   (Dataset | DatasetV2) | Audit | Split | Benchmark | Evidence | Failure | Provenance | Report
@@ -1024,7 +1129,7 @@ export type Generalization = string;
 /**
  * @minItems 1
  */
-export type Limitations1 = string[];
+export type Limitations2 = string[];
 export type Domain =
   | 'batteries'
   | 'electrolytes'
@@ -1943,16 +2048,91 @@ export interface MaterialResponse {
   sha256: Sha2566;
   dataset_id: DatasetId4;
 }
-export interface LegacyJobResponse {
+export interface Capabilities {
+  schema_version?: SchemaVersion25;
+  operations: Operations;
+  benchmark_models: BenchmarkModels;
+  split_strategies: SplitStrategies;
+  artifact_read_versions: ArtifactReadVersions;
+  artifact_write_versions: ArtifactWriteVersions;
+  dependency_pins: DependencyPins;
+  limits: CapabilityLimits;
+  agent_reads_available?: AgentReadsAvailable;
+  evaluation_exposure?: EvaluationExposure;
+  validation_only_execution?: ValidationOnlyExecution;
+  ocr?: Ocr;
+  failure_search?: FailureSearch;
+  limitations: Limitations1;
+}
+export interface ArtifactReadVersions {
+  [k: string]: string[];
+}
+export interface ArtifactWriteVersions {
+  [k: string]: string[];
+}
+export interface DependencyPins {
+  [k: string]: string;
+}
+export interface CapabilityLimits {
+  max_upload_bytes: MaxUploadBytes;
+  max_rows: MaxRows;
+  job_timeout_seconds: JobTimeoutSeconds;
+  max_page_size?: MaxPageSize;
+  max_detail_bytes?: MaxDetailBytes;
+}
+export interface ExternalReceiptProjection {
+  external_id: ExternalId1;
+  connector: Connector1;
+  state: State7;
+  request_sha256: RequestSha2563;
+  body_sha256: BodySha256;
+  attempts: Attempts;
+  submitted_at: SubmittedAt;
+  external_project_id: ExternalProjectId2;
+  external_record_id: ExternalRecordId2;
+  artifact_id: ArtifactId1;
+  reconciliation_required: ReconciliationRequired;
+}
+export interface JobDetail {
   id: Id28;
   project_id: ProjectId19;
   kind: Kind21;
-  state: State7;
+  state: State8;
   result_id: ResultId1;
   error: Error4;
   created_at: CreatedAt19;
   started_at: StartedAt1;
   finished_at: FinishedAt2;
+  error_code?: ErrorCode5;
+  retry_of_job_id?: RetryOfJobId1;
+  deadline_at?: DeadlineAt2;
+  external_receipt?: ExternalReceiptProjection | null;
+}
+export interface JobPage {
+  items: Items;
+  next_cursor?: NextCursor;
+}
+export interface ArtifactSummary {
+  id: Id29;
+  project_id: ProjectId20;
+  kind: Kind22;
+  schema_version: SchemaVersion26;
+  created_at: CreatedAt20;
+}
+export interface ArtifactPage {
+  items: Items1;
+  next_cursor?: NextCursor1;
+}
+export interface LegacyJobResponse {
+  id: Id30;
+  project_id: ProjectId21;
+  kind: Kind23;
+  state: State9;
+  result_id: ResultId2;
+  error: Error5;
+  created_at: CreatedAt21;
+  started_at: StartedAt2;
+  finished_at: FinishedAt3;
 }
 export interface ProjectInput {
   name: Name4;
@@ -1986,7 +2166,7 @@ export interface BenchmarkInput {
   independence_status: IndependenceStatus;
   independence_rationale: IndependenceRationale;
   generalization: Generalization;
-  limitations: Limitations1;
+  limitations: Limitations2;
   domain?: Domain;
   accepted_warnings?: AcceptedWarnings;
   model?: Model4;

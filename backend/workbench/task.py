@@ -18,8 +18,18 @@ def compute(directory):
     work = Work.model_validate(request["work"])
     settings = TaskSettings.model_validate(request["settings"])
     try:
-        value = execute(LocalStore(settings.storage_root), settings, work)
-        result = TaskResult(artifact=value.model_dump(mode="json"))
+        if work.kind == "failure" and work.external_project_id is None:
+            from .failure_memory import FailureMemory
+            from types import SimpleNamespace
+            remote_id = FailureMemory(settings).resolve(SimpleNamespace(**work.project))
+            result = TaskResult(external_project_id=remote_id)
+        else:
+            value = execute(LocalStore(settings.storage_root), settings, work)
+            receipt = None
+            if work.kind == "failure":
+                value, receipt = value
+            result = TaskResult(artifact=value.model_dump(mode="json"),
+                                receipt=receipt.model_dump(mode="json") if receipt else None)
     except Exception as exc:
         result = TaskResult(error=safe_error(exc, settings), error_code=getattr(exc, "error_code", "INTERNAL_ERROR"))
     raw = result.model_dump_json().encode()

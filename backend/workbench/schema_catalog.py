@@ -9,6 +9,8 @@ from .contract_core import ErrorResponse
 from .contract_registry import LEGACY_MODELS, NEW_ARTIFACT_MODELS, VersionedArtifact
 from .http_contracts import JobResponse, LegacyJobResponse, ProjectResponse, IntakeArtifact, MaterialResponse
 
+from .read_contracts import Capabilities, ExternalReceiptProjection, JobDetail, JobPage, ArtifactPage, ArtifactSummary
+
 BASE_URI = "https://sciml-workbench.local/contracts"
 RECORD_TYPES = {
     "evidence_reference": s.EvidenceReference,
@@ -34,6 +36,12 @@ RECORD_TYPES = {
     "project_response": ProjectResponse,
     "job_response": JobResponse,
     "material_response": MaterialResponse,
+    "capabilities": Capabilities,
+    "external_receipt_projection": ExternalReceiptProjection,
+    "job_detail": JobDetail,
+    "job_page": JobPage,
+    "artifact_summary": ArtifactSummary,
+    "artifact_page": ArtifactPage,
 }
 CATALOG_TYPES = {
     **{m.__name__: m for m in (*LEGACY_MODELS, *NEW_ARTIFACT_MODELS)},
@@ -59,6 +67,10 @@ HTTP_RESPONSE_TYPES = {
     "ArtifactsResponse": list[IntakeArtifact],
     "IntakeArtifact": IntakeArtifact,
     "MaterialResponse": MaterialResponse,
+    "Capabilities": Capabilities,
+    "JobDetail": JobDetail,
+    "JobPage": JobPage,
+    "ArtifactPage": ArtifactPage,
 }
 
 

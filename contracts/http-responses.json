@@ -1,5 +1,78 @@
 {
   "$defs": {
+    "ArtifactPage": {
+      "additionalProperties": false,
+      "properties": {
+        "items": {
+          "items": {
+            "$ref": "#/$defs/ArtifactSummary"
+          },
+          "maxItems": 100,
+          "title": "Items",
+          "type": "array"
+        },
+        "next_cursor": {
+          "anyOf": [
+            {
+              "maxLength": 2048,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Next Cursor"
+        }
+      },
+      "required": [
+        "items",
+        "next_cursor"
+      ],
+      "title": "ArtifactPage",
+      "type": "object"
+    },
+    "ArtifactSummary": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "project_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Project Id",
+          "type": "string"
+        },
+        "kind": {
+          "maxLength": 40,
+          "title": "Kind",
+          "type": "string"
+        },
+        "schema_version": {
+          "maxLength": 16,
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "project_id",
+        "kind",
+        "schema_version",
+        "created_at"
+      ],
+      "title": "ArtifactSummary",
+      "type": "object"
+    },
     "Audit": {
       "additionalProperties": false,
       "properties": {
@@ -196,6 +269,169 @@
         "config"
       ],
       "title": "Benchmark",
+      "type": "object"
+    },
+    "Capabilities": {
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "1.0",
+          "default": "1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "operations": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 20,
+          "title": "Operations",
+          "type": "array"
+        },
+        "benchmark_models": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 20,
+          "title": "Benchmark Models",
+          "type": "array"
+        },
+        "split_strategies": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 20,
+          "title": "Split Strategies",
+          "type": "array"
+        },
+        "artifact_read_versions": {
+          "additionalProperties": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "title": "Artifact Read Versions",
+          "type": "object"
+        },
+        "artifact_write_versions": {
+          "additionalProperties": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "title": "Artifact Write Versions",
+          "type": "object"
+        },
+        "dependency_pins": {
+          "additionalProperties": {
+            "pattern": "^[a-f0-9]{40}$",
+            "type": "string"
+          },
+          "title": "Dependency Pins",
+          "type": "object"
+        },
+        "limits": {
+          "$ref": "#/$defs/CapabilityLimits"
+        },
+        "agent_reads_available": {
+          "const": false,
+          "default": false,
+          "title": "Agent Reads Available",
+          "type": "boolean"
+        },
+        "evaluation_exposure": {
+          "const": "unavailable_pending_C12",
+          "default": "unavailable_pending_C12",
+          "title": "Evaluation Exposure",
+          "type": "string"
+        },
+        "validation_only_execution": {
+          "const": false,
+          "default": false,
+          "title": "Validation Only Execution",
+          "type": "boolean"
+        },
+        "ocr": {
+          "const": false,
+          "default": false,
+          "title": "Ocr",
+          "type": "boolean"
+        },
+        "failure_search": {
+          "const": "project_scoped_lexical",
+          "default": "project_scoped_lexical",
+          "title": "Failure Search",
+          "type": "string"
+        },
+        "limitations": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 20,
+          "title": "Limitations",
+          "type": "array"
+        }
+      },
+      "required": [
+        "schema_version",
+        "operations",
+        "benchmark_models",
+        "split_strategies",
+        "artifact_read_versions",
+        "artifact_write_versions",
+        "dependency_pins",
+        "limits",
+        "agent_reads_available",
+        "evaluation_exposure",
+        "validation_only_execution",
+        "ocr",
+        "failure_search",
+        "limitations"
+      ],
+      "title": "Capabilities",
+      "type": "object"
+    },
+    "CapabilityLimits": {
+      "additionalProperties": false,
+      "properties": {
+        "max_upload_bytes": {
+          "exclusiveMinimum": 0,
+          "title": "Max Upload Bytes",
+          "type": "integer"
+        },
+        "max_rows": {
+          "exclusiveMinimum": 0,
+          "title": "Max Rows",
+          "type": "integer"
+        },
+        "job_timeout_seconds": {
+          "exclusiveMinimum": 0,
+          "title": "Job Timeout Seconds",
+          "type": "integer"
+        },
+        "max_page_size": {
+          "const": 100,
+          "default": 100,
+          "title": "Max Page Size",
+          "type": "integer"
+        },
+        "max_detail_bytes": {
+          "const": 33554432,
+          "default": 33554432,
+          "title": "Max Detail Bytes",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "max_upload_bytes",
+        "max_rows",
+        "job_timeout_seconds",
+        "max_page_size",
+        "max_detail_bytes"
+      ],
+      "title": "CapabilityLimits",
       "type": "object"
     },
     "Dataset": {
@@ -669,6 +905,116 @@
         "bundle_key"
       ],
       "title": "Evidence",
+      "type": "object"
+    },
+    "ExternalReceiptProjection": {
+      "additionalProperties": false,
+      "properties": {
+        "external_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "External Id",
+          "type": "string"
+        },
+        "connector": {
+          "const": "sciml-workbench",
+          "title": "Connector",
+          "type": "string"
+        },
+        "state": {
+          "enum": [
+            "prepared",
+            "unknown",
+            "confirmed"
+          ],
+          "title": "State",
+          "type": "string"
+        },
+        "request_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Request Sha256",
+          "type": "string"
+        },
+        "body_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Body Sha256",
+          "type": "string"
+        },
+        "attempts": {
+          "minimum": 0,
+          "title": "Attempts",
+          "type": "integer"
+        },
+        "submitted_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Submitted At"
+        },
+        "external_project_id": {
+          "anyOf": [
+            {
+              "maxLength": 160,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "External Project Id"
+        },
+        "external_record_id": {
+          "anyOf": [
+            {
+              "maxLength": 160,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "External Record Id"
+        },
+        "artifact_id": {
+          "anyOf": [
+            {
+              "maxLength": 160,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Artifact Id"
+        },
+        "reconciliation_required": {
+          "title": "Reconciliation Required",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "external_id",
+        "connector",
+        "state",
+        "request_sha256",
+        "body_sha256",
+        "attempts",
+        "submitted_at",
+        "external_project_id",
+        "external_record_id",
+        "artifact_id",
+        "reconciliation_required"
+      ],
+      "title": "ExternalReceiptProjection",
       "type": "object"
     },
     "Failure": {
@@ -1155,6 +1501,231 @@
         "confidence"
       ],
       "title": "InferredDeclaration[list[Annotated[str, StringConstraints]]]",
+      "type": "object"
+    },
+    "JobDetail": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "project_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Project Id",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "audit",
+            "split",
+            "benchmark",
+            "evidence",
+            "failure",
+            "report",
+            "report_verify",
+            "scientific_replay"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "state": {
+          "enum": [
+            "queued",
+            "running",
+            "succeeded",
+            "failed"
+          ],
+          "title": "State",
+          "type": "string"
+        },
+        "result_id": {
+          "anyOf": [
+            {
+              "maxLength": 160,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Result Id"
+        },
+        "error": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Error"
+        },
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        },
+        "started_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Started At"
+        },
+        "finished_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Finished At"
+        },
+        "error_code": {
+          "anyOf": [
+            {
+              "enum": [
+                "UNAUTHORIZED",
+                "ORIGIN_REJECTED",
+                "PROJECT_NOT_FOUND",
+                "ARTIFACT_NOT_FOUND",
+                "JOB_NOT_FOUND",
+                "IDEMPOTENCY_CONFLICT",
+                "PROJECT_BUSY",
+                "VALIDATION_FAILED",
+                "LINEAGE_MISMATCH",
+                "UPLOAD_TOO_LARGE",
+                "STORAGE_UNAVAILABLE",
+                "DEPENDENCY_UNAVAILABLE",
+                "INTERNAL_ERROR",
+                "ADMISSION_REJECTED",
+                "JOB_TIMED_OUT",
+                "WORKER_INTERRUPTED",
+                "INTEGRITY_FAILED",
+                "EXTERNAL_OUTCOME_UNKNOWN",
+                "AGENT_UNAVAILABLE",
+                "POLICY_DENIED",
+                "DATA_EXPOSURE_DENIED",
+                "RUN_REVISION_CHANGED",
+                "QUESTION_STALE",
+                "BUDGET_EXHAUSTED",
+                "PROVIDER_UNAVAILABLE",
+                "TOOL_SCHEMA_INVALID",
+                "UNSUPPORTED_CAPABILITY",
+                "REFERENCE_INVALID",
+                "TEST_PROTOCOL_SEALED",
+                "RUN_CANCELLED"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Error Code"
+        },
+        "retry_of_job_id": {
+          "anyOf": [
+            {
+              "maxLength": 160,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Retry Of Job Id"
+        },
+        "deadline_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Deadline At"
+        },
+        "external_receipt": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ExternalReceiptProjection"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "id",
+        "project_id",
+        "kind",
+        "state",
+        "result_id",
+        "error",
+        "created_at",
+        "started_at",
+        "finished_at",
+        "error_code",
+        "retry_of_job_id",
+        "deadline_at",
+        "external_receipt"
+      ],
+      "title": "JobDetail",
+      "type": "object"
+    },
+    "JobPage": {
+      "additionalProperties": false,
+      "properties": {
+        "items": {
+          "items": {
+            "$ref": "#/$defs/JobDetail"
+          },
+          "maxItems": 100,
+          "title": "Items",
+          "type": "array"
+        },
+        "next_cursor": {
+          "anyOf": [
+            {
+              "maxLength": 2048,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Next Cursor"
+        }
+      },
+      "required": [
+        "items",
+        "next_cursor"
+      ],
+      "title": "JobPage",
       "type": "object"
     },
     "LegacyJobResponse": {
@@ -2523,6 +3094,18 @@
     },
     {
       "$ref": "#/$defs/MaterialResponse"
+    },
+    {
+      "$ref": "#/$defs/Capabilities"
+    },
+    {
+      "$ref": "#/$defs/JobDetail"
+    },
+    {
+      "$ref": "#/$defs/JobPage"
+    },
+    {
+      "$ref": "#/$defs/ArtifactPage"
     }
   ]
 }

@@ -1,0 +1,303 @@
+{
+  "$defs": {
+    "ExternalReceiptProjection": {
+      "additionalProperties": false,
+      "properties": {
+        "external_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "External Id",
+          "type": "string"
+        },
+        "connector": {
+          "const": "sciml-workbench",
+          "title": "Connector",
+          "type": "string"
+        },
+        "state": {
+          "enum": [
+            "prepared",
+            "unknown",
+            "confirmed"
+          ],
+          "title": "State",
+          "type": "string"
+        },
+        "request_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Request Sha256",
+          "type": "string"
+        },
+        "body_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Body Sha256",
+          "type": "string"
+        },
+        "attempts": {
+          "minimum": 0,
+          "title": "Attempts",
+          "type": "integer"
+        },
+        "submitted_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Submitted At"
+        },
+        "external_project_id": {
+          "anyOf": [
+            {
+              "maxLength": 160,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "External Project Id"
+        },
+        "external_record_id": {
+          "anyOf": [
+            {
+              "maxLength": 160,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "External Record Id"
+        },
+        "artifact_id": {
+          "anyOf": [
+            {
+              "maxLength": 160,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Artifact Id"
+        },
+        "reconciliation_required": {
+          "title": "Reconciliation Required",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "external_id",
+        "connector",
+        "state",
+        "request_sha256",
+        "body_sha256",
+        "attempts",
+        "submitted_at",
+        "external_project_id",
+        "external_record_id",
+        "artifact_id",
+        "reconciliation_required"
+      ],
+      "title": "ExternalReceiptProjection",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "maxLength": 160,
+      "minLength": 1,
+      "title": "Id",
+      "type": "string"
+    },
+    "project_id": {
+      "maxLength": 160,
+      "minLength": 1,
+      "title": "Project Id",
+      "type": "string"
+    },
+    "kind": {
+      "enum": [
+        "audit",
+        "split",
+        "benchmark",
+        "evidence",
+        "failure",
+        "report",
+        "report_verify",
+        "scientific_replay"
+      ],
+      "title": "Kind",
+      "type": "string"
+    },
+    "state": {
+      "enum": [
+        "queued",
+        "running",
+        "succeeded",
+        "failed"
+      ],
+      "title": "State",
+      "type": "string"
+    },
+    "result_id": {
+      "anyOf": [
+        {
+          "maxLength": 160,
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Result Id"
+    },
+    "error": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Error"
+    },
+    "created_at": {
+      "format": "date-time",
+      "title": "Created At",
+      "type": "string"
+    },
+    "started_at": {
+      "anyOf": [
+        {
+          "format": "date-time",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Started At"
+    },
+    "finished_at": {
+      "anyOf": [
+        {
+          "format": "date-time",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Finished At"
+    },
+    "error_code": {
+      "anyOf": [
+        {
+          "enum": [
+            "UNAUTHORIZED",
+            "ORIGIN_REJECTED",
+            "PROJECT_NOT_FOUND",
+            "ARTIFACT_NOT_FOUND",
+            "JOB_NOT_FOUND",
+            "IDEMPOTENCY_CONFLICT",
+            "PROJECT_BUSY",
+            "VALIDATION_FAILED",
+            "LINEAGE_MISMATCH",
+            "UPLOAD_TOO_LARGE",
+            "STORAGE_UNAVAILABLE",
+            "DEPENDENCY_UNAVAILABLE",
+            "INTERNAL_ERROR",
+            "ADMISSION_REJECTED",
+            "JOB_TIMED_OUT",
+            "WORKER_INTERRUPTED",
+            "INTEGRITY_FAILED",
+            "EXTERNAL_OUTCOME_UNKNOWN",
+            "AGENT_UNAVAILABLE",
+            "POLICY_DENIED",
+            "DATA_EXPOSURE_DENIED",
+            "RUN_REVISION_CHANGED",
+            "QUESTION_STALE",
+            "BUDGET_EXHAUSTED",
+            "PROVIDER_UNAVAILABLE",
+            "TOOL_SCHEMA_INVALID",
+            "UNSUPPORTED_CAPABILITY",
+            "REFERENCE_INVALID",
+            "TEST_PROTOCOL_SEALED",
+            "RUN_CANCELLED"
+          ],
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Error Code"
+    },
+    "retry_of_job_id": {
+      "anyOf": [
+        {
+          "maxLength": 160,
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Retry Of Job Id"
+    },
+    "deadline_at": {
+      "anyOf": [
+        {
+          "format": "date-time",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Deadline At"
+    },
+    "external_receipt": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ExternalReceiptProjection"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    }
+  },
+  "required": [
+    "id",
+    "project_id",
+    "kind",
+    "state",
+    "result_id",
+    "error",
+    "created_at",
+    "started_at",
+    "finished_at"
+  ],
+  "title": "JobDetail",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sciml-workbench.local/contracts/records/v1/job_detail.json"
+}
