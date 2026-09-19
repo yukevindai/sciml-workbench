@@ -26,17 +26,8 @@ from .db import ArtifactRow, JobRow, ProjectRow, MaterialRow
 from .contract_registry import read_artifact
 from .storage import StorageError
 from .execution import Work
-
-
-class DomainError(Exception):
-    def __init__(self, message, status=422, error_code=None):
-        self.message, self.status = message, status
-        self.error_code = error_code or {
-            401: "UNAUTHORIZED", 403: "POLICY_DENIED", 404: "ARTIFACT_NOT_FOUND",
-            409: "IDEMPOTENCY_CONFLICT", 413: "UPLOAD_TOO_LARGE", 422: "VALIDATION_FAILED",
-            503: "DEPENDENCY_UNAVAILABLE",
-        }.get(status, "INTERNAL_ERROR")
-        super().__init__(message)
+from .errors import DomainError
+from .artifacts import ArtifactResolver, operation_inputs, resolve_material
 
 
 def software():
@@ -51,17 +42,11 @@ def project(session, project_id):
 
 
 def artifact(session, project_id, artifact_id, kind=None):
-    row = session.get(ArtifactRow, artifact_id)
-    if not row or row.project_id != project_id:
-        raise DomainError("Artifact not found in this project", 404)
-    result = read_artifact(row.payload)
-    if kind and result.kind != kind:
-        raise DomainError(f"Expected a {kind} artifact")
-    return result
+    return ArtifactResolver(session, project_id).resolve(artifact_id, kind)
 
 
 def save(session, value):
-    checked = read_artifact(value.model_dump(mode="json"))
+    checked = ArtifactResolver(session, value.project_id).validate(value)
     session.add(
         ArtifactRow(
             id=checked.id,
@@ -109,23 +94,7 @@ def upload_csv(session, store, settings, project_id, raw, filename, source):
 def ensure_lineage(session, pid, kind, payload):
     """Validate project boundaries and immutable parent chains before queuing."""
     project(session, pid)
-    if kind in {"audit", "split", "benchmark"}:
-        data = artifact(session, pid, payload["dataset_id"], "dataset")
-        if kind == "split":
-            audit = artifact(session, pid, payload["audit_id"], "audit")
-            if audit.dataset_id != data.id:
-                raise DomainError("Audit belongs to another dataset", 422, "LINEAGE_MISMATCH")
-        if kind == "benchmark":
-            part = artifact(session, pid, payload["split_id"], "split")
-            if part.dataset_id != data.id:
-                raise DomainError("Split belongs to another dataset", 422, "LINEAGE_MISMATCH")
-    elif kind == "failure":
-        artifact(session, pid, payload["benchmark_id"], "benchmark")
-    elif kind == "evidence" and payload.get("material_id"):
-        from .intake import material
-        source = material(session, pid, payload["material_id"])
-        if source.media_type != "application/pdf" or source.blob_key != payload["pdf_key"]:
-            raise DomainError("Evidence input does not match its attachment", 422, "LINEAGE_MISMATCH")
+    return operation_inputs(session, pid, kind, payload)
 
 
 def capture_report(session, pid):
@@ -135,11 +104,15 @@ def capture_report(session, pid):
         .where(ArtifactRow.project_id == pid)
         .order_by(ArtifactRow.created_at, ArtifactRow.id)
     ).all()
-    artifacts = [x.payload for x in rows if x.kind != "report"]
+    resolver = ArtifactResolver(session, pid)
+    artifacts = [resolver.resolve(x.id).model_dump(mode="json") for x in rows if x.kind != "report"]
     jobs = session.scalars(select(JobRow).where(JobRow.project_id == pid)).all()
+    materials = [resolve_material(session, pid, mid) for mid in session.scalars(
+        select(MaterialRow.id).where(MaterialRow.project_id == pid).order_by(MaterialRow.id))]
     return deepcopy({
-        "materials": [{key: getattr(m, key) for key in ("id", "project_id", "filename", "media_type", "blob_key", "sha256", "dataset_id")}
-                      for m in session.scalars(select(MaterialRow).where(MaterialRow.project_id == pid).order_by(MaterialRow.id))],
+        "materials": [{key: getattr(m, key)
+                       for key in ("id", "project_id", "filename", "media_type", "blob_key", "sha256", "dataset_id")}
+                      for m in materials],
         "artifacts": artifacts,
         "project": {"id": proj.id, "name": proj.name, "description": proj.description},
         "jobs": [
@@ -239,11 +212,11 @@ def report_bundle(snapshot, store):
 def prepare_execution(session, job):
     """Detach immutable metadata in a short transaction; no blob or adapter IO."""
     pid, p = job.project_id, deepcopy(job.payload)
-    ensure_lineage(session, pid, job.kind, p)
+    resolved = ensure_lineage(session, pid, job.kind, p)
     work = Work(job_id=job.id, result_id=uid(), project_id=pid, kind=job.kind, payload=p)
 
     def include(aid, kind):
-        value = artifact(session, pid, aid, kind)
+        value = resolved[aid]
         work.artifacts[aid] = value.model_dump(mode="json")
         return value
 

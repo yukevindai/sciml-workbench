@@ -115,7 +115,5 @@ def attach(session, store, settings, pid, raw, name, media_type, source, request
 
 
 def material(session, pid, mid):
-    value = session.get(MaterialRow, mid)
-    if value is None or value.project_id != pid:
-        raise DomainError("Attachment not found in this project", 404)
-    return value
+    from .artifacts import resolve_material
+    return resolve_material(session, pid, mid)

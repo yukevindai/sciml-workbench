@@ -1,4 +1,5 @@
 import hmac
+from typing import Literal
 from datetime import datetime, timezone
 from fastapi import Depends, FastAPI, Header, Request
 from fastapi.exceptions import RequestValidationError
@@ -26,6 +27,7 @@ from .http_contracts import IntakeArtifact, IntakeDataset, MaterialResponse
 from .scientific_contracts import SourceDeclarations
 from . import intake
 from .db import MaterialRow
+from .artifacts import ArtifactResolver, artifact_download, material_download
 
 
 def job_json(j):
@@ -181,8 +183,9 @@ def create_app(settings=None):
     @app.get("/api/v1/projects/{pid}/artifacts", dependencies=protected, response_model=list[IntakeArtifact])
     def artifacts(pid: str, s=Depends(session)):
         project(s, pid)
+        resolver = ArtifactResolver(s, pid)
         return [
-            a.payload
+            resolver.resolve(a.id)
             for a in s.scalars(
                 select(ArtifactRow)
                 .where(ArtifactRow.project_id == pid)
@@ -236,14 +239,13 @@ def create_app(settings=None):
              response_model=list[MaterialResponse])
     def materials(pid: str, s=Depends(session)):
         project(s, pid)
-        return [material_json(value) for value in s.scalars(select(MaterialRow).where(MaterialRow.project_id == pid))]
+        return [material_json(intake.material(s, pid, value.id)) for value in s.scalars(select(MaterialRow).where(MaterialRow.project_id == pid))]
 
     @app.get("/api/v1/projects/{pid}/research-materials/{mid}/download", dependencies=protected)
     def download_material(pid: str, mid: str, s=Depends(session)):
-        value = intake.material(s, pid, mid)
-        ext = "csv" if value.media_type == "text/csv" else "pdf"
-        return Response(store.get(value.blob_key), media_type=value.media_type,
-                        headers={"Content-Disposition": f'attachment; filename="attachment-{value.id}.{ext}"'})
+        value = material_download(s, pid, mid)
+        return Response(store.get(value.key), media_type=value.media_type,
+                        headers={"Content-Disposition": f'attachment; filename="{value.filename}"'})
 
     @app.post("/api/v1/projects/{pid}/research-materials/{mid}/ingest", dependencies=protected,
               status_code=202, response_model=JobResponse, response_model_exclude_unset=True)
@@ -317,17 +319,13 @@ def create_app(settings=None):
         ]
 
     @app.get("/api/v1/projects/{pid}/artifacts/{aid}/download", dependencies=protected)
-    def download(pid: str, aid: str, s=Depends(session)):
-        a = artifact(s, pid, aid)
-        key = getattr(a, "blob_key", None) or getattr(a, "bundle_key", None)
-        if not key:
-            raise DomainError("Artifact has no downloadable file", 404)
-        ext = "csv" if a.kind == "dataset" else "zip"
+    def download(pid: str, aid: str, representation: Literal["default", "original", "bundle"] = "default", s=Depends(session)):
+        value = artifact_download(s, pid, aid, representation)
         return Response(
-            store.get(key),
-            media_type="text/csv" if ext == "csv" else "application/zip",
+            store.get(value.key),
+            media_type=value.media_type,
             headers={
-                "Content-Disposition": f'attachment; filename="{a.kind}-{a.id}.{ext}"'
+                "Content-Disposition": f'attachment; filename="{value.filename}"'
             },
         )
 

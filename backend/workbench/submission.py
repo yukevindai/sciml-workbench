@@ -18,6 +18,7 @@ from .intake import material
 from .job_metadata import submit_job
 from .request_identity import request_digest
 from .services import DomainError, artifact, ensure_lineage, project
+from .artifacts import operation_inputs
 
 
 @dataclass(frozen=True)
@@ -148,10 +149,8 @@ class SubmissionService:
                 if source.media_type != "application/pdf":
                     raise DomainError("Evidence ingestion requires a PDF attachment")
                 accepted = {"pdf_key": source.blob_key, "title": source.filename, "material_id": source.id}
-            if kind == "benchmark" and scope.artifact_ids is not None:
-                part = artifact(session, scope.project_id, accepted["split_id"], "split")
-                if part.audit_id not in scope.artifact_ids:
-                    raise DomainError("Parent audit is outside the authorized input scope", 403)
+            operation_inputs(session, scope.project_id, kind, accepted,
+                             allowed_ids=scope.artifact_ids, material_ids=scope.material_ids)
             if old is not None:
                 if old.request_digest != request_digest(kind, accepted) or old.retry_of_job_id != retry_of_job_id:
                     raise DomainError("Idempotency key was used for a different request", 409)
@@ -201,10 +200,6 @@ class SubmissionService:
         if kind == "benchmark":
             from .adapters import benchmark_source
             data = artifact(session, scope.project_id, payload["dataset_id"], "dataset")
-            part = artifact(session, scope.project_id, payload["split_id"], "split")
-            audited = artifact(session, scope.project_id, part.audit_id, "audit")
-            if audited.dataset_id != data.id:
-                raise DomainError("Parent audit belongs to another dataset", 422, "LINEAGE_MISMATCH")
             try:
                 benchmark_source(data)
             except ValueError:

@@ -105,6 +105,7 @@ Replay validates every archived file against the manifest, regenerates audit and
 - [Architecture, trust boundary and limits](docs/architecture.md)
 - [Project input intake](docs/intake.md)
 - [Durable operation submission](docs/submission.md)
+- [Artifact lineage and authenticated downloads](docs/artifact-resolution.md)
 - [Inspected public integration points and exact pins](docs/integrations.md)
 - [Operations, backups and troubleshooting](docs/operations.md)
 - [Versioned JSON Schemas](contracts/v1/)

@@ -99,6 +99,7 @@ def run_task(settings, work, deadline, stopped):
 
 
 def publish_result(db, claimed, work, result):
+    from .artifacts import validate_result
     if result.error is not None:
         raise TaskFailure(result.error, result.error_code)
     try:
@@ -113,8 +114,7 @@ def publish_result(db, claimed, work, result):
         if (work.job_id, work.project_id, work.kind, work.payload) != (job.id, job.project_id, job.kind, job.payload):
             raise TaskFailure("Task snapshot does not match its accepted operation.")
         ensure_lineage(session, work.project_id, work.kind, work.payload)
-        for parent in value.parents:
-            artifact(session, work.project_id, parent)
+        validate_result(value, work)
         save(session, value)
         save(session, Provenance(project_id=work.project_id, software=value.software, parents=value.parents,
                                  activity=work.kind, inputs=value.parents, outputs=[value.id], parameters=work.payload))

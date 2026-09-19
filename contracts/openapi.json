@@ -2499,6 +2499,21 @@
             }
           },
           {
+            "name": "representation",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "enum": [
+                "default",
+                "original",
+                "bundle"
+              ],
+              "type": "string",
+              "default": "default",
+              "title": "Representation"
+            }
+          },
+          {
             "name": "authorization",
             "in": "header",
             "required": false,
