@@ -4,7 +4,6 @@ from fastapi import Depends, FastAPI, Header, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse, Response
 from sqlalchemy import select, text
-from sqlalchemy.exc import IntegrityError
 from .config import Settings
 from .contracts import (
     Artifact,
@@ -21,7 +20,8 @@ from .contracts import uid
 from .http_contracts import LegacyJobResponse as JobResponse, ProjectResponse
 from .schema_catalog import add_openapi_contracts
 from .db import ArtifactRow, Database, JobRow, ProjectRow
-from .services import DomainError, artifact, ensure_lineage, project, upload_csv
+from .job_metadata import submit_job
+from .services import DomainError, artifact, project, upload_csv
 from .storage import LocalStore
 
 
@@ -192,33 +192,7 @@ def create_app(settings=None):
         )
 
     def queue(s, pid, kind, payload, key):
-        if not key or len(key) > 100:
-            raise DomainError("Provide an Idempotency-Key of 1–100 characters")
-        ensure_lineage(s, pid, kind, payload)
-        old = s.scalar(
-            select(JobRow).where(JobRow.project_id == pid, JobRow.request_key == key)
-        )
-        if old:
-            if old.kind != kind or old.payload != payload:
-                raise DomainError(
-                    "Idempotency key was used for a different request", 409
-                )
-            return job_json(old)
-        j = JobRow(project_id=pid, kind=kind, payload=payload, request_key=key)
-        try:
-            with s.begin_nested():
-                s.add(j)
-                s.flush()
-        except IntegrityError:
-            old = s.scalar(
-                select(JobRow).where(
-                    JobRow.project_id == pid, JobRow.request_key == key
-                )
-            )
-            if not old or old.kind != kind or old.payload != payload:
-                raise DomainError("Idempotency conflict", 409)
-            return job_json(old)
-        return job_json(j)
+        return job_json(submit_job(s, pid, kind, payload, key))
 
     @app.post("/api/v1/projects/{pid}/audit", dependencies=protected, status_code=202, response_model=JobResponse, response_model_exclude_unset=True)
     def audit(

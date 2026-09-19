@@ -1,13 +1,19 @@
 from sqlalchemy import (
     JSON,
     DateTime,
+    BigInteger,
+    CheckConstraint,
     ForeignKey,
+    ForeignKeyConstraint,
+    Index,
     String,
     UniqueConstraint,
     create_engine,
+    event,
 )
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, sessionmaker
 from .contracts import now, uid
+from .request_identity import request_digest
 
 
 class Base(DeclarativeBase):
@@ -24,6 +30,7 @@ class ProjectRow(Base):
 
 class ArtifactRow(Base):
     __tablename__ = "artifacts"
+    __table_args__ = (UniqueConstraint("project_id", "id", name="uq_artifacts_project_id_id"),)
     id: Mapped[str] = mapped_column(String(36), primary_key=True)
     project_id: Mapped[str] = mapped_column(ForeignKey("projects.id"), index=True)
     kind: Mapped[str] = mapped_column(String(24), index=True)
@@ -33,12 +40,34 @@ class ArtifactRow(Base):
 
 class JobRow(Base):
     __tablename__ = "jobs"
-    __table_args__ = (UniqueConstraint("project_id", "request_key"),)
+    __table_args__ = (
+        UniqueConstraint("project_id", "request_key", name="uq_jobs_project_request"),
+        UniqueConstraint("project_id", "id", name="uq_jobs_project_id_id"),
+        ForeignKeyConstraint(["project_id", "result_id"], ["artifacts.project_id", "artifacts.id"], name="fk_jobs_scoped_result"),
+        ForeignKeyConstraint(["project_id", "retry_of_job_id"], ["jobs.project_id", "jobs.id"], name="fk_jobs_scoped_retry"),
+        CheckConstraint("state IN ('queued', 'running', 'succeeded', 'failed')", name="ck_jobs_state"),
+        CheckConstraint("claim_token >= 0", name="ck_jobs_claim_token"),
+        CheckConstraint("length(request_digest) = 64", name="ck_jobs_request_digest"),
+        CheckConstraint("retry_of_job_id IS NULL OR retry_of_job_id <> id", name="ck_jobs_not_self_retry"),
+        CheckConstraint("(claim_token = 0 AND worker_id IS NULL AND deadline_at IS NULL) OR "
+                        "(claim_token > 0 AND worker_id IS NOT NULL AND started_at IS NOT NULL "
+                        "AND deadline_at IS NOT NULL AND deadline_at > started_at)", name="ck_jobs_claim_metadata"),
+        CheckConstraint("state <> 'running' OR claim_token > 0", name="ck_jobs_running_claim"),
+        Index("ix_jobs_claim_queue", "state", "created_at", "id"),
+        Index("ix_jobs_expiry", "state", "deadline_at"),
+    )
     id: Mapped[str] = mapped_column(String(36), primary_key=True, default=uid)
     project_id: Mapped[str] = mapped_column(ForeignKey("projects.id"), index=True)
     request_key: Mapped[str] = mapped_column(String(100))
     kind: Mapped[str] = mapped_column(String(24))
     payload: Mapped[dict] = mapped_column(JSON)
+    request_digest: Mapped[str] = mapped_column(String(64), default=lambda ctx: request_digest(
+        ctx.get_current_parameters()["kind"], ctx.get_current_parameters()["payload"]))
+    claim_token: Mapped[int] = mapped_column(BigInteger, default=0, server_default="0")
+    worker_id: Mapped[str | None] = mapped_column(String(160), nullable=True)
+    deadline_at: Mapped[object | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    error_code: Mapped[str | None] = mapped_column(String(80), nullable=True)
+    retry_of_job_id: Mapped[str | None] = mapped_column(String(36), nullable=True)
     state: Mapped[str] = mapped_column(String(24), default="queued", index=True)
     result_id: Mapped[str | None] = mapped_column(String(36), nullable=True)
     error: Mapped[str | None] = mapped_column(nullable=True)
@@ -54,4 +83,28 @@ class JobRow(Base):
 class Database:
     def __init__(self, url):
         self.engine = create_engine(url, pool_pre_ping=True)
+        if self.engine.dialect.name == "sqlite":
+            event.listen(self.engine, "connect", sqlite_foreign_keys)
         self.session = sessionmaker(self.engine, expire_on_commit=False)
+
+
+def sqlite_foreign_keys(connection, _):
+    cursor = connection.cursor()
+    cursor.execute("PRAGMA foreign_keys=ON")
+    cursor.close()
+
+
+for field in ("id", "project_id", "kind"):
+    value = ArtifactRow.__table__.c.payload[field].as_string()
+    ArtifactRow.__table__.append_constraint(CheckConstraint(
+        value.is_not(None) & (value == ArtifactRow.__table__.c[field]),
+        name=f"ck_artifacts_payload_{field}",
+    ))
+
+
+@event.listens_for(Base.metadata, "after_create")
+def install_metadata_guards(metadata, connection, **kwargs):
+    # create_all is used by ephemeral test databases. Production uses Alembic.
+    from .metadata_guards_v2 import install, uninstall
+    uninstall(connection)
+    install(connection)

@@ -301,6 +301,9 @@ def test_crashed_worker_recovery(env):
             payload={},
             state="running",
             started_at=now() - timedelta(hours=1),
+            deadline_at=now() - timedelta(minutes=45),
+            claim_token=1,
+            worker_id="crashed-test-worker",
         )
         s.add(j)
         s.flush()
