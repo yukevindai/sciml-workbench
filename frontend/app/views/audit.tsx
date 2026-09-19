@@ -3,6 +3,8 @@
 import { useEffect, useState } from 'react';
 import { ArrowUpRight, Database, FileSpreadsheet, ShieldCheck } from 'lucide-react';
 import { api } from '../lib/api';
+import { parseArtifact } from '../lib/decode';
+import { auditFindings } from '../lib/result-projections';
 import { readPreview, looksNumeric, type CsvPreview } from '../lib/csv';
 import { auditDefault, sourceDefault } from '../lib/defaults';
 import type { Workbench } from '../lib/context';
@@ -158,7 +160,7 @@ export function AuditView({ wb }: { wb: Workbench }) {
               className="button"
               disabled={wb.busy || !wb.projectId || !file}
               onClick={() => wb.act(async () => {
-                await api(`projects/${wb.projectId}/datasets`, {
+                await api(`projects/${wb.projectId}/datasets`, parseArtifact, {
                   method: 'POST',
                   headers: {
                     'Content-Type': 'text/csv',
@@ -249,15 +251,19 @@ export function AuditView({ wb }: { wb: Workbench }) {
 
       {/* --------------------------------- results ------------------------ */}
       {wb.audits.map(audit => {
-        const findings = audit.result?.findings ?? [];
+        const findings = auditFindings(audit.result);
         return (
           <Panel
             key={audit.id}
             title="Audit findings"
             description={`Run ${formatDate(audit.created_at)}`}
-            aside={<FindingSummary findings={findings} />}
+            aside={findings && <FindingSummary findings={findings} />}
           >
-            {findings.length === 0 ? (
+            {findings === null ? (
+              <Alert variant="warning" title="Findings summary unavailable">
+                Inspect the complete artifact below; this result has no supported findings summary.
+              </Alert>
+            ) : findings.length === 0 ? (
               <Alert variant="success" title="No findings for the checks you configured">
                 This is not a certificate of scientific validity — it means nothing the auditor looks for was triggered by these declarations.
               </Alert>

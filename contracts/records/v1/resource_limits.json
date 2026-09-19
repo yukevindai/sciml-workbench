@@ -1,0 +1,103 @@
+{
+  "additionalProperties": false,
+  "description": "Values are required; E01 owns defaults and server/project intersections.",
+  "properties": {
+    "model_tokens": {
+      "maximum": 9007199254740991,
+      "minimum": 0,
+      "title": "Model Tokens",
+      "type": "integer"
+    },
+    "model_requests": {
+      "maximum": 9007199254740991,
+      "minimum": 0,
+      "title": "Model Requests",
+      "type": "integer"
+    },
+    "tool_calls": {
+      "maximum": 9007199254740991,
+      "minimum": 0,
+      "title": "Tool Calls",
+      "type": "integer"
+    },
+    "coordinator_iterations": {
+      "maximum": 9007199254740991,
+      "minimum": 0,
+      "title": "Coordinator Iterations",
+      "type": "integer"
+    },
+    "specialist_assignments": {
+      "maximum": 9007199254740991,
+      "minimum": 0,
+      "title": "Specialist Assignments",
+      "type": "integer"
+    },
+    "specialist_concurrency": {
+      "maximum": 9007199254740991,
+      "minimum": 0,
+      "title": "Specialist Concurrency",
+      "type": "integer"
+    },
+    "delegation_depth": {
+      "maximum": 1,
+      "minimum": 0,
+      "title": "Delegation Depth",
+      "type": "integer"
+    },
+    "review_rounds": {
+      "maximum": 9007199254740991,
+      "minimum": 0,
+      "title": "Review Rounds",
+      "type": "integer"
+    },
+    "scientific_attempts": {
+      "maximum": 9007199254740991,
+      "minimum": 0,
+      "title": "Scientific Attempts",
+      "type": "integer"
+    },
+    "active_seconds": {
+      "maximum": 9007199254740991,
+      "minimum": 0,
+      "title": "Active Seconds",
+      "type": "integer"
+    },
+    "transient_retries": {
+      "maximum": 9007199254740991,
+      "minimum": 0,
+      "title": "Transient Retries",
+      "type": "integer"
+    },
+    "finalization_model_tokens": {
+      "maximum": 9007199254740991,
+      "minimum": 0,
+      "title": "Finalization Model Tokens",
+      "type": "integer"
+    },
+    "finalization_scientific_attempts": {
+      "maximum": 9007199254740991,
+      "minimum": 0,
+      "title": "Finalization Scientific Attempts",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "model_tokens",
+    "model_requests",
+    "tool_calls",
+    "coordinator_iterations",
+    "specialist_assignments",
+    "specialist_concurrency",
+    "delegation_depth",
+    "review_rounds",
+    "scientific_attempts",
+    "active_seconds",
+    "transient_retries",
+    "finalization_model_tokens",
+    "finalization_scientific_attempts"
+  ],
+  "title": "ResourceLimits",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sciml-workbench.local/contracts/records/v1/resource_limits.json"
+}

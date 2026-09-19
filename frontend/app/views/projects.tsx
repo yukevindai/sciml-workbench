@@ -3,8 +3,8 @@
 import { useState } from 'react';
 import { Activity, Database, FlaskConical, Plus, ShieldCheck } from 'lucide-react';
 import { api, json } from '../lib/api';
+import { parseProject } from '../lib/decode';
 import type { Workbench } from '../lib/context';
-import type { Project } from '../lib/types';
 import { Field, Panel, Tile } from '../components/ui';
 import { NextAction, PipelineRail } from '../components/workflow';
 
@@ -43,7 +43,7 @@ export function ProjectsView({ wb }: { wb: Workbench }) {
             onSubmit={event => {
               event.preventDefault();
               void wb.act(async () => {
-                const project = await api<Project>('projects', json({ name, description }));
+                const project = await api('projects', parseProject, json({ name, description }));
                 wb.setProjects(current => [project, ...current]);
                 wb.setProjectId(project.id);
                 setName('');

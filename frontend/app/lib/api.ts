@@ -1,6 +1,6 @@
 /** Every request goes to the same-origin Next route handler, which attaches the
  *  backend bearer credential server-side. No token is ever visible to the browser. */
-export async function api<T = unknown>(path: string, init?: RequestInit): Promise<T> {
+export async function api<T>(path: string, decode: (value: unknown) => T, init?: RequestInit): Promise<T> {
   const response = await fetch(`/api/${path}`, init);
   const data = await response.json().catch(() => ({}));
   if (!response.ok) {
@@ -10,7 +10,7 @@ export async function api<T = unknown>(path: string, init?: RequestInit): Promis
       `Request failed (${response.status})`
     );
   }
-  return data as T;
+  return decode(data);
 }
 
 export function json(body: unknown, extra: Record<string, string> = {}): RequestInit {

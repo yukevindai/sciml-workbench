@@ -7,6 +7,7 @@ import { benchmarkDefault, COMMON_UNITS } from '../lib/defaults';
 import type { Workbench } from '../lib/context';
 import { DOMAINS, type BenchmarkConfig, type IndependenceStatus } from '../lib/types';
 import { formatDate, humanise } from '../lib/format';
+import { metricPartition } from '../lib/result-projections';
 import { Alert, Badge, Disclosure, Field, JsonBox, Panel } from '../components/ui';
 import {
   AdvancedJson, ChipInput, ColumnSelect, ColumnToggles, JustificationEditor, UnitsEditor,
@@ -172,7 +173,7 @@ export function BenchmarkView({ wb }: { wb: Workbench }) {
             <Field label="Scientific domain">
               {props => (
                 <select className="select" value={config.domain}
-                  onChange={e => setConfig({ ...config, domain: e.target.value })} {...props}>
+                  onChange={e => setConfig({ ...config, domain: e.target.value as BenchmarkConfig['domain'] })} {...props}>
                   {DOMAINS.map(domain => (
                     <option key={domain} value={domain}>{humanise(domain)}</option>
                   ))}
@@ -265,10 +266,10 @@ export function BenchmarkView({ wb }: { wb: Workbench }) {
             <Alert variant="error" title="Admission or evaluation failed">{run.error}</Alert>
           )}
 
-          {run.result?.metrics?.test && (
+          {metricPartition(run.result, 'test') && (
             <div>
               <span className="panel-section-title">Held-out test scores</span>
-              <MetricGrid metrics={run.result.metrics.test} />
+              <MetricGrid metrics={metricPartition(run.result, 'test') ?? {}} />
               <p className="field-hint" style={{ marginTop: 'var(--space-5)' }}>
                 Validation scores and the full model configuration are in the complete artifact and the exported report.
               </p>

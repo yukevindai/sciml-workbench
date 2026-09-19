@@ -1,0 +1,41 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "expected_run_revision": {
+      "maximum": 9007199254740991,
+      "minimum": 1,
+      "title": "Expected Run Revision",
+      "type": "integer"
+    },
+    "expected_question_revision": {
+      "maximum": 9007199254740991,
+      "minimum": 1,
+      "title": "Expected Question Revision",
+      "type": "integer"
+    },
+    "answers": {
+      "additionalProperties": {
+        "maxLength": 4000,
+        "minLength": 1,
+        "type": "string"
+      },
+      "maxProperties": 20,
+      "minProperties": 1,
+      "propertyNames": {
+        "maxLength": 160,
+        "minLength": 1
+      },
+      "title": "Answers",
+      "type": "object"
+    }
+  },
+  "required": [
+    "expected_run_revision",
+    "expected_question_revision",
+    "answers"
+  ],
+  "title": "QuestionAnswerInput",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sciml-workbench.local/contracts/records/v1/question_answer_input.json"
+}

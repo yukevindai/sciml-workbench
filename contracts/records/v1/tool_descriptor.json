@@ -1,0 +1,194 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "contract": {
+      "const": "tool_descriptor",
+      "default": "tool_descriptor",
+      "title": "Contract",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "name": {
+      "enum": [
+        "inspect_project",
+        "inspect_dataset",
+        "list_artifacts",
+        "read_artifact",
+        "read_job",
+        "run_audit",
+        "generate_split",
+        "seal_evaluation",
+        "run_baseline",
+        "read_evaluation",
+        "ingest_evidence",
+        "search_evidence",
+        "read_evidence_span",
+        "search_failures",
+        "read_failure",
+        "record_outcome",
+        "reconcile_outcome",
+        "validate_claims",
+        "build_report",
+        "verify_report",
+        "replay_science",
+        "read_memory"
+      ],
+      "title": "Name",
+      "type": "string"
+    },
+    "version": {
+      "maxLength": 160,
+      "minLength": 1,
+      "title": "Version",
+      "type": "string"
+    },
+    "purpose": {
+      "maxLength": 4000,
+      "minLength": 1,
+      "title": "Purpose",
+      "type": "string"
+    },
+    "input_schema_id": {
+      "maxLength": 4000,
+      "minLength": 1,
+      "title": "Input Schema Id",
+      "type": "string"
+    },
+    "output_schema_id": {
+      "maxLength": 4000,
+      "minLength": 1,
+      "title": "Output Schema Id",
+      "type": "string"
+    },
+    "allowed_roles": {
+      "items": {
+        "enum": [
+          "coordinator",
+          "data_evaluation",
+          "evidence",
+          "failure_memory",
+          "scientific_reviewer"
+        ],
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Allowed Roles",
+      "type": "array"
+    },
+    "prerequisites": {
+      "items": {
+        "maxLength": 4000,
+        "minLength": 1,
+        "type": "string"
+      },
+      "title": "Prerequisites",
+      "type": "array"
+    },
+    "accepted_artifact_versions": {
+      "additionalProperties": {
+        "items": {
+          "maxLength": 160,
+          "minLength": 1,
+          "type": "string"
+        },
+        "type": "array"
+      },
+      "propertyNames": {
+        "maxLength": 160,
+        "minLength": 1
+      },
+      "title": "Accepted Artifact Versions",
+      "type": "object"
+    },
+    "side_effect": {
+      "enum": [
+        "read",
+        "compute",
+        "external_write",
+        "control",
+        "report"
+      ],
+      "title": "Side Effect",
+      "type": "string"
+    },
+    "retry_class": {
+      "enum": [
+        "read",
+        "idempotent_submission",
+        "receipt_reconciliation",
+        "new_attempt",
+        "never"
+      ],
+      "title": "Retry Class",
+      "type": "string"
+    },
+    "expected_artifact_kinds": {
+      "items": {
+        "maxLength": 160,
+        "minLength": 1,
+        "type": "string"
+      },
+      "title": "Expected Artifact Kinds",
+      "type": "array"
+    },
+    "required_checks": {
+      "items": {
+        "enum": [
+          "project_scope",
+          "policy",
+          "exposure",
+          "evaluation",
+          "prerequisites",
+          "budget"
+        ],
+        "type": "string"
+      },
+      "title": "Required Checks",
+      "type": "array"
+    },
+    "scientific_attempt_estimate": {
+      "maximum": 9007199254740991,
+      "minimum": 0,
+      "title": "Scientific Attempt Estimate",
+      "type": "integer"
+    },
+    "active_seconds_estimate": {
+      "anyOf": [
+        {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Active Seconds Estimate"
+    }
+  },
+  "required": [
+    "name",
+    "version",
+    "purpose",
+    "input_schema_id",
+    "output_schema_id",
+    "allowed_roles",
+    "prerequisites",
+    "accepted_artifact_versions",
+    "side_effect",
+    "retry_class",
+    "expected_artifact_kinds",
+    "required_checks",
+    "scientific_attempt_estimate",
+    "active_seconds_estimate"
+  ],
+  "title": "ToolDescriptor",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sciml-workbench.local/contracts/records/v1/tool_descriptor.json"
+}

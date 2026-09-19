@@ -1,0 +1,61 @@
+{
+  "$defs": {
+    "JsonValue": {}
+  },
+  "additionalProperties": false,
+  "properties": {
+    "connector": {
+      "const": "sciml-workbench",
+      "default": "sciml-workbench",
+      "title": "Connector",
+      "type": "string"
+    },
+    "external_id": {
+      "maxLength": 160,
+      "minLength": 1,
+      "title": "External Id",
+      "type": "string"
+    },
+    "request_sha256": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Request Sha256",
+      "type": "string"
+    },
+    "state": {
+      "const": "confirmed",
+      "default": "confirmed",
+      "title": "State",
+      "type": "string"
+    },
+    "external_project_id": {
+      "maxLength": 160,
+      "minLength": 1,
+      "title": "External Project Id",
+      "type": "string"
+    },
+    "external_record_id": {
+      "maxLength": 160,
+      "minLength": 1,
+      "title": "External Record Id",
+      "type": "string"
+    },
+    "record": {
+      "additionalProperties": {
+        "$ref": "#/$defs/JsonValue"
+      },
+      "title": "Record",
+      "type": "object"
+    }
+  },
+  "required": [
+    "external_id",
+    "request_sha256",
+    "external_project_id",
+    "external_record_id",
+    "record"
+  ],
+  "title": "FailureReceipt",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sciml-workbench.local/contracts/records/v1/failure_receipt.json"
+}

@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { BookOpen, Download, FileText } from 'lucide-react';
 import { api } from '../lib/api';
+import { parseJob } from '../lib/decode';
 import type { Workbench } from '../lib/context';
 import { formatDate, pluralise } from '../lib/format';
 import { kinds } from '../lib/types';
@@ -57,7 +58,7 @@ export function EvidenceView({ wb }: { wb: Workbench }) {
             className="button"
             disabled={wb.busy || !wb.projectId || !title.trim() || !file}
             onClick={() => wb.act(async () => {
-              await api(`projects/${wb.projectId}/evidence`, {
+              await api(`projects/${wb.projectId}/evidence`, parseJob, {
                 method: 'POST',
                 headers: {
                   'X-Title': title,
@@ -88,7 +89,7 @@ export function EvidenceView({ wb }: { wb: Workbench }) {
             key={document.id}
             title={document.title}
             description={
-              document.result?.page_count
+              typeof document.result.page_count === 'number' && Number.isInteger(document.result.page_count) && document.result.page_count > 0
                 ? `${pluralise(document.result.page_count, 'page')} · metadata supplied by the researcher`
                 : 'Metadata supplied by the researcher'
             }

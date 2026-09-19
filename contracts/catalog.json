@@ -1,0 +1,6668 @@
+{
+  "$defs": {
+    "ActionSummary": {
+      "additionalProperties": false,
+      "properties": {
+        "action_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Action Id",
+          "type": "string"
+        },
+        "attempt_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Attempt Id",
+          "type": "string"
+        },
+        "tool": {
+          "enum": [
+            "inspect_project",
+            "inspect_dataset",
+            "list_artifacts",
+            "read_artifact",
+            "read_job",
+            "run_audit",
+            "generate_split",
+            "seal_evaluation",
+            "run_baseline",
+            "read_evaluation",
+            "ingest_evidence",
+            "search_evidence",
+            "read_evidence_span",
+            "search_failures",
+            "read_failure",
+            "record_outcome",
+            "reconcile_outcome",
+            "validate_claims",
+            "build_report",
+            "verify_report",
+            "replay_science",
+            "read_memory"
+          ],
+          "title": "Tool",
+          "type": "string"
+        },
+        "tool_version": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Tool Version",
+          "type": "string"
+        },
+        "request_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Request Sha256",
+          "type": "string"
+        },
+        "state": {
+          "enum": [
+            "prepared",
+            "submitted",
+            "completed",
+            "failed",
+            "unknown",
+            "cancelled"
+          ],
+          "title": "State",
+          "type": "string"
+        },
+        "job_id": {
+          "anyOf": [
+            {
+              "maxLength": 160,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Job Id"
+        },
+        "receipt_id": {
+          "anyOf": [
+            {
+              "maxLength": 160,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Receipt Id"
+        },
+        "artifact_ids": {
+          "items": {
+            "maxLength": 160,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Artifact Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "action_id",
+        "attempt_id",
+        "tool",
+        "tool_version",
+        "request_sha256",
+        "state",
+        "artifact_ids"
+      ],
+      "title": "ActionSummary",
+      "type": "object"
+    },
+    "AgentActor": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "const": "agent",
+          "title": "Kind",
+          "type": "string"
+        },
+        "run_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Run Id",
+          "type": "string"
+        },
+        "assignment_id": {
+          "anyOf": [
+            {
+              "maxLength": 160,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Assignment Id"
+        },
+        "action_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Action Id",
+          "type": "string"
+        },
+        "provider": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Provider",
+          "type": "string"
+        },
+        "model": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Model",
+          "type": "string"
+        },
+        "prompt_version": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Prompt Version",
+          "type": "string"
+        },
+        "policy": {
+          "$ref": "#/$defs/PolicyReference"
+        },
+        "policy_rule_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Policy Rule Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "run_id",
+        "action_id",
+        "provider",
+        "model",
+        "prompt_version",
+        "policy",
+        "policy_rule_id"
+      ],
+      "title": "AgentActor",
+      "type": "object"
+    },
+    "AgentExecutionRecord": {
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "1.0",
+          "default": "1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "project_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Project Id",
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        },
+        "parents": {
+          "items": {
+            "maxLength": 160,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Parents",
+          "type": "array"
+        },
+        "software": {
+          "additionalProperties": {
+            "maxLength": 4000,
+            "minLength": 1,
+            "type": "string"
+          },
+          "propertyNames": {
+            "maxLength": 160,
+            "minLength": 1
+          },
+          "title": "Software",
+          "type": "object"
+        },
+        "kind": {
+          "const": "agent_execution",
+          "default": "agent_execution",
+          "title": "Kind",
+          "type": "string"
+        },
+        "run_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Run Id",
+          "type": "string"
+        },
+        "objective": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Objective",
+          "type": "string"
+        },
+        "inputs": {
+          "$ref": "#/$defs/InputScope"
+        },
+        "policy": {
+          "$ref": "#/$defs/PolicyReference"
+        },
+        "plan_revisions": {
+          "items": {
+            "$ref": "#/$defs/ResearchPlan"
+          },
+          "title": "Plan Revisions",
+          "type": "array"
+        },
+        "decisions": {
+          "items": {
+            "$ref": "#/$defs/DecisionSummary"
+          },
+          "title": "Decisions",
+          "type": "array"
+        },
+        "assignment_ids": {
+          "items": {
+            "maxLength": 160,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Assignment Ids",
+          "type": "array"
+        },
+        "actions": {
+          "items": {
+            "$ref": "#/$defs/ActionSummary"
+          },
+          "title": "Actions",
+          "type": "array"
+        },
+        "limits": {
+          "$ref": "#/$defs/ResourceLimits"
+        },
+        "usage": {
+          "$ref": "#/$defs/UsageSnapshot"
+        },
+        "versions": {
+          "$ref": "#/$defs/ExecutionVersions"
+        },
+        "state_at_cutoff": {
+          "enum": [
+            "queued",
+            "running",
+            "waiting_for_job",
+            "waiting_for_input",
+            "paused",
+            "completed",
+            "partially_completed",
+            "failed",
+            "cancelled"
+          ],
+          "title": "State At Cutoff",
+          "type": "string"
+        },
+        "event_cutoff": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "title": "Event Cutoff",
+          "type": "integer"
+        },
+        "captured_at": {
+          "format": "date-time",
+          "title": "Captured At",
+          "type": "string"
+        },
+        "pending_finalization_action_ids": {
+          "items": {
+            "maxLength": 160,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Pending Finalization Action Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "project_id",
+        "run_id",
+        "objective",
+        "inputs",
+        "policy",
+        "plan_revisions",
+        "decisions",
+        "assignment_ids",
+        "actions",
+        "limits",
+        "usage",
+        "versions",
+        "state_at_cutoff",
+        "event_cutoff",
+        "captured_at",
+        "pending_finalization_action_ids"
+      ],
+      "title": "AgentExecutionRecord",
+      "type": "object"
+    },
+    "Audit": {
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "1.0",
+          "default": "1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "project_id": {
+          "title": "Project Id",
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        },
+        "parents": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Parents",
+          "type": "array"
+        },
+        "software": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "title": "Software",
+          "type": "object"
+        },
+        "kind": {
+          "const": "audit",
+          "default": "audit",
+          "title": "Kind",
+          "type": "string"
+        },
+        "dataset_id": {
+          "title": "Dataset Id",
+          "type": "string"
+        },
+        "config": {
+          "additionalProperties": true,
+          "title": "Config",
+          "type": "object"
+        },
+        "result": {
+          "additionalProperties": true,
+          "title": "Result",
+          "type": "object"
+        }
+      },
+      "required": [
+        "project_id",
+        "dataset_id",
+        "config",
+        "result"
+      ],
+      "title": "Audit",
+      "type": "object"
+    },
+    "AuditInput": {
+      "additionalProperties": false,
+      "properties": {
+        "dataset_id": {
+          "title": "Dataset Id",
+          "type": "string"
+        },
+        "config": {
+          "additionalProperties": true,
+          "title": "Config",
+          "type": "object"
+        }
+      },
+      "required": [
+        "dataset_id"
+      ],
+      "title": "AuditInput",
+      "type": "object"
+    },
+    "AvailableEvidenceReference": {
+      "additionalProperties": false,
+      "properties": {
+        "contract": {
+          "const": "evidence_reference",
+          "default": "evidence_reference",
+          "title": "Contract",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "1.0",
+          "default": "1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "availability": {
+          "const": "available",
+          "title": "Availability",
+          "type": "string"
+        },
+        "source_artifact_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Source Artifact Id",
+          "type": "string"
+        },
+        "source_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Source Sha256",
+          "type": "string"
+        },
+        "representation_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Representation Sha256",
+          "type": "string"
+        },
+        "extraction_version": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Extraction Version",
+          "type": "string"
+        },
+        "locator": {
+          "$ref": "#/$defs/TextSpan"
+        },
+        "excerpt_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Excerpt Sha256",
+          "type": "string"
+        },
+        "page": {
+          "anyOf": [
+            {
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Page"
+        }
+      },
+      "required": [
+        "availability",
+        "source_artifact_id",
+        "source_sha256",
+        "representation_sha256",
+        "extraction_version",
+        "locator",
+        "excerpt_sha256"
+      ],
+      "title": "AvailableEvidenceReference",
+      "type": "object"
+    },
+    "Benchmark": {
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "1.0",
+          "default": "1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "project_id": {
+          "title": "Project Id",
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        },
+        "parents": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Parents",
+          "type": "array"
+        },
+        "software": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "title": "Software",
+          "type": "object"
+        },
+        "kind": {
+          "const": "benchmark",
+          "default": "benchmark",
+          "title": "Kind",
+          "type": "string"
+        },
+        "dataset_id": {
+          "title": "Dataset Id",
+          "type": "string"
+        },
+        "split_id": {
+          "title": "Split Id",
+          "type": "string"
+        },
+        "model": {
+          "enum": [
+            "mean",
+            "ridge"
+          ],
+          "title": "Model",
+          "type": "string"
+        },
+        "seed": {
+          "title": "Seed",
+          "type": "integer"
+        },
+        "status": {
+          "enum": [
+            "succeeded",
+            "failed"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "result": {
+          "additionalProperties": true,
+          "title": "Result",
+          "type": "object"
+        },
+        "error": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Error"
+        },
+        "bundle_key": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Bundle Key"
+        },
+        "config": {
+          "additionalProperties": true,
+          "title": "Config",
+          "type": "object"
+        }
+      },
+      "required": [
+        "project_id",
+        "dataset_id",
+        "split_id",
+        "model",
+        "seed",
+        "status",
+        "config"
+      ],
+      "title": "Benchmark",
+      "type": "object"
+    },
+    "BenchmarkInput": {
+      "additionalProperties": false,
+      "properties": {
+        "dataset_id": {
+          "title": "Dataset Id",
+          "type": "string"
+        },
+        "split_id": {
+          "title": "Split Id",
+          "type": "string"
+        },
+        "target": {
+          "minLength": 1,
+          "title": "Target",
+          "type": "string"
+        },
+        "numeric_features": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Numeric Features",
+          "type": "array"
+        },
+        "categorical_features": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Categorical Features",
+          "type": "array"
+        },
+        "row_id": {
+          "minLength": 1,
+          "title": "Row Id",
+          "type": "string"
+        },
+        "group_columns": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Group Columns",
+          "type": "array"
+        },
+        "units": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "title": "Units",
+          "type": "object"
+        },
+        "independence_unit": {
+          "minLength": 1,
+          "title": "Independence Unit",
+          "type": "string"
+        },
+        "independence_status": {
+          "enum": [
+            "documented",
+            "proxy",
+            "synthetic"
+          ],
+          "title": "Independence Status",
+          "type": "string"
+        },
+        "independence_rationale": {
+          "minLength": 1,
+          "title": "Independence Rationale",
+          "type": "string"
+        },
+        "generalization": {
+          "minLength": 1,
+          "title": "Generalization",
+          "type": "string"
+        },
+        "limitations": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Limitations",
+          "type": "array"
+        },
+        "domain": {
+          "default": "materials",
+          "enum": [
+            "batteries",
+            "electrolytes",
+            "adsorption",
+            "catalysis",
+            "separations",
+            "thermodynamics",
+            "transport",
+            "materials",
+            "process_optimization"
+          ],
+          "title": "Domain",
+          "type": "string"
+        },
+        "accepted_warnings": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "title": "Accepted Warnings",
+          "type": "object"
+        },
+        "model": {
+          "default": "ridge",
+          "enum": [
+            "mean",
+            "ridge"
+          ],
+          "title": "Model",
+          "type": "string"
+        },
+        "seed": {
+          "default": 0,
+          "exclusiveMaximum": 4294967296,
+          "minimum": 0,
+          "title": "Seed",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "dataset_id",
+        "split_id",
+        "target",
+        "numeric_features",
+        "row_id",
+        "group_columns",
+        "units",
+        "independence_unit",
+        "independence_status",
+        "independence_rationale",
+        "generalization",
+        "limitations"
+      ],
+      "title": "BenchmarkInput",
+      "type": "object"
+    },
+    "Claim": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "statement": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Statement",
+          "type": "string"
+        },
+        "classification": {
+          "enum": [
+            "computed_result",
+            "source_supported",
+            "interpretation",
+            "hypothesis"
+          ],
+          "title": "Classification",
+          "type": "string"
+        },
+        "source_references": {
+          "items": {
+            "$ref": "#/$defs/AvailableEvidenceReference"
+          },
+          "title": "Source References",
+          "type": "array"
+        },
+        "metric_references": {
+          "items": {
+            "$ref": "#/$defs/MetricReference"
+          },
+          "title": "Metric References",
+          "type": "array"
+        },
+        "population": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Population",
+          "type": "string"
+        },
+        "split_id": {
+          "anyOf": [
+            {
+              "maxLength": 160,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Split Id"
+        },
+        "limitations": {
+          "items": {
+            "maxLength": 4000,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Limitations",
+          "type": "array"
+        },
+        "uncertainty": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Uncertainty",
+          "type": "string"
+        },
+        "reference_check": {
+          "$ref": "#/$defs/ReferenceCheck"
+        },
+        "semantic_review": {
+          "$ref": "#/$defs/SemanticReview"
+        }
+      },
+      "required": [
+        "id",
+        "statement",
+        "classification",
+        "population",
+        "limitations",
+        "uncertainty",
+        "reference_check",
+        "semantic_review"
+      ],
+      "title": "Claim",
+      "type": "object"
+    },
+    "ClaimSet": {
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "1.0",
+          "default": "1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "project_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Project Id",
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        },
+        "parents": {
+          "items": {
+            "maxLength": 160,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Parents",
+          "type": "array"
+        },
+        "software": {
+          "additionalProperties": {
+            "maxLength": 4000,
+            "minLength": 1,
+            "type": "string"
+          },
+          "propertyNames": {
+            "maxLength": 160,
+            "minLength": 1
+          },
+          "title": "Software",
+          "type": "object"
+        },
+        "kind": {
+          "const": "claim_set",
+          "default": "claim_set",
+          "title": "Kind",
+          "type": "string"
+        },
+        "run_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Run Id",
+          "type": "string"
+        },
+        "revision": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "title": "Revision",
+          "type": "integer"
+        },
+        "claims": {
+          "items": {
+            "$ref": "#/$defs/Claim"
+          },
+          "minItems": 1,
+          "title": "Claims",
+          "type": "array"
+        }
+      },
+      "required": [
+        "project_id",
+        "run_id",
+        "revision",
+        "claims"
+      ],
+      "title": "ClaimSet",
+      "type": "object"
+    },
+    "ContractReference": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "contract": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Contract",
+          "type": "string"
+        },
+        "schema_version": {
+          "pattern": "^[1-9][0-9]*\\.[0-9]+$",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "contract",
+        "schema_version",
+        "sha256"
+      ],
+      "title": "ContractReference",
+      "type": "object"
+    },
+    "CriterionFailure": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "const": "criterion_missed",
+          "title": "Kind",
+          "type": "string"
+        },
+        "protocol_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Protocol Id",
+          "type": "string"
+        },
+        "protocol_revision": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "title": "Protocol Revision",
+          "type": "integer"
+        },
+        "criterion_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Criterion Id",
+          "type": "string"
+        },
+        "metric": {
+          "$ref": "#/$defs/MetricReference"
+        },
+        "success_comparison": {
+          "enum": [
+            "lt",
+            "lte",
+            "gt",
+            "gte"
+          ],
+          "title": "Success Comparison",
+          "type": "string"
+        },
+        "threshold": {
+          "title": "Threshold",
+          "type": "number"
+        }
+      },
+      "required": [
+        "kind",
+        "protocol_id",
+        "protocol_revision",
+        "criterion_id",
+        "metric",
+        "success_comparison",
+        "threshold"
+      ],
+      "title": "CriterionFailure",
+      "type": "object"
+    },
+    "Dataset": {
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "1.0",
+          "default": "1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "project_id": {
+          "title": "Project Id",
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        },
+        "parents": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Parents",
+          "type": "array"
+        },
+        "software": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "title": "Software",
+          "type": "object"
+        },
+        "kind": {
+          "const": "dataset",
+          "default": "dataset",
+          "title": "Kind",
+          "type": "string"
+        },
+        "filename": {
+          "title": "Filename",
+          "type": "string"
+        },
+        "blob_key": {
+          "title": "Blob Key",
+          "type": "string"
+        },
+        "sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        },
+        "rows": {
+          "exclusiveMinimum": 0,
+          "title": "Rows",
+          "type": "integer"
+        },
+        "columns": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Columns",
+          "type": "array"
+        },
+        "source": {
+          "$ref": "#/$defs/Source"
+        }
+      },
+      "required": [
+        "project_id",
+        "filename",
+        "blob_key",
+        "sha256",
+        "rows",
+        "columns",
+        "source"
+      ],
+      "title": "Dataset",
+      "type": "object"
+    },
+    "DatasetV2": {
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "2.0",
+          "default": "2.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "project_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Project Id",
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        },
+        "parents": {
+          "items": {
+            "maxLength": 160,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Parents",
+          "type": "array"
+        },
+        "software": {
+          "additionalProperties": {
+            "maxLength": 4000,
+            "minLength": 1,
+            "type": "string"
+          },
+          "propertyNames": {
+            "maxLength": 160,
+            "minLength": 1
+          },
+          "title": "Software",
+          "type": "object"
+        },
+        "kind": {
+          "const": "dataset",
+          "default": "dataset",
+          "title": "Kind",
+          "type": "string"
+        },
+        "filename": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Filename",
+          "type": "string"
+        },
+        "blob_key": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Blob Key",
+          "type": "string"
+        },
+        "sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        },
+        "rows": {
+          "minimum": 3,
+          "title": "Rows",
+          "type": "integer"
+        },
+        "columns": {
+          "items": {
+            "minLength": 1,
+            "pattern": "\\S",
+            "type": "string"
+          },
+          "maxItems": 200,
+          "minItems": 1,
+          "title": "Columns",
+          "type": "array"
+        },
+        "source": {
+          "$ref": "#/$defs/SourceDeclarations"
+        },
+        "unresolved_fields": {
+          "items": {
+            "enum": [
+              "citation",
+              "url",
+              "license",
+              "data_kind",
+              "transformations",
+              "units",
+              "target",
+              "independent_unit"
+            ],
+            "type": "string"
+          },
+          "title": "Unresolved Fields",
+          "type": "array"
+        }
+      },
+      "required": [
+        "project_id",
+        "filename",
+        "blob_key",
+        "sha256",
+        "rows",
+        "columns",
+        "source",
+        "unresolved_fields"
+      ],
+      "title": "DatasetV2",
+      "type": "object"
+    },
+    "DecisionSummary": {
+      "additionalProperties": false,
+      "properties": {
+        "action_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Action Id",
+          "type": "string"
+        },
+        "plan_revision": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "title": "Plan Revision",
+          "type": "integer"
+        },
+        "summary": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Summary",
+          "type": "string"
+        },
+        "input_references": {
+          "items": {
+            "$ref": "#/$defs/ContractReference"
+          },
+          "title": "Input References",
+          "type": "array"
+        }
+      },
+      "required": [
+        "action_id",
+        "plan_revision",
+        "summary",
+        "input_references"
+      ],
+      "title": "DecisionSummary",
+      "type": "object"
+    },
+    "DeclarationReference": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "enum": [
+            "user_message",
+            "operator_assertion",
+            "source_span",
+            "artifact"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "id"
+      ],
+      "title": "DeclarationReference",
+      "type": "object"
+    },
+    "Declaration_Annotated_dict_Annotated_str__FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1____PydanticGeneralMetadata_pattern____S_______Annotated_str__StringConstraints____FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1_____": {
+      "discriminator": {
+        "mapping": {
+          "inferred": "#/$defs/InferredDeclaration_Annotated_dict_Annotated_str__FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1____PydanticGeneralMetadata_pattern____S_______Annotated_str__StringConstraints____FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1_____",
+          "source_derived": "#/$defs/SourceDeclaration_Annotated_dict_Annotated_str__FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1____PydanticGeneralMetadata_pattern____S_______Annotated_str__StringConstraints____FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1_____",
+          "unknown": "#/$defs/UnknownDeclaration",
+          "user_supplied": "#/$defs/UserDeclaration_Annotated_dict_Annotated_str__FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1____PydanticGeneralMetadata_pattern____S_______Annotated_str__StringConstraints____FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1_____"
+        },
+        "propertyName": "origin"
+      },
+      "oneOf": [
+        {
+          "$ref": "#/$defs/UnknownDeclaration"
+        },
+        {
+          "$ref": "#/$defs/UserDeclaration_Annotated_dict_Annotated_str__FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1____PydanticGeneralMetadata_pattern____S_______Annotated_str__StringConstraints____FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1_____"
+        },
+        {
+          "$ref": "#/$defs/SourceDeclaration_Annotated_dict_Annotated_str__FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1____PydanticGeneralMetadata_pattern____S_______Annotated_str__StringConstraints____FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1_____"
+        },
+        {
+          "$ref": "#/$defs/InferredDeclaration_Annotated_dict_Annotated_str__FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1____PydanticGeneralMetadata_pattern____S_______Annotated_str__StringConstraints____FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1_____"
+        }
+      ]
+    },
+    "Declaration_Annotated_str__FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1____PydanticGeneralMetadata_pattern____S______": {
+      "discriminator": {
+        "mapping": {
+          "inferred": "#/$defs/InferredDeclaration_Annotated_str__FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1____PydanticGeneralMetadata_pattern____S______",
+          "source_derived": "#/$defs/SourceDeclaration_Annotated_str__FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1____PydanticGeneralMetadata_pattern____S______",
+          "unknown": "#/$defs/UnknownDeclaration",
+          "user_supplied": "#/$defs/UserDeclaration_Annotated_str__FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1____PydanticGeneralMetadata_pattern____S______"
+        },
+        "propertyName": "origin"
+      },
+      "oneOf": [
+        {
+          "$ref": "#/$defs/UnknownDeclaration"
+        },
+        {
+          "$ref": "#/$defs/UserDeclaration_Annotated_str__FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1____PydanticGeneralMetadata_pattern____S______"
+        },
+        {
+          "$ref": "#/$defs/SourceDeclaration_Annotated_str__FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1____PydanticGeneralMetadata_pattern____S______"
+        },
+        {
+          "$ref": "#/$defs/InferredDeclaration_Annotated_str__FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1____PydanticGeneralMetadata_pattern____S______"
+        }
+      ]
+    },
+    "Declaration_Annotated_str__StringConstraints__": {
+      "discriminator": {
+        "mapping": {
+          "inferred": "#/$defs/InferredDeclaration_Annotated_str__StringConstraints__",
+          "source_derived": "#/$defs/SourceDeclaration_Annotated_str__StringConstraints__",
+          "unknown": "#/$defs/UnknownDeclaration",
+          "user_supplied": "#/$defs/UserDeclaration_Annotated_str__StringConstraints__"
+        },
+        "propertyName": "origin"
+      },
+      "oneOf": [
+        {
+          "$ref": "#/$defs/UnknownDeclaration"
+        },
+        {
+          "$ref": "#/$defs/UserDeclaration_Annotated_str__StringConstraints__"
+        },
+        {
+          "$ref": "#/$defs/SourceDeclaration_Annotated_str__StringConstraints__"
+        },
+        {
+          "$ref": "#/$defs/InferredDeclaration_Annotated_str__StringConstraints__"
+        }
+      ]
+    },
+    "Declaration_IndependentUnit_": {
+      "discriminator": {
+        "mapping": {
+          "inferred": "#/$defs/InferredDeclaration_IndependentUnit_",
+          "source_derived": "#/$defs/SourceDeclaration_IndependentUnit_",
+          "unknown": "#/$defs/UnknownDeclaration",
+          "user_supplied": "#/$defs/UserDeclaration_IndependentUnit_"
+        },
+        "propertyName": "origin"
+      },
+      "oneOf": [
+        {
+          "$ref": "#/$defs/UnknownDeclaration"
+        },
+        {
+          "$ref": "#/$defs/UserDeclaration_IndependentUnit_"
+        },
+        {
+          "$ref": "#/$defs/SourceDeclaration_IndependentUnit_"
+        },
+        {
+          "$ref": "#/$defs/InferredDeclaration_IndependentUnit_"
+        }
+      ]
+    },
+    "Declaration_Literal__empirical____synthetic___": {
+      "discriminator": {
+        "mapping": {
+          "inferred": "#/$defs/InferredDeclaration_Literal__empirical____synthetic___",
+          "source_derived": "#/$defs/SourceDeclaration_Literal__empirical____synthetic___",
+          "unknown": "#/$defs/UnknownDeclaration",
+          "user_supplied": "#/$defs/UserDeclaration_Literal__empirical____synthetic___"
+        },
+        "propertyName": "origin"
+      },
+      "oneOf": [
+        {
+          "$ref": "#/$defs/UnknownDeclaration"
+        },
+        {
+          "$ref": "#/$defs/UserDeclaration_Literal__empirical____synthetic___"
+        },
+        {
+          "$ref": "#/$defs/SourceDeclaration_Literal__empirical____synthetic___"
+        },
+        {
+          "$ref": "#/$defs/InferredDeclaration_Literal__empirical____synthetic___"
+        }
+      ]
+    },
+    "Declaration_list_Annotated_str__StringConstraints___": {
+      "discriminator": {
+        "mapping": {
+          "inferred": "#/$defs/InferredDeclaration_list_Annotated_str__StringConstraints___",
+          "source_derived": "#/$defs/SourceDeclaration_list_Annotated_str__StringConstraints___",
+          "unknown": "#/$defs/UnknownDeclaration",
+          "user_supplied": "#/$defs/UserDeclaration_list_Annotated_str__StringConstraints___"
+        },
+        "propertyName": "origin"
+      },
+      "oneOf": [
+        {
+          "$ref": "#/$defs/UnknownDeclaration"
+        },
+        {
+          "$ref": "#/$defs/UserDeclaration_list_Annotated_str__StringConstraints___"
+        },
+        {
+          "$ref": "#/$defs/SourceDeclaration_list_Annotated_str__StringConstraints___"
+        },
+        {
+          "$ref": "#/$defs/InferredDeclaration_list_Annotated_str__StringConstraints___"
+        }
+      ]
+    },
+    "ErrorResponse": {
+      "additionalProperties": false,
+      "description": "Additive API error fields: the original error string/details remain.",
+      "properties": {
+        "error": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Error",
+          "type": "string"
+        },
+        "error_code": {
+          "enum": [
+            "UNAUTHORIZED",
+            "ORIGIN_REJECTED",
+            "PROJECT_NOT_FOUND",
+            "ARTIFACT_NOT_FOUND",
+            "JOB_NOT_FOUND",
+            "IDEMPOTENCY_CONFLICT",
+            "PROJECT_BUSY",
+            "VALIDATION_FAILED",
+            "LINEAGE_MISMATCH",
+            "UPLOAD_TOO_LARGE",
+            "STORAGE_UNAVAILABLE",
+            "DEPENDENCY_UNAVAILABLE",
+            "INTERNAL_ERROR",
+            "ADMISSION_REJECTED",
+            "JOB_TIMED_OUT",
+            "WORKER_INTERRUPTED",
+            "INTEGRITY_FAILED",
+            "EXTERNAL_OUTCOME_UNKNOWN",
+            "AGENT_UNAVAILABLE",
+            "POLICY_DENIED",
+            "DATA_EXPOSURE_DENIED",
+            "RUN_REVISION_CHANGED",
+            "QUESTION_STALE",
+            "BUDGET_EXHAUSTED",
+            "PROVIDER_UNAVAILABLE",
+            "TOOL_SCHEMA_INVALID",
+            "UNSUPPORTED_CAPABILITY",
+            "REFERENCE_INVALID",
+            "TEST_PROTOCOL_SEALED",
+            "RUN_CANCELLED"
+          ],
+          "title": "Error Code",
+          "type": "string"
+        },
+        "request_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Request Id",
+          "type": "string"
+        },
+        "details": {
+          "items": {
+            "$ref": "#/$defs/ValidationIssue"
+          },
+          "title": "Details",
+          "type": "array"
+        }
+      },
+      "required": [
+        "error",
+        "error_code",
+        "request_id"
+      ],
+      "title": "ErrorResponse",
+      "type": "object"
+    },
+    "EstimatedCost": {
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "const": "estimated",
+          "title": "Status",
+          "type": "string"
+        },
+        "amount": {
+          "minimum": 0,
+          "title": "Amount",
+          "type": "number"
+        },
+        "currency": {
+          "pattern": "^[A-Z]{3}$",
+          "title": "Currency",
+          "type": "string"
+        },
+        "pricing_revision": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Pricing Revision",
+          "type": "string"
+        }
+      },
+      "required": [
+        "status",
+        "amount",
+        "currency",
+        "pricing_revision"
+      ],
+      "title": "EstimatedCost",
+      "type": "object"
+    },
+    "EvaluationCandidate": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "model": {
+          "enum": [
+            "mean",
+            "ridge"
+          ],
+          "title": "Model",
+          "type": "string"
+        },
+        "seed": {
+          "exclusiveMaximum": 4294967296,
+          "minimum": 0,
+          "title": "Seed",
+          "type": "integer"
+        },
+        "configuration_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Configuration Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "model",
+        "seed",
+        "configuration_sha256"
+      ],
+      "title": "EvaluationCandidate",
+      "type": "object"
+    },
+    "EvaluationProtocol": {
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "1.0",
+          "default": "1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "project_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Project Id",
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        },
+        "parents": {
+          "items": {
+            "maxLength": 160,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Parents",
+          "type": "array"
+        },
+        "software": {
+          "additionalProperties": {
+            "maxLength": 4000,
+            "minLength": 1,
+            "type": "string"
+          },
+          "propertyNames": {
+            "maxLength": 160,
+            "minLength": 1
+          },
+          "title": "Software",
+          "type": "object"
+        },
+        "kind": {
+          "const": "evaluation_protocol",
+          "default": "evaluation_protocol",
+          "title": "Kind",
+          "type": "string"
+        },
+        "revision": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "title": "Revision",
+          "type": "integer"
+        },
+        "dataset_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Dataset Id",
+          "type": "string"
+        },
+        "dataset_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Dataset Sha256",
+          "type": "string"
+        },
+        "split_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Split Id",
+          "type": "string"
+        },
+        "split_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Split Sha256",
+          "type": "string"
+        },
+        "configuration_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Configuration Sha256",
+          "type": "string"
+        },
+        "target": {
+          "minLength": 1,
+          "pattern": "\\S",
+          "title": "Target",
+          "type": "string"
+        },
+        "features": {
+          "items": {
+            "minLength": 1,
+            "pattern": "\\S",
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Features",
+          "type": "array"
+        },
+        "preprocessing": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Preprocessing",
+          "type": "string"
+        },
+        "independent_unit": {
+          "$ref": "#/$defs/IndependentUnit"
+        },
+        "candidates": {
+          "items": {
+            "$ref": "#/$defs/EvaluationCandidate"
+          },
+          "minItems": 1,
+          "title": "Candidates",
+          "type": "array"
+        },
+        "primary_metric": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Primary Metric",
+          "type": "string"
+        },
+        "selection_rule": {
+          "enum": [
+            "validation",
+            "predeclared_comparison"
+          ],
+          "title": "Selection Rule",
+          "type": "string"
+        },
+        "success_criterion": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SuccessCriterion"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "state": {
+          "enum": [
+            "draft",
+            "sealed",
+            "released"
+          ],
+          "title": "State",
+          "type": "string"
+        },
+        "sealed_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Sealed At"
+        },
+        "released_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Released At"
+        },
+        "selected_candidate_id": {
+          "anyOf": [
+            {
+              "maxLength": 160,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Selected Candidate Id"
+        },
+        "exposure_status": {
+          "enum": [
+            "unexposed",
+            "exposed",
+            "unknown"
+          ],
+          "title": "Exposure Status",
+          "type": "string"
+        },
+        "exposure_event_ids": {
+          "items": {
+            "maxLength": 160,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Exposure Event Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "project_id",
+        "revision",
+        "dataset_id",
+        "dataset_sha256",
+        "split_id",
+        "split_sha256",
+        "configuration_sha256",
+        "target",
+        "features",
+        "preprocessing",
+        "independent_unit",
+        "candidates",
+        "primary_metric",
+        "selection_rule",
+        "state",
+        "exposure_status"
+      ],
+      "title": "EvaluationProtocol",
+      "type": "object"
+    },
+    "Evidence": {
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "1.0",
+          "default": "1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "project_id": {
+          "title": "Project Id",
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        },
+        "parents": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Parents",
+          "type": "array"
+        },
+        "software": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "title": "Software",
+          "type": "object"
+        },
+        "kind": {
+          "const": "evidence",
+          "default": "evidence",
+          "title": "Kind",
+          "type": "string"
+        },
+        "title": {
+          "title": "Title",
+          "type": "string"
+        },
+        "pdf_key": {
+          "title": "Pdf Key",
+          "type": "string"
+        },
+        "sha256": {
+          "title": "Sha256",
+          "type": "string"
+        },
+        "result": {
+          "additionalProperties": true,
+          "title": "Result",
+          "type": "object"
+        },
+        "bundle_key": {
+          "title": "Bundle Key",
+          "type": "string"
+        }
+      },
+      "required": [
+        "project_id",
+        "title",
+        "pdf_key",
+        "sha256",
+        "result",
+        "bundle_key"
+      ],
+      "title": "Evidence",
+      "type": "object"
+    },
+    "ExecutionFailure": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "const": "execution_failure",
+          "title": "Kind",
+          "type": "string"
+        },
+        "error_code": {
+          "enum": [
+            "ADMISSION_REJECTED",
+            "JOB_TIMED_OUT",
+            "WORKER_INTERRUPTED",
+            "INTEGRITY_FAILED"
+          ],
+          "title": "Error Code",
+          "type": "string"
+        },
+        "observed_error": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Observed Error",
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "error_code",
+        "observed_error"
+      ],
+      "title": "ExecutionFailure",
+      "type": "object"
+    },
+    "ExecutionVersions": {
+      "additionalProperties": false,
+      "properties": {
+        "workbench_revision": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Workbench Revision",
+          "type": "string"
+        },
+        "provider": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Provider",
+          "type": "string"
+        },
+        "model": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Model",
+          "type": "string"
+        },
+        "model_revision": {
+          "anyOf": [
+            {
+              "maxLength": 160,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Model Revision"
+        },
+        "provider_sdk": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Provider Sdk",
+          "type": "string"
+        },
+        "runtime": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Runtime",
+          "type": "string"
+        },
+        "checkpointer": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Checkpointer",
+          "type": "string"
+        },
+        "prompt": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Prompt",
+          "type": "string"
+        },
+        "tool_catalog": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Tool Catalog",
+          "type": "string"
+        }
+      },
+      "required": [
+        "workbench_revision",
+        "provider",
+        "model",
+        "model_revision",
+        "provider_sdk",
+        "runtime",
+        "checkpointer",
+        "prompt",
+        "tool_catalog"
+      ],
+      "title": "ExecutionVersions",
+      "type": "object"
+    },
+    "Failure": {
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "1.0",
+          "default": "1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "project_id": {
+          "title": "Project Id",
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        },
+        "parents": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Parents",
+          "type": "array"
+        },
+        "software": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "title": "Software",
+          "type": "object"
+        },
+        "kind": {
+          "const": "failure",
+          "default": "failure",
+          "title": "Kind",
+          "type": "string"
+        },
+        "benchmark_id": {
+          "title": "Benchmark Id",
+          "type": "string"
+        },
+        "external_project_id": {
+          "title": "External Project Id",
+          "type": "string"
+        },
+        "external_record_id": {
+          "title": "External Record Id",
+          "type": "string"
+        },
+        "reason": {
+          "title": "Reason",
+          "type": "string"
+        },
+        "record": {
+          "additionalProperties": true,
+          "title": "Record",
+          "type": "object"
+        }
+      },
+      "required": [
+        "project_id",
+        "benchmark_id",
+        "external_project_id",
+        "external_record_id",
+        "reason",
+        "record"
+      ],
+      "title": "Failure",
+      "type": "object"
+    },
+    "FailureInput": {
+      "additionalProperties": false,
+      "properties": {
+        "benchmark_id": {
+          "title": "Benchmark Id",
+          "type": "string"
+        },
+        "reason": {
+          "maxLength": 3000,
+          "minLength": 1,
+          "title": "Reason",
+          "type": "string"
+        },
+        "uncertainty_notes": {
+          "maxLength": 3000,
+          "minLength": 1,
+          "title": "Uncertainty Notes",
+          "type": "string"
+        }
+      },
+      "required": [
+        "benchmark_id",
+        "reason",
+        "uncertainty_notes"
+      ],
+      "title": "FailureInput",
+      "type": "object"
+    },
+    "FailureReceipt": {
+      "additionalProperties": false,
+      "properties": {
+        "connector": {
+          "const": "sciml-workbench",
+          "default": "sciml-workbench",
+          "title": "Connector",
+          "type": "string"
+        },
+        "external_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "External Id",
+          "type": "string"
+        },
+        "request_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Request Sha256",
+          "type": "string"
+        },
+        "state": {
+          "const": "confirmed",
+          "default": "confirmed",
+          "title": "State",
+          "type": "string"
+        },
+        "external_project_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "External Project Id",
+          "type": "string"
+        },
+        "external_record_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "External Record Id",
+          "type": "string"
+        },
+        "record": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Record",
+          "type": "object"
+        }
+      },
+      "required": [
+        "external_id",
+        "request_sha256",
+        "external_project_id",
+        "external_record_id",
+        "record"
+      ],
+      "title": "FailureReceipt",
+      "type": "object"
+    },
+    "FailureV2": {
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "2.0",
+          "default": "2.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "project_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Project Id",
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        },
+        "parents": {
+          "items": {
+            "maxLength": 160,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Parents",
+          "type": "array"
+        },
+        "software": {
+          "additionalProperties": {
+            "maxLength": 4000,
+            "minLength": 1,
+            "type": "string"
+          },
+          "propertyNames": {
+            "maxLength": 160,
+            "minLength": 1
+          },
+          "title": "Software",
+          "type": "object"
+        },
+        "kind": {
+          "const": "failure",
+          "default": "failure",
+          "title": "Kind",
+          "type": "string"
+        },
+        "benchmark_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Benchmark Id",
+          "type": "string"
+        },
+        "source_job_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Source Job Id",
+          "type": "string"
+        },
+        "reason": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Reason",
+          "type": "string"
+        },
+        "uncertainty_notes": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Uncertainty Notes",
+          "type": "string"
+        },
+        "actor": {
+          "discriminator": {
+            "mapping": {
+              "agent": "#/$defs/AgentActor",
+              "human": "#/$defs/HumanActor"
+            },
+            "propertyName": "kind"
+          },
+          "oneOf": [
+            {
+              "$ref": "#/$defs/HumanActor"
+            },
+            {
+              "$ref": "#/$defs/AgentActor"
+            }
+          ],
+          "title": "Actor"
+        },
+        "observation": {
+          "discriminator": {
+            "mapping": {
+              "criterion_missed": "#/$defs/CriterionFailure",
+              "execution_failure": "#/$defs/ExecutionFailure",
+              "researcher_assessment": "#/$defs/ResearcherAssessment"
+            },
+            "propertyName": "kind"
+          },
+          "oneOf": [
+            {
+              "$ref": "#/$defs/ExecutionFailure"
+            },
+            {
+              "$ref": "#/$defs/CriterionFailure"
+            },
+            {
+              "$ref": "#/$defs/ResearcherAssessment"
+            }
+          ],
+          "title": "Observation"
+        },
+        "causal_hypotheses": {
+          "items": {
+            "maxLength": 4000,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Causal Hypotheses",
+          "type": "array"
+        },
+        "receipt": {
+          "$ref": "#/$defs/FailureReceipt"
+        }
+      },
+      "required": [
+        "project_id",
+        "benchmark_id",
+        "source_job_id",
+        "reason",
+        "uncertainty_notes",
+        "actor",
+        "observation",
+        "receipt"
+      ],
+      "title": "FailureV2",
+      "type": "object"
+    },
+    "HumanActor": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "const": "human",
+          "title": "Kind",
+          "type": "string"
+        },
+        "operator_session_reference": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Operator Session Reference",
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "operator_session_reference"
+      ],
+      "title": "HumanActor",
+      "type": "object"
+    },
+    "IndependentUnit": {
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        },
+        "group_columns": {
+          "items": {
+            "minLength": 1,
+            "pattern": "\\S",
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Group Columns",
+          "type": "array"
+        },
+        "rationale": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Rationale",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "group_columns",
+        "rationale"
+      ],
+      "title": "IndependentUnit",
+      "type": "object"
+    },
+    "InferredDeclaration_Annotated_dict_Annotated_str__FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1____PydanticGeneralMetadata_pattern____S_______Annotated_str__StringConstraints____FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1_____": {
+      "additionalProperties": false,
+      "properties": {
+        "origin": {
+          "const": "inferred",
+          "title": "Origin",
+          "type": "string"
+        },
+        "value": {
+          "minProperties": 1,
+          "patternProperties": {
+            "\\S": {
+              "maxLength": 4000,
+              "minLength": 1,
+              "type": "string"
+            }
+          },
+          "propertyNames": {
+            "minLength": 1
+          },
+          "title": "Value",
+          "type": "object"
+        },
+        "supporting_references": {
+          "items": {
+            "$ref": "#/$defs/DeclarationReference"
+          },
+          "minItems": 1,
+          "title": "Supporting References",
+          "type": "array"
+        },
+        "rationale": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Rationale",
+          "type": "string"
+        },
+        "uncertainty": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Uncertainty",
+          "type": "string"
+        },
+        "confidence": {
+          "anyOf": [
+            {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Confidence"
+        }
+      },
+      "required": [
+        "origin",
+        "value",
+        "supporting_references",
+        "rationale",
+        "uncertainty"
+      ],
+      "title": "InferredDeclaration[Annotated[dict[Annotated[str, FieldInfo(annotation=NoneType, required=True, metadata=[MinLen(min_length=1), _PydanticGeneralMetadata(pattern='\\\\S')])], Annotated[str, StringConstraints]], FieldInfo(annotation=NoneType, required=True, metadata=[MinLen(min_length=1)])]]",
+      "type": "object"
+    },
+    "InferredDeclaration_Annotated_str__FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1____PydanticGeneralMetadata_pattern____S______": {
+      "additionalProperties": false,
+      "properties": {
+        "origin": {
+          "const": "inferred",
+          "title": "Origin",
+          "type": "string"
+        },
+        "value": {
+          "minLength": 1,
+          "pattern": "\\S",
+          "title": "Value",
+          "type": "string"
+        },
+        "supporting_references": {
+          "items": {
+            "$ref": "#/$defs/DeclarationReference"
+          },
+          "minItems": 1,
+          "title": "Supporting References",
+          "type": "array"
+        },
+        "rationale": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Rationale",
+          "type": "string"
+        },
+        "uncertainty": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Uncertainty",
+          "type": "string"
+        },
+        "confidence": {
+          "anyOf": [
+            {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Confidence"
+        }
+      },
+      "required": [
+        "origin",
+        "value",
+        "supporting_references",
+        "rationale",
+        "uncertainty"
+      ],
+      "title": "InferredDeclaration[Annotated[str, FieldInfo(annotation=NoneType, required=True, metadata=[MinLen(min_length=1), _PydanticGeneralMetadata(pattern='\\\\S')])]]",
+      "type": "object"
+    },
+    "InferredDeclaration_Annotated_str__StringConstraints__": {
+      "additionalProperties": false,
+      "properties": {
+        "origin": {
+          "const": "inferred",
+          "title": "Origin",
+          "type": "string"
+        },
+        "value": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Value",
+          "type": "string"
+        },
+        "supporting_references": {
+          "items": {
+            "$ref": "#/$defs/DeclarationReference"
+          },
+          "minItems": 1,
+          "title": "Supporting References",
+          "type": "array"
+        },
+        "rationale": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Rationale",
+          "type": "string"
+        },
+        "uncertainty": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Uncertainty",
+          "type": "string"
+        },
+        "confidence": {
+          "anyOf": [
+            {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Confidence"
+        }
+      },
+      "required": [
+        "origin",
+        "value",
+        "supporting_references",
+        "rationale",
+        "uncertainty"
+      ],
+      "title": "InferredDeclaration[Annotated[str, StringConstraints]]",
+      "type": "object"
+    },
+    "InferredDeclaration_IndependentUnit_": {
+      "additionalProperties": false,
+      "properties": {
+        "origin": {
+          "const": "inferred",
+          "title": "Origin",
+          "type": "string"
+        },
+        "value": {
+          "$ref": "#/$defs/IndependentUnit"
+        },
+        "supporting_references": {
+          "items": {
+            "$ref": "#/$defs/DeclarationReference"
+          },
+          "minItems": 1,
+          "title": "Supporting References",
+          "type": "array"
+        },
+        "rationale": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Rationale",
+          "type": "string"
+        },
+        "uncertainty": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Uncertainty",
+          "type": "string"
+        },
+        "confidence": {
+          "anyOf": [
+            {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Confidence"
+        }
+      },
+      "required": [
+        "origin",
+        "value",
+        "supporting_references",
+        "rationale",
+        "uncertainty"
+      ],
+      "title": "InferredDeclaration[IndependentUnit]",
+      "type": "object"
+    },
+    "InferredDeclaration_Literal__empirical____synthetic___": {
+      "additionalProperties": false,
+      "properties": {
+        "origin": {
+          "const": "inferred",
+          "title": "Origin",
+          "type": "string"
+        },
+        "value": {
+          "enum": [
+            "empirical",
+            "synthetic"
+          ],
+          "title": "Value",
+          "type": "string"
+        },
+        "supporting_references": {
+          "items": {
+            "$ref": "#/$defs/DeclarationReference"
+          },
+          "minItems": 1,
+          "title": "Supporting References",
+          "type": "array"
+        },
+        "rationale": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Rationale",
+          "type": "string"
+        },
+        "uncertainty": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Uncertainty",
+          "type": "string"
+        },
+        "confidence": {
+          "anyOf": [
+            {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Confidence"
+        }
+      },
+      "required": [
+        "origin",
+        "value",
+        "supporting_references",
+        "rationale",
+        "uncertainty"
+      ],
+      "title": "InferredDeclaration[Literal['empirical', 'synthetic']]",
+      "type": "object"
+    },
+    "InferredDeclaration_list_Annotated_str__StringConstraints___": {
+      "additionalProperties": false,
+      "properties": {
+        "origin": {
+          "const": "inferred",
+          "title": "Origin",
+          "type": "string"
+        },
+        "value": {
+          "items": {
+            "maxLength": 4000,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Value",
+          "type": "array"
+        },
+        "supporting_references": {
+          "items": {
+            "$ref": "#/$defs/DeclarationReference"
+          },
+          "minItems": 1,
+          "title": "Supporting References",
+          "type": "array"
+        },
+        "rationale": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Rationale",
+          "type": "string"
+        },
+        "uncertainty": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Uncertainty",
+          "type": "string"
+        },
+        "confidence": {
+          "anyOf": [
+            {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Confidence"
+        }
+      },
+      "required": [
+        "origin",
+        "value",
+        "supporting_references",
+        "rationale",
+        "uncertainty"
+      ],
+      "title": "InferredDeclaration[list[Annotated[str, StringConstraints]]]",
+      "type": "object"
+    },
+    "InputScope": {
+      "additionalProperties": false,
+      "properties": {
+        "material_ids": {
+          "items": {
+            "maxLength": 160,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Material Ids",
+          "type": "array"
+        },
+        "artifact_ids": {
+          "items": {
+            "maxLength": 160,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Artifact Ids",
+          "type": "array"
+        },
+        "conversation_id": {
+          "anyOf": [
+            {
+              "maxLength": 160,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Conversation Id"
+        },
+        "message_cutoff": {
+          "anyOf": [
+            {
+              "maximum": 9007199254740991,
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Message Cutoff"
+        }
+      },
+      "required": [
+        "material_ids",
+        "artifact_ids"
+      ],
+      "title": "InputScope",
+      "type": "object"
+    },
+    "JobResponse": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "project_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Project Id",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "audit",
+            "split",
+            "benchmark",
+            "evidence",
+            "failure",
+            "report",
+            "report_verify",
+            "scientific_replay"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "state": {
+          "enum": [
+            "queued",
+            "running",
+            "succeeded",
+            "failed"
+          ],
+          "title": "State",
+          "type": "string"
+        },
+        "result_id": {
+          "anyOf": [
+            {
+              "maxLength": 160,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Result Id"
+        },
+        "error": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Error"
+        },
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        },
+        "started_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Started At"
+        },
+        "finished_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Finished At"
+        },
+        "error_code": {
+          "anyOf": [
+            {
+              "enum": [
+                "UNAUTHORIZED",
+                "ORIGIN_REJECTED",
+                "PROJECT_NOT_FOUND",
+                "ARTIFACT_NOT_FOUND",
+                "JOB_NOT_FOUND",
+                "IDEMPOTENCY_CONFLICT",
+                "PROJECT_BUSY",
+                "VALIDATION_FAILED",
+                "LINEAGE_MISMATCH",
+                "UPLOAD_TOO_LARGE",
+                "STORAGE_UNAVAILABLE",
+                "DEPENDENCY_UNAVAILABLE",
+                "INTERNAL_ERROR",
+                "ADMISSION_REJECTED",
+                "JOB_TIMED_OUT",
+                "WORKER_INTERRUPTED",
+                "INTEGRITY_FAILED",
+                "EXTERNAL_OUTCOME_UNKNOWN",
+                "AGENT_UNAVAILABLE",
+                "POLICY_DENIED",
+                "DATA_EXPOSURE_DENIED",
+                "RUN_REVISION_CHANGED",
+                "QUESTION_STALE",
+                "BUDGET_EXHAUSTED",
+                "PROVIDER_UNAVAILABLE",
+                "TOOL_SCHEMA_INVALID",
+                "UNSUPPORTED_CAPABILITY",
+                "REFERENCE_INVALID",
+                "TEST_PROTOCOL_SEALED",
+                "RUN_CANCELLED"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Error Code"
+        },
+        "retry_of_job_id": {
+          "anyOf": [
+            {
+              "maxLength": 160,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Retry Of Job Id"
+        },
+        "deadline_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Deadline At"
+        }
+      },
+      "required": [
+        "id",
+        "project_id",
+        "kind",
+        "state",
+        "result_id",
+        "error",
+        "created_at",
+        "started_at",
+        "finished_at"
+      ],
+      "title": "JobResponse",
+      "type": "object"
+    },
+    "JsonValue": {},
+    "LegacyJobResponse": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "project_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Project Id",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "audit",
+            "split",
+            "benchmark",
+            "evidence",
+            "failure",
+            "report"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "state": {
+          "enum": [
+            "queued",
+            "running",
+            "succeeded",
+            "failed"
+          ],
+          "title": "State",
+          "type": "string"
+        },
+        "result_id": {
+          "anyOf": [
+            {
+              "maxLength": 160,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Result Id"
+        },
+        "error": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Error"
+        },
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        },
+        "started_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Started At"
+        },
+        "finished_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Finished At"
+        }
+      },
+      "required": [
+        "id",
+        "project_id",
+        "kind",
+        "state",
+        "result_id",
+        "error",
+        "created_at",
+        "started_at",
+        "finished_at"
+      ],
+      "title": "LegacyJobResponse",
+      "type": "object"
+    },
+    "MaterialQuestion": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "field": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Field",
+          "type": "string"
+        },
+        "prompt": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Prompt",
+          "type": "string"
+        },
+        "blocked_step_ids": {
+          "items": {
+            "maxLength": 160,
+            "minLength": 1,
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Blocked Step Ids",
+          "type": "array"
+        },
+        "options": {
+          "items": {
+            "$ref": "#/$defs/QuestionOption"
+          },
+          "title": "Options",
+          "type": "array"
+        },
+        "evidence": {
+          "items": {
+            "discriminator": {
+              "mapping": {
+                "available": "#/$defs/AvailableEvidenceReference",
+                "unavailable": "#/$defs/UnavailableEvidenceReference"
+              },
+              "propertyName": "availability"
+            },
+            "oneOf": [
+              {
+                "$ref": "#/$defs/AvailableEvidenceReference"
+              },
+              {
+                "$ref": "#/$defs/UnavailableEvidenceReference"
+              }
+            ]
+          },
+          "title": "Evidence",
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "field",
+        "prompt",
+        "blocked_step_ids",
+        "options",
+        "evidence"
+      ],
+      "title": "MaterialQuestion",
+      "type": "object"
+    },
+    "MetricReference": {
+      "additionalProperties": false,
+      "properties": {
+        "artifact_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Artifact Id",
+          "type": "string"
+        },
+        "field_path": {
+          "pattern": "^/(?:[^~/]|~[01])+(?:/(?:[^~/]|~[01])+)*$",
+          "title": "Field Path",
+          "type": "string"
+        },
+        "partition": {
+          "enum": [
+            "train",
+            "validation",
+            "test",
+            "excluded"
+          ],
+          "title": "Partition",
+          "type": "string"
+        },
+        "value": {
+          "title": "Value",
+          "type": "number"
+        },
+        "units": {
+          "anyOf": [
+            {
+              "maxLength": 4000,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Units"
+        }
+      },
+      "required": [
+        "artifact_id",
+        "field_path",
+        "partition",
+        "value"
+      ],
+      "title": "MetricReference",
+      "type": "object"
+    },
+    "PlanAcceptanceInput": {
+      "additionalProperties": false,
+      "properties": {
+        "expected_run_revision": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "title": "Expected Run Revision",
+          "type": "integer"
+        },
+        "expected_plan_revision": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "title": "Expected Plan Revision",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "expected_run_revision",
+        "expected_plan_revision"
+      ],
+      "title": "PlanAcceptanceInput",
+      "type": "object"
+    },
+    "PolicyReference": {
+      "additionalProperties": false,
+      "properties": {
+        "policy_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Policy Id",
+          "type": "string"
+        },
+        "revision": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "title": "Revision",
+          "type": "integer"
+        },
+        "sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "policy_id",
+        "revision",
+        "sha256"
+      ],
+      "title": "PolicyReference",
+      "type": "object"
+    },
+    "ProjectInput": {
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        },
+        "description": {
+          "default": "",
+          "maxLength": 2000,
+          "title": "Description",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name"
+      ],
+      "title": "ProjectInput",
+      "type": "object"
+    },
+    "ProjectResponse": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "description": {
+          "title": "Description",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "description"
+      ],
+      "title": "ProjectResponse",
+      "type": "object"
+    },
+    "Provenance": {
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "1.0",
+          "default": "1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "project_id": {
+          "title": "Project Id",
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        },
+        "parents": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Parents",
+          "type": "array"
+        },
+        "software": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "title": "Software",
+          "type": "object"
+        },
+        "kind": {
+          "const": "provenance",
+          "default": "provenance",
+          "title": "Kind",
+          "type": "string"
+        },
+        "activity": {
+          "title": "Activity",
+          "type": "string"
+        },
+        "inputs": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Inputs",
+          "type": "array"
+        },
+        "outputs": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Outputs",
+          "type": "array"
+        },
+        "parameters": {
+          "additionalProperties": true,
+          "title": "Parameters",
+          "type": "object"
+        }
+      },
+      "required": [
+        "project_id",
+        "activity",
+        "inputs",
+        "outputs",
+        "parameters"
+      ],
+      "title": "Provenance",
+      "type": "object"
+    },
+    "QuestionAnswerInput": {
+      "additionalProperties": false,
+      "properties": {
+        "expected_run_revision": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "title": "Expected Run Revision",
+          "type": "integer"
+        },
+        "expected_question_revision": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "title": "Expected Question Revision",
+          "type": "integer"
+        },
+        "answers": {
+          "additionalProperties": {
+            "maxLength": 4000,
+            "minLength": 1,
+            "type": "string"
+          },
+          "maxProperties": 20,
+          "minProperties": 1,
+          "propertyNames": {
+            "maxLength": 160,
+            "minLength": 1
+          },
+          "title": "Answers",
+          "type": "object"
+        }
+      },
+      "required": [
+        "expected_run_revision",
+        "expected_question_revision",
+        "answers"
+      ],
+      "title": "QuestionAnswerInput",
+      "type": "object"
+    },
+    "QuestionOption": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "label": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Label",
+          "type": "string"
+        },
+        "consequence": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Consequence",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "label",
+        "consequence"
+      ],
+      "title": "QuestionOption",
+      "type": "object"
+    },
+    "ReferenceCheck": {
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "enum": [
+            "not_checked",
+            "valid",
+            "invalid"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "checked_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Checked At"
+        },
+        "issues": {
+          "items": {
+            "maxLength": 4000,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Issues",
+          "type": "array"
+        }
+      },
+      "required": [
+        "status"
+      ],
+      "title": "ReferenceCheck",
+      "type": "object"
+    },
+    "Report": {
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "1.0",
+          "default": "1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "project_id": {
+          "title": "Project Id",
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        },
+        "parents": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Parents",
+          "type": "array"
+        },
+        "software": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "title": "Software",
+          "type": "object"
+        },
+        "kind": {
+          "const": "report",
+          "default": "report",
+          "title": "Kind",
+          "type": "string"
+        },
+        "blob_key": {
+          "title": "Blob Key",
+          "type": "string"
+        },
+        "sha256": {
+          "title": "Sha256",
+          "type": "string"
+        },
+        "artifact_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Artifact Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "project_id",
+        "blob_key",
+        "sha256",
+        "artifact_ids"
+      ],
+      "title": "Report",
+      "type": "object"
+    },
+    "ResearchPlan": {
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "1.0",
+          "default": "1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "project_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Project Id",
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        },
+        "contract": {
+          "const": "research_plan",
+          "default": "research_plan",
+          "title": "Contract",
+          "type": "string"
+        },
+        "run_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Run Id",
+          "type": "string"
+        },
+        "revision": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "title": "Revision",
+          "type": "integer"
+        },
+        "steps": {
+          "items": {
+            "$ref": "#/$defs/ResearchStep"
+          },
+          "maxItems": 120,
+          "minItems": 1,
+          "title": "Steps",
+          "type": "array"
+        },
+        "rationale_summary": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Rationale Summary",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "project_id",
+        "created_at",
+        "run_id",
+        "revision",
+        "steps",
+        "rationale_summary"
+      ],
+      "title": "ResearchPlan",
+      "type": "object"
+    },
+    "ResearchQuestion": {
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "1.0",
+          "default": "1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "project_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Project Id",
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        },
+        "contract": {
+          "const": "research_question",
+          "default": "research_question",
+          "title": "Contract",
+          "type": "string"
+        },
+        "run_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Run Id",
+          "type": "string"
+        },
+        "revision": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "title": "Revision",
+          "type": "integer"
+        },
+        "run_revision": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "title": "Run Revision",
+          "type": "integer"
+        },
+        "questions": {
+          "items": {
+            "$ref": "#/$defs/MaterialQuestion"
+          },
+          "maxItems": 20,
+          "minItems": 1,
+          "title": "Questions",
+          "type": "array"
+        },
+        "status": {
+          "enum": [
+            "open",
+            "answered",
+            "superseded",
+            "expired",
+            "cancelled"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "expires_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Expires At"
+        },
+        "answer_message_id": {
+          "anyOf": [
+            {
+              "maxLength": 160,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Answer Message Id"
+        }
+      },
+      "required": [
+        "id",
+        "project_id",
+        "created_at",
+        "run_id",
+        "revision",
+        "run_revision",
+        "questions",
+        "status"
+      ],
+      "title": "ResearchQuestion",
+      "type": "object"
+    },
+    "ResearchRun": {
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "1.0",
+          "default": "1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "project_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Project Id",
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        },
+        "contract": {
+          "const": "research_run",
+          "default": "research_run",
+          "title": "Contract",
+          "type": "string"
+        },
+        "objective": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Objective",
+          "type": "string"
+        },
+        "inputs": {
+          "$ref": "#/$defs/InputScope"
+        },
+        "policy": {
+          "$ref": "#/$defs/PolicyReference"
+        },
+        "mode": {
+          "enum": [
+            "autopilot",
+            "review_plan"
+          ],
+          "title": "Mode",
+          "type": "string"
+        },
+        "state": {
+          "enum": [
+            "queued",
+            "running",
+            "waiting_for_job",
+            "waiting_for_input",
+            "paused",
+            "completed",
+            "partially_completed",
+            "failed",
+            "cancelled"
+          ],
+          "title": "State",
+          "type": "string"
+        },
+        "control_revision": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "title": "Control Revision",
+          "type": "integer"
+        },
+        "plan_revision": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "title": "Plan Revision",
+          "type": "integer"
+        },
+        "limits": {
+          "$ref": "#/$defs/ResourceLimits"
+        },
+        "usage": {
+          "$ref": "#/$defs/UsageSnapshot"
+        },
+        "open_question_ids": {
+          "items": {
+            "maxLength": 160,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Open Question Ids",
+          "type": "array"
+        },
+        "result_artifact_ids": {
+          "items": {
+            "maxLength": 160,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Result Artifact Ids",
+          "type": "array"
+        },
+        "continued_from_run_id": {
+          "anyOf": [
+            {
+              "maxLength": 160,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Continued From Run Id"
+        },
+        "finished_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Finished At"
+        },
+        "stop_reason": {
+          "anyOf": [
+            {
+              "maxLength": 4000,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Stop Reason"
+        }
+      },
+      "required": [
+        "id",
+        "project_id",
+        "created_at",
+        "objective",
+        "inputs",
+        "policy",
+        "mode",
+        "state",
+        "control_revision",
+        "plan_revision",
+        "limits",
+        "usage",
+        "open_question_ids",
+        "result_artifact_ids"
+      ],
+      "title": "ResearchRun",
+      "type": "object"
+    },
+    "ResearchStep": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "objective": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Objective",
+          "type": "string"
+        },
+        "depends_on": {
+          "items": {
+            "maxLength": 160,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Depends On",
+          "type": "array"
+        },
+        "allowed_input_ids": {
+          "items": {
+            "maxLength": 160,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Allowed Input Ids",
+          "type": "array"
+        },
+        "expected_artifact_kinds": {
+          "items": {
+            "maxLength": 160,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Expected Artifact Kinds",
+          "type": "array"
+        },
+        "completion_criteria": {
+          "items": {
+            "maxLength": 4000,
+            "minLength": 1,
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Completion Criteria",
+          "type": "array"
+        },
+        "status": {
+          "enum": [
+            "pending",
+            "ready",
+            "running",
+            "blocked",
+            "completed",
+            "failed",
+            "skipped"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "action_ids": {
+          "items": {
+            "maxLength": 160,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Action Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "objective",
+        "depends_on",
+        "allowed_input_ids",
+        "expected_artifact_kinds",
+        "completion_criteria",
+        "status"
+      ],
+      "title": "ResearchStep",
+      "type": "object"
+    },
+    "ResearcherAssessment": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "const": "researcher_assessment",
+          "title": "Kind",
+          "type": "string"
+        },
+        "statement": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Statement",
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "statement"
+      ],
+      "title": "ResearcherAssessment",
+      "type": "object"
+    },
+    "ResourceLimits": {
+      "additionalProperties": false,
+      "description": "Values are required; E01 owns defaults and server/project intersections.",
+      "properties": {
+        "model_tokens": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "title": "Model Tokens",
+          "type": "integer"
+        },
+        "model_requests": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "title": "Model Requests",
+          "type": "integer"
+        },
+        "tool_calls": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "title": "Tool Calls",
+          "type": "integer"
+        },
+        "coordinator_iterations": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "title": "Coordinator Iterations",
+          "type": "integer"
+        },
+        "specialist_assignments": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "title": "Specialist Assignments",
+          "type": "integer"
+        },
+        "specialist_concurrency": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "title": "Specialist Concurrency",
+          "type": "integer"
+        },
+        "delegation_depth": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Delegation Depth",
+          "type": "integer"
+        },
+        "review_rounds": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "title": "Review Rounds",
+          "type": "integer"
+        },
+        "scientific_attempts": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "title": "Scientific Attempts",
+          "type": "integer"
+        },
+        "active_seconds": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "title": "Active Seconds",
+          "type": "integer"
+        },
+        "transient_retries": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "title": "Transient Retries",
+          "type": "integer"
+        },
+        "finalization_model_tokens": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "title": "Finalization Model Tokens",
+          "type": "integer"
+        },
+        "finalization_scientific_attempts": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "title": "Finalization Scientific Attempts",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "model_tokens",
+        "model_requests",
+        "tool_calls",
+        "coordinator_iterations",
+        "specialist_assignments",
+        "specialist_concurrency",
+        "delegation_depth",
+        "review_rounds",
+        "scientific_attempts",
+        "active_seconds",
+        "transient_retries",
+        "finalization_model_tokens",
+        "finalization_scientific_attempts"
+      ],
+      "title": "ResourceLimits",
+      "type": "object"
+    },
+    "RunAmendmentInput": {
+      "additionalProperties": false,
+      "properties": {
+        "expected_run_revision": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "title": "Expected Run Revision",
+          "type": "integer"
+        },
+        "expected_plan_revision": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "title": "Expected Plan Revision",
+          "type": "integer"
+        },
+        "objective": {
+          "anyOf": [
+            {
+              "maxLength": 4000,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Objective"
+        },
+        "inputs": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/InputScope"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "policy_revision": {
+          "anyOf": [
+            {
+              "maximum": 9007199254740991,
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Policy Revision"
+        }
+      },
+      "required": [
+        "expected_run_revision",
+        "expected_plan_revision"
+      ],
+      "title": "RunAmendmentInput",
+      "type": "object"
+    },
+    "RunControlInput": {
+      "additionalProperties": false,
+      "properties": {
+        "expected_run_revision": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "title": "Expected Run Revision",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "expected_run_revision"
+      ],
+      "title": "RunControlInput",
+      "type": "object"
+    },
+    "RunEvent": {
+      "additionalProperties": false,
+      "properties": {
+        "contract": {
+          "const": "run_event",
+          "default": "run_event",
+          "title": "Contract",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "1.0",
+          "default": "1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "run_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Run Id",
+          "type": "string"
+        },
+        "sequence": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "title": "Sequence",
+          "type": "integer"
+        },
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        },
+        "event_type": {
+          "enum": [
+            "accepted",
+            "state_changed",
+            "plan_changed",
+            "action_changed",
+            "question_changed",
+            "usage_changed",
+            "result_published"
+          ],
+          "title": "Event Type",
+          "type": "string"
+        },
+        "run_revision": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "title": "Run Revision",
+          "type": "integer"
+        },
+        "state": {
+          "enum": [
+            "queued",
+            "running",
+            "waiting_for_job",
+            "waiting_for_input",
+            "paused",
+            "completed",
+            "partially_completed",
+            "failed",
+            "cancelled"
+          ],
+          "title": "State",
+          "type": "string"
+        },
+        "action_id": {
+          "anyOf": [
+            {
+              "maxLength": 160,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Action Id"
+        },
+        "question_id": {
+          "anyOf": [
+            {
+              "maxLength": 160,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Question Id"
+        },
+        "artifact_ids": {
+          "items": {
+            "maxLength": 160,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Artifact Ids",
+          "type": "array"
+        },
+        "summary": {
+          "anyOf": [
+            {
+              "maxLength": 4000,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Summary"
+        }
+      },
+      "required": [
+        "run_id",
+        "sequence",
+        "created_at",
+        "event_type",
+        "run_revision",
+        "state"
+      ],
+      "title": "RunEvent",
+      "type": "object"
+    },
+    "RunInput": {
+      "additionalProperties": false,
+      "properties": {
+        "objective": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Objective",
+          "type": "string"
+        },
+        "inputs": {
+          "$ref": "#/$defs/InputScope"
+        },
+        "policy_revision": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "title": "Policy Revision",
+          "type": "integer"
+        },
+        "mode": {
+          "default": "autopilot",
+          "enum": [
+            "autopilot",
+            "review_plan"
+          ],
+          "title": "Mode",
+          "type": "string"
+        },
+        "limits": {
+          "$ref": "#/$defs/ResourceLimits"
+        }
+      },
+      "required": [
+        "objective",
+        "inputs",
+        "policy_revision",
+        "limits"
+      ],
+      "title": "RunInput",
+      "type": "object"
+    },
+    "SemanticReview": {
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "enum": [
+            "supported",
+            "partially_supported",
+            "unsupported",
+            "conflicting",
+            "not_reviewed"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "reviewed_snapshot_sha256": {
+          "anyOf": [
+            {
+              "pattern": "^[a-f0-9]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Reviewed Snapshot Sha256"
+        },
+        "reviewer_assignment_id": {
+          "anyOf": [
+            {
+              "maxLength": 160,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Reviewer Assignment Id"
+        },
+        "explanation": {
+          "anyOf": [
+            {
+              "maxLength": 4000,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Explanation"
+        }
+      },
+      "required": [
+        "status"
+      ],
+      "title": "SemanticReview",
+      "type": "object"
+    },
+    "Source": {
+      "additionalProperties": false,
+      "properties": {
+        "citation": {
+          "maxLength": 2000,
+          "minLength": 1,
+          "title": "Citation",
+          "type": "string"
+        },
+        "url": {
+          "default": "Not supplied",
+          "maxLength": 2000,
+          "title": "Url",
+          "type": "string"
+        },
+        "license": {
+          "maxLength": 200,
+          "minLength": 1,
+          "title": "License",
+          "type": "string"
+        },
+        "data_kind": {
+          "enum": [
+            "empirical",
+            "synthetic"
+          ],
+          "title": "Data Kind",
+          "type": "string"
+        },
+        "transformations": {
+          "maxLength": 3000,
+          "minLength": 1,
+          "title": "Transformations",
+          "type": "string"
+        }
+      },
+      "required": [
+        "citation",
+        "license",
+        "data_kind",
+        "transformations"
+      ],
+      "title": "Source",
+      "type": "object"
+    },
+    "SourceDeclaration_Annotated_dict_Annotated_str__FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1____PydanticGeneralMetadata_pattern____S_______Annotated_str__StringConstraints____FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1_____": {
+      "additionalProperties": false,
+      "properties": {
+        "origin": {
+          "const": "source_derived",
+          "title": "Origin",
+          "type": "string"
+        },
+        "value": {
+          "minProperties": 1,
+          "patternProperties": {
+            "\\S": {
+              "maxLength": 4000,
+              "minLength": 1,
+              "type": "string"
+            }
+          },
+          "propertyNames": {
+            "minLength": 1
+          },
+          "title": "Value",
+          "type": "object"
+        },
+        "supporting_references": {
+          "items": {
+            "$ref": "#/$defs/DeclarationReference"
+          },
+          "minItems": 1,
+          "title": "Supporting References",
+          "type": "array"
+        },
+        "uncertainty": {
+          "anyOf": [
+            {
+              "maxLength": 4000,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Uncertainty"
+        }
+      },
+      "required": [
+        "origin",
+        "value",
+        "supporting_references"
+      ],
+      "title": "SourceDeclaration[Annotated[dict[Annotated[str, FieldInfo(annotation=NoneType, required=True, metadata=[MinLen(min_length=1), _PydanticGeneralMetadata(pattern='\\\\S')])], Annotated[str, StringConstraints]], FieldInfo(annotation=NoneType, required=True, metadata=[MinLen(min_length=1)])]]",
+      "type": "object"
+    },
+    "SourceDeclaration_Annotated_str__FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1____PydanticGeneralMetadata_pattern____S______": {
+      "additionalProperties": false,
+      "properties": {
+        "origin": {
+          "const": "source_derived",
+          "title": "Origin",
+          "type": "string"
+        },
+        "value": {
+          "minLength": 1,
+          "pattern": "\\S",
+          "title": "Value",
+          "type": "string"
+        },
+        "supporting_references": {
+          "items": {
+            "$ref": "#/$defs/DeclarationReference"
+          },
+          "minItems": 1,
+          "title": "Supporting References",
+          "type": "array"
+        },
+        "uncertainty": {
+          "anyOf": [
+            {
+              "maxLength": 4000,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Uncertainty"
+        }
+      },
+      "required": [
+        "origin",
+        "value",
+        "supporting_references"
+      ],
+      "title": "SourceDeclaration[Annotated[str, FieldInfo(annotation=NoneType, required=True, metadata=[MinLen(min_length=1), _PydanticGeneralMetadata(pattern='\\\\S')])]]",
+      "type": "object"
+    },
+    "SourceDeclaration_Annotated_str__StringConstraints__": {
+      "additionalProperties": false,
+      "properties": {
+        "origin": {
+          "const": "source_derived",
+          "title": "Origin",
+          "type": "string"
+        },
+        "value": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Value",
+          "type": "string"
+        },
+        "supporting_references": {
+          "items": {
+            "$ref": "#/$defs/DeclarationReference"
+          },
+          "minItems": 1,
+          "title": "Supporting References",
+          "type": "array"
+        },
+        "uncertainty": {
+          "anyOf": [
+            {
+              "maxLength": 4000,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Uncertainty"
+        }
+      },
+      "required": [
+        "origin",
+        "value",
+        "supporting_references"
+      ],
+      "title": "SourceDeclaration[Annotated[str, StringConstraints]]",
+      "type": "object"
+    },
+    "SourceDeclaration_IndependentUnit_": {
+      "additionalProperties": false,
+      "properties": {
+        "origin": {
+          "const": "source_derived",
+          "title": "Origin",
+          "type": "string"
+        },
+        "value": {
+          "$ref": "#/$defs/IndependentUnit"
+        },
+        "supporting_references": {
+          "items": {
+            "$ref": "#/$defs/DeclarationReference"
+          },
+          "minItems": 1,
+          "title": "Supporting References",
+          "type": "array"
+        },
+        "uncertainty": {
+          "anyOf": [
+            {
+              "maxLength": 4000,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Uncertainty"
+        }
+      },
+      "required": [
+        "origin",
+        "value",
+        "supporting_references"
+      ],
+      "title": "SourceDeclaration[IndependentUnit]",
+      "type": "object"
+    },
+    "SourceDeclaration_Literal__empirical____synthetic___": {
+      "additionalProperties": false,
+      "properties": {
+        "origin": {
+          "const": "source_derived",
+          "title": "Origin",
+          "type": "string"
+        },
+        "value": {
+          "enum": [
+            "empirical",
+            "synthetic"
+          ],
+          "title": "Value",
+          "type": "string"
+        },
+        "supporting_references": {
+          "items": {
+            "$ref": "#/$defs/DeclarationReference"
+          },
+          "minItems": 1,
+          "title": "Supporting References",
+          "type": "array"
+        },
+        "uncertainty": {
+          "anyOf": [
+            {
+              "maxLength": 4000,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Uncertainty"
+        }
+      },
+      "required": [
+        "origin",
+        "value",
+        "supporting_references"
+      ],
+      "title": "SourceDeclaration[Literal['empirical', 'synthetic']]",
+      "type": "object"
+    },
+    "SourceDeclaration_list_Annotated_str__StringConstraints___": {
+      "additionalProperties": false,
+      "properties": {
+        "origin": {
+          "const": "source_derived",
+          "title": "Origin",
+          "type": "string"
+        },
+        "value": {
+          "items": {
+            "maxLength": 4000,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Value",
+          "type": "array"
+        },
+        "supporting_references": {
+          "items": {
+            "$ref": "#/$defs/DeclarationReference"
+          },
+          "minItems": 1,
+          "title": "Supporting References",
+          "type": "array"
+        },
+        "uncertainty": {
+          "anyOf": [
+            {
+              "maxLength": 4000,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Uncertainty"
+        }
+      },
+      "required": [
+        "origin",
+        "value",
+        "supporting_references"
+      ],
+      "title": "SourceDeclaration[list[Annotated[str, StringConstraints]]]",
+      "type": "object"
+    },
+    "SourceDeclarations": {
+      "additionalProperties": false,
+      "properties": {
+        "citation": {
+          "$ref": "#/$defs/Declaration_Annotated_str__StringConstraints__"
+        },
+        "url": {
+          "$ref": "#/$defs/Declaration_Annotated_str__StringConstraints__"
+        },
+        "license": {
+          "$ref": "#/$defs/Declaration_Annotated_str__StringConstraints__"
+        },
+        "data_kind": {
+          "$ref": "#/$defs/Declaration_Literal__empirical____synthetic___"
+        },
+        "transformations": {
+          "$ref": "#/$defs/Declaration_list_Annotated_str__StringConstraints___"
+        },
+        "units": {
+          "$ref": "#/$defs/Declaration_Annotated_dict_Annotated_str__FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1____PydanticGeneralMetadata_pattern____S_______Annotated_str__StringConstraints____FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1_____"
+        },
+        "target": {
+          "$ref": "#/$defs/Declaration_Annotated_str__FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1____PydanticGeneralMetadata_pattern____S______"
+        },
+        "independent_unit": {
+          "$ref": "#/$defs/Declaration_IndependentUnit_"
+        }
+      },
+      "title": "SourceDeclarations",
+      "type": "object"
+    },
+    "SpecialistAssignment": {
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "1.0",
+          "default": "1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "project_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Project Id",
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        },
+        "contract": {
+          "const": "specialist_assignment",
+          "default": "specialist_assignment",
+          "title": "Contract",
+          "type": "string"
+        },
+        "run_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Run Id",
+          "type": "string"
+        },
+        "plan_revision": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "title": "Plan Revision",
+          "type": "integer"
+        },
+        "role": {
+          "enum": [
+            "data_evaluation",
+            "evidence",
+            "failure_memory",
+            "scientific_reviewer"
+          ],
+          "title": "Role",
+          "type": "string"
+        },
+        "objective": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Objective",
+          "type": "string"
+        },
+        "allowed_artifact_ids": {
+          "items": {
+            "maxLength": 160,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Allowed Artifact Ids",
+          "type": "array"
+        },
+        "allowed_material_ids": {
+          "items": {
+            "maxLength": 160,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Allowed Material Ids",
+          "type": "array"
+        },
+        "allowed_tools": {
+          "items": {
+            "enum": [
+              "inspect_project",
+              "inspect_dataset",
+              "list_artifacts",
+              "read_artifact",
+              "read_job",
+              "run_audit",
+              "generate_split",
+              "seal_evaluation",
+              "run_baseline",
+              "read_evaluation",
+              "ingest_evidence",
+              "search_evidence",
+              "read_evidence_span",
+              "search_failures",
+              "read_failure",
+              "record_outcome",
+              "reconcile_outcome",
+              "validate_claims",
+              "build_report",
+              "verify_report",
+              "replay_science",
+              "read_memory"
+            ],
+            "type": "string"
+          },
+          "title": "Allowed Tools",
+          "type": "array"
+        },
+        "budget_allocation_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Budget Allocation Id",
+          "type": "string"
+        },
+        "deadline_at": {
+          "format": "date-time",
+          "title": "Deadline At",
+          "type": "string"
+        },
+        "completion_criteria": {
+          "items": {
+            "maxLength": 4000,
+            "minLength": 1,
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Completion Criteria",
+          "type": "array"
+        },
+        "state": {
+          "enum": [
+            "queued",
+            "running",
+            "waiting",
+            "completed",
+            "failed",
+            "cancelled"
+          ],
+          "title": "State",
+          "type": "string"
+        },
+        "reviewed_snapshot_sha256": {
+          "anyOf": [
+            {
+              "pattern": "^[a-f0-9]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Reviewed Snapshot Sha256"
+        }
+      },
+      "required": [
+        "id",
+        "project_id",
+        "created_at",
+        "run_id",
+        "plan_revision",
+        "role",
+        "objective",
+        "allowed_artifact_ids",
+        "allowed_material_ids",
+        "allowed_tools",
+        "budget_allocation_id",
+        "deadline_at",
+        "completion_criteria",
+        "state"
+      ],
+      "title": "SpecialistAssignment",
+      "type": "object"
+    },
+    "SpecialistResult": {
+      "additionalProperties": false,
+      "properties": {
+        "contract": {
+          "const": "specialist_result",
+          "default": "specialist_result",
+          "title": "Contract",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "1.0",
+          "default": "1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "assignment_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Assignment Id",
+          "type": "string"
+        },
+        "findings": {
+          "items": {
+            "$ref": "#/$defs/Claim"
+          },
+          "title": "Findings",
+          "type": "array"
+        },
+        "supporting_artifact_ids": {
+          "items": {
+            "maxLength": 160,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Supporting Artifact Ids",
+          "type": "array"
+        },
+        "uncertainty": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Uncertainty",
+          "type": "string"
+        },
+        "unresolved_issues": {
+          "items": {
+            "maxLength": 4000,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Unresolved Issues",
+          "type": "array"
+        },
+        "recommended_actions": {
+          "items": {
+            "maxLength": 4000,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Recommended Actions",
+          "type": "array"
+        }
+      },
+      "required": [
+        "assignment_id",
+        "findings",
+        "supporting_artifact_ids",
+        "uncertainty",
+        "unresolved_issues",
+        "recommended_actions"
+      ],
+      "title": "SpecialistResult",
+      "type": "object"
+    },
+    "Split": {
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "1.0",
+          "default": "1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "project_id": {
+          "title": "Project Id",
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        },
+        "parents": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Parents",
+          "type": "array"
+        },
+        "software": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "title": "Software",
+          "type": "object"
+        },
+        "kind": {
+          "const": "split",
+          "default": "split",
+          "title": "Kind",
+          "type": "string"
+        },
+        "dataset_id": {
+          "title": "Dataset Id",
+          "type": "string"
+        },
+        "audit_id": {
+          "title": "Audit Id",
+          "type": "string"
+        },
+        "config": {
+          "additionalProperties": true,
+          "title": "Config",
+          "type": "object"
+        },
+        "assignments": {
+          "items": {
+            "enum": [
+              "train",
+              "validation",
+              "test",
+              "excluded"
+            ],
+            "type": "string"
+          },
+          "title": "Assignments",
+          "type": "array"
+        },
+        "result": {
+          "additionalProperties": true,
+          "title": "Result",
+          "type": "object"
+        }
+      },
+      "required": [
+        "project_id",
+        "dataset_id",
+        "audit_id",
+        "config",
+        "assignments",
+        "result"
+      ],
+      "title": "Split",
+      "type": "object"
+    },
+    "SplitInput": {
+      "additionalProperties": false,
+      "properties": {
+        "dataset_id": {
+          "title": "Dataset Id",
+          "type": "string"
+        },
+        "audit_id": {
+          "title": "Audit Id",
+          "type": "string"
+        },
+        "config": {
+          "additionalProperties": true,
+          "title": "Config",
+          "type": "object"
+        }
+      },
+      "required": [
+        "dataset_id",
+        "audit_id",
+        "config"
+      ],
+      "title": "SplitInput",
+      "type": "object"
+    },
+    "SuccessCriterion": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "metric": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Metric",
+          "type": "string"
+        },
+        "partition": {
+          "enum": [
+            "validation",
+            "test"
+          ],
+          "title": "Partition",
+          "type": "string"
+        },
+        "comparison": {
+          "enum": [
+            "lt",
+            "lte",
+            "gt",
+            "gte"
+          ],
+          "title": "Comparison",
+          "type": "string"
+        },
+        "threshold": {
+          "title": "Threshold",
+          "type": "number"
+        },
+        "declaration_reference": {
+          "$ref": "#/$defs/DeclarationReference"
+        }
+      },
+      "required": [
+        "id",
+        "metric",
+        "partition",
+        "comparison",
+        "threshold",
+        "declaration_reference"
+      ],
+      "title": "SuccessCriterion",
+      "type": "object"
+    },
+    "TextSpan": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "const": "text_span",
+          "default": "text_span",
+          "title": "Kind",
+          "type": "string"
+        },
+        "unit": {
+          "const": "unicode_codepoint",
+          "default": "unicode_codepoint",
+          "title": "Unit",
+          "type": "string"
+        },
+        "start": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "title": "Start",
+          "type": "integer"
+        },
+        "end": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "title": "End",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "start",
+        "end"
+      ],
+      "title": "TextSpan",
+      "type": "object"
+    },
+    "ToolBlocked": {
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "const": "blocked",
+          "title": "Status",
+          "type": "string"
+        },
+        "error_code": {
+          "enum": [
+            "UNAUTHORIZED",
+            "ORIGIN_REJECTED",
+            "PROJECT_NOT_FOUND",
+            "ARTIFACT_NOT_FOUND",
+            "JOB_NOT_FOUND",
+            "IDEMPOTENCY_CONFLICT",
+            "PROJECT_BUSY",
+            "VALIDATION_FAILED",
+            "LINEAGE_MISMATCH",
+            "UPLOAD_TOO_LARGE",
+            "STORAGE_UNAVAILABLE",
+            "DEPENDENCY_UNAVAILABLE",
+            "INTERNAL_ERROR",
+            "ADMISSION_REJECTED",
+            "JOB_TIMED_OUT",
+            "WORKER_INTERRUPTED",
+            "INTEGRITY_FAILED",
+            "EXTERNAL_OUTCOME_UNKNOWN",
+            "AGENT_UNAVAILABLE",
+            "POLICY_DENIED",
+            "DATA_EXPOSURE_DENIED",
+            "RUN_REVISION_CHANGED",
+            "QUESTION_STALE",
+            "BUDGET_EXHAUSTED",
+            "PROVIDER_UNAVAILABLE",
+            "TOOL_SCHEMA_INVALID",
+            "UNSUPPORTED_CAPABILITY",
+            "REFERENCE_INVALID",
+            "TEST_PROTOCOL_SEALED",
+            "RUN_CANCELLED"
+          ],
+          "title": "Error Code",
+          "type": "string"
+        },
+        "reason": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Reason",
+          "type": "string"
+        },
+        "blocked_step_ids": {
+          "items": {
+            "maxLength": 160,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Blocked Step Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "status",
+        "error_code",
+        "reason",
+        "blocked_step_ids"
+      ],
+      "title": "ToolBlocked",
+      "type": "object"
+    },
+    "ToolCompleted": {
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "const": "completed",
+          "title": "Status",
+          "type": "string"
+        },
+        "artifact_ids": {
+          "items": {
+            "maxLength": 160,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Artifact Ids",
+          "type": "array"
+        },
+        "result": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Result",
+          "type": "object"
+        }
+      },
+      "required": [
+        "status",
+        "artifact_ids",
+        "result"
+      ],
+      "title": "ToolCompleted",
+      "type": "object"
+    },
+    "ToolDescriptor": {
+      "additionalProperties": false,
+      "properties": {
+        "contract": {
+          "const": "tool_descriptor",
+          "default": "tool_descriptor",
+          "title": "Contract",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "1.0",
+          "default": "1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "name": {
+          "enum": [
+            "inspect_project",
+            "inspect_dataset",
+            "list_artifacts",
+            "read_artifact",
+            "read_job",
+            "run_audit",
+            "generate_split",
+            "seal_evaluation",
+            "run_baseline",
+            "read_evaluation",
+            "ingest_evidence",
+            "search_evidence",
+            "read_evidence_span",
+            "search_failures",
+            "read_failure",
+            "record_outcome",
+            "reconcile_outcome",
+            "validate_claims",
+            "build_report",
+            "verify_report",
+            "replay_science",
+            "read_memory"
+          ],
+          "title": "Name",
+          "type": "string"
+        },
+        "version": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Version",
+          "type": "string"
+        },
+        "purpose": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Purpose",
+          "type": "string"
+        },
+        "input_schema_id": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Input Schema Id",
+          "type": "string"
+        },
+        "output_schema_id": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Output Schema Id",
+          "type": "string"
+        },
+        "allowed_roles": {
+          "items": {
+            "enum": [
+              "coordinator",
+              "data_evaluation",
+              "evidence",
+              "failure_memory",
+              "scientific_reviewer"
+            ],
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Allowed Roles",
+          "type": "array"
+        },
+        "prerequisites": {
+          "items": {
+            "maxLength": 4000,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Prerequisites",
+          "type": "array"
+        },
+        "accepted_artifact_versions": {
+          "additionalProperties": {
+            "items": {
+              "maxLength": 160,
+              "minLength": 1,
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "propertyNames": {
+            "maxLength": 160,
+            "minLength": 1
+          },
+          "title": "Accepted Artifact Versions",
+          "type": "object"
+        },
+        "side_effect": {
+          "enum": [
+            "read",
+            "compute",
+            "external_write",
+            "control",
+            "report"
+          ],
+          "title": "Side Effect",
+          "type": "string"
+        },
+        "retry_class": {
+          "enum": [
+            "read",
+            "idempotent_submission",
+            "receipt_reconciliation",
+            "new_attempt",
+            "never"
+          ],
+          "title": "Retry Class",
+          "type": "string"
+        },
+        "expected_artifact_kinds": {
+          "items": {
+            "maxLength": 160,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Expected Artifact Kinds",
+          "type": "array"
+        },
+        "required_checks": {
+          "items": {
+            "enum": [
+              "project_scope",
+              "policy",
+              "exposure",
+              "evaluation",
+              "prerequisites",
+              "budget"
+            ],
+            "type": "string"
+          },
+          "title": "Required Checks",
+          "type": "array"
+        },
+        "scientific_attempt_estimate": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "title": "Scientific Attempt Estimate",
+          "type": "integer"
+        },
+        "active_seconds_estimate": {
+          "anyOf": [
+            {
+              "maximum": 9007199254740991,
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Active Seconds Estimate"
+        }
+      },
+      "required": [
+        "name",
+        "version",
+        "purpose",
+        "input_schema_id",
+        "output_schema_id",
+        "allowed_roles",
+        "prerequisites",
+        "accepted_artifact_versions",
+        "side_effect",
+        "retry_class",
+        "expected_artifact_kinds",
+        "required_checks",
+        "scientific_attempt_estimate",
+        "active_seconds_estimate"
+      ],
+      "title": "ToolDescriptor",
+      "type": "object"
+    },
+    "ToolFailed": {
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "const": "failed",
+          "title": "Status",
+          "type": "string"
+        },
+        "error_code": {
+          "enum": [
+            "UNAUTHORIZED",
+            "ORIGIN_REJECTED",
+            "PROJECT_NOT_FOUND",
+            "ARTIFACT_NOT_FOUND",
+            "JOB_NOT_FOUND",
+            "IDEMPOTENCY_CONFLICT",
+            "PROJECT_BUSY",
+            "VALIDATION_FAILED",
+            "LINEAGE_MISMATCH",
+            "UPLOAD_TOO_LARGE",
+            "STORAGE_UNAVAILABLE",
+            "DEPENDENCY_UNAVAILABLE",
+            "INTERNAL_ERROR",
+            "ADMISSION_REJECTED",
+            "JOB_TIMED_OUT",
+            "WORKER_INTERRUPTED",
+            "INTEGRITY_FAILED",
+            "EXTERNAL_OUTCOME_UNKNOWN",
+            "AGENT_UNAVAILABLE",
+            "POLICY_DENIED",
+            "DATA_EXPOSURE_DENIED",
+            "RUN_REVISION_CHANGED",
+            "QUESTION_STALE",
+            "BUDGET_EXHAUSTED",
+            "PROVIDER_UNAVAILABLE",
+            "TOOL_SCHEMA_INVALID",
+            "UNSUPPORTED_CAPABILITY",
+            "REFERENCE_INVALID",
+            "TEST_PROTOCOL_SEALED",
+            "RUN_CANCELLED"
+          ],
+          "title": "Error Code",
+          "type": "string"
+        },
+        "error": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Error",
+          "type": "string"
+        }
+      },
+      "required": [
+        "status",
+        "error_code",
+        "error"
+      ],
+      "title": "ToolFailed",
+      "type": "object"
+    },
+    "ToolRequest": {
+      "additionalProperties": false,
+      "description": "Trusted dispatch envelope. A provider proposes only name/arguments.",
+      "properties": {
+        "contract": {
+          "const": "tool_request",
+          "default": "tool_request",
+          "title": "Contract",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "1.0",
+          "default": "1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "run_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Run Id",
+          "type": "string"
+        },
+        "action_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Action Id",
+          "type": "string"
+        },
+        "attempt_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Attempt Id",
+          "type": "string"
+        },
+        "assignment_id": {
+          "anyOf": [
+            {
+              "maxLength": 160,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Assignment Id"
+        },
+        "name": {
+          "enum": [
+            "inspect_project",
+            "inspect_dataset",
+            "list_artifacts",
+            "read_artifact",
+            "read_job",
+            "run_audit",
+            "generate_split",
+            "seal_evaluation",
+            "run_baseline",
+            "read_evaluation",
+            "ingest_evidence",
+            "search_evidence",
+            "read_evidence_span",
+            "search_failures",
+            "read_failure",
+            "record_outcome",
+            "reconcile_outcome",
+            "validate_claims",
+            "build_report",
+            "verify_report",
+            "replay_science",
+            "read_memory"
+          ],
+          "title": "Name",
+          "type": "string"
+        },
+        "tool_version": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Tool Version",
+          "type": "string"
+        },
+        "arguments": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Arguments",
+          "type": "object"
+        },
+        "request_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Request Sha256",
+          "type": "string"
+        },
+        "policy": {
+          "$ref": "#/$defs/PolicyReference"
+        }
+      },
+      "required": [
+        "run_id",
+        "action_id",
+        "attempt_id",
+        "name",
+        "tool_version",
+        "arguments",
+        "request_sha256",
+        "policy"
+      ],
+      "title": "ToolRequest",
+      "type": "object"
+    },
+    "ToolResponse": {
+      "additionalProperties": false,
+      "properties": {
+        "contract": {
+          "const": "tool_response",
+          "default": "tool_response",
+          "title": "Contract",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "1.0",
+          "default": "1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "action_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Action Id",
+          "type": "string"
+        },
+        "attempt_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Attempt Id",
+          "type": "string"
+        },
+        "outcome": {
+          "discriminator": {
+            "mapping": {
+              "blocked": "#/$defs/ToolBlocked",
+              "completed": "#/$defs/ToolCompleted",
+              "failed": "#/$defs/ToolFailed",
+              "submitted": "#/$defs/ToolSubmitted"
+            },
+            "propertyName": "status"
+          },
+          "oneOf": [
+            {
+              "$ref": "#/$defs/ToolCompleted"
+            },
+            {
+              "$ref": "#/$defs/ToolSubmitted"
+            },
+            {
+              "$ref": "#/$defs/ToolBlocked"
+            },
+            {
+              "$ref": "#/$defs/ToolFailed"
+            }
+          ],
+          "title": "Outcome"
+        }
+      },
+      "required": [
+        "action_id",
+        "attempt_id",
+        "outcome"
+      ],
+      "title": "ToolResponse",
+      "type": "object"
+    },
+    "ToolSubmitted": {
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "const": "submitted",
+          "title": "Status",
+          "type": "string"
+        },
+        "job_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Job Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "status",
+        "job_id"
+      ],
+      "title": "ToolSubmitted",
+      "type": "object"
+    },
+    "UnavailableEvidenceReference": {
+      "additionalProperties": false,
+      "properties": {
+        "contract": {
+          "const": "evidence_reference",
+          "default": "evidence_reference",
+          "title": "Contract",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "1.0",
+          "default": "1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "availability": {
+          "const": "unavailable",
+          "title": "Availability",
+          "type": "string"
+        },
+        "source_artifact_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Source Artifact Id",
+          "type": "string"
+        },
+        "source_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Source Sha256",
+          "type": "string"
+        },
+        "reason": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Reason",
+          "type": "string"
+        }
+      },
+      "required": [
+        "availability",
+        "source_artifact_id",
+        "source_sha256",
+        "reason"
+      ],
+      "title": "UnavailableEvidenceReference",
+      "type": "object"
+    },
+    "UnknownCost": {
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "const": "unknown",
+          "title": "Status",
+          "type": "string"
+        },
+        "reason": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Reason",
+          "type": "string"
+        }
+      },
+      "required": [
+        "status",
+        "reason"
+      ],
+      "title": "UnknownCost",
+      "type": "object"
+    },
+    "UnknownDeclaration": {
+      "additionalProperties": false,
+      "properties": {
+        "origin": {
+          "const": "unknown",
+          "default": "unknown",
+          "title": "Origin",
+          "type": "string"
+        },
+        "value": {
+          "default": null,
+          "title": "Value",
+          "type": "null"
+        },
+        "supporting_references": {
+          "items": {
+            "$ref": "#/$defs/DeclarationReference"
+          },
+          "title": "Supporting References",
+          "type": "array"
+        },
+        "uncertainty": {
+          "anyOf": [
+            {
+              "maxLength": 4000,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Uncertainty"
+        }
+      },
+      "title": "UnknownDeclaration",
+      "type": "object"
+    },
+    "UsageSnapshot": {
+      "additionalProperties": false,
+      "properties": {
+        "billed_token_categories": {
+          "additionalProperties": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "propertyNames": {
+            "maxLength": 160,
+            "minLength": 1
+          },
+          "title": "Billed Token Categories",
+          "type": "object"
+        },
+        "reserved_tokens": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "title": "Reserved Tokens",
+          "type": "integer"
+        },
+        "model_requests": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "title": "Model Requests",
+          "type": "integer"
+        },
+        "tool_calls": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "title": "Tool Calls",
+          "type": "integer"
+        },
+        "scientific_attempts": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "title": "Scientific Attempts",
+          "type": "integer"
+        },
+        "active_seconds": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "title": "Active Seconds",
+          "type": "integer"
+        },
+        "unknown_request_ids": {
+          "items": {
+            "maxLength": 160,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Unknown Request Ids",
+          "type": "array"
+        },
+        "cost": {
+          "discriminator": {
+            "mapping": {
+              "estimated": "#/$defs/EstimatedCost",
+              "unknown": "#/$defs/UnknownCost"
+            },
+            "propertyName": "status"
+          },
+          "oneOf": [
+            {
+              "$ref": "#/$defs/UnknownCost"
+            },
+            {
+              "$ref": "#/$defs/EstimatedCost"
+            }
+          ],
+          "title": "Cost"
+        }
+      },
+      "required": [
+        "billed_token_categories",
+        "reserved_tokens",
+        "model_requests",
+        "tool_calls",
+        "scientific_attempts",
+        "active_seconds",
+        "unknown_request_ids",
+        "cost"
+      ],
+      "title": "UsageSnapshot",
+      "type": "object"
+    },
+    "UserDeclaration_Annotated_dict_Annotated_str__FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1____PydanticGeneralMetadata_pattern____S_______Annotated_str__StringConstraints____FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1_____": {
+      "additionalProperties": false,
+      "properties": {
+        "origin": {
+          "const": "user_supplied",
+          "title": "Origin",
+          "type": "string"
+        },
+        "value": {
+          "minProperties": 1,
+          "patternProperties": {
+            "\\S": {
+              "maxLength": 4000,
+              "minLength": 1,
+              "type": "string"
+            }
+          },
+          "propertyNames": {
+            "minLength": 1
+          },
+          "title": "Value",
+          "type": "object"
+        },
+        "supporting_references": {
+          "items": {
+            "$ref": "#/$defs/DeclarationReference"
+          },
+          "minItems": 1,
+          "title": "Supporting References",
+          "type": "array"
+        },
+        "uncertainty": {
+          "anyOf": [
+            {
+              "maxLength": 4000,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Uncertainty"
+        }
+      },
+      "required": [
+        "origin",
+        "value",
+        "supporting_references"
+      ],
+      "title": "UserDeclaration[Annotated[dict[Annotated[str, FieldInfo(annotation=NoneType, required=True, metadata=[MinLen(min_length=1), _PydanticGeneralMetadata(pattern='\\\\S')])], Annotated[str, StringConstraints]], FieldInfo(annotation=NoneType, required=True, metadata=[MinLen(min_length=1)])]]",
+      "type": "object"
+    },
+    "UserDeclaration_Annotated_str__FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1____PydanticGeneralMetadata_pattern____S______": {
+      "additionalProperties": false,
+      "properties": {
+        "origin": {
+          "const": "user_supplied",
+          "title": "Origin",
+          "type": "string"
+        },
+        "value": {
+          "minLength": 1,
+          "pattern": "\\S",
+          "title": "Value",
+          "type": "string"
+        },
+        "supporting_references": {
+          "items": {
+            "$ref": "#/$defs/DeclarationReference"
+          },
+          "minItems": 1,
+          "title": "Supporting References",
+          "type": "array"
+        },
+        "uncertainty": {
+          "anyOf": [
+            {
+              "maxLength": 4000,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Uncertainty"
+        }
+      },
+      "required": [
+        "origin",
+        "value",
+        "supporting_references"
+      ],
+      "title": "UserDeclaration[Annotated[str, FieldInfo(annotation=NoneType, required=True, metadata=[MinLen(min_length=1), _PydanticGeneralMetadata(pattern='\\\\S')])]]",
+      "type": "object"
+    },
+    "UserDeclaration_Annotated_str__StringConstraints__": {
+      "additionalProperties": false,
+      "properties": {
+        "origin": {
+          "const": "user_supplied",
+          "title": "Origin",
+          "type": "string"
+        },
+        "value": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Value",
+          "type": "string"
+        },
+        "supporting_references": {
+          "items": {
+            "$ref": "#/$defs/DeclarationReference"
+          },
+          "minItems": 1,
+          "title": "Supporting References",
+          "type": "array"
+        },
+        "uncertainty": {
+          "anyOf": [
+            {
+              "maxLength": 4000,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Uncertainty"
+        }
+      },
+      "required": [
+        "origin",
+        "value",
+        "supporting_references"
+      ],
+      "title": "UserDeclaration[Annotated[str, StringConstraints]]",
+      "type": "object"
+    },
+    "UserDeclaration_IndependentUnit_": {
+      "additionalProperties": false,
+      "properties": {
+        "origin": {
+          "const": "user_supplied",
+          "title": "Origin",
+          "type": "string"
+        },
+        "value": {
+          "$ref": "#/$defs/IndependentUnit"
+        },
+        "supporting_references": {
+          "items": {
+            "$ref": "#/$defs/DeclarationReference"
+          },
+          "minItems": 1,
+          "title": "Supporting References",
+          "type": "array"
+        },
+        "uncertainty": {
+          "anyOf": [
+            {
+              "maxLength": 4000,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Uncertainty"
+        }
+      },
+      "required": [
+        "origin",
+        "value",
+        "supporting_references"
+      ],
+      "title": "UserDeclaration[IndependentUnit]",
+      "type": "object"
+    },
+    "UserDeclaration_Literal__empirical____synthetic___": {
+      "additionalProperties": false,
+      "properties": {
+        "origin": {
+          "const": "user_supplied",
+          "title": "Origin",
+          "type": "string"
+        },
+        "value": {
+          "enum": [
+            "empirical",
+            "synthetic"
+          ],
+          "title": "Value",
+          "type": "string"
+        },
+        "supporting_references": {
+          "items": {
+            "$ref": "#/$defs/DeclarationReference"
+          },
+          "minItems": 1,
+          "title": "Supporting References",
+          "type": "array"
+        },
+        "uncertainty": {
+          "anyOf": [
+            {
+              "maxLength": 4000,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Uncertainty"
+        }
+      },
+      "required": [
+        "origin",
+        "value",
+        "supporting_references"
+      ],
+      "title": "UserDeclaration[Literal['empirical', 'synthetic']]",
+      "type": "object"
+    },
+    "UserDeclaration_list_Annotated_str__StringConstraints___": {
+      "additionalProperties": false,
+      "properties": {
+        "origin": {
+          "const": "user_supplied",
+          "title": "Origin",
+          "type": "string"
+        },
+        "value": {
+          "items": {
+            "maxLength": 4000,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Value",
+          "type": "array"
+        },
+        "supporting_references": {
+          "items": {
+            "$ref": "#/$defs/DeclarationReference"
+          },
+          "minItems": 1,
+          "title": "Supporting References",
+          "type": "array"
+        },
+        "uncertainty": {
+          "anyOf": [
+            {
+              "maxLength": 4000,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Uncertainty"
+        }
+      },
+      "required": [
+        "origin",
+        "value",
+        "supporting_references"
+      ],
+      "title": "UserDeclaration[list[Annotated[str, StringConstraints]]]",
+      "type": "object"
+    },
+    "ValidationIssue": {
+      "additionalProperties": false,
+      "properties": {
+        "loc": {
+          "items": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ]
+          },
+          "title": "Loc",
+          "type": "array"
+        },
+        "msg": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Msg",
+          "type": "string"
+        }
+      },
+      "required": [
+        "loc",
+        "msg"
+      ],
+      "title": "ValidationIssue",
+      "type": "object"
+    },
+    "EvidenceReference": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/AvailableEvidenceReference"
+        },
+        {
+          "$ref": "#/$defs/UnavailableEvidenceReference"
+        }
+      ],
+      "discriminator": {
+        "propertyName": "availability",
+        "mapping": {
+          "available": "#/$defs/AvailableEvidenceReference",
+          "unavailable": "#/$defs/UnavailableEvidenceReference"
+        }
+      }
+    },
+    "LegacyArtifact": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/Dataset"
+        },
+        {
+          "$ref": "#/$defs/Audit"
+        },
+        {
+          "$ref": "#/$defs/Split"
+        },
+        {
+          "$ref": "#/$defs/Benchmark"
+        },
+        {
+          "$ref": "#/$defs/Evidence"
+        },
+        {
+          "$ref": "#/$defs/Failure"
+        },
+        {
+          "$ref": "#/$defs/Provenance"
+        },
+        {
+          "$ref": "#/$defs/Report"
+        }
+      ],
+      "discriminator": {
+        "propertyName": "kind",
+        "mapping": {
+          "dataset": "#/$defs/Dataset",
+          "audit": "#/$defs/Audit",
+          "split": "#/$defs/Split",
+          "benchmark": "#/$defs/Benchmark",
+          "evidence": "#/$defs/Evidence",
+          "failure": "#/$defs/Failure",
+          "provenance": "#/$defs/Provenance",
+          "report": "#/$defs/Report"
+        }
+      }
+    },
+    "VersionedArtifact": {
+      "oneOf": [
+        {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/Dataset"
+            },
+            {
+              "$ref": "#/$defs/DatasetV2"
+            }
+          ],
+          "discriminator": {
+            "propertyName": "schema_version",
+            "mapping": {
+              "1.0": "#/$defs/Dataset",
+              "2.0": "#/$defs/DatasetV2"
+            }
+          }
+        },
+        {
+          "$ref": "#/$defs/Audit"
+        },
+        {
+          "$ref": "#/$defs/Split"
+        },
+        {
+          "$ref": "#/$defs/Benchmark"
+        },
+        {
+          "$ref": "#/$defs/Evidence"
+        },
+        {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/Failure"
+            },
+            {
+              "$ref": "#/$defs/FailureV2"
+            }
+          ],
+          "discriminator": {
+            "propertyName": "schema_version",
+            "mapping": {
+              "1.0": "#/$defs/Failure",
+              "2.0": "#/$defs/FailureV2"
+            }
+          }
+        },
+        {
+          "$ref": "#/$defs/Provenance"
+        },
+        {
+          "$ref": "#/$defs/Report"
+        },
+        {
+          "$ref": "#/$defs/ClaimSet"
+        },
+        {
+          "$ref": "#/$defs/EvaluationProtocol"
+        },
+        {
+          "$ref": "#/$defs/AgentExecutionRecord"
+        }
+      ],
+      "discriminator": {
+        "propertyName": "kind",
+        "mapping": {
+          "dataset": {
+            "oneOf": [
+              {
+                "$ref": "#/$defs/Dataset"
+              },
+              {
+                "$ref": "#/$defs/DatasetV2"
+              }
+            ],
+            "discriminator": {
+              "propertyName": "schema_version",
+              "mapping": {
+                "1.0": "#/$defs/Dataset",
+                "2.0": "#/$defs/DatasetV2"
+              }
+            }
+          },
+          "audit": "#/$defs/Audit",
+          "split": "#/$defs/Split",
+          "benchmark": "#/$defs/Benchmark",
+          "evidence": "#/$defs/Evidence",
+          "failure": {
+            "oneOf": [
+              {
+                "$ref": "#/$defs/Failure"
+              },
+              {
+                "$ref": "#/$defs/FailureV2"
+              }
+            ],
+            "discriminator": {
+              "propertyName": "schema_version",
+              "mapping": {
+                "1.0": "#/$defs/Failure",
+                "2.0": "#/$defs/FailureV2"
+              }
+            }
+          },
+          "provenance": "#/$defs/Provenance",
+          "report": "#/$defs/Report",
+          "claim_set": "#/$defs/ClaimSet",
+          "evaluation_protocol": "#/$defs/EvaluationProtocol",
+          "agent_execution": "#/$defs/AgentExecutionRecord"
+        }
+      },
+      "type": "object",
+      "required": [
+        "kind",
+        "schema_version"
+      ]
+    },
+    "ProjectsResponse": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/ProjectResponse"
+      }
+    },
+    "JobsResponse": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/LegacyJobResponse"
+      }
+    },
+    "ArtifactsResponse": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "$ref": "#/$defs/Dataset"
+          },
+          {
+            "$ref": "#/$defs/Audit"
+          },
+          {
+            "$ref": "#/$defs/Split"
+          },
+          {
+            "$ref": "#/$defs/Benchmark"
+          },
+          {
+            "$ref": "#/$defs/Evidence"
+          },
+          {
+            "$ref": "#/$defs/Failure"
+          },
+          {
+            "$ref": "#/$defs/Provenance"
+          },
+          {
+            "$ref": "#/$defs/Report"
+          }
+        ],
+        "discriminator": {
+          "propertyName": "kind",
+          "mapping": {
+            "dataset": "#/$defs/Dataset",
+            "audit": "#/$defs/Audit",
+            "split": "#/$defs/Split",
+            "benchmark": "#/$defs/Benchmark",
+            "evidence": "#/$defs/Evidence",
+            "failure": "#/$defs/Failure",
+            "provenance": "#/$defs/Provenance",
+            "report": "#/$defs/Report"
+          }
+        }
+      }
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sciml-workbench.local/contracts/catalog.json",
+  "title": "WorkbenchContract",
+  "anyOf": [
+    {
+      "$ref": "#/$defs/Dataset"
+    },
+    {
+      "$ref": "#/$defs/Audit"
+    },
+    {
+      "$ref": "#/$defs/Split"
+    },
+    {
+      "$ref": "#/$defs/Benchmark"
+    },
+    {
+      "$ref": "#/$defs/Evidence"
+    },
+    {
+      "$ref": "#/$defs/Failure"
+    },
+    {
+      "$ref": "#/$defs/Provenance"
+    },
+    {
+      "$ref": "#/$defs/Report"
+    },
+    {
+      "$ref": "#/$defs/DatasetV2"
+    },
+    {
+      "$ref": "#/$defs/FailureV2"
+    },
+    {
+      "$ref": "#/$defs/ClaimSet"
+    },
+    {
+      "$ref": "#/$defs/EvaluationProtocol"
+    },
+    {
+      "$ref": "#/$defs/AgentExecutionRecord"
+    },
+    {
+      "$ref": "#/$defs/EvidenceReference"
+    },
+    {
+      "$ref": "#/$defs/MetricReference"
+    },
+    {
+      "$ref": "#/$defs/FailureReceipt"
+    },
+    {
+      "$ref": "#/$defs/ResearchRun"
+    },
+    {
+      "$ref": "#/$defs/RunInput"
+    },
+    {
+      "$ref": "#/$defs/RunControlInput"
+    },
+    {
+      "$ref": "#/$defs/RunAmendmentInput"
+    },
+    {
+      "$ref": "#/$defs/PlanAcceptanceInput"
+    },
+    {
+      "$ref": "#/$defs/ResearchPlan"
+    },
+    {
+      "$ref": "#/$defs/SpecialistAssignment"
+    },
+    {
+      "$ref": "#/$defs/SpecialistResult"
+    },
+    {
+      "$ref": "#/$defs/ResearchQuestion"
+    },
+    {
+      "$ref": "#/$defs/QuestionAnswerInput"
+    },
+    {
+      "$ref": "#/$defs/ToolRequest"
+    },
+    {
+      "$ref": "#/$defs/ToolResponse"
+    },
+    {
+      "$ref": "#/$defs/ToolDescriptor"
+    },
+    {
+      "$ref": "#/$defs/RunEvent"
+    },
+    {
+      "$ref": "#/$defs/ResourceLimits"
+    },
+    {
+      "$ref": "#/$defs/UsageSnapshot"
+    },
+    {
+      "$ref": "#/$defs/ErrorResponse"
+    },
+    {
+      "$ref": "#/$defs/ProjectResponse"
+    },
+    {
+      "$ref": "#/$defs/JobResponse"
+    },
+    {
+      "$ref": "#/$defs/LegacyArtifact"
+    },
+    {
+      "$ref": "#/$defs/VersionedArtifact"
+    },
+    {
+      "$ref": "#/$defs/ProjectsResponse"
+    },
+    {
+      "$ref": "#/$defs/JobsResponse"
+    },
+    {
+      "$ref": "#/$defs/ArtifactsResponse"
+    },
+    {
+      "$ref": "#/$defs/ProjectInput"
+    },
+    {
+      "$ref": "#/$defs/Source"
+    },
+    {
+      "$ref": "#/$defs/AuditInput"
+    },
+    {
+      "$ref": "#/$defs/SplitInput"
+    },
+    {
+      "$ref": "#/$defs/BenchmarkInput"
+    },
+    {
+      "$ref": "#/$defs/FailureInput"
+    }
+  ]
+}

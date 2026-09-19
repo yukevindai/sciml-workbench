@@ -16,7 +16,8 @@ def now():
 
 class Strict(BaseModel):
     model_config = ConfigDict(
-        extra="forbid", allow_inf_nan=False, str_strip_whitespace=True
+        extra="forbid", allow_inf_nan=False, str_strip_whitespace=True,
+        json_schema_serialization_defaults_required=True,
     )
 
 

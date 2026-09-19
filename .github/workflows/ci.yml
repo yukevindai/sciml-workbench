@@ -33,8 +33,8 @@ jobs:
       - run: pip install -c backend/constraints.txt -e 'backend[dev]'
       - run: alembic -c backend/alembic.ini upgrade head
       - run: pytest backend/tests -q
-      - run: python scripts/export_schemas.py && git diff --exit-code contracts
-      - run: npm ci && npm run build
+      - run: python scripts/export_schemas.py --check
+      - run: npm ci && npm run contracts:check && npm run test:contracts && npm run build
         working-directory: frontend
       - run: npx playwright install --with-deps chromium
         working-directory: frontend

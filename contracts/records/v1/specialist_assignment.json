@@ -1,0 +1,177 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "id": {
+      "maxLength": 160,
+      "minLength": 1,
+      "title": "Id",
+      "type": "string"
+    },
+    "project_id": {
+      "maxLength": 160,
+      "minLength": 1,
+      "title": "Project Id",
+      "type": "string"
+    },
+    "created_at": {
+      "format": "date-time",
+      "title": "Created At",
+      "type": "string"
+    },
+    "contract": {
+      "const": "specialist_assignment",
+      "default": "specialist_assignment",
+      "title": "Contract",
+      "type": "string"
+    },
+    "run_id": {
+      "maxLength": 160,
+      "minLength": 1,
+      "title": "Run Id",
+      "type": "string"
+    },
+    "plan_revision": {
+      "maximum": 9007199254740991,
+      "minimum": 1,
+      "title": "Plan Revision",
+      "type": "integer"
+    },
+    "role": {
+      "enum": [
+        "data_evaluation",
+        "evidence",
+        "failure_memory",
+        "scientific_reviewer"
+      ],
+      "title": "Role",
+      "type": "string"
+    },
+    "objective": {
+      "maxLength": 4000,
+      "minLength": 1,
+      "title": "Objective",
+      "type": "string"
+    },
+    "allowed_artifact_ids": {
+      "items": {
+        "maxLength": 160,
+        "minLength": 1,
+        "type": "string"
+      },
+      "title": "Allowed Artifact Ids",
+      "type": "array"
+    },
+    "allowed_material_ids": {
+      "items": {
+        "maxLength": 160,
+        "minLength": 1,
+        "type": "string"
+      },
+      "title": "Allowed Material Ids",
+      "type": "array"
+    },
+    "allowed_tools": {
+      "items": {
+        "enum": [
+          "inspect_project",
+          "inspect_dataset",
+          "list_artifacts",
+          "read_artifact",
+          "read_job",
+          "run_audit",
+          "generate_split",
+          "seal_evaluation",
+          "run_baseline",
+          "read_evaluation",
+          "ingest_evidence",
+          "search_evidence",
+          "read_evidence_span",
+          "search_failures",
+          "read_failure",
+          "record_outcome",
+          "reconcile_outcome",
+          "validate_claims",
+          "build_report",
+          "verify_report",
+          "replay_science",
+          "read_memory"
+        ],
+        "type": "string"
+      },
+      "title": "Allowed Tools",
+      "type": "array"
+    },
+    "budget_allocation_id": {
+      "maxLength": 160,
+      "minLength": 1,
+      "title": "Budget Allocation Id",
+      "type": "string"
+    },
+    "deadline_at": {
+      "format": "date-time",
+      "title": "Deadline At",
+      "type": "string"
+    },
+    "completion_criteria": {
+      "items": {
+        "maxLength": 4000,
+        "minLength": 1,
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Completion Criteria",
+      "type": "array"
+    },
+    "state": {
+      "enum": [
+        "queued",
+        "running",
+        "waiting",
+        "completed",
+        "failed",
+        "cancelled"
+      ],
+      "title": "State",
+      "type": "string"
+    },
+    "reviewed_snapshot_sha256": {
+      "anyOf": [
+        {
+          "pattern": "^[a-f0-9]{64}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Reviewed Snapshot Sha256"
+    }
+  },
+  "required": [
+    "id",
+    "project_id",
+    "created_at",
+    "run_id",
+    "plan_revision",
+    "role",
+    "objective",
+    "allowed_artifact_ids",
+    "allowed_material_ids",
+    "allowed_tools",
+    "budget_allocation_id",
+    "deadline_at",
+    "completion_criteria",
+    "state"
+  ],
+  "title": "SpecialistAssignment",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sciml-workbench.local/contracts/records/v1/specialist_assignment.json"
+}

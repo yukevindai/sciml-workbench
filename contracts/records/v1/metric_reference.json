@@ -1,0 +1,54 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "artifact_id": {
+      "maxLength": 160,
+      "minLength": 1,
+      "title": "Artifact Id",
+      "type": "string"
+    },
+    "field_path": {
+      "pattern": "^/(?:[^~/]|~[01])+(?:/(?:[^~/]|~[01])+)*$",
+      "title": "Field Path",
+      "type": "string"
+    },
+    "partition": {
+      "enum": [
+        "train",
+        "validation",
+        "test",
+        "excluded"
+      ],
+      "title": "Partition",
+      "type": "string"
+    },
+    "value": {
+      "title": "Value",
+      "type": "number"
+    },
+    "units": {
+      "anyOf": [
+        {
+          "maxLength": 4000,
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Units"
+    }
+  },
+  "required": [
+    "artifact_id",
+    "field_path",
+    "partition",
+    "value"
+  ],
+  "title": "MetricReference",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sciml-workbench.local/contracts/records/v1/metric_reference.json"
+}

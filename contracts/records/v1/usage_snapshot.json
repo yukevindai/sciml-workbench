@@ -1,0 +1,147 @@
+{
+  "$defs": {
+    "EstimatedCost": {
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "const": "estimated",
+          "title": "Status",
+          "type": "string"
+        },
+        "amount": {
+          "minimum": 0,
+          "title": "Amount",
+          "type": "number"
+        },
+        "currency": {
+          "pattern": "^[A-Z]{3}$",
+          "title": "Currency",
+          "type": "string"
+        },
+        "pricing_revision": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Pricing Revision",
+          "type": "string"
+        }
+      },
+      "required": [
+        "status",
+        "amount",
+        "currency",
+        "pricing_revision"
+      ],
+      "title": "EstimatedCost",
+      "type": "object"
+    },
+    "UnknownCost": {
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "const": "unknown",
+          "title": "Status",
+          "type": "string"
+        },
+        "reason": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Reason",
+          "type": "string"
+        }
+      },
+      "required": [
+        "status",
+        "reason"
+      ],
+      "title": "UnknownCost",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "billed_token_categories": {
+      "additionalProperties": {
+        "maximum": 9007199254740991,
+        "minimum": 0,
+        "type": "integer"
+      },
+      "propertyNames": {
+        "maxLength": 160,
+        "minLength": 1
+      },
+      "title": "Billed Token Categories",
+      "type": "object"
+    },
+    "reserved_tokens": {
+      "maximum": 9007199254740991,
+      "minimum": 0,
+      "title": "Reserved Tokens",
+      "type": "integer"
+    },
+    "model_requests": {
+      "maximum": 9007199254740991,
+      "minimum": 0,
+      "title": "Model Requests",
+      "type": "integer"
+    },
+    "tool_calls": {
+      "maximum": 9007199254740991,
+      "minimum": 0,
+      "title": "Tool Calls",
+      "type": "integer"
+    },
+    "scientific_attempts": {
+      "maximum": 9007199254740991,
+      "minimum": 0,
+      "title": "Scientific Attempts",
+      "type": "integer"
+    },
+    "active_seconds": {
+      "maximum": 9007199254740991,
+      "minimum": 0,
+      "title": "Active Seconds",
+      "type": "integer"
+    },
+    "unknown_request_ids": {
+      "items": {
+        "maxLength": 160,
+        "minLength": 1,
+        "type": "string"
+      },
+      "title": "Unknown Request Ids",
+      "type": "array"
+    },
+    "cost": {
+      "discriminator": {
+        "mapping": {
+          "estimated": "#/$defs/EstimatedCost",
+          "unknown": "#/$defs/UnknownCost"
+        },
+        "propertyName": "status"
+      },
+      "oneOf": [
+        {
+          "$ref": "#/$defs/UnknownCost"
+        },
+        {
+          "$ref": "#/$defs/EstimatedCost"
+        }
+      ],
+      "title": "Cost"
+    }
+  },
+  "required": [
+    "billed_token_categories",
+    "reserved_tokens",
+    "model_requests",
+    "tool_calls",
+    "scientific_attempts",
+    "active_seconds",
+    "unknown_request_ids",
+    "cost"
+  ],
+  "title": "UsageSnapshot",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sciml-workbench.local/contracts/records/v1/usage_snapshot.json"
+}

@@ -1,0 +1,996 @@
+{
+  "$defs": {
+    "Audit": {
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "1.0",
+          "default": "1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "project_id": {
+          "title": "Project Id",
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        },
+        "parents": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Parents",
+          "type": "array"
+        },
+        "software": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "title": "Software",
+          "type": "object"
+        },
+        "kind": {
+          "const": "audit",
+          "default": "audit",
+          "title": "Kind",
+          "type": "string"
+        },
+        "dataset_id": {
+          "title": "Dataset Id",
+          "type": "string"
+        },
+        "config": {
+          "additionalProperties": true,
+          "title": "Config",
+          "type": "object"
+        },
+        "result": {
+          "additionalProperties": true,
+          "title": "Result",
+          "type": "object"
+        }
+      },
+      "required": [
+        "schema_version",
+        "id",
+        "project_id",
+        "created_at",
+        "parents",
+        "software",
+        "kind",
+        "dataset_id",
+        "config",
+        "result"
+      ],
+      "title": "Audit",
+      "type": "object"
+    },
+    "Benchmark": {
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "1.0",
+          "default": "1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "project_id": {
+          "title": "Project Id",
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        },
+        "parents": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Parents",
+          "type": "array"
+        },
+        "software": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "title": "Software",
+          "type": "object"
+        },
+        "kind": {
+          "const": "benchmark",
+          "default": "benchmark",
+          "title": "Kind",
+          "type": "string"
+        },
+        "dataset_id": {
+          "title": "Dataset Id",
+          "type": "string"
+        },
+        "split_id": {
+          "title": "Split Id",
+          "type": "string"
+        },
+        "model": {
+          "enum": [
+            "mean",
+            "ridge"
+          ],
+          "title": "Model",
+          "type": "string"
+        },
+        "seed": {
+          "title": "Seed",
+          "type": "integer"
+        },
+        "status": {
+          "enum": [
+            "succeeded",
+            "failed"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "result": {
+          "additionalProperties": true,
+          "title": "Result",
+          "type": "object"
+        },
+        "error": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Error"
+        },
+        "bundle_key": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Bundle Key"
+        },
+        "config": {
+          "additionalProperties": true,
+          "title": "Config",
+          "type": "object"
+        }
+      },
+      "required": [
+        "schema_version",
+        "id",
+        "project_id",
+        "created_at",
+        "parents",
+        "software",
+        "kind",
+        "dataset_id",
+        "split_id",
+        "model",
+        "seed",
+        "status",
+        "result",
+        "error",
+        "bundle_key",
+        "config"
+      ],
+      "title": "Benchmark",
+      "type": "object"
+    },
+    "Dataset": {
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "1.0",
+          "default": "1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "project_id": {
+          "title": "Project Id",
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        },
+        "parents": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Parents",
+          "type": "array"
+        },
+        "software": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "title": "Software",
+          "type": "object"
+        },
+        "kind": {
+          "const": "dataset",
+          "default": "dataset",
+          "title": "Kind",
+          "type": "string"
+        },
+        "filename": {
+          "title": "Filename",
+          "type": "string"
+        },
+        "blob_key": {
+          "title": "Blob Key",
+          "type": "string"
+        },
+        "sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        },
+        "rows": {
+          "exclusiveMinimum": 0,
+          "title": "Rows",
+          "type": "integer"
+        },
+        "columns": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Columns",
+          "type": "array"
+        },
+        "source": {
+          "$ref": "#/$defs/Source"
+        }
+      },
+      "required": [
+        "schema_version",
+        "id",
+        "project_id",
+        "created_at",
+        "parents",
+        "software",
+        "kind",
+        "filename",
+        "blob_key",
+        "sha256",
+        "rows",
+        "columns",
+        "source"
+      ],
+      "title": "Dataset",
+      "type": "object"
+    },
+    "Evidence": {
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "1.0",
+          "default": "1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "project_id": {
+          "title": "Project Id",
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        },
+        "parents": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Parents",
+          "type": "array"
+        },
+        "software": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "title": "Software",
+          "type": "object"
+        },
+        "kind": {
+          "const": "evidence",
+          "default": "evidence",
+          "title": "Kind",
+          "type": "string"
+        },
+        "title": {
+          "title": "Title",
+          "type": "string"
+        },
+        "pdf_key": {
+          "title": "Pdf Key",
+          "type": "string"
+        },
+        "sha256": {
+          "title": "Sha256",
+          "type": "string"
+        },
+        "result": {
+          "additionalProperties": true,
+          "title": "Result",
+          "type": "object"
+        },
+        "bundle_key": {
+          "title": "Bundle Key",
+          "type": "string"
+        }
+      },
+      "required": [
+        "schema_version",
+        "id",
+        "project_id",
+        "created_at",
+        "parents",
+        "software",
+        "kind",
+        "title",
+        "pdf_key",
+        "sha256",
+        "result",
+        "bundle_key"
+      ],
+      "title": "Evidence",
+      "type": "object"
+    },
+    "Failure": {
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "1.0",
+          "default": "1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "project_id": {
+          "title": "Project Id",
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        },
+        "parents": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Parents",
+          "type": "array"
+        },
+        "software": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "title": "Software",
+          "type": "object"
+        },
+        "kind": {
+          "const": "failure",
+          "default": "failure",
+          "title": "Kind",
+          "type": "string"
+        },
+        "benchmark_id": {
+          "title": "Benchmark Id",
+          "type": "string"
+        },
+        "external_project_id": {
+          "title": "External Project Id",
+          "type": "string"
+        },
+        "external_record_id": {
+          "title": "External Record Id",
+          "type": "string"
+        },
+        "reason": {
+          "title": "Reason",
+          "type": "string"
+        },
+        "record": {
+          "additionalProperties": true,
+          "title": "Record",
+          "type": "object"
+        }
+      },
+      "required": [
+        "schema_version",
+        "id",
+        "project_id",
+        "created_at",
+        "parents",
+        "software",
+        "kind",
+        "benchmark_id",
+        "external_project_id",
+        "external_record_id",
+        "reason",
+        "record"
+      ],
+      "title": "Failure",
+      "type": "object"
+    },
+    "LegacyJobResponse": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "project_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Project Id",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "audit",
+            "split",
+            "benchmark",
+            "evidence",
+            "failure",
+            "report"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "state": {
+          "enum": [
+            "queued",
+            "running",
+            "succeeded",
+            "failed"
+          ],
+          "title": "State",
+          "type": "string"
+        },
+        "result_id": {
+          "anyOf": [
+            {
+              "maxLength": 160,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Result Id"
+        },
+        "error": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Error"
+        },
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        },
+        "started_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Started At"
+        },
+        "finished_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Finished At"
+        }
+      },
+      "required": [
+        "id",
+        "project_id",
+        "kind",
+        "state",
+        "result_id",
+        "error",
+        "created_at",
+        "started_at",
+        "finished_at"
+      ],
+      "title": "LegacyJobResponse",
+      "type": "object"
+    },
+    "ProjectResponse": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "description": {
+          "title": "Description",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "description"
+      ],
+      "title": "ProjectResponse",
+      "type": "object"
+    },
+    "Provenance": {
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "1.0",
+          "default": "1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "project_id": {
+          "title": "Project Id",
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        },
+        "parents": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Parents",
+          "type": "array"
+        },
+        "software": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "title": "Software",
+          "type": "object"
+        },
+        "kind": {
+          "const": "provenance",
+          "default": "provenance",
+          "title": "Kind",
+          "type": "string"
+        },
+        "activity": {
+          "title": "Activity",
+          "type": "string"
+        },
+        "inputs": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Inputs",
+          "type": "array"
+        },
+        "outputs": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Outputs",
+          "type": "array"
+        },
+        "parameters": {
+          "additionalProperties": true,
+          "title": "Parameters",
+          "type": "object"
+        }
+      },
+      "required": [
+        "schema_version",
+        "id",
+        "project_id",
+        "created_at",
+        "parents",
+        "software",
+        "kind",
+        "activity",
+        "inputs",
+        "outputs",
+        "parameters"
+      ],
+      "title": "Provenance",
+      "type": "object"
+    },
+    "Report": {
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "1.0",
+          "default": "1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "project_id": {
+          "title": "Project Id",
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        },
+        "parents": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Parents",
+          "type": "array"
+        },
+        "software": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "title": "Software",
+          "type": "object"
+        },
+        "kind": {
+          "const": "report",
+          "default": "report",
+          "title": "Kind",
+          "type": "string"
+        },
+        "blob_key": {
+          "title": "Blob Key",
+          "type": "string"
+        },
+        "sha256": {
+          "title": "Sha256",
+          "type": "string"
+        },
+        "artifact_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Artifact Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "schema_version",
+        "id",
+        "project_id",
+        "created_at",
+        "parents",
+        "software",
+        "kind",
+        "blob_key",
+        "sha256",
+        "artifact_ids"
+      ],
+      "title": "Report",
+      "type": "object"
+    },
+    "Source": {
+      "additionalProperties": false,
+      "properties": {
+        "citation": {
+          "maxLength": 2000,
+          "minLength": 1,
+          "title": "Citation",
+          "type": "string"
+        },
+        "url": {
+          "default": "Not supplied",
+          "maxLength": 2000,
+          "title": "Url",
+          "type": "string"
+        },
+        "license": {
+          "maxLength": 200,
+          "minLength": 1,
+          "title": "License",
+          "type": "string"
+        },
+        "data_kind": {
+          "enum": [
+            "empirical",
+            "synthetic"
+          ],
+          "title": "Data Kind",
+          "type": "string"
+        },
+        "transformations": {
+          "maxLength": 3000,
+          "minLength": 1,
+          "title": "Transformations",
+          "type": "string"
+        }
+      },
+      "required": [
+        "citation",
+        "url",
+        "license",
+        "data_kind",
+        "transformations"
+      ],
+      "title": "Source",
+      "type": "object"
+    },
+    "Split": {
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "1.0",
+          "default": "1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "project_id": {
+          "title": "Project Id",
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        },
+        "parents": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Parents",
+          "type": "array"
+        },
+        "software": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "title": "Software",
+          "type": "object"
+        },
+        "kind": {
+          "const": "split",
+          "default": "split",
+          "title": "Kind",
+          "type": "string"
+        },
+        "dataset_id": {
+          "title": "Dataset Id",
+          "type": "string"
+        },
+        "audit_id": {
+          "title": "Audit Id",
+          "type": "string"
+        },
+        "config": {
+          "additionalProperties": true,
+          "title": "Config",
+          "type": "object"
+        },
+        "assignments": {
+          "items": {
+            "enum": [
+              "train",
+              "validation",
+              "test",
+              "excluded"
+            ],
+            "type": "string"
+          },
+          "title": "Assignments",
+          "type": "array"
+        },
+        "result": {
+          "additionalProperties": true,
+          "title": "Result",
+          "type": "object"
+        }
+      },
+      "required": [
+        "schema_version",
+        "id",
+        "project_id",
+        "created_at",
+        "parents",
+        "software",
+        "kind",
+        "dataset_id",
+        "audit_id",
+        "config",
+        "assignments",
+        "result"
+      ],
+      "title": "Split",
+      "type": "object"
+    },
+    "ProjectsResponse": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/ProjectResponse"
+      }
+    },
+    "JobsResponse": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/LegacyJobResponse"
+      }
+    },
+    "LegacyArtifact": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/Dataset"
+        },
+        {
+          "$ref": "#/$defs/Audit"
+        },
+        {
+          "$ref": "#/$defs/Split"
+        },
+        {
+          "$ref": "#/$defs/Benchmark"
+        },
+        {
+          "$ref": "#/$defs/Evidence"
+        },
+        {
+          "$ref": "#/$defs/Failure"
+        },
+        {
+          "$ref": "#/$defs/Provenance"
+        },
+        {
+          "$ref": "#/$defs/Report"
+        }
+      ],
+      "discriminator": {
+        "propertyName": "kind",
+        "mapping": {
+          "dataset": "#/$defs/Dataset",
+          "audit": "#/$defs/Audit",
+          "split": "#/$defs/Split",
+          "benchmark": "#/$defs/Benchmark",
+          "evidence": "#/$defs/Evidence",
+          "failure": "#/$defs/Failure",
+          "provenance": "#/$defs/Provenance",
+          "report": "#/$defs/Report"
+        }
+      }
+    },
+    "ArtifactsResponse": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "$ref": "#/$defs/Dataset"
+          },
+          {
+            "$ref": "#/$defs/Audit"
+          },
+          {
+            "$ref": "#/$defs/Split"
+          },
+          {
+            "$ref": "#/$defs/Benchmark"
+          },
+          {
+            "$ref": "#/$defs/Evidence"
+          },
+          {
+            "$ref": "#/$defs/Failure"
+          },
+          {
+            "$ref": "#/$defs/Provenance"
+          },
+          {
+            "$ref": "#/$defs/Report"
+          }
+        ],
+        "discriminator": {
+          "propertyName": "kind",
+          "mapping": {
+            "dataset": "#/$defs/Dataset",
+            "audit": "#/$defs/Audit",
+            "split": "#/$defs/Split",
+            "benchmark": "#/$defs/Benchmark",
+            "evidence": "#/$defs/Evidence",
+            "failure": "#/$defs/Failure",
+            "provenance": "#/$defs/Provenance",
+            "report": "#/$defs/Report"
+          }
+        }
+      }
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sciml-workbench.local/contracts/http-responses.json",
+  "title": "HttpResponse",
+  "anyOf": [
+    {
+      "$ref": "#/$defs/ProjectResponse"
+    },
+    {
+      "$ref": "#/$defs/ProjectsResponse"
+    },
+    {
+      "$ref": "#/$defs/LegacyJobResponse"
+    },
+    {
+      "$ref": "#/$defs/JobsResponse"
+    },
+    {
+      "$ref": "#/$defs/LegacyArtifact"
+    },
+    {
+      "$ref": "#/$defs/ArtifactsResponse"
+    }
+  ]
+}

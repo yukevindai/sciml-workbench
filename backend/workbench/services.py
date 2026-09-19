@@ -25,8 +25,13 @@ from .db import ArtifactRow, JobRow, ProjectRow
 
 
 class DomainError(Exception):
-    def __init__(self, message, status=422):
+    def __init__(self, message, status=422, error_code=None):
         self.message, self.status = message, status
+        self.error_code = error_code or {
+            401: "UNAUTHORIZED", 403: "POLICY_DENIED", 404: "ARTIFACT_NOT_FOUND",
+            409: "IDEMPOTENCY_CONFLICT", 413: "UPLOAD_TOO_LARGE", 422: "VALIDATION_FAILED",
+            503: "DEPENDENCY_UNAVAILABLE",
+        }.get(status, "INTERNAL_ERROR")
         super().__init__(message)
 
 
@@ -37,7 +42,7 @@ def software():
 def project(session, project_id):
     row = session.get(ProjectRow, project_id)
     if not row:
-        raise DomainError("Project not found", 404)
+        raise DomainError("Project not found", 404, "PROJECT_NOT_FOUND")
     return row
 
 
@@ -118,11 +123,11 @@ def ensure_lineage(session, pid, kind, payload):
         if kind == "split":
             audit = artifact(session, pid, payload["audit_id"], "audit")
             if audit.dataset_id != data.id:
-                raise DomainError("Audit belongs to another dataset")
+                raise DomainError("Audit belongs to another dataset", 422, "LINEAGE_MISMATCH")
         if kind == "benchmark":
             part = artifact(session, pid, payload["split_id"], "split")
             if part.dataset_id != data.id:
-                raise DomainError("Split belongs to another dataset")
+                raise DomainError("Split belongs to another dataset", 422, "LINEAGE_MISMATCH")
     elif kind == "failure":
         artifact(session, pid, payload["benchmark_id"], "benchmark")
 

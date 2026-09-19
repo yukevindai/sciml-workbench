@@ -1,0 +1,202 @@
+{
+  "$defs": {
+    "InputScope": {
+      "additionalProperties": false,
+      "properties": {
+        "material_ids": {
+          "items": {
+            "maxLength": 160,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Material Ids",
+          "type": "array"
+        },
+        "artifact_ids": {
+          "items": {
+            "maxLength": 160,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Artifact Ids",
+          "type": "array"
+        },
+        "conversation_id": {
+          "anyOf": [
+            {
+              "maxLength": 160,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Conversation Id"
+        },
+        "message_cutoff": {
+          "anyOf": [
+            {
+              "maximum": 9007199254740991,
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Message Cutoff"
+        }
+      },
+      "required": [
+        "material_ids",
+        "artifact_ids"
+      ],
+      "title": "InputScope",
+      "type": "object"
+    },
+    "ResourceLimits": {
+      "additionalProperties": false,
+      "description": "Values are required; E01 owns defaults and server/project intersections.",
+      "properties": {
+        "model_tokens": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "title": "Model Tokens",
+          "type": "integer"
+        },
+        "model_requests": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "title": "Model Requests",
+          "type": "integer"
+        },
+        "tool_calls": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "title": "Tool Calls",
+          "type": "integer"
+        },
+        "coordinator_iterations": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "title": "Coordinator Iterations",
+          "type": "integer"
+        },
+        "specialist_assignments": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "title": "Specialist Assignments",
+          "type": "integer"
+        },
+        "specialist_concurrency": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "title": "Specialist Concurrency",
+          "type": "integer"
+        },
+        "delegation_depth": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Delegation Depth",
+          "type": "integer"
+        },
+        "review_rounds": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "title": "Review Rounds",
+          "type": "integer"
+        },
+        "scientific_attempts": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "title": "Scientific Attempts",
+          "type": "integer"
+        },
+        "active_seconds": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "title": "Active Seconds",
+          "type": "integer"
+        },
+        "transient_retries": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "title": "Transient Retries",
+          "type": "integer"
+        },
+        "finalization_model_tokens": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "title": "Finalization Model Tokens",
+          "type": "integer"
+        },
+        "finalization_scientific_attempts": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "title": "Finalization Scientific Attempts",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "model_tokens",
+        "model_requests",
+        "tool_calls",
+        "coordinator_iterations",
+        "specialist_assignments",
+        "specialist_concurrency",
+        "delegation_depth",
+        "review_rounds",
+        "scientific_attempts",
+        "active_seconds",
+        "transient_retries",
+        "finalization_model_tokens",
+        "finalization_scientific_attempts"
+      ],
+      "title": "ResourceLimits",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "objective": {
+      "maxLength": 4000,
+      "minLength": 1,
+      "title": "Objective",
+      "type": "string"
+    },
+    "inputs": {
+      "$ref": "#/$defs/InputScope"
+    },
+    "policy_revision": {
+      "maximum": 9007199254740991,
+      "minimum": 1,
+      "title": "Policy Revision",
+      "type": "integer"
+    },
+    "mode": {
+      "default": "autopilot",
+      "enum": [
+        "autopilot",
+        "review_plan"
+      ],
+      "title": "Mode",
+      "type": "string"
+    },
+    "limits": {
+      "$ref": "#/$defs/ResourceLimits"
+    }
+  },
+  "required": [
+    "objective",
+    "inputs",
+    "policy_revision",
+    "limits"
+  ],
+  "title": "RunInput",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sciml-workbench.local/contracts/records/v1/run_input.json"
+}

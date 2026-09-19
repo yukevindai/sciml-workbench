@@ -1,4 +1,5 @@
 import hmac
+from datetime import datetime, timezone
 from fastapi import Depends, FastAPI, Header, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse, Response
@@ -6,6 +7,8 @@ from sqlalchemy import select, text
 from sqlalchemy.exc import IntegrityError
 from .config import Settings
 from .contracts import (
+    Artifact,
+    Dataset,
     AuditInput,
     BenchmarkInput,
     FailureInput,
@@ -13,13 +16,17 @@ from .contracts import (
     Source,
     SplitInput,
 )
+from .contract_core import ErrorResponse
+from .contracts import uid
+from .http_contracts import LegacyJobResponse as JobResponse, ProjectResponse
+from .schema_catalog import add_openapi_contracts
 from .db import ArtifactRow, Database, JobRow, ProjectRow
 from .services import DomainError, artifact, ensure_lineage, project, upload_csv
 from .storage import LocalStore
 
 
 def job_json(j):
-    return {
+    value = {
         k: getattr(j, k)
         for k in (
             "id",
@@ -33,6 +40,12 @@ def job_json(j):
             "finished_at",
         )
     }
+    # These columns are written in UTC; SQLite drops their timezone on read.
+    for key in ("created_at", "started_at", "finished_at"):
+        stamp = value[key]
+        if isinstance(stamp, datetime) and stamp.tzinfo is None:
+            value[key] = stamp.replace(tzinfo=timezone.utc)
+    return value
 
 
 def create_app(settings=None):
@@ -44,9 +57,27 @@ def create_app(settings=None):
         docs_url=None,
         redoc_url=None,
         openapi_url=None,
+        separate_input_output_schemas=False,
+        responses={status: {"model": ErrorResponse} for status in (401, 403, 404, 409, 413, 422, 500, 503)},
     )
     db, store = Database(settings.database_url), LocalStore(settings.storage_root)
     app.state.db, app.state.store = db, store
+
+    original_openapi = app.openapi
+
+    def openapi():
+        if app.openapi_schema is None:
+            app.openapi_schema = add_openapi_contracts(original_openapi())
+        return app.openapi_schema
+
+    app.openapi = openapi
+
+    def error_response(request, message, code, status, details=None):
+        fields = dict(error=message, error_code=code, request_id=request.state.request_id)
+        if details is not None:
+            fields["details"] = details
+        value = ErrorResponse(**fields)
+        return JSONResponse(value.model_dump(mode="json", exclude_unset=True), status_code=status)
 
     def session():
         with db.session.begin() as s:
@@ -61,43 +92,40 @@ def create_app(settings=None):
 
     @app.exception_handler(DomainError)
     async def domain_error(request, exc):
-        return JSONResponse({"error": exc.message}, status_code=exc.status)
+        return error_response(request, exc.message, exc.error_code, exc.status)
 
     @app.exception_handler(RequestValidationError)
     async def validation_error(request, exc):
-        return JSONResponse(
-            {
-                "error": "Invalid request",
-                "details": [{"loc": e["loc"], "msg": e["msg"]} for e in exc.errors()],
-            },
-            status_code=422,
+        return error_response(
+            request, "Invalid request", "VALIDATION_FAILED", 422,
+            [{"loc": e["loc"], "msg": e["msg"]} for e in exc.errors()],
         )
 
     @app.exception_handler(Exception)
     async def unexpected(request, exc):
-        return JSONResponse(
-            {
-                "error": "Internal service error. Check server configuration and storage availability."
-            },
-            status_code=500,
+        return error_response(
+            request, "Internal service error. Check server configuration and storage availability.",
+            "INTERNAL_ERROR", 500,
         )
 
     @app.middleware("http")
     async def limit_body(request, call_next):
+        request.state.request_id = uid()
         # Bound bodies before FastAPI parses JSON; uploads use raw bytes.
         if request.method in {"POST", "PUT", "PATCH"}:
             body = bytearray()
             async for chunk in request.stream():
                 body.extend(chunk)
                 if len(body) > settings.max_upload_bytes:
-                    return JSONResponse(
-                        {"error": "Upload exceeds configured byte limit"},
-                        status_code=413,
-                    )
+                    res = error_response(request, "Upload exceeds configured byte limit", "UPLOAD_TOO_LARGE", 413)
+                    res.headers["X-Request-ID"] = request.state.request_id
+                    res.headers["Cache-Control"] = "no-store"
+                    return res
             request._body = bytes(body)
         res = await call_next(request)
         res.headers["Cache-Control"] = "no-store"
         res.headers["X-Content-Type-Options"] = "nosniff"
+        res.headers["X-Request-ID"] = request.state.request_id
         return res
 
     @app.get("/health")
@@ -111,7 +139,7 @@ def create_app(settings=None):
     def schema():
         return app.openapi()
 
-    @app.get("/api/v1/projects", dependencies=protected)
+    @app.get("/api/v1/projects", dependencies=protected, response_model=list[ProjectResponse])
     def projects(s=Depends(session)):
         return [
             {"id": p.id, "name": p.name, "description": p.description}
@@ -120,14 +148,14 @@ def create_app(settings=None):
             )
         ]
 
-    @app.post("/api/v1/projects", dependencies=protected, status_code=201)
+    @app.post("/api/v1/projects", dependencies=protected, status_code=201, response_model=ProjectResponse)
     def create_project(payload: ProjectInput, s=Depends(session)):
         p = ProjectRow(**payload.model_dump())
         s.add(p)
         s.flush()
         return {"id": p.id, "name": p.name, "description": p.description}
 
-    @app.get("/api/v1/projects/{pid}/artifacts", dependencies=protected)
+    @app.get("/api/v1/projects/{pid}/artifacts", dependencies=protected, response_model=list[Artifact])
     def artifacts(pid: str, s=Depends(session)):
         project(s, pid)
         return [
@@ -139,12 +167,12 @@ def create_app(settings=None):
             )
         ]
 
-    @app.get("/api/v1/projects/{pid}/artifacts/{aid}", dependencies=protected)
+    @app.get("/api/v1/projects/{pid}/artifacts/{aid}", dependencies=protected, response_model=Artifact)
     def get_artifact(pid: str, aid: str, s=Depends(session)):
         return artifact(s, pid, aid)
 
     @app.post(
-        "/api/v1/projects/{pid}/datasets", dependencies=protected, status_code=201
+        "/api/v1/projects/{pid}/datasets", dependencies=protected, status_code=201, response_model=Dataset
     )
     async def upload(
         pid: str,
@@ -192,7 +220,7 @@ def create_app(settings=None):
             return job_json(old)
         return job_json(j)
 
-    @app.post("/api/v1/projects/{pid}/audit", dependencies=protected, status_code=202)
+    @app.post("/api/v1/projects/{pid}/audit", dependencies=protected, status_code=202, response_model=JobResponse, response_model_exclude_unset=True)
     def audit(
         pid: str,
         payload: AuditInput,
@@ -201,7 +229,7 @@ def create_app(settings=None):
     ):
         return queue(s, pid, "audit", payload.model_dump(), idempotency_key)
 
-    @app.post("/api/v1/projects/{pid}/split", dependencies=protected, status_code=202)
+    @app.post("/api/v1/projects/{pid}/split", dependencies=protected, status_code=202, response_model=JobResponse, response_model_exclude_unset=True)
     def split(
         pid: str,
         payload: SplitInput,
@@ -211,7 +239,7 @@ def create_app(settings=None):
         return queue(s, pid, "split", payload.model_dump(), idempotency_key)
 
     @app.post(
-        "/api/v1/projects/{pid}/benchmark", dependencies=protected, status_code=202
+        "/api/v1/projects/{pid}/benchmark", dependencies=protected, status_code=202, response_model=JobResponse, response_model_exclude_unset=True
     )
     def benchmark(
         pid: str,
@@ -221,7 +249,7 @@ def create_app(settings=None):
     ):
         return queue(s, pid, "benchmark", payload.model_dump(), idempotency_key)
 
-    @app.post("/api/v1/projects/{pid}/failure", dependencies=protected, status_code=202)
+    @app.post("/api/v1/projects/{pid}/failure", dependencies=protected, status_code=202, response_model=JobResponse, response_model_exclude_unset=True)
     def failure(
         pid: str,
         payload: FailureInput,
@@ -231,7 +259,7 @@ def create_app(settings=None):
         return queue(s, pid, "failure", payload.model_dump(), idempotency_key)
 
     @app.post(
-        "/api/v1/projects/{pid}/evidence", dependencies=protected, status_code=202
+        "/api/v1/projects/{pid}/evidence", dependencies=protected, status_code=202, response_model=JobResponse, response_model_exclude_unset=True
     )
     async def evidence(
         pid: str,
@@ -251,7 +279,7 @@ def create_app(settings=None):
             s, pid, "evidence", {"pdf_key": key, "title": x_title}, idempotency_key
         )
 
-    @app.post("/api/v1/projects/{pid}/report", dependencies=protected, status_code=202)
+    @app.post("/api/v1/projects/{pid}/report", dependencies=protected, status_code=202, response_model=JobResponse, response_model_exclude_unset=True)
     def report(pid: str, idempotency_key: str = Header(), s=Depends(session)):
         # A reproducible export must describe settled work, not partial tasks.
         active = s.scalar(
@@ -264,10 +292,10 @@ def create_app(settings=None):
             .limit(1)
         )
         if active:
-            raise DomainError("Wait for active jobs before exporting a report", 409)
+            raise DomainError("Wait for active jobs before exporting a report", 409, "PROJECT_BUSY")
         return queue(s, pid, "report", {}, idempotency_key)
 
-    @app.get("/api/v1/projects/{pid}/jobs", dependencies=protected)
+    @app.get("/api/v1/projects/{pid}/jobs", dependencies=protected, response_model=list[JobResponse], response_model_exclude_unset=True)
     def jobs(pid: str, s=Depends(session)):
         project(s, pid)
         return [

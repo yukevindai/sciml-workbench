@@ -1,0 +1,181 @@
+[
+  {
+    "schema_version": "1.0",
+    "project_id": "legacy-project",
+    "created_at": "2026-09-19T12:00:00Z",
+    "parents": [],
+    "software": {
+      "workbench": "0.1.0"
+    },
+    "kind": "dataset",
+    "id": "legacy-dataset",
+    "filename": "fixture.csv",
+    "blob_key": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "rows": 3,
+    "columns": [
+      "row",
+      "target"
+    ],
+    "source": {
+      "citation": "Synthetic contract fixture",
+      "url": "Not supplied",
+      "license": "CC0",
+      "data_kind": "synthetic",
+      "transformations": "Generated contract-test rows"
+    }
+  },
+  {
+    "schema_version": "1.0",
+    "project_id": "legacy-project",
+    "created_at": "2026-09-19T12:00:00Z",
+    "parents": [
+      "legacy-dataset"
+    ],
+    "software": {
+      "workbench": "0.1.0"
+    },
+    "kind": "audit",
+    "id": "legacy-audit",
+    "dataset_id": "legacy-dataset",
+    "config": {
+      "target_column": "target"
+    },
+    "result": {
+      "findings": []
+    }
+  },
+  {
+    "schema_version": "1.0",
+    "project_id": "legacy-project",
+    "created_at": "2026-09-19T12:00:00Z",
+    "parents": [
+      "legacy-dataset",
+      "legacy-audit"
+    ],
+    "software": {
+      "workbench": "0.1.0"
+    },
+    "kind": "split",
+    "id": "legacy-split",
+    "dataset_id": "legacy-dataset",
+    "audit_id": "legacy-audit",
+    "config": {
+      "seed": 0
+    },
+    "assignments": [
+      "train",
+      "validation",
+      "test"
+    ],
+    "result": {}
+  },
+  {
+    "schema_version": "1.0",
+    "project_id": "legacy-project",
+    "created_at": "2026-09-19T12:00:00Z",
+    "parents": [
+      "legacy-dataset",
+      "legacy-split"
+    ],
+    "software": {
+      "workbench": "0.1.0"
+    },
+    "kind": "benchmark",
+    "id": "legacy-benchmark",
+    "dataset_id": "legacy-dataset",
+    "split_id": "legacy-split",
+    "model": "ridge",
+    "seed": 0,
+    "status": "succeeded",
+    "result": {
+      "metrics": {
+        "test": {
+          "group_mae": 0.25
+        }
+      }
+    },
+    "error": null,
+    "bundle_key": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "config": {}
+  },
+  {
+    "schema_version": "1.0",
+    "project_id": "legacy-project",
+    "created_at": "2026-09-19T12:00:00Z",
+    "parents": [],
+    "software": {
+      "workbench": "0.1.0"
+    },
+    "kind": "evidence",
+    "id": "legacy-evidence",
+    "title": "Synthetic contract fixture",
+    "pdf_key": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "result": {
+      "page_count": 1
+    },
+    "bundle_key": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  },
+  {
+    "schema_version": "1.0",
+    "project_id": "legacy-project",
+    "created_at": "2026-09-19T12:00:00Z",
+    "parents": [
+      "legacy-benchmark"
+    ],
+    "software": {
+      "workbench": "0.1.0"
+    },
+    "kind": "failure",
+    "id": "legacy-failure",
+    "benchmark_id": "legacy-benchmark",
+    "external_project_id": "external-project",
+    "external_record_id": "external-record",
+    "reason": "Human contract-test assessment",
+    "record": {
+      "record": {
+        "status": "failed"
+      }
+    }
+  },
+  {
+    "schema_version": "1.0",
+    "project_id": "legacy-project",
+    "created_at": "2026-09-19T12:00:00Z",
+    "parents": [
+      "legacy-dataset"
+    ],
+    "software": {
+      "workbench": "0.1.0"
+    },
+    "kind": "provenance",
+    "id": "legacy-provenance",
+    "activity": "audit",
+    "inputs": [
+      "legacy-dataset"
+    ],
+    "outputs": [
+      "legacy-audit"
+    ],
+    "parameters": {}
+  },
+  {
+    "schema_version": "1.0",
+    "project_id": "legacy-project",
+    "created_at": "2026-09-19T12:00:00Z",
+    "parents": [
+      "legacy-dataset"
+    ],
+    "software": {
+      "workbench": "0.1.0"
+    },
+    "kind": "report",
+    "id": "legacy-report",
+    "blob_key": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "artifact_ids": [
+      "legacy-dataset"
+    ]
+  }
+]

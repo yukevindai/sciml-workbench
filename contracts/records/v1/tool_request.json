@@ -1,0 +1,145 @@
+{
+  "$defs": {
+    "JsonValue": {},
+    "PolicyReference": {
+      "additionalProperties": false,
+      "properties": {
+        "policy_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Policy Id",
+          "type": "string"
+        },
+        "revision": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "title": "Revision",
+          "type": "integer"
+        },
+        "sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "policy_id",
+        "revision",
+        "sha256"
+      ],
+      "title": "PolicyReference",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Trusted dispatch envelope. A provider proposes only name/arguments.",
+  "properties": {
+    "contract": {
+      "const": "tool_request",
+      "default": "tool_request",
+      "title": "Contract",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "run_id": {
+      "maxLength": 160,
+      "minLength": 1,
+      "title": "Run Id",
+      "type": "string"
+    },
+    "action_id": {
+      "maxLength": 160,
+      "minLength": 1,
+      "title": "Action Id",
+      "type": "string"
+    },
+    "attempt_id": {
+      "maxLength": 160,
+      "minLength": 1,
+      "title": "Attempt Id",
+      "type": "string"
+    },
+    "assignment_id": {
+      "anyOf": [
+        {
+          "maxLength": 160,
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Assignment Id"
+    },
+    "name": {
+      "enum": [
+        "inspect_project",
+        "inspect_dataset",
+        "list_artifacts",
+        "read_artifact",
+        "read_job",
+        "run_audit",
+        "generate_split",
+        "seal_evaluation",
+        "run_baseline",
+        "read_evaluation",
+        "ingest_evidence",
+        "search_evidence",
+        "read_evidence_span",
+        "search_failures",
+        "read_failure",
+        "record_outcome",
+        "reconcile_outcome",
+        "validate_claims",
+        "build_report",
+        "verify_report",
+        "replay_science",
+        "read_memory"
+      ],
+      "title": "Name",
+      "type": "string"
+    },
+    "tool_version": {
+      "maxLength": 160,
+      "minLength": 1,
+      "title": "Tool Version",
+      "type": "string"
+    },
+    "arguments": {
+      "additionalProperties": {
+        "$ref": "#/$defs/JsonValue"
+      },
+      "title": "Arguments",
+      "type": "object"
+    },
+    "request_sha256": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Request Sha256",
+      "type": "string"
+    },
+    "policy": {
+      "$ref": "#/$defs/PolicyReference"
+    }
+  },
+  "required": [
+    "run_id",
+    "action_id",
+    "attempt_id",
+    "name",
+    "tool_version",
+    "arguments",
+    "request_sha256",
+    "policy"
+  ],
+  "title": "ToolRequest",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sciml-workbench.local/contracts/records/v1/tool_request.json"
+}

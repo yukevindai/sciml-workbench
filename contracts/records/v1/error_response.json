@@ -1,0 +1,103 @@
+{
+  "$defs": {
+    "ValidationIssue": {
+      "additionalProperties": false,
+      "properties": {
+        "loc": {
+          "items": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ]
+          },
+          "title": "Loc",
+          "type": "array"
+        },
+        "msg": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Msg",
+          "type": "string"
+        }
+      },
+      "required": [
+        "loc",
+        "msg"
+      ],
+      "title": "ValidationIssue",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Additive API error fields: the original error string/details remain.",
+  "properties": {
+    "error": {
+      "maxLength": 4000,
+      "minLength": 1,
+      "title": "Error",
+      "type": "string"
+    },
+    "error_code": {
+      "enum": [
+        "UNAUTHORIZED",
+        "ORIGIN_REJECTED",
+        "PROJECT_NOT_FOUND",
+        "ARTIFACT_NOT_FOUND",
+        "JOB_NOT_FOUND",
+        "IDEMPOTENCY_CONFLICT",
+        "PROJECT_BUSY",
+        "VALIDATION_FAILED",
+        "LINEAGE_MISMATCH",
+        "UPLOAD_TOO_LARGE",
+        "STORAGE_UNAVAILABLE",
+        "DEPENDENCY_UNAVAILABLE",
+        "INTERNAL_ERROR",
+        "ADMISSION_REJECTED",
+        "JOB_TIMED_OUT",
+        "WORKER_INTERRUPTED",
+        "INTEGRITY_FAILED",
+        "EXTERNAL_OUTCOME_UNKNOWN",
+        "AGENT_UNAVAILABLE",
+        "POLICY_DENIED",
+        "DATA_EXPOSURE_DENIED",
+        "RUN_REVISION_CHANGED",
+        "QUESTION_STALE",
+        "BUDGET_EXHAUSTED",
+        "PROVIDER_UNAVAILABLE",
+        "TOOL_SCHEMA_INVALID",
+        "UNSUPPORTED_CAPABILITY",
+        "REFERENCE_INVALID",
+        "TEST_PROTOCOL_SEALED",
+        "RUN_CANCELLED"
+      ],
+      "title": "Error Code",
+      "type": "string"
+    },
+    "request_id": {
+      "maxLength": 160,
+      "minLength": 1,
+      "title": "Request Id",
+      "type": "string"
+    },
+    "details": {
+      "items": {
+        "$ref": "#/$defs/ValidationIssue"
+      },
+      "title": "Details",
+      "type": "array"
+    }
+  },
+  "required": [
+    "error",
+    "error_code",
+    "request_id"
+  ],
+  "title": "ErrorResponse",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sciml-workbench.local/contracts/records/v1/error_response.json"
+}

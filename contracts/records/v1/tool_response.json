@@ -1,0 +1,250 @@
+{
+  "$defs": {
+    "JsonValue": {},
+    "ToolBlocked": {
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "const": "blocked",
+          "title": "Status",
+          "type": "string"
+        },
+        "error_code": {
+          "enum": [
+            "UNAUTHORIZED",
+            "ORIGIN_REJECTED",
+            "PROJECT_NOT_FOUND",
+            "ARTIFACT_NOT_FOUND",
+            "JOB_NOT_FOUND",
+            "IDEMPOTENCY_CONFLICT",
+            "PROJECT_BUSY",
+            "VALIDATION_FAILED",
+            "LINEAGE_MISMATCH",
+            "UPLOAD_TOO_LARGE",
+            "STORAGE_UNAVAILABLE",
+            "DEPENDENCY_UNAVAILABLE",
+            "INTERNAL_ERROR",
+            "ADMISSION_REJECTED",
+            "JOB_TIMED_OUT",
+            "WORKER_INTERRUPTED",
+            "INTEGRITY_FAILED",
+            "EXTERNAL_OUTCOME_UNKNOWN",
+            "AGENT_UNAVAILABLE",
+            "POLICY_DENIED",
+            "DATA_EXPOSURE_DENIED",
+            "RUN_REVISION_CHANGED",
+            "QUESTION_STALE",
+            "BUDGET_EXHAUSTED",
+            "PROVIDER_UNAVAILABLE",
+            "TOOL_SCHEMA_INVALID",
+            "UNSUPPORTED_CAPABILITY",
+            "REFERENCE_INVALID",
+            "TEST_PROTOCOL_SEALED",
+            "RUN_CANCELLED"
+          ],
+          "title": "Error Code",
+          "type": "string"
+        },
+        "reason": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Reason",
+          "type": "string"
+        },
+        "blocked_step_ids": {
+          "items": {
+            "maxLength": 160,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Blocked Step Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "status",
+        "error_code",
+        "reason",
+        "blocked_step_ids"
+      ],
+      "title": "ToolBlocked",
+      "type": "object"
+    },
+    "ToolCompleted": {
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "const": "completed",
+          "title": "Status",
+          "type": "string"
+        },
+        "artifact_ids": {
+          "items": {
+            "maxLength": 160,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Artifact Ids",
+          "type": "array"
+        },
+        "result": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Result",
+          "type": "object"
+        }
+      },
+      "required": [
+        "status",
+        "artifact_ids",
+        "result"
+      ],
+      "title": "ToolCompleted",
+      "type": "object"
+    },
+    "ToolFailed": {
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "const": "failed",
+          "title": "Status",
+          "type": "string"
+        },
+        "error_code": {
+          "enum": [
+            "UNAUTHORIZED",
+            "ORIGIN_REJECTED",
+            "PROJECT_NOT_FOUND",
+            "ARTIFACT_NOT_FOUND",
+            "JOB_NOT_FOUND",
+            "IDEMPOTENCY_CONFLICT",
+            "PROJECT_BUSY",
+            "VALIDATION_FAILED",
+            "LINEAGE_MISMATCH",
+            "UPLOAD_TOO_LARGE",
+            "STORAGE_UNAVAILABLE",
+            "DEPENDENCY_UNAVAILABLE",
+            "INTERNAL_ERROR",
+            "ADMISSION_REJECTED",
+            "JOB_TIMED_OUT",
+            "WORKER_INTERRUPTED",
+            "INTEGRITY_FAILED",
+            "EXTERNAL_OUTCOME_UNKNOWN",
+            "AGENT_UNAVAILABLE",
+            "POLICY_DENIED",
+            "DATA_EXPOSURE_DENIED",
+            "RUN_REVISION_CHANGED",
+            "QUESTION_STALE",
+            "BUDGET_EXHAUSTED",
+            "PROVIDER_UNAVAILABLE",
+            "TOOL_SCHEMA_INVALID",
+            "UNSUPPORTED_CAPABILITY",
+            "REFERENCE_INVALID",
+            "TEST_PROTOCOL_SEALED",
+            "RUN_CANCELLED"
+          ],
+          "title": "Error Code",
+          "type": "string"
+        },
+        "error": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Error",
+          "type": "string"
+        }
+      },
+      "required": [
+        "status",
+        "error_code",
+        "error"
+      ],
+      "title": "ToolFailed",
+      "type": "object"
+    },
+    "ToolSubmitted": {
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "const": "submitted",
+          "title": "Status",
+          "type": "string"
+        },
+        "job_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Job Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "status",
+        "job_id"
+      ],
+      "title": "ToolSubmitted",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "contract": {
+      "const": "tool_response",
+      "default": "tool_response",
+      "title": "Contract",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "action_id": {
+      "maxLength": 160,
+      "minLength": 1,
+      "title": "Action Id",
+      "type": "string"
+    },
+    "attempt_id": {
+      "maxLength": 160,
+      "minLength": 1,
+      "title": "Attempt Id",
+      "type": "string"
+    },
+    "outcome": {
+      "discriminator": {
+        "mapping": {
+          "blocked": "#/$defs/ToolBlocked",
+          "completed": "#/$defs/ToolCompleted",
+          "failed": "#/$defs/ToolFailed",
+          "submitted": "#/$defs/ToolSubmitted"
+        },
+        "propertyName": "status"
+      },
+      "oneOf": [
+        {
+          "$ref": "#/$defs/ToolCompleted"
+        },
+        {
+          "$ref": "#/$defs/ToolSubmitted"
+        },
+        {
+          "$ref": "#/$defs/ToolBlocked"
+        },
+        {
+          "$ref": "#/$defs/ToolFailed"
+        }
+      ],
+      "title": "Outcome"
+    }
+  },
+  "required": [
+    "action_id",
+    "attempt_id",
+    "outcome"
+  ],
+  "title": "ToolResponse",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sciml-workbench.local/contracts/records/v1/tool_response.json"
+}

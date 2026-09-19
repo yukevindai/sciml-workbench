@@ -1,0 +1,389 @@
+{
+  "$defs": {
+    "DeclarationReference": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "enum": [
+            "user_message",
+            "operator_assertion",
+            "source_span",
+            "artifact"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "id"
+      ],
+      "title": "DeclarationReference",
+      "type": "object"
+    },
+    "EvaluationCandidate": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "model": {
+          "enum": [
+            "mean",
+            "ridge"
+          ],
+          "title": "Model",
+          "type": "string"
+        },
+        "seed": {
+          "exclusiveMaximum": 4294967296,
+          "minimum": 0,
+          "title": "Seed",
+          "type": "integer"
+        },
+        "configuration_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Configuration Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "model",
+        "seed",
+        "configuration_sha256"
+      ],
+      "title": "EvaluationCandidate",
+      "type": "object"
+    },
+    "IndependentUnit": {
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        },
+        "group_columns": {
+          "items": {
+            "minLength": 1,
+            "pattern": "\\S",
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Group Columns",
+          "type": "array"
+        },
+        "rationale": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Rationale",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "group_columns",
+        "rationale"
+      ],
+      "title": "IndependentUnit",
+      "type": "object"
+    },
+    "SuccessCriterion": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "metric": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Metric",
+          "type": "string"
+        },
+        "partition": {
+          "enum": [
+            "validation",
+            "test"
+          ],
+          "title": "Partition",
+          "type": "string"
+        },
+        "comparison": {
+          "enum": [
+            "lt",
+            "lte",
+            "gt",
+            "gte"
+          ],
+          "title": "Comparison",
+          "type": "string"
+        },
+        "threshold": {
+          "title": "Threshold",
+          "type": "number"
+        },
+        "declaration_reference": {
+          "$ref": "#/$defs/DeclarationReference"
+        }
+      },
+      "required": [
+        "id",
+        "metric",
+        "partition",
+        "comparison",
+        "threshold",
+        "declaration_reference"
+      ],
+      "title": "SuccessCriterion",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "id": {
+      "maxLength": 160,
+      "minLength": 1,
+      "title": "Id",
+      "type": "string"
+    },
+    "project_id": {
+      "maxLength": 160,
+      "minLength": 1,
+      "title": "Project Id",
+      "type": "string"
+    },
+    "created_at": {
+      "format": "date-time",
+      "title": "Created At",
+      "type": "string"
+    },
+    "parents": {
+      "items": {
+        "maxLength": 160,
+        "minLength": 1,
+        "type": "string"
+      },
+      "title": "Parents",
+      "type": "array"
+    },
+    "software": {
+      "additionalProperties": {
+        "maxLength": 4000,
+        "minLength": 1,
+        "type": "string"
+      },
+      "propertyNames": {
+        "maxLength": 160,
+        "minLength": 1
+      },
+      "title": "Software",
+      "type": "object"
+    },
+    "kind": {
+      "const": "evaluation_protocol",
+      "default": "evaluation_protocol",
+      "title": "Kind",
+      "type": "string"
+    },
+    "revision": {
+      "maximum": 9007199254740991,
+      "minimum": 1,
+      "title": "Revision",
+      "type": "integer"
+    },
+    "dataset_id": {
+      "maxLength": 160,
+      "minLength": 1,
+      "title": "Dataset Id",
+      "type": "string"
+    },
+    "dataset_sha256": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Dataset Sha256",
+      "type": "string"
+    },
+    "split_id": {
+      "maxLength": 160,
+      "minLength": 1,
+      "title": "Split Id",
+      "type": "string"
+    },
+    "split_sha256": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Split Sha256",
+      "type": "string"
+    },
+    "configuration_sha256": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Configuration Sha256",
+      "type": "string"
+    },
+    "target": {
+      "minLength": 1,
+      "pattern": "\\S",
+      "title": "Target",
+      "type": "string"
+    },
+    "features": {
+      "items": {
+        "minLength": 1,
+        "pattern": "\\S",
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Features",
+      "type": "array"
+    },
+    "preprocessing": {
+      "maxLength": 4000,
+      "minLength": 1,
+      "title": "Preprocessing",
+      "type": "string"
+    },
+    "independent_unit": {
+      "$ref": "#/$defs/IndependentUnit"
+    },
+    "candidates": {
+      "items": {
+        "$ref": "#/$defs/EvaluationCandidate"
+      },
+      "minItems": 1,
+      "title": "Candidates",
+      "type": "array"
+    },
+    "primary_metric": {
+      "maxLength": 160,
+      "minLength": 1,
+      "title": "Primary Metric",
+      "type": "string"
+    },
+    "selection_rule": {
+      "enum": [
+        "validation",
+        "predeclared_comparison"
+      ],
+      "title": "Selection Rule",
+      "type": "string"
+    },
+    "success_criterion": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/SuccessCriterion"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "state": {
+      "enum": [
+        "draft",
+        "sealed",
+        "released"
+      ],
+      "title": "State",
+      "type": "string"
+    },
+    "sealed_at": {
+      "anyOf": [
+        {
+          "format": "date-time",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Sealed At"
+    },
+    "released_at": {
+      "anyOf": [
+        {
+          "format": "date-time",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Released At"
+    },
+    "selected_candidate_id": {
+      "anyOf": [
+        {
+          "maxLength": 160,
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Selected Candidate Id"
+    },
+    "exposure_status": {
+      "enum": [
+        "unexposed",
+        "exposed",
+        "unknown"
+      ],
+      "title": "Exposure Status",
+      "type": "string"
+    },
+    "exposure_event_ids": {
+      "items": {
+        "maxLength": 160,
+        "minLength": 1,
+        "type": "string"
+      },
+      "title": "Exposure Event Ids",
+      "type": "array"
+    }
+  },
+  "required": [
+    "project_id",
+    "revision",
+    "dataset_id",
+    "dataset_sha256",
+    "split_id",
+    "split_sha256",
+    "configuration_sha256",
+    "target",
+    "features",
+    "preprocessing",
+    "independent_unit",
+    "candidates",
+    "primary_metric",
+    "selection_rule",
+    "state",
+    "exposure_status"
+  ],
+  "title": "EvaluationProtocol",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sciml-workbench.local/contracts/v1/evaluation_protocol.json"
+}

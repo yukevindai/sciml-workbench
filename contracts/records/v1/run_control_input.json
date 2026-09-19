@@ -1,0 +1,18 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "expected_run_revision": {
+      "maximum": 9007199254740991,
+      "minimum": 1,
+      "title": "Expected Run Revision",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "expected_run_revision"
+  ],
+  "title": "RunControlInput",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sciml-workbench.local/contracts/records/v1/run_control_input.json"
+}

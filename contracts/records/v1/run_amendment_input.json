@@ -1,0 +1,123 @@
+{
+  "$defs": {
+    "InputScope": {
+      "additionalProperties": false,
+      "properties": {
+        "material_ids": {
+          "items": {
+            "maxLength": 160,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Material Ids",
+          "type": "array"
+        },
+        "artifact_ids": {
+          "items": {
+            "maxLength": 160,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Artifact Ids",
+          "type": "array"
+        },
+        "conversation_id": {
+          "anyOf": [
+            {
+              "maxLength": 160,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Conversation Id"
+        },
+        "message_cutoff": {
+          "anyOf": [
+            {
+              "maximum": 9007199254740991,
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Message Cutoff"
+        }
+      },
+      "required": [
+        "material_ids",
+        "artifact_ids"
+      ],
+      "title": "InputScope",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "expected_run_revision": {
+      "maximum": 9007199254740991,
+      "minimum": 1,
+      "title": "Expected Run Revision",
+      "type": "integer"
+    },
+    "expected_plan_revision": {
+      "maximum": 9007199254740991,
+      "minimum": 0,
+      "title": "Expected Plan Revision",
+      "type": "integer"
+    },
+    "objective": {
+      "anyOf": [
+        {
+          "maxLength": 4000,
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Objective"
+    },
+    "inputs": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/InputScope"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "policy_revision": {
+      "anyOf": [
+        {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Policy Revision"
+    }
+  },
+  "required": [
+    "expected_run_revision",
+    "expected_plan_revision"
+  ],
+  "title": "RunAmendmentInput",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sciml-workbench.local/contracts/records/v1/run_amendment_input.json"
+}

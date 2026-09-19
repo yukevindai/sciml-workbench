@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { api, json } from './lib/api';
+import { parseArtifacts, parseJobs, parseProjects, parseJob } from './lib/decode';
 import { deriveWorkflow, navItem, type View } from './lib/pipeline';
 import type { Workbench as WorkbenchModel } from './lib/context';
 import { kinds, type Artifact, type Job, type Project } from './lib/types';
@@ -37,15 +38,15 @@ export default function Workbench({ view }: { view: View }) {
   const refresh = useCallback(async () => {
     if (!projectId) return;
     const [nextArtifacts, nextJobs] = await Promise.all([
-      api<Artifact[]>(`projects/${projectId}/artifacts`),
-      api<Job[]>(`projects/${projectId}/jobs`),
+      api(`projects/${projectId}/artifacts`, parseArtifacts),
+      api(`projects/${projectId}/jobs`, parseJobs),
     ]);
     setArtifacts(nextArtifacts);
     setJobs(nextJobs);
   }, [projectId]);
 
   useEffect(() => {
-    api<Project[]>('projects')
+    api('projects', parseProjects)
       .then(list => {
         setProjects(list);
         let saved: string | null = null;
@@ -84,7 +85,7 @@ export default function Workbench({ view }: { view: View }) {
   }, [refresh]);
 
   const submit = useCallback(async (kind: string, payload: object = {}) => {
-    await api(`projects/${projectId}/${kind}`, json(payload));
+    await api(`projects/${projectId}/${kind}`, parseJob, json(payload));
     setNotice('Job queued. Progress appears under job activity below.');
   }, [projectId]);
 
