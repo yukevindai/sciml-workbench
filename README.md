@@ -6,9 +6,15 @@ A unified local web interface for four independent scientific Python projects. N
 
 For a hosted private workspace, follow the [Render setup walkthrough](docs/render-setup.md).
 
+The [agent-operated release blueprint](sciml-workbench-mvp-design.md) defines the next release's five workstreams and 64 tickets. The [pre-implementation readiness record](docs/implementation-readiness.md) distinguishes existing behavior, pending work, and current validation results. The application currently implements the manual workflow described below.
+
 ## Start with Docker Compose
 
 Requires Docker Engine with Compose v2 and network access to GitHub/PyPI/npm during the build. No external model API keys are required.
+
+See [runtime setup and configuration ownership](docs/runtime-setup.md) for clean Python 3.12 installation, startup ordering, the Linux/WSL process boundary, and the reserved agent-worker configuration. Agent execution remains disabled until its provider and scheduler tickets are implemented.
+
+The [scientific worker runtime](docs/scientific-worker.md) describes fixed job deadlines, bounded subprocesses, fenced parent publication and restart behavior implemented in D03.
 
 ```bash
 cp .env.example .env
@@ -40,13 +46,13 @@ For other CSVs, change the configuration declarations to match the columns, targ
 Python 3.12, Node 22+, and PostgreSQL 16 are recommended. From the repository root:
 
 ```bash
-python -m venv .venv
+python3.12 -m venv .venv
 source .venv/bin/activate
 pip install -c backend/constraints.txt -e 'backend[dev]'
 cp .env.example .env
 # Set secrets and WB_DATABASE_URL to your PostgreSQL database.
-alembic -c backend/alembic.ini upgrade head
-python -m workbench.bootstrap
+python -m workbench.config
+python -m workbench.setup
 uvicorn workbench.api:create_app --factory --host 127.0.0.1 --port 8000
 ```
 
@@ -64,7 +70,7 @@ In another terminal with the same environment and activated virtualenv:
 python -m workbench.worker
 ```
 
-For the UI, copy **only** `WB_API_TOKEN`, `WB_API_URL=http://localhost:8000`, `WB_PUBLIC_ORIGIN=http://localhost:3000`, `WB_REQUIRE_LOGIN=1`, `WB_LOGIN_USERNAME` and `WB_LOGIN_PASSWORD` into `frontend/.env.local`, then:
+For the UI, copy `frontend/.env.example` to `frontend/.env.local`, set the matching backend `WB_API_TOKEN` and independent web login values, then:
 
 ```bash
 cd frontend
@@ -105,4 +111,6 @@ No changes are required in any upstream repository. PostgreSQL stores workbench 
 
 ## Validation status
 
-Validated locally: five real-upstream backend tests, two Chromium browser tests (the complete workflow and proxy security), mobile layout, report replay, and the Next.js production build. The PostgreSQL concurrent-claim test is skipped locally because PostgreSQL/Docker are unavailable in this environment. CI includes PostgreSQL integration/concurrency and Compose startup checks; consult its run for those results. No public deployment is included.
+Subsequent [D01 runtime acceptance](docs/tickets/D01.md) passed a clean Linux Compose build/startup, setup replay, and 118 backend tests with real PostgreSQL (4 SQLite-parameter skips). The following readiness inspection is historical; agent and hosted release acceptance remain separate.
+
+The repository contains eight backend tests and three browser tests. The September 19, 2026 inspection ran the backend suite on the existing Windows/Python 3.13 environment: six passed, the POSIX-only supervisor test failed because Windows lacks `os.killpg`, and the PostgreSQL concurrent-claim test was skipped. Schema generation and frontend typechecking passed. See the [readiness record](docs/implementation-readiness.md#validation-evidence) for build results and checks not run. These results do not establish a clean Python 3.12, PostgreSQL, browser, hosted, or agent-release acceptance run. CI defines PostgreSQL integration/concurrency, browser, and Compose checks; inspect the corresponding run before claiming they pass.

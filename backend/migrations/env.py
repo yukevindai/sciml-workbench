@@ -1,6 +1,6 @@
 from alembic import context
 from sqlalchemy import create_engine
-from workbench.config import Settings
+from workbench.config import load_settings
 from workbench.db import Base
 
 def run(connection):
@@ -32,7 +32,7 @@ supplied = context.config.attributes.get("connection")
 if supplied is not None:
     run(supplied)
 else:
-    engine = create_engine(Settings().database_url)
+    engine = create_engine(load_settings().database_url)
     with engine.connect() as connection:
         run(connection)
     engine.dispose()

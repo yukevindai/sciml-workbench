@@ -6,11 +6,20 @@ import subprocess
 import sys
 import time
 
-from .bootstrap import main as bootstrap
-from .config import Settings
+from .setup import main as setup
+from .config import AgentSettings, ConfigurationError, load_settings
+
+
+def require_posix():
+    if os.name != "posix":
+        raise ConfigurationError(
+            "The supervised runtime requires Linux process groups. "
+            "Use Docker Compose with Linux containers or WSL2; native Windows is supported for tests only."
+        )
 
 
 def supervise(commands):
+    require_posix()
     children = []
     stopping = False
 
@@ -29,7 +38,8 @@ def supervise(commands):
             time.sleep(0.25)
         return 0
     finally:
-        # Include a worker's task subprocess in shutdown, not just its parent.
+        # The worker handles TERM and asks its guardian to stop the task tree.
+        # Parent-loss detection also covers an abruptly killed worker.
         for child in children:
             try:
                 os.killpg(child.pid, signal.SIGTERM)
@@ -49,13 +59,14 @@ def supervise(commands):
 
 
 def main():
-    settings = Settings()
-    settings.validate_secrets()
+    require_posix()
+    settings = load_settings()
+    agent = load_settings(AgentSettings)
+    if agent.agents_enabled:
+        # Fail before migrations or child processes; D11 will supply the scheduler.
+        agent.require_runtime()
     # Run at runtime: Render disks are unavailable to pre-deploy commands.
-    subprocess.run(
-        ["alembic", "-c", "backend/alembic.ini", "upgrade", "head"], check=True
-    )
-    bootstrap()
+    setup(settings)
     return supervise(
         [
             [
@@ -75,4 +86,7 @@ def main():
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    try:
+        raise SystemExit(main())
+    except ConfigurationError as exc:
+        sys.exit(str(exc))

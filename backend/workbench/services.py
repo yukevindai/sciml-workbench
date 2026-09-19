@@ -5,7 +5,9 @@ import json
 import zipfile
 from importlib.metadata import version, distributions
 import platform
+from copy import deepcopy
 from pathlib import Path
+from types import SimpleNamespace
 from sqlalchemy import select
 from . import adapters
 from .config import PINS
@@ -20,8 +22,11 @@ from .contracts import (
     Report,
     Split,
     artifact_adapter,
+    uid,
 )
 from .db import ArtifactRow, JobRow, ProjectRow
+from .storage import StorageError
+from .execution import Work
 
 
 class DomainError(Exception):
@@ -132,7 +137,7 @@ def ensure_lineage(session, pid, kind, payload):
         artifact(session, pid, payload["benchmark_id"], "benchmark")
 
 
-def report_bundle(session, store, pid):
+def capture_report(session, pid):
     proj = project(session, pid)
     rows = session.scalars(
         select(ArtifactRow)
@@ -141,13 +146,10 @@ def report_bundle(session, store, pid):
     ).all()
     artifacts = [x.payload for x in rows if x.kind != "report"]
     jobs = session.scalars(select(JobRow).where(JobRow.project_id == pid)).all()
-    files = {
-        "artifacts.json": adapters.encoded(artifacts),
-        "project.json": adapters.encoded(
-            {"id": proj.id, "name": proj.name, "description": proj.description}
-        ),
-        "jobs.json": adapters.encoded(
-            [
+    return deepcopy({
+        "artifacts": artifacts,
+        "project": {"id": proj.id, "name": proj.name, "description": proj.description},
+        "jobs": [
                 {
                     "id": j.id,
                     "kind": j.kind,
@@ -157,8 +159,17 @@ def report_bundle(session, store, pid):
                 }
                 for j in jobs
                 if j.kind != "report"
-            ]
-        ),
+            ],
+    })
+
+
+def report_bundle(snapshot, store):
+    artifacts = snapshot["artifacts"]
+    proj = SimpleNamespace(**snapshot["project"])
+    files = {
+        "artifacts.json": adapters.encoded(artifacts),
+        "project.json": adapters.encoded(snapshot["project"]),
+        "jobs.json": adapters.encoded(snapshot["jobs"]),
         "software.json": adapters.encoded(software()),
     }
     files["environment.json"] = adapters.encoded(
@@ -227,14 +238,40 @@ def report_bundle(session, store, pid):
     return out.getvalue(), [a["id"] for a in artifacts]
 
 
-def execute(session, store, settings, job):
-    pid, p = job.project_id, job.payload
-    common = {"project_id": pid, "software": software()}
+def prepare_execution(session, job):
+    """Detach immutable metadata in a short transaction; no blob or adapter IO."""
+    pid, p = job.project_id, deepcopy(job.payload)
     ensure_lineage(session, pid, job.kind, p)
+    work = Work(job_id=job.id, result_id=uid(), project_id=pid, kind=job.kind, payload=p)
+
+    def include(aid, kind):
+        value = artifact(session, pid, aid, kind)
+        work.artifacts[aid] = value.model_dump(mode="json")
+        return value
+
     if job.kind in {"audit", "split", "benchmark"}:
-        data = artifact(session, pid, p["dataset_id"], "dataset")
+        include(p["dataset_id"], "dataset")
+    if job.kind == "benchmark":
+        part = include(p["split_id"], "split")
+        include(part.audit_id, "audit")
+    elif job.kind == "failure":
+        include(p["benchmark_id"], "benchmark")
+        proj = project(session, pid)
+        work.project = {"id": proj.id, "name": proj.name, "description": proj.description}
+    elif job.kind == "report":
+        work.report = capture_report(session, pid)
+    return work
+
+
+def execute(store, settings, work):
+    """Compute from a detached snapshot. No session, engine or metadata writes."""
+    pid, p = work.project_id, work.payload
+    common = {"id": work.result_id, "project_id": pid, "software": software()}
+    inputs = {key: artifact_adapter.validate_python(value) for key, value in work.artifacts.items()}
+    if work.kind in {"audit", "split", "benchmark"}:
+        data = inputs[p["dataset_id"]]
         raw = store.get(data.blob_key)
-    if job.kind == "audit":
+    if work.kind == "audit":
         value = Audit(
             **common,
             parents=[data.id],
@@ -242,7 +279,7 @@ def execute(session, store, settings, job):
             config=p["config"],
             result=adapters.run_audit(raw, p["config"]),
         )
-    elif job.kind == "split":
+    elif work.kind == "split":
         assignments, result = adapters.run_split(raw, p["config"])
         value = Split(
             **common,
@@ -253,9 +290,9 @@ def execute(session, store, settings, job):
             assignments=assignments,
             result=result,
         )
-    elif job.kind == "benchmark":
-        part = artifact(session, pid, p["split_id"], "split")
-        audited = artifact(session, pid, part.audit_id, "audit")
+    elif work.kind == "benchmark":
+        part = inputs[p["split_id"]]
+        audited = inputs[part.audit_id]
         value = Benchmark(
             **common,
             parents=[data.id, part.id],
@@ -272,9 +309,12 @@ def execute(session, store, settings, job):
             )
             value.bundle_key = store.put(bundle)
             value.status = "succeeded"
+        except StorageError:
+            # Storage failure is operational, not a scientific admission result.
+            raise
         except (ValueError, TypeError, KeyError) as exc:
             value.error = safe_error(exc, settings)
-    elif job.kind == "evidence":
+    elif work.kind == "evidence":
         raw = store.get(p["pdf_key"])
         result, bundle = adapters.ingest_pdf(raw, p["title"])
         value = Evidence(
@@ -285,8 +325,8 @@ def execute(session, store, settings, job):
             result=result,
             bundle_key=store.put(bundle),
         )
-    elif job.kind == "failure":
-        run = artifact(session, pid, p["benchmark_id"], "benchmark")
+    elif work.kind == "failure":
+        run = inputs[p["benchmark_id"]]
         record = {
             "title": f"Unsuccessful {run.model} benchmark",
             "performed_at": run.created_at.isoformat(),
@@ -305,13 +345,8 @@ def execute(session, store, settings, job):
                 "notes": "Computational run; unsuccessful is a researcher assessment, not a physical experiment.",
             },
         }
-        # Serialize remote provisioning/imports across workers using a PG advisory lock.
-        if session.bind.dialect.name == "postgresql":
-            from sqlalchemy import text
-
-            session.execute(text("SELECT pg_advisory_xact_lock(7314201)"))
         external_pid, result = adapters.FailureMemory(settings).save(
-            project(session, pid), job.id, record
+            SimpleNamespace(**work.project), work.job_id, record
         )
         value = Failure(
             **common,
@@ -322,26 +357,14 @@ def execute(session, store, settings, job):
             reason=p["reason"],
             record=result,
         )
-    elif job.kind == "report":
-        raw, ids = report_bundle(session, store, pid)
+    elif work.kind == "report":
+        raw, ids = report_bundle(work.report, store)
         key = store.put(raw)
         value = Report(
             **common, parents=ids, blob_key=key, sha256=key, artifact_ids=ids
         )
     else:
         raise DomainError("Unsupported job kind")
-    value = save(session, value)
-    save(
-        session,
-        Provenance(
-            **common,
-            parents=value.parents,
-            activity=job.kind,
-            inputs=value.parents,
-            outputs=[value.id],
-            parameters=p,
-        ),
-    )
     return value
 
 
@@ -349,14 +372,14 @@ def safe_error(exc, settings):
     if isinstance(exc, httpx_error_types()):
         return "Failure Memory request failed. Check its server account and logs; credentials are never included in errors."
     if isinstance(exc, (ValueError, TypeError, KeyError, DomainError)):
-        msg = str(exc)[:1500]
-        for secret in (
-            settings.api_token.get_secret_value(),
-            settings.efm_password.get_secret_value(),
-            settings.database_url,
-        ):
-            msg = msg.replace(secret, "[redacted]")
-        return msg
+        msg = str(exc)
+        for name in ("api_token", "efm_password", "database_url"):
+            secret = getattr(settings, name, None)
+            if hasattr(secret, "get_secret_value"):
+                secret = secret.get_secret_value()
+            if secret:
+                msg = msg.replace(secret, "[redacted]")
+        return msg[:1500]
     return "Task could not complete. Check server logs using the job ID."
 
 

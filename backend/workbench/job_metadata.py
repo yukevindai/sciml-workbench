@@ -45,7 +45,7 @@ def submit_job(session, project_id, kind, payload, request_key, *, retry_of_job_
 
 
 def database_now(session):
-    expression = func.clock_timestamp() if session.bind.dialect.name == "postgresql" else func.current_timestamp()
+    expression = func.clock_timestamp() if session.bind.dialect.name == "postgresql" else func.strftime("%Y-%m-%d %H:%M:%f", "now")
     stamp = session.scalar(select(expression))
     if isinstance(stamp, str):
         stamp = datetime.fromisoformat(stamp)

@@ -4,7 +4,7 @@ from fastapi import Depends, FastAPI, Header, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse, Response
 from sqlalchemy import select, text
-from .config import Settings
+from .config import load_settings
 from .contracts import (
     Artifact,
     Dataset,
@@ -22,7 +22,7 @@ from .schema_catalog import add_openapi_contracts
 from .db import ArtifactRow, Database, JobRow, ProjectRow
 from .job_metadata import submit_job
 from .services import DomainError, artifact, project, upload_csv
-from .storage import LocalStore
+from .storage import LocalStore, StorageError, StorageIntegrityError
 
 
 def job_json(j):
@@ -49,7 +49,7 @@ def job_json(j):
 
 
 def create_app(settings=None):
-    settings = settings or Settings()
+    settings = settings or load_settings()
     settings.validate_secrets()
     app = FastAPI(
         title="SciML Workbench",
@@ -68,6 +68,19 @@ def create_app(settings=None):
     def openapi():
         if app.openapi_schema is None:
             app.openapi_schema = add_openapi_contracts(original_openapi())
+            # HTTPStatus changed these defaults in Python 3.13. Preserve the
+            # published descriptions and key ordering on Python 3.12 as well.
+            for path in app.openapi_schema["paths"].values():
+                for operation in path.values():
+                    if not isinstance(operation, dict):
+                        continue
+                    for status, old, current in (
+                        ("413", "Request Entity Too Large", "Content Too Large"),
+                        ("422", "Unprocessable Entity", "Unprocessable Content"),
+                    ):
+                        response = operation.get("responses", {}).get(status, {})
+                        if response.get("description") == old:
+                            response["description"] = current
         return app.openapi_schema
 
     app.openapi = openapi
@@ -93,6 +106,11 @@ def create_app(settings=None):
     @app.exception_handler(DomainError)
     async def domain_error(request, exc):
         return error_response(request, exc.message, exc.error_code, exc.status)
+
+    @app.exception_handler(StorageError)
+    async def storage_error(request, exc):
+        status = 500 if isinstance(exc, StorageIntegrityError) else 503
+        return error_response(request, str(exc), exc.error_code, status)
 
     @app.exception_handler(RequestValidationError)
     async def validation_error(request, exc):

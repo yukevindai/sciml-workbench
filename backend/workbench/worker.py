@@ -1,85 +1,179 @@
-"""Durable PostgreSQL queue with atomic claims and isolated, bounded jobs.
+"""Short metadata phases around independently supervised scientific tasks."""
 
-A crashed job is marked interrupted after its deadline, never silently replayed.
-Retries are explicit new jobs. Failure Memory imports are idempotent per job ID.
-"""
-
+from datetime import timezone
+import json
 import logging
-import multiprocessing as mp
+import os
+from pathlib import Path
+import signal
+import sys
+import tempfile
+import threading
 import time
-from .config import Settings
-from .contracts import uid
+
+from .config import ConfigurationError, load_settings
+from .contracts import Provenance, artifact_adapter, uid
 from .db import Database, JobRow
-from .job_metadata import JobClaim, StaleClaim, claim_is_current, claim_next, fail_claim, finish_claim
-from .services import execute, safe_error
-from .storage import LocalStore
+from .execution import MAX_RESULT_BYTES, TaskResult
+from .job_metadata import (JobClaim, StaleClaim, claim_is_current, claim_next, database_now,
+                           fail_claim, finish_claim, lock_claim)
+from .processes import ProcessInterrupted, ProcessTimedOut, run_bounded
+from .services import artifact, ensure_lineage, prepare_execution, safe_error, save
+
+
+class TaskFailure(ValueError):
+    def __init__(self, message, code="WORKER_INTERRUPTED"):
+        super().__init__(message)
+        self.error_code = code
 
 
 def claim(db, timeout):
-    claimed = claim_next(db, timeout, uid())
-    return claimed.job_id if claimed else None
+    return claim_next(db, timeout, uid())
 
 
-def process_job(settings, job_id, expected_claim=None):
-    db = Database(settings.database_url)
-    claimed = expected_claim
+def prepare_claim(db, claimed):
+    # Query latency, input loading and launch overhead cannot renew the budget.
+    started = time.monotonic()
+    with db.session.begin() as session:
+        if not claim_is_current(session, claimed):
+            raise StaleClaim()
+        job = session.get(JobRow, claimed.job_id)
+        stamp = database_now(session)
+        deadline = job.deadline_at
+        if deadline.tzinfo is None:
+            deadline = deadline.replace(tzinfo=timezone.utc)
+        end = started + (deadline - stamp).total_seconds()
+        work = prepare_execution(session, job)
+    return work, end
+
+
+def task_environment(workspace):
+    # This is a trusted-code process boundary, not an OS sandbox.
+    allowed = {"PATH", "PYTHONPATH", "PYTHONHOME", "SYSTEMROOT", "WINDIR", "COMSPEC",
+               "LD_LIBRARY_PATH", "LANG", "LC_ALL", "TZ", "HOME", "USERPROFILE"}
+    env = {key: value for key, value in os.environ.items() if key.upper() in allowed}
+    if "PYTHONPATH" in env:
+        env["PYTHONPATH"] = os.pathsep.join(str(Path(part or ".").resolve()) for part in env["PYTHONPATH"].split(os.pathsep))
+    env.update(TMPDIR=str(workspace / "scratch"), TEMP=str(workspace / "scratch"), TMP=str(workspace / "scratch"),
+               PYTHONUNBUFFERED="1", PYTHONDONTWRITEBYTECODE="1")
+    for key in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS"):
+        if key in os.environ:
+            env[key] = os.environ[key]
+    return env
+
+
+def read_result(path):
     try:
-        with db.session.begin() as s:
-            job = s.get(JobRow, job_id)
-            if not job or job.state != "running":
-                return
-            claimed = claimed or JobClaim.from_row(job)
-            if claimed != JobClaim.from_row(job):
-                return
-            if not claim_is_current(s, claimed):
-                return
-            value = execute(s, LocalStore(settings.storage_root), settings, job)
-            state = (
-                "failed"
-                if value.kind == "benchmark" and value.status == "failed"
-                else "succeeded"
-            )
-            finish_claim(s, claimed, state=state, result_id=value.id,
-                         error=value.error if value.kind == "benchmark" else None,
-                         error_code="VALIDATION_FAILED" if state == "failed" else None)
-    except StaleClaim:
-        # Transaction rollback discards every pending artifact and provenance row.
-        pass
-    except Exception as exc:
-        logging.getLogger(__name__).error(
-            "Job %s failed (%s)", job_id, type(exc).__name__
+        if path.is_symlink() or not path.is_file():
+            raise ValueError()
+        with path.open("rb") as source:
+            raw = source.read(MAX_RESULT_BYTES + 1)
+        if len(raw) > MAX_RESULT_BYTES:
+            raise ValueError()
+        return TaskResult.model_validate_json(raw)
+    except (OSError, ValueError):
+        raise TaskFailure("Task did not produce a valid bounded result.") from None
+
+
+def run_task(settings, work, deadline, stopped):
+    root = settings.storage_root.resolve() / "workspaces"
+    root.mkdir(mode=0o700, parents=True, exist_ok=True)
+    with tempfile.TemporaryDirectory(prefix="job-", dir=root) as directory:
+        workspace = Path(directory)
+        (workspace / "scratch").mkdir(mode=0o700)
+        private = {"storage_root": str(settings.storage_root.resolve())}
+        if work.kind == "failure":
+            private.update(efm_username=settings.efm_username, efm_password=settings.efm_password.get_secret_value())
+        (workspace / "input.json").write_text(json.dumps({"work": work.model_dump(mode="json"), "settings": private}), encoding="utf-8")
+        code = run_bounded(
+            [sys.executable, "-m", "workbench.task", str(workspace), str(deadline), str(os.getpid())],
+            deadline, stopped=stopped, env=task_environment(workspace), cwd=workspace, grace=5.0,
         )
-        # No request payloads/credentials are emitted into logs or responses.
-        if claimed is not None:
-            fail_claim(db, claimed, error=safe_error(exc, settings), error_code=getattr(exc, "error_code", "INTERNAL_ERROR"))
+        if code == 124:
+            raise ProcessTimedOut()
+        if code == 125:
+            raise ProcessInterrupted()
+        if code != 0:
+            raise TaskFailure("Task subprocess exited without a result; retry explicitly.")
+        return read_result(workspace / "output.json")
+
+
+def publish_result(db, claimed, work, result):
+    if result.error is not None:
+        raise TaskFailure(result.error, result.error_code)
+    try:
+        value = artifact_adapter.validate_python(result.artifact)
+    except ValueError:
+        raise TaskFailure("Task returned an invalid artifact.") from None
+    if (value.id, value.project_id, value.kind) != (work.result_id, work.project_id, work.kind):
+        raise TaskFailure("Task result does not match its accepted operation.")
+    with db.session.begin() as session:
+        lock_claim(session, claimed)
+        job = session.get(JobRow, claimed.job_id)
+        if (work.job_id, work.project_id, work.kind, work.payload) != (job.id, job.project_id, job.kind, job.payload):
+            raise TaskFailure("Task snapshot does not match its accepted operation.")
+        ensure_lineage(session, work.project_id, work.kind, work.payload)
+        for parent in value.parents:
+            artifact(session, work.project_id, parent)
+        save(session, value)
+        save(session, Provenance(project_id=work.project_id, software=value.software, parents=value.parents,
+                                 activity=work.kind, inputs=value.parents, outputs=[value.id], parameters=work.payload))
+        failed = value.kind == "benchmark" and value.status == "failed"
+        finish_claim(session, claimed, state="failed" if failed else "succeeded", result_id=value.id,
+                     error=value.error if failed else None, error_code="VALIDATION_FAILED" if failed else None)
+
+
+def process_job(settings, claimed, *, db=None, stopped=lambda: False):
+    if not isinstance(claimed, JobClaim):
+        raise TypeError("Scientific execution requires the original JobClaim, not a job ID")
+    owned_db = db is None
+    db = db or Database(settings.database_url)
+    try:
+        work, deadline = prepare_claim(db, claimed)
+        result = run_task(settings, work, deadline, stopped)
+        if stopped():
+            raise ProcessInterrupted()
+        if time.monotonic() >= deadline:
+            raise ProcessTimedOut()
+        publish_result(db, claimed, work, result)
+    except StaleClaim:
+        fail_claim(db, claimed, error="Claim expired before publication; retry explicitly.", error_code="JOB_TIMED_OUT")
+    except ProcessTimedOut:
+        fail_claim(db, claimed, error="Task exceeded its fixed execution deadline; retry explicitly.", error_code="JOB_TIMED_OUT")
+    except ProcessInterrupted:
+        fail_claim(db, claimed, error="Worker stopped before task completion; retry explicitly.", error_code="WORKER_INTERRUPTED")
+    except Exception as exc:
+        logging.getLogger(__name__).error("Job %s failed (%s)", claimed.job_id, type(exc).__name__)
+        fail_claim(db, claimed, error=safe_error(exc, settings), error_code=getattr(exc, "error_code", "INTERNAL_ERROR"))
     finally:
-        db.engine.dispose()
+        if owned_db:
+            db.engine.dispose()
 
 
 def main():
-    settings = Settings()
-    settings.validate_secrets()
+    from .serve import require_posix
+
+    require_posix()
+    settings = load_settings()
+    stopping = threading.Event()
+    previous = {sig: signal.signal(sig, lambda signum, frame: stopping.set()) for sig in (signal.SIGTERM, signal.SIGINT)}
     db = Database(settings.database_url)
     worker_id = uid()
-    while True:
-        claimed = claim_next(db, settings.job_timeout_seconds, worker_id)
-        if not claimed:
-            time.sleep(1)
-            continue
-        child = mp.get_context("spawn").Process(
-            target=process_job, args=(settings, claimed.job_id, claimed)
-        )
-        child.start()
-        child.join(settings.job_timeout_seconds)
-        if child.is_alive():
-            child.terminate()
-            child.join(5)
-            if child.is_alive():
-                child.kill()
-                child.join()
-        fail_claim(db, claimed, error="Worker exited or task exceeded its deadline; retry explicitly.",
-                   error_code="WORKER_INTERRUPTED")
+    try:
+        while not stopping.is_set():
+            claimed = claim_next(db, settings.job_timeout_seconds, worker_id)
+            if claimed:
+                process_job(settings, claimed, db=db, stopped=stopping.is_set)
+            else:
+                stopping.wait(1)
+    finally:
+        db.engine.dispose()
+        for sig, handler in previous.items():
+            signal.signal(sig, handler)
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except ConfigurationError as exc:
+        sys.exit(str(exc))

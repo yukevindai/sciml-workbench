@@ -105,6 +105,18 @@ Do not add database or Failure Memory credentials to the frontend service. Do no
 
 HTTP Basic authentication is a single-operator access gate, not a multi-user login system. Browsers can cache these credentials; use a private window and close it when finished. Use a strong unique password and HTTPS. To rotate access, update `WB_LOGIN_PASSWORD` and redeploy the frontend. Rotating `WB_EFM_PASSWORD` is a separate operator action described in `operations.md`.
 
+## Public testing mode (no login)
+
+To let anyone open the site without a username or password during testing, on the **frontend** web service (`sciml-web`) set:
+
+| Variable | Value |
+|---|---|
+| `WB_REQUIRE_LOGIN` | `0` |
+
+Then click **Manual Deploy → Deploy latest commit** (or save the variable and let Render redeploy). `WB_LOGIN_USERNAME` and `WB_LOGIN_PASSWORD` can stay set; they are ignored while `WB_REQUIRE_LOGIN` is `0`. No backend change is needed: the backend stays private and the frontend keeps sending the server-side `WB_API_TOKEN` on the visitor's behalf.
+
+In this mode every visitor shares the same single workspace: anyone with the URL can create, view and delete projects and upload data. Do not upload confidential data while the site is public. To restore the gate, set `WB_REQUIRE_LOGIN` back to `1` and redeploy.
+
 ## Common problems
 
 | Symptom | Fix |

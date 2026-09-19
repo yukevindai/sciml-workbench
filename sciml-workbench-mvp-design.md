@@ -1,7 +1,7 @@
 # SciML Workbench
 ## Agent operated research workspace design and implementation blueprint
 
-Revised September 19, 2026. Draft 0.3. Supersedes the manual-first Draft 0.2.
+Revised September 19, 2026. Draft 0.3.1. Supersedes the manual-first Draft 0.2; reconciles Draft 0.3 with the current checkout and implementation handoffs.
 
 ## Summary
 
@@ -35,6 +35,8 @@ Keep Next.js/TypeScript, FastAPI/Python, PostgreSQL, immutable local storage, an
 ### Status and scope of this revision
 
 The historical inspected repository baseline remains `d5c1520d03448fb917a10790b4c116f266014c06`. It contains the manual workflow, eight views, pinned adapters, artifact schemas, queue, reports, Compose, CI, and Render guide. This revision changes the design; it does not claim that an agent implementation, provider test, new migration, or live deployment has already been completed. The implementer must inspect the actual checkout before changing code.
+
+The September 19 pre-implementation inspection synchronized `origin/main` at `8128559` into the existing Python/Windows-fix branch, producing local merge `efea153`. It preserves `bac705e` and the pre-existing uncommitted Render-guide edit. The agent runtime and new contracts remain unimplemented. The separate remote follow-up `d1f61eb` is not part of this baseline; its target/feature, advanced-JSON, and mobile-navigation fixes must be integrated or equivalently addressed under A01/A03/A05/A10. See [the repository readiness record](docs/implementation-readiness.md) for observed gaps, validation results, and remaining setup work. Historical references in section 29 remain historical rather than being relabeled as current validation.
 
 The attached Agent and Multi-Agent Build Prompt is incorporated throughout the product, contracts, APIs, runtime, controls, tickets, and acceptance plan. Previous requirements for a click before every scientific step, manual-only retries/assessments, agent deferral, and absence of provider data flow are superseded. Independent upstream usability, immutable originals, project scoping, scientific admission, durable operations, and reproducibility remain required.
 
@@ -825,7 +827,7 @@ The table describes FastAPI routes. Browser traffic reaches them through the exi
 | `POST /api/v1/projects/{p}/benchmark` | Queue baseline | 202 job object |
 | `POST /api/v1/projects/{p}/evidence` | Upload PDF and queue ingestion | 202 job object |
 | `POST /api/v1/projects/{p}/failure` | Queue failure assessment import | 202 job object |
-| `POST /api/v1/projects/{p}/report` | Capture and queue report export | 202 job object |
+| `POST /api/v1/projects/{p}/report` | Queue project report after checking active scientific jobs; request-time capture is a target change | 202 job object |
 | `GET /api/v1/projects/{p}/jobs` | Read project job history | Job array |
 
 Next.js also exposes the existing public `/healthz` liveness response. It must not return configuration, authenticated content, or proof that the scientific worker is healthy.
@@ -921,12 +923,14 @@ All routes are project-scoped and require the same authenticated proxy/session c
 | `GET/PUT /api/v1/projects/{p}/execution-policy` | Read policy or create an explicit operator revision; no agent write permission |
 | `POST /api/v1/projects/{p}/research-materials` | Idempotent CSV/PDF attachment with optional declarations; bytes preserved before run |
 | `GET/POST /api/v1/projects/{p}/conversations` | Read/create research conversation |
+| `GET /api/v1/projects/{p}/conversations/{c}/messages?after=...&limit=...` | Read bounded, ordered conversation history for refresh/reconnect |
 | `POST /api/v1/projects/{p}/conversations/{c}/messages` | Append user text/attachments; ordinary discussion alone does not start spending |
 | `POST /api/v1/projects/{p}/agent-runs` | Accept objective, input IDs, conversation cutoff, policy revision, mode, limits; return 202 run |
 | `GET /api/v1/projects/{p}/agent-runs` | Cursor-paginated run history |
 | `GET /api/v1/projects/{p}/agent-runs/{r}` | Current run, plan, progress, questions, budgets, deliverable links |
 | `POST /api/v1/projects/{p}/agent-runs/{r}/amend` | Apply user scope/plan amendment with expected revision |
 | `POST /api/v1/projects/{p}/agent-runs/{r}/questions/{q}/answer` | Answer a current question; store attribution and resume eligible work |
+| `POST /api/v1/projects/{p}/agent-runs/{r}/review-plan` | Accept the exact current plan revision in opt-in Review plan mode; require expected run/plan revisions and a request key |
 | `POST /api/v1/projects/{p}/agent-runs/{r}/pause` | Stop new dispatch at a safe boundary |
 | `POST /api/v1/projects/{p}/agent-runs/{r}/resume` | Continue the same paused/input-resolved run without resetting usage |
 | `POST /api/v1/projects/{p}/agent-runs/{r}/cancel` | Cancel future dispatch and manage already accepted actions |
@@ -937,6 +941,8 @@ All routes are project-scoped and require the same authenticated proxy/session c
 | `POST /api/v1/projects/{p}/memory/{m}/correct` | User correction/supersession with expected revision |
 
 The attachment route accepts unresolved source declarations through the new contract rather than making the browser forge legacy required fields. Never expose an HTTP endpoint that accepts a replacement graph checkpoint, arbitrary tool permission set, or a client-supplied coordinator lease.
+
+Plan acceptance records the operator decision against the reviewed revision. A stale acceptance conflicts; a duplicate compatible acceptance returns the original decision. It cannot expand policy, and generic Resume cannot bypass an outstanding plan review. Autopilot does not call this endpoint. B12 owns these history/review contracts; E07 and A11/A12 consume them.
 
 ### 10.8 Accepting a run
 
@@ -1676,15 +1682,15 @@ These 64 tickets form an acyclic dependency graph. The stage assignment in secti
 
 | ID | Task and scope | Depends on | Deliverable and acceptance |
 |---|---|---|---|
-| B01 | Versioned contracts — Harden | None | Publish Pydantic/JSON/OpenAPI contracts, error vocabulary, TypeScript generation, and migration rules for legacy artifacts plus the new agent/evidence/evaluation contracts. Acceptance: all eight legacy 1.0 fixtures remain readable; Dataset 2.0 and Failure 2.0 reject fabricated declarations or ambiguous actor fields; generated schemas do not drift. |
+| B01 | Versioned contracts — Harden | None | Publish Pydantic/JSON/OpenAPI contracts, error vocabulary, TypeScript generation, and migration rules for legacy artifacts plus the new agent/evidence/evaluation contracts. Acceptance: all eight legacy 1.0 fixtures remain readable; Dataset 2.0 and Failure 2.0 reject invalid declaration states or ambiguous actor fields; generated schemas do not drift. Source truth requires the separate provenance/grounding checks, not schema validation alone. |
 | B02 | Metadata migrations and invariants — Harden | B01 | Preserve projects/artifacts/jobs while adding short-transaction claims, deadlines, publication fencing, and immutable request identity. Acceptance: a populated database migrates without rewriting artifacts; same-project references and request-key uniqueness hold under PostgreSQL concurrency. |
 | B03 | Projects and automatic input intake — Harden | B02, D02 | Create projects and publish exact-byte CSV/PDF intake with bounded parsing, idempotent attachment binding, and explicitly unresolved source declarations. Acceptance: ordinary CSV upload needs no fabricated license or provenance; malformed input is rejected safely; two projects retain distinct artifact ownership for identical bytes. |
 | B04 | Durable operation submission — Harden | B03, D03 | Expose one scoped submission service to UI and agent tools, with canonical payload digest, action/request keys, admission checks, and stable errors. Acceptance: duplicate submissions yield one job; a reused key with changed payload returns conflict; browser disconnect does not lose accepted work. |
 | B05 | Artifact and lineage resolution — Harden | B03 | Centralize typed, project-scoped artifact/parent resolution and authenticated downloads. Acceptance: wrong-kind and cross-project references fail; missing parents are integrity errors; raw storage keys are never sufficient download authority. |
-| B06 | Run-scoped report capture — Add | B04, B05 | Capture a selected artifact dependency closure, terminal selected jobs, metadata, and immutable snapshot digest under the publication barrier. Acceptance: unrelated active project work does not block a run report; racing selected work cannot produce a torn snapshot; report-key replay returns the original capture. |
+| B06 | Run-scoped report capture — Add | B04, B05, B11 | Capture a selected artifact dependency closure, terminal selected jobs, metadata, and immutable snapshot digest under the publication barrier. Acceptance: unrelated active project work does not block a run report; racing selected work cannot produce a torn snapshot; report-key replay returns the original capture. |
 | B07 | External operation journal — Add | B04, C06 | Persist original import ID, exact body/digest, submission outcome, and receipt linkage. Acceptance: a lost response preserves an unknown outcome and the original ID; reconciliation rejects changed bodies; no upstream table access is used. |
 | B08 | Fenced result publication — Harden | B04, B05, D03 | Publish artifacts, provenance, job linkage, and terminal state atomically after claim validation. Acceptance: expired/cancelled claims cannot publish late outputs; rollback exposes no success; late errors cannot overwrite success; scientific execution holds no long database transaction. |
-| B09 | Capability and result projections — Add | B01, B05, B08, C01 | Add bounded typed capabilities, artifact/job indexes, detailed reads, and external-receipt projections. Acceptance: advertised options match installed public APIs; pagination is stable; agent reads enforce evaluation exposure; responses omit claim tokens and credentials. |
+| B09 | Capability and result projections — Add | B01, B05, B07, B08, C01, C12 | Add bounded typed capabilities, artifact/job indexes, detailed reads, and external-receipt projections. Acceptance: advertised options match installed public APIs; pagination is stable; agent reads enforce evaluation exposure; responses omit claim tokens and credentials. |
 | B10 | Data and API integration checks — Integrate | B06, B07, B08, B09, B11, B12, D12 | Exercise migrations, lineage, idempotency, snapshot races, fenced publication, event ordering, run transitions, and receipt recovery using PostgreSQL. Acceptance: tests assert committed state and persisted counters, not only HTTP status; fresh and populated databases pass. |
 | B11 | Agent persistence and ledgers — Add | B02, E01 | Add conversations, runs, revisions, assignments, actions, questions, reservations, events, protocol/exposure links, and scoped memory; integrate runtime checkpoint setup. Acceptance: action keys and event sequence constraints hold; migration/restore retains resumable state; checkpoint state cannot override authoritative action records. |
 | B12 | Agent API and controls — Add | B11, E01 | Implement scoped create/read/amend/answer/pause/resume/cancel/result/event endpoints with expected revisions and idempotency. Acceptance: duplicate Run research creates one run; stale amendments conflict; invalid state transitions fail clearly; no client can write raw checkpoints or expand server authority. |
@@ -1717,11 +1723,11 @@ These 64 tickets form an acyclic dependency graph. The stage assignment in secti
 | C05 | Evidence ingestion and source bundle — Verify | C01, D02 | Use the public PDF ingestion API and preserve original bytes plus available text/metadata. Acceptance: text PDFs are inspectable; scanned/invalid PDFs have honest limitations; no invented OCR, page mapping, extraction accuracy, or calibrated digitization. |
 | C06 | Failure Memory adapter and retrieval — Harden | C01, B02 | Verify public provisioning/login/CSRF/import/logout and available retrieval APIs; expose a typed stable-ID receipt and scoped search capability or local-snapshot fallback. Acceptance: exact import replay resolves one record; independent upstream usage remains possible; missing search capabilities are disclosed. |
 | C07 | Unsuccessful outcomes and actor truth — Harden | C04, B08 | Create artifacts for admission/runtime failures and criterion-based unsuccessful completed runs using Failure 2.0 attribution. Acceptance: agent observations cite objective errors or predeclared criteria; researcher judgments stay separate; missing metrics are absent; cancellation/provider outage never becomes an invented scientific failure. |
-| C08 | Scientific report assembly — Harden | B06, C04, C05, C06, C07, C11 | Assemble selected scientific artifacts, sources, failure snapshots, schemas, versions, protocol, manifest, and readable report from a frozen capture. Acceptance: references resolve, secrets are absent, corrupt/missing bytes block export, and unrelated prior report archives are not recursively embedded. |
+| C08 | Scientific report assembly — Harden | B06, C04, C05, C06, C07, C11, C12 | Assemble selected scientific artifacts, sources, failure snapshots, schemas, versions, protocol, manifest, and readable report from a frozen capture. Acceptance: references resolve, secrets are absent, corrupt/missing bytes block export, and unrelated prior report archives are not recursively embedded. |
 | C09 | Archive verification and replay — Harden | C08 | Verify paths/hashes/contracts and replay supported scientific operations in a fresh pinned environment with stated numeric tolerances. Acceptance: tampering and incompatibility fail clearly; supported assignments reproduce; Failure Memory is not mutated; agent text is not claimed deterministic. |
 | C10 | Real scientific integration suite — Integrate | C02, C03, C04, C05, C06, C07, C09, C11, C12 | Maintain focused fixtures for real adapters, invalid science, evidence references, criteria, frozen partitions, and replay. Acceptance: no science is replaced with mocks; known-good and deliberate rejection outcomes are distinguished; source-pin incompatibility blocks release. |
 | C11 | Evidence references and claim validation — Add | C05, B01, B05 | Implement source references, text representation hashes/offsets, result-field references, claim categories, and deterministic reference/metric consistency checks. Acceptance: missing anchors and false metric values fail; absent pages stay null; semantic support remains a separate review judgment. |
-| C12 | Evaluation protocol and exposure boundary — Add | C04, B02 | Seal features, split, baseline candidates, selection criterion, and eligibility; record holdout exposure across every result/retrieval path. Acceptance: upstream full-run test output is quarantined from selection agents; manual/prior exposure cannot be reset by a new run ID; unsupported validation-selection capability causes explicit limitation, not test-driven tuning. |
+| C12 | Evaluation protocol and exposure boundary — Add | C04, B02, B11 | Seal features, split, baseline candidates, selection criterion, and eligibility; record holdout exposure across every result/retrieval path. Acceptance: upstream full-run test output is quarantined from selection agents; manual/prior exposure cannot be reset by a new run ID; unsupported validation-selection capability causes explicit limitation, not test-driven tuning. |
 
 ### 25.4 Role A — Frontend and research UX
 
@@ -1746,10 +1752,10 @@ These 64 tickets form an acyclic dependency graph. The stage assignment in secti
 |---|---|---|---|
 | E01 | Authority and autonomy policy — Add | B01 | Define versioned server/project/request/assignment policy intersection, allowed routine actions, material clarification rules, and defaults. Acceptance: goal text cannot expand tools, egress, project scope, or budget; well-specified requests authorize dependent routine actions without repeated approvals. |
 | E02 | Provider interface and configuration — Add | B01, D01, E01 | Implement one tested server-side provider adapter with structured tool calls, validated model config, bounded responses, usage, redaction, and version metadata. Acceptance: malformed responses/outages are typed errors; no provider secret reaches browser/log/archive; real provider/model support is verified during implementation. |
-| E03 | Scoped typed tool registry — Add | B04, B05, C01, E01, E05 | Wrap supported services with schemas, capability checks, context restrictions, stable action IDs, and bounded results. Acceptance: no arbitrary shell/code/SQL/URL fetch is available; malformed calls and cross-project IDs fail before side effects; scientific tools submit durable jobs. |
+| E03 | Scoped typed tool registry — Add | B04, B05, B08, C01, E01, E05 | Wrap supported services with schemas, capability checks, context restrictions, stable action IDs, and bounded results. Acceptance: no arbitrary shell/code/SQL/URL fetch is available; malformed calls and cross-project IDs fail before side effects; scientific tools submit durable jobs. |
 | E04 | Adaptive durable coordinator — Add | E02, E03, E05, E14, B12, D11, C02 | Implement goal interpretation, plan/revision persistence, bounded tool choice, result inspection, yield/resume, and completion using the selected durable runtime. Acceptance: a real audit request completes through installed tools; a fault changes the next action appropriately; this is not a fixed pipeline with generated narration. |
 | E05 | Atomic budgets and usage — Add | B11, E01, E02 | Reserve/settle shared model and scientific budgets, handle unknown usage, and report cost estimates honestly. Acceptance: concurrent assignments cannot overspend one allowance; retries/resume preserve counters; unknown pricing is not zero; hard token/call limits remain enforced. |
-| E06 | Autonomous scientific workflow — Add | E04, C03, C04, E12, C08, E07 | Plan and execute audit, admissible split, baseline, eligible failure recording, evidence work, and requested report using actual outcomes and policy. Acceptance: a fully specified fixture finishes without intermediate approval; audit-only goals do not train; deterministic admission rejection does not trigger blind retries. |
+| E06 | Autonomous scientific workflow — Add | E04, C03, C04, E12, C08, E07, E08, E09 | Plan and execute audit, admissible split, baseline, eligible failure recording, evidence work, and requested report using actual outcomes and policy. Acceptance: a fully specified fixture finishes without intermediate approval; audit-only goals do not train; deterministic admission rejection does not trigger blind retries. |
 | E07 | Focused clarification and plan amendments — Add | E04, B12 | Detect material unknowns, consolidate questions, continue independent work, and apply answers/amendments through persisted expected revisions. Acceptance: ambiguous target/units produces a precise question; inferred declarations are not promoted to facts; ordinary defaults produce no unnecessary interruption. |
 | E08 | Agent recovery and control semantics — Add | E04, D12, B07 | Reconcile graph checkpoints against authoritative actions, jobs, receipts, controls, and reservations on resume. Acceptance: crash after submission returns the original job; cancelled/paused runs issue no new work; outstanding external effects retain truthful outcomes; terminal continuation uses a linked new run. |
 | E09 | Scoped memory and compatible reuse — Add | E03, C06, B11, C12 | Retrieve confirmed preferences, provisional lessons, failure snapshots, and compatible artifacts under project/policy/exposure limits. Acceptance: reuse avoids an identical scientific rerun; a changed scientific key is not a cache hit; provisional advice cannot overwrite confirmed facts; cross-project retrieval requires authority. |
@@ -1842,7 +1848,7 @@ Use model doubles for deterministic orchestration/error tests and transport doub
 | Pause or cancellation in flight | No new dispatch after the effective fence; eligible child work stops or detaches; already committed effects remain visible; late callbacks cannot resume cancelled work |
 | Cross-project lookup or assignment | Server rejects unauthorized references before read or side effect; matching content hashes do not create shared authority |
 | Injection in CSV/PDF/failure-memory text | Untrusted instructions cannot expand tools, exposure, budgets, or project scope; denied operations and safe rationale are recorded |
-| Raw data or secret seeded in errors/context | Exposure filters apply to prompts, specialist summaries, traces, memory, and archives; forbidden content does not reach provider/browser |
+| Raw data or secret seeded in errors/context | Provider exposure filters apply to prompts, specialist summaries, traces, and memory; disallowed raw content never reaches the provider. Credentials never reach provider/browser/archive. Authorized scientific downloads retain original bytes under the separate project access boundary. |
 | Sealed test scores returned by upstream | Raw bundle is stored privately; selection agents receive eligible fields only; test scores cannot enter prompts, caches, memories, reviews, or candidate ranking |
 | Manual reveal or old exposed result | Exposure is durably recorded and respected across new runs/copies with the same evaluation identity; no fresh clean-holdout claim |
 | Selective delegation | Simple tasks remain coordinator-only; independent subtasks receive scoped specialists; parent budget/depth limits and read-only reviewer rights hold |
@@ -1982,7 +1988,7 @@ Pinned upstream source roots:
 
 ### Agent-design inputs and runtime references
 
-The uploaded **SciML_Workbench_Agent_Build_Prompt(1).md** supplies the agent architecture, Autopilot, specialist, tool, durability, evaluation, and researcher-effort requirements incorporated throughout this revision. It is a design input, not evidence that the requested implementation exists.
+Draft 0.3 records **SciML_Workbench_Agent_Build_Prompt(1).md** as the supplied source of the agent architecture, Autopilot, specialist, tool, durability, evaluation, and researcher-effort requirements incorporated throughout this revision. That separate attachment is not tracked in the inspected repository and was not independently re-read during the pre-implementation inspection. This blueprint is the available implementation specification; the historical attachment reference is not evidence that implementation exists.
 
 - [LangGraph persistence](https://docs.langchain.com/oss/python/langgraph/persistence): checkpoint/thread and persistent-state design reference.
 - [LangGraph interrupts](https://docs.langchain.com/oss/python/langgraph/interrupts): pause/resume behavior and restart-safe node design reference.

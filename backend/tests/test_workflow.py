@@ -92,9 +92,10 @@ def run(env, pid, kind, payload=None, key=None):
         headers={"Idempotency-Key": key or os.urandom(12).hex()},
     )
     assert r.status_code == 202, r.text
-    job_id = claim(db, 900)
+    claimed = claim(db, 900)
+    job_id = claimed.job_id
     assert job_id == r.json()["id"]
-    process_job(settings, job_id)
+    process_job(settings, claimed)
     with db.session() as s:
         job = s.get(JobRow, job_id)
         if job.result_id:
@@ -333,6 +334,6 @@ def test_postgres_workers_claim_distinct_jobs(env):
     with ThreadPoolExecutor(max_workers=6) as pool:
         claimed = list(pool.map(lambda _: claim(db, 900), range(6)))
     assert len(set(claimed)) == 6 and None not in claimed
-    for jid in claimed:
+    for entry in claimed:
         with db.session.begin() as s:
-            s.get(JobRow, jid).state = "failed"
+            s.get(JobRow, entry.job_id).state = "failed"

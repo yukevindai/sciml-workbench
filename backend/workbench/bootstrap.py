@@ -2,16 +2,17 @@
 
 import os
 import subprocess
-from .config import Settings
+import sys
+from .config import ConfigurationError, load_settings
 
 
-def main():
-    s = Settings()
+def main(settings=None):
+    s = settings or load_settings()
     s.validate_secrets()
     s.storage_root.mkdir(parents=True, exist_ok=True)
     database = s.storage_root / "failure-memory.sqlite"
     marker = s.storage_root / ".efm-provisioned"
-    base = ["failure-memory", "--database", str(database)]
+    base = [sys.executable, "-m", "failure_memory.cli", "--database", str(database)]
     subprocess.run(base + ["init"], check=True)
     if not marker.exists():
         env = dict(os.environ, WB_PROVISION_PASSWORD=s.efm_password.get_secret_value())
@@ -32,4 +33,7 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except ConfigurationError as exc:
+        sys.exit(str(exc))

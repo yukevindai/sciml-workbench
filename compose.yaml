@@ -29,7 +29,7 @@ services:
     restart: unless-stopped
   setup:
     <<: *backend
-    command: ["sh", "-c", "alembic -c backend/alembic.ini upgrade head && python -m workbench.bootstrap"]
+    command: ["python", "-m", "workbench.setup"]
     depends_on:
       postgres:
         condition: service_healthy
@@ -51,6 +51,24 @@ services:
       setup:
         condition: service_completed_successfully
     restart: unless-stopped
+    stop_grace_period: 20s
+  # Reserved process boundary. E02/B11/D11 supply the real provider and scheduler.
+  # Explicit opt-in fails with an actionable message until those tickets land.
+  agent-worker:
+    <<: *backend
+    profiles: [agents]
+    command: ["python", "-m", "workbench.agent_worker"]
+    environment:
+      <<: *backend-env
+      WB_AGENTS_ENABLED: ${WB_AGENTS_ENABLED:-0}
+      WB_MODEL_PROVIDER: ${WB_MODEL_PROVIDER:-anthropic}
+      WB_COORDINATOR_MODEL: ${WB_COORDINATOR_MODEL:-}
+      WB_SPECIALIST_MODEL: ${WB_SPECIALIST_MODEL:-}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+    depends_on:
+      setup:
+        condition: service_completed_successfully
+    restart: "no"
     stop_grace_period: 20s
   web:
     build:

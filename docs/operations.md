@@ -4,7 +4,7 @@
 
 `docker compose up --build -d` builds pinned dependencies, waits for PostgreSQL, runs migrations/provisioning, then starts the API, worker and Next.js. Never run multiple setup containers concurrently. Named volumes preserve files and metadata across restarts. `docker compose down` preserves volumes; adding `-v` irreversibly removes them.
 
-For code updates, back up first, rebuild, and allow the setup service to apply Alembic migrations. Keep library pins and resolved constraints together. Do not change the Auditor revision independently of ChemE Benchmarks.
+For code updates, back up first and stop `web api worker` (plus `agent-worker` if explicitly started) before running migrations; old workers must not run alongside a metadata upgrade. Follow the [runtime setup procedure](runtime-setup.md). Keep library pins and resolved constraints together. Do not change the Auditor revision independently of ChemE Benchmarks.
 
 ## Backup and restore
 
@@ -32,11 +32,13 @@ The Failure Memory CLI can serve the same stopped SQLite store independently for
 | Backend unavailable | `docker compose ps` and `docker compose logs api setup postgres`; setup must complete and PostgreSQL must be healthy. |
 | Cross-origin request rejected | Use the exact URL in `WB_PUBLIC_ORIGIN`, including scheme and port; localhost and 127.0.0.1 are different origins. |
 | Jobs remain queued | Start the worker; inspect `docker compose logs worker`. No request process executes scientific jobs. |
-| Worker interrupted/deadline error | Investigate data size/configuration, then explicitly submit a new request. There are no silent retries. |
+| Worker interrupted/deadline error | Investigate data size/configuration and the [worker runtime](scientific-worker.md). There are no silent retries or renewed deadlines. Before retrying Failure Memory, inspect the upstream outcome: an import may have committed before interruption. |
 | Benchmark admission failed | Inspect the returned error and audit. Supply correct units, features, independence groups and three nonempty partitions; never disable upstream guards. |
 | Source differs from pinned implementation | Reinstall exact pyproject Git references and constraints; do not modify the installed Auditor sources. |
 | Failure Memory request failed | Check account provisioning and password rotation. Upstream credentials and raw HTTP responses are intentionally excluded from errors. |
 | Report cannot export | Wait for queued/running jobs. Check storage capacity and file integrity. |
+| `INTEGRITY_FAILED` while reading/reusing a blob | Missing, corrupt or non-regular stored bytes were rejected. Preserve the affected volume for investigation and recover from a verified coordinated backup; uploading identical bytes does not overwrite the existing entry. |
+| `STORAGE_UNAVAILABLE` while publishing | Check free space, volume permissions, hard-link support and directory synchronization. A complete unreferenced object may remain after an error; do not delete digest paths as rollback compensation. See the [storage contract](storage.md). |
 
 ## Scope
 

@@ -4,6 +4,7 @@ import asyncio
 import hashlib
 import io
 import json
+import os
 import tempfile
 import zipfile
 from pathlib import Path
@@ -114,7 +115,7 @@ def run_benchmark(raw, dataset, partition, req, audit_config):
         "model_seeds": [req.seed],
         "primary_metric": "group_mae",
     }
-    with tempfile.TemporaryDirectory() as tmp:
+    with tempfile.TemporaryDirectory(prefix="wb-benchmark-") as tmp:
         root = Path(tmp)
         (root / "data.csv").write_bytes(raw)
         (root / "partitions.json").write_bytes(frozen_raw)
@@ -125,7 +126,7 @@ def run_benchmark(raw, dataset, partition, req, audit_config):
 
 
 def ingest_pdf(raw, title):
-    with tempfile.TemporaryDirectory() as tmp:
+    with tempfile.TemporaryDirectory(prefix="wb-evidence-") as tmp:
         root = Path(tmp)
         (root / "input.pdf").write_bytes(raw)
         result = ingest_paper(root / "input.pdf", root / "evidence", {"title": title})
@@ -208,4 +209,19 @@ class FailureMemory:
                 await client.post("/api/logout")
 
     def save(self, project, external_id, record):
-        return asyncio.run(self.save_async(project, external_id, record))
+        # Local upstream SQLite is shared by the single-backend topology.
+        # Serialize its public provisioning/import calls without holding a
+        # workbench database transaction or connection across external IO.
+        with (self.settings.storage_root / ".failure-memory.lock").open("a+b") as lock:
+            if os.name == "posix":
+                import fcntl
+                fcntl.flock(lock, fcntl.LOCK_EX)
+            else:
+                # Development-only Windows byte-range lock; production is Linux.
+                import msvcrt
+                if lock.tell() == 0:
+                    lock.write(b"\0")
+                    lock.flush()
+                lock.seek(0)
+                msvcrt.locking(lock.fileno(), msvcrt.LK_LOCK, 1)
+            return asyncio.run(self.save_async(project, external_id, record))

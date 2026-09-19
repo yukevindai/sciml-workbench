@@ -31,6 +31,8 @@ jobs:
       - uses: actions/setup-node@v4
         with: {node-version: '22', cache: npm, cache-dependency-path: frontend/package-lock.json}
       - run: pip install -c backend/constraints.txt -e 'backend[dev]'
+      - run: pip check
+      - run: python -m workbench.config
       - run: alembic -c backend/alembic.ini upgrade head
       - run: pytest backend/tests -q
       - run: python scripts/export_schemas.py --check
@@ -63,8 +65,20 @@ jobs:
       WB_LOGIN_PASSWORD: compose-test-private-workspace-password
     steps:
       - uses: actions/checkout@v4
-      - run: docker compose config --quiet
+      - run: python scripts/check_compose.py
       - run: docker compose up --build -d --wait
+      - name: Verify repeatable setup and unavailable agent runtime
+        run: |
+          docker compose stop web api worker
+          docker compose run --rm setup
+          docker compose up -d --wait
+          set +e
+          docker compose run --rm --no-deps -e WB_AGENTS_ENABLED=1 -e WB_COORDINATOR_MODEL=ci-model -e WB_SPECIALIST_MODEL=ci-model -e ANTHROPIC_API_KEY=ci-only-canary agent-worker > /tmp/agent-startup.log 2>&1
+          status=$?
+          set -e
+          test "$status" = "2"
+          grep -q 'E02/B11/D11' /tmp/agent-startup.log
+          ! grep -q 'ci-only-canary' /tmp/agent-startup.log
       - run: |
           curl --fail http://localhost:3000/healthz
           test "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:3000/)" = "401"
