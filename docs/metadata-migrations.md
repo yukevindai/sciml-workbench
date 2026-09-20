@@ -59,6 +59,11 @@ The D03 worker carries these claims through transaction-free subprocess executio
 
 ## Reproducing acceptance checks
 
+Migration `0007` adds `job_recoveries`: recorded bounded policy, recovery leases,
+attempt history and scientific retry linkage. It preserves existing job and
+external-operation rows, and refuses downgrade when recovery history exists.
+Apply it before starting workers. See [D04 recovery](recovery.md).
+
 ```powershell
 .venv\Scripts\python.exe -m pytest backend/tests/test_metadata.py -q
 .venv\Scripts\python.exe -m pytest backend/tests/test_workflow.py backend/tests/test_contracts.py -q

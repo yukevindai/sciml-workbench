@@ -10,7 +10,7 @@ The digest uses workbench request-identity version 1 with kind `failure_import`,
 
 The returned record is a snapshot. Independent upstream edits do not rewrite saved workbench artifacts. Replaying an original import after a native edit resolves the same ID but returns its current upstream snapshot, while the original request digest stays unchanged. A receipt does not mean that upstream content can never change.
 
-Import/provisioning calls retain the existing single-host shared file lock and run outside workbench database transactions. The [B07 journal](external-operations.md) now wraps worker imports with durable identity, destination binding, receipt persistence and trusted reconciliation. D04 still owns automatic recovery policy and recovery publication. This ticket does not switch outcomes to Failure 2.0 or implement C07 actor/criterion semantics.
+Import/provisioning calls retain the existing single-host shared file lock and run outside workbench database transactions. The [B07 journal](external-operations.md) now wraps worker imports with durable identity, destination binding, receipt persistence and trusted reconciliation. [D04 recovery](recovery.md) now supplies automatic recovery policy and recovery publication. This ticket does not switch outcomes to Failure 2.0 or implement C07 actor/criterion semantics.
 
 ## Scoped live search
 

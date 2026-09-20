@@ -159,7 +159,7 @@ def link_artifact(session, work, value):
 def reconcile(db, settings, project_id, job_id, *, expected_body=None, runner=None):
     """Trusted/operator entry point. Confirm the original import; do not rewrite a job.
 
-    Automatic eligibility, recovery artifact publication and scheduling belong to D04.
+    Automatic eligibility, publication and scheduling live in workbench.recovery.
     """
     from .services import prepare_execution
     from .worker import run_task

@@ -101,6 +101,26 @@ class JobRow(Base):
     )
 
 
+class RecoveryRow(Base):
+    __tablename__ = "job_recoveries"
+    __table_args__ = (
+        ForeignKeyConstraint(["project_id", "job_id"], ["jobs.project_id", "jobs.id"], name="fk_recovery_job"),
+        ForeignKeyConstraint(["project_id", "retry_job_id"], ["jobs.project_id", "jobs.id"], name="fk_recovery_retry"),
+        CheckConstraint("state IN ('pending', 'running', 'completed', 'exhausted')", name="ck_recovery_state"),
+        CheckConstraint("attempts >= 0", name="ck_recovery_attempts"),
+    )
+    job_id: Mapped[str] = mapped_column(String(36), primary_key=True)
+    project_id: Mapped[str] = mapped_column(String(36), index=True)
+    policy: Mapped[dict] = mapped_column(JSON)
+    state: Mapped[str] = mapped_column(String(24), default="pending")
+    attempts: Mapped[int] = mapped_column(BigInteger, default=0)
+    due_at: Mapped[object] = mapped_column(DateTime(timezone=True), default=now)
+    lease_token: Mapped[str | None] = mapped_column(String(36), nullable=True)
+    lease_until: Mapped[object | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    retry_job_id: Mapped[str | None] = mapped_column(String(36), nullable=True)
+    history: Mapped[list] = mapped_column(JSON, default=list)
+
+
 class ExternalProjectRow(Base):
     __tablename__ = "external_projects"
     project_id: Mapped[str] = mapped_column(ForeignKey("projects.id"), primary_key=True)

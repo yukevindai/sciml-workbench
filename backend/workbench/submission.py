@@ -76,8 +76,8 @@ def identity_key(scope, request_key, action_id, attempt_id):
         raise DomainError("Action identities require a trusted run scope", 403)
     if not isinstance(request_key, str) or not request_key.strip() or len(request_key) > 100:
         raise DomainError("Provide an Idempotency-Key of 1–100 characters")
-    if request_key.startswith(ACTION_PREFIX):
-        raise DomainError("This request-key namespace is reserved for tool actions")
+    if request_key.startswith((ACTION_PREFIX, "recovery:v1:")):
+        raise DomainError("This request-key namespace is reserved for internal operations")
     return request_key
 
 

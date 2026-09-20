@@ -142,6 +142,10 @@ def main():
     worker_id = uid()
     try:
         while not stopping.is_set():
+            from .recovery import recover_once
+            recover_once(db, settings, stopped=stopping.is_set)
+            if stopping.is_set():
+                break
             claimed = claim_next(db, settings.job_timeout_seconds, worker_id)
             if claimed:
                 process_job(settings, claimed, db=db, stopped=stopping.is_set)
