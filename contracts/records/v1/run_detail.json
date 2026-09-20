@@ -1,0 +1,1066 @@
+{
+  "$defs": {
+    "AvailableEvidenceReference": {
+      "additionalProperties": false,
+      "properties": {
+        "contract": {
+          "const": "evidence_reference",
+          "default": "evidence_reference",
+          "title": "Contract",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "1.0",
+          "default": "1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "availability": {
+          "const": "available",
+          "title": "Availability",
+          "type": "string"
+        },
+        "source_artifact_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Source Artifact Id",
+          "type": "string"
+        },
+        "source_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Source Sha256",
+          "type": "string"
+        },
+        "representation_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Representation Sha256",
+          "type": "string"
+        },
+        "extraction_version": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Extraction Version",
+          "type": "string"
+        },
+        "locator": {
+          "$ref": "#/$defs/TextSpan"
+        },
+        "excerpt_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Excerpt Sha256",
+          "type": "string"
+        },
+        "page": {
+          "anyOf": [
+            {
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Page"
+        }
+      },
+      "required": [
+        "availability",
+        "source_artifact_id",
+        "source_sha256",
+        "representation_sha256",
+        "extraction_version",
+        "locator",
+        "excerpt_sha256"
+      ],
+      "title": "AvailableEvidenceReference",
+      "type": "object"
+    },
+    "EstimatedCost": {
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "const": "estimated",
+          "title": "Status",
+          "type": "string"
+        },
+        "amount": {
+          "minimum": 0,
+          "title": "Amount",
+          "type": "number"
+        },
+        "currency": {
+          "pattern": "^[A-Z]{3}$",
+          "title": "Currency",
+          "type": "string"
+        },
+        "pricing_revision": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Pricing Revision",
+          "type": "string"
+        }
+      },
+      "required": [
+        "status",
+        "amount",
+        "currency",
+        "pricing_revision"
+      ],
+      "title": "EstimatedCost",
+      "type": "object"
+    },
+    "InputScope": {
+      "additionalProperties": false,
+      "properties": {
+        "material_ids": {
+          "items": {
+            "maxLength": 160,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Material Ids",
+          "type": "array"
+        },
+        "artifact_ids": {
+          "items": {
+            "maxLength": 160,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Artifact Ids",
+          "type": "array"
+        },
+        "conversation_id": {
+          "anyOf": [
+            {
+              "maxLength": 160,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Conversation Id"
+        },
+        "message_cutoff": {
+          "anyOf": [
+            {
+              "maximum": 9007199254740991,
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Message Cutoff"
+        }
+      },
+      "required": [
+        "material_ids",
+        "artifact_ids"
+      ],
+      "title": "InputScope",
+      "type": "object"
+    },
+    "MaterialQuestion": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "field": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Field",
+          "type": "string"
+        },
+        "prompt": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Prompt",
+          "type": "string"
+        },
+        "blocked_step_ids": {
+          "items": {
+            "maxLength": 160,
+            "minLength": 1,
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Blocked Step Ids",
+          "type": "array"
+        },
+        "options": {
+          "items": {
+            "$ref": "#/$defs/QuestionOption"
+          },
+          "title": "Options",
+          "type": "array"
+        },
+        "evidence": {
+          "items": {
+            "discriminator": {
+              "mapping": {
+                "available": "#/$defs/AvailableEvidenceReference",
+                "unavailable": "#/$defs/UnavailableEvidenceReference"
+              },
+              "propertyName": "availability"
+            },
+            "oneOf": [
+              {
+                "$ref": "#/$defs/AvailableEvidenceReference"
+              },
+              {
+                "$ref": "#/$defs/UnavailableEvidenceReference"
+              }
+            ]
+          },
+          "title": "Evidence",
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "field",
+        "prompt",
+        "blocked_step_ids",
+        "options",
+        "evidence"
+      ],
+      "title": "MaterialQuestion",
+      "type": "object"
+    },
+    "PolicyReference": {
+      "additionalProperties": false,
+      "properties": {
+        "policy_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Policy Id",
+          "type": "string"
+        },
+        "revision": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "title": "Revision",
+          "type": "integer"
+        },
+        "sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "policy_id",
+        "revision",
+        "sha256"
+      ],
+      "title": "PolicyReference",
+      "type": "object"
+    },
+    "QuestionOption": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "label": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Label",
+          "type": "string"
+        },
+        "consequence": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Consequence",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "label",
+        "consequence"
+      ],
+      "title": "QuestionOption",
+      "type": "object"
+    },
+    "ResearchPlan": {
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "1.0",
+          "default": "1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "project_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Project Id",
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        },
+        "contract": {
+          "const": "research_plan",
+          "default": "research_plan",
+          "title": "Contract",
+          "type": "string"
+        },
+        "run_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Run Id",
+          "type": "string"
+        },
+        "revision": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "title": "Revision",
+          "type": "integer"
+        },
+        "steps": {
+          "items": {
+            "$ref": "#/$defs/ResearchStep"
+          },
+          "maxItems": 120,
+          "minItems": 1,
+          "title": "Steps",
+          "type": "array"
+        },
+        "rationale_summary": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Rationale Summary",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "project_id",
+        "created_at",
+        "run_id",
+        "revision",
+        "steps",
+        "rationale_summary"
+      ],
+      "title": "ResearchPlan",
+      "type": "object"
+    },
+    "ResearchQuestion": {
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "1.0",
+          "default": "1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "project_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Project Id",
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        },
+        "contract": {
+          "const": "research_question",
+          "default": "research_question",
+          "title": "Contract",
+          "type": "string"
+        },
+        "run_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Run Id",
+          "type": "string"
+        },
+        "revision": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "title": "Revision",
+          "type": "integer"
+        },
+        "run_revision": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "title": "Run Revision",
+          "type": "integer"
+        },
+        "questions": {
+          "items": {
+            "$ref": "#/$defs/MaterialQuestion"
+          },
+          "maxItems": 20,
+          "minItems": 1,
+          "title": "Questions",
+          "type": "array"
+        },
+        "status": {
+          "enum": [
+            "open",
+            "answered",
+            "superseded",
+            "expired",
+            "cancelled"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "expires_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Expires At"
+        },
+        "answer_message_id": {
+          "anyOf": [
+            {
+              "maxLength": 160,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Answer Message Id"
+        }
+      },
+      "required": [
+        "id",
+        "project_id",
+        "created_at",
+        "run_id",
+        "revision",
+        "run_revision",
+        "questions",
+        "status"
+      ],
+      "title": "ResearchQuestion",
+      "type": "object"
+    },
+    "ResearchRun": {
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "1.0",
+          "default": "1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "project_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Project Id",
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        },
+        "contract": {
+          "const": "research_run",
+          "default": "research_run",
+          "title": "Contract",
+          "type": "string"
+        },
+        "objective": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Objective",
+          "type": "string"
+        },
+        "inputs": {
+          "$ref": "#/$defs/InputScope"
+        },
+        "policy": {
+          "$ref": "#/$defs/PolicyReference"
+        },
+        "mode": {
+          "enum": [
+            "autopilot",
+            "review_plan"
+          ],
+          "title": "Mode",
+          "type": "string"
+        },
+        "state": {
+          "enum": [
+            "queued",
+            "running",
+            "waiting_for_job",
+            "waiting_for_input",
+            "paused",
+            "completed",
+            "partially_completed",
+            "failed",
+            "cancelled"
+          ],
+          "title": "State",
+          "type": "string"
+        },
+        "control_revision": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "title": "Control Revision",
+          "type": "integer"
+        },
+        "plan_revision": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "title": "Plan Revision",
+          "type": "integer"
+        },
+        "limits": {
+          "$ref": "#/$defs/ResourceLimits"
+        },
+        "usage": {
+          "$ref": "#/$defs/UsageSnapshot"
+        },
+        "open_question_ids": {
+          "items": {
+            "maxLength": 160,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Open Question Ids",
+          "type": "array"
+        },
+        "result_artifact_ids": {
+          "items": {
+            "maxLength": 160,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Result Artifact Ids",
+          "type": "array"
+        },
+        "continued_from_run_id": {
+          "anyOf": [
+            {
+              "maxLength": 160,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Continued From Run Id"
+        },
+        "finished_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Finished At"
+        },
+        "stop_reason": {
+          "anyOf": [
+            {
+              "maxLength": 4000,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Stop Reason"
+        }
+      },
+      "required": [
+        "id",
+        "project_id",
+        "created_at",
+        "objective",
+        "inputs",
+        "policy",
+        "mode",
+        "state",
+        "control_revision",
+        "plan_revision",
+        "limits",
+        "usage",
+        "open_question_ids",
+        "result_artifact_ids"
+      ],
+      "title": "ResearchRun",
+      "type": "object"
+    },
+    "ResearchStep": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "objective": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Objective",
+          "type": "string"
+        },
+        "depends_on": {
+          "items": {
+            "maxLength": 160,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Depends On",
+          "type": "array"
+        },
+        "allowed_input_ids": {
+          "items": {
+            "maxLength": 160,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Allowed Input Ids",
+          "type": "array"
+        },
+        "expected_artifact_kinds": {
+          "items": {
+            "maxLength": 160,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Expected Artifact Kinds",
+          "type": "array"
+        },
+        "completion_criteria": {
+          "items": {
+            "maxLength": 4000,
+            "minLength": 1,
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Completion Criteria",
+          "type": "array"
+        },
+        "status": {
+          "enum": [
+            "pending",
+            "ready",
+            "running",
+            "blocked",
+            "completed",
+            "failed",
+            "skipped"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "action_ids": {
+          "items": {
+            "maxLength": 160,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Action Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "objective",
+        "depends_on",
+        "allowed_input_ids",
+        "expected_artifact_kinds",
+        "completion_criteria",
+        "status"
+      ],
+      "title": "ResearchStep",
+      "type": "object"
+    },
+    "ResourceLimits": {
+      "additionalProperties": false,
+      "description": "Values are required; E01 owns defaults and server/project intersections.",
+      "properties": {
+        "model_tokens": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "title": "Model Tokens",
+          "type": "integer"
+        },
+        "model_requests": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "title": "Model Requests",
+          "type": "integer"
+        },
+        "tool_calls": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "title": "Tool Calls",
+          "type": "integer"
+        },
+        "coordinator_iterations": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "title": "Coordinator Iterations",
+          "type": "integer"
+        },
+        "specialist_assignments": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "title": "Specialist Assignments",
+          "type": "integer"
+        },
+        "specialist_concurrency": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "title": "Specialist Concurrency",
+          "type": "integer"
+        },
+        "delegation_depth": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Delegation Depth",
+          "type": "integer"
+        },
+        "review_rounds": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "title": "Review Rounds",
+          "type": "integer"
+        },
+        "scientific_attempts": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "title": "Scientific Attempts",
+          "type": "integer"
+        },
+        "active_seconds": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "title": "Active Seconds",
+          "type": "integer"
+        },
+        "transient_retries": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "title": "Transient Retries",
+          "type": "integer"
+        },
+        "finalization_model_tokens": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "title": "Finalization Model Tokens",
+          "type": "integer"
+        },
+        "finalization_scientific_attempts": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "title": "Finalization Scientific Attempts",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "model_tokens",
+        "model_requests",
+        "tool_calls",
+        "coordinator_iterations",
+        "specialist_assignments",
+        "specialist_concurrency",
+        "delegation_depth",
+        "review_rounds",
+        "scientific_attempts",
+        "active_seconds",
+        "transient_retries",
+        "finalization_model_tokens",
+        "finalization_scientific_attempts"
+      ],
+      "title": "ResourceLimits",
+      "type": "object"
+    },
+    "TextSpan": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "const": "text_span",
+          "default": "text_span",
+          "title": "Kind",
+          "type": "string"
+        },
+        "unit": {
+          "const": "unicode_codepoint",
+          "default": "unicode_codepoint",
+          "title": "Unit",
+          "type": "string"
+        },
+        "start": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "title": "Start",
+          "type": "integer"
+        },
+        "end": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "title": "End",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "start",
+        "end"
+      ],
+      "title": "TextSpan",
+      "type": "object"
+    },
+    "UnavailableEvidenceReference": {
+      "additionalProperties": false,
+      "properties": {
+        "contract": {
+          "const": "evidence_reference",
+          "default": "evidence_reference",
+          "title": "Contract",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "1.0",
+          "default": "1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "availability": {
+          "const": "unavailable",
+          "title": "Availability",
+          "type": "string"
+        },
+        "source_artifact_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Source Artifact Id",
+          "type": "string"
+        },
+        "source_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Source Sha256",
+          "type": "string"
+        },
+        "reason": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Reason",
+          "type": "string"
+        }
+      },
+      "required": [
+        "availability",
+        "source_artifact_id",
+        "source_sha256",
+        "reason"
+      ],
+      "title": "UnavailableEvidenceReference",
+      "type": "object"
+    },
+    "UnknownCost": {
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "const": "unknown",
+          "title": "Status",
+          "type": "string"
+        },
+        "reason": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Reason",
+          "type": "string"
+        }
+      },
+      "required": [
+        "status",
+        "reason"
+      ],
+      "title": "UnknownCost",
+      "type": "object"
+    },
+    "UsageSnapshot": {
+      "additionalProperties": false,
+      "properties": {
+        "billed_token_categories": {
+          "additionalProperties": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "propertyNames": {
+            "maxLength": 160,
+            "minLength": 1
+          },
+          "title": "Billed Token Categories",
+          "type": "object"
+        },
+        "reserved_tokens": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "title": "Reserved Tokens",
+          "type": "integer"
+        },
+        "model_requests": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "title": "Model Requests",
+          "type": "integer"
+        },
+        "tool_calls": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "title": "Tool Calls",
+          "type": "integer"
+        },
+        "scientific_attempts": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "title": "Scientific Attempts",
+          "type": "integer"
+        },
+        "active_seconds": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "title": "Active Seconds",
+          "type": "integer"
+        },
+        "unknown_request_ids": {
+          "items": {
+            "maxLength": 160,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Unknown Request Ids",
+          "type": "array"
+        },
+        "cost": {
+          "discriminator": {
+            "mapping": {
+              "estimated": "#/$defs/EstimatedCost",
+              "unknown": "#/$defs/UnknownCost"
+            },
+            "propertyName": "status"
+          },
+          "oneOf": [
+            {
+              "$ref": "#/$defs/UnknownCost"
+            },
+            {
+              "$ref": "#/$defs/EstimatedCost"
+            }
+          ],
+          "title": "Cost"
+        }
+      },
+      "required": [
+        "billed_token_categories",
+        "reserved_tokens",
+        "model_requests",
+        "tool_calls",
+        "scientific_attempts",
+        "active_seconds",
+        "unknown_request_ids",
+        "cost"
+      ],
+      "title": "UsageSnapshot",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "run": {
+      "$ref": "#/$defs/ResearchRun"
+    },
+    "plan": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ResearchPlan"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "questions": {
+      "items": {
+        "$ref": "#/$defs/ResearchQuestion"
+      },
+      "title": "Questions",
+      "type": "array"
+    },
+    "control_effect": {
+      "maxLength": 4000,
+      "minLength": 1,
+      "title": "Control Effect",
+      "type": "string"
+    }
+  },
+  "required": [
+    "run",
+    "plan",
+    "questions",
+    "control_effect"
+  ],
+  "title": "RunDetail",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sciml-workbench.local/contracts/records/v1/run_detail.json"
+}

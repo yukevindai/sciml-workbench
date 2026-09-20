@@ -10,6 +10,7 @@ dependencies = [
   "fastapi>=0.115,<1", "uvicorn>=0.30,<1", "pydantic-settings>=2.6,<3",
   "sqlalchemy>=2.0,<3", "psycopg[binary]>=3.2,<4", "alembic>=1.14,<2",
   "httpx>=0.27,<1",
+  "langgraph==1.2.11", "langgraph-checkpoint-postgres==3.1.2",
   "chemdata-auditor @ git+https://github.com/yukevindai/chemdata-auditor.git@eff3ed3c43ec71e9ceecabc1f04d1dfb5c91c116",
   "cheme-ml-benchmarks @ git+https://github.com/yukevindai/ChemE-ML-Benchmarks.git@db02d8963725a1d406b9b07eb6f4cc3436fbb082",
   "scientific-evidence-engine @ git+https://github.com/yukevindai/scientific-evidence-engine.git@09f5ec810e8f04bf8d233ec12eb9448342ee5121",

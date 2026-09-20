@@ -1,6 +1,6 @@
 # Runtime setup (D01)
 
-The manual scientific workflow runs without model credentials. A bounded Anthropic provider adapter and authority policy module are available for backend integration. The independent agent-worker process still requires B11 persistence and D11 scheduling. Enabling it exits with a configuration or runtime-unavailable error. See [E01](tickets/E01.md) and [E02](tickets/E02.md) for implementation evidence and the outstanding live-provider acceptance gate.
+The manual scientific workflow runs without model credentials. A bounded Anthropic provider adapter, authority policy module and B11/B12 persistence/control APIs are available for backend integration. The independent agent-worker process still requires D11 scheduling. Enabling it exits with a configuration or runtime-unavailable error. See [agent persistence](agent-persistence.md), [E01](tickets/E01.md) and [E02](tickets/E02.md) for implementation evidence and outstanding runtime/live-provider gates.
 
 ## Supported environment
 
@@ -57,7 +57,7 @@ The Next.js server necessarily holds the existing proxy bearer token and web log
 
 Missing/invalid backend values name the relevant environment variables without echoing their values. API tokens require 32+ characters and Failure Memory passwords 12+; blank values and example placeholders are rejected. Row, upload and timeout limits must be positive. The database URL is required; there is no implicit development password fallback. SQLite is accepted only to support isolated tests and schema generation; the deployed runtime uses PostgreSQL.
 
-`WB_AGENTS_ENABLED=0` permits absent model IDs and keys. Opting in requires the `anthropic` provider, both configured model IDs and a non-placeholder `ANTHROPIC_API_KEY`, then fails with the explicit B11/D11 runtime-unavailable message. No paid call occurs. Other providers are unsupported. Checkpoints will use the application PostgreSQL database with their schema/pool supplied by B11/D11; this revision creates no checkpoints.
+`WB_AGENTS_ENABLED=0` permits absent model IDs and keys. Opting in requires the `anthropic` provider, both configured model IDs and a non-placeholder `ANTHROPIC_API_KEY`, then fails with the explicit D11 runtime-unavailable message. No paid call occurs. Other providers are unsupported. B11 adds explicit PostgreSQL checkpoint setup through `python -m workbench.checkpoints`; D11 still owns scheduler and pool lifecycle. API startup does not create checkpoint tables.
 
 For an account availability check, configure `WB_COORDINATOR_MODEL`, `WB_SPECIALIST_MODEL` and `ANTHROPIC_API_KEY` server-side, leave agents disabled, then run `python -m workbench.model_provider`. This calls only the authenticated Models API and prints resolved model IDs and adapter/API versions. It does not generate text, execute tools, or prove structured generation works for that account. The adapter refuses generation until this lookup succeeds on its own instance. A live bounded structured-tool generation check is still required for E02 acceptance. No model ID or price is assumed by default.
 

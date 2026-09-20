@@ -67,7 +67,7 @@ class Settings(BaseSettings):
 
 
 class AgentSettings(BaseSettings):
-    """Private provider configuration; durable execution still requires B11/D11."""
+    """Private provider configuration; durable execution still requires D11."""
 
     model_config = SettingsConfigDict(
         env_prefix="WB_", env_file=".env", extra="ignore", hide_input_in_errors=True
@@ -100,7 +100,7 @@ class AgentSettings(BaseSettings):
         if not self.agents_enabled:
             raise ConfigurationError("Agent execution is disabled (WB_AGENTS_ENABLED=0); use the manual workflow.")
         raise ConfigurationError(
-            "Agent runtime is not implemented in this revision (B11/D11). "
+            "Agent scheduling is not implemented in this revision (D11). "
             "Set WB_AGENTS_ENABLED=0 and omit the Compose agents profile to use the manual workflow."
         )
 

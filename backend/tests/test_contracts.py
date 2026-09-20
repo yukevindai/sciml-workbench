@@ -312,12 +312,13 @@ def api(tmp_path):
     app.state.db.engine.dispose()
 
 
-def test_actual_openapi_has_contracts_but_no_unimplemented_routes(api):
+def test_actual_openapi_has_contracts_and_guarded_run_routes(api):
     app, client = api
     schema = app.openapi()
     assert schema["openapi"].startswith("3.1")
     assert {"DatasetV2", "FailureV2", "ResearchRun", "ClaimSet", "EvaluationProtocol", "AgentExecutionRecord"} <= schema["components"]["schemas"].keys()
-    assert not any("agent-runs" in path for path in schema["paths"])
+    assert "/api/v1/projects/{pid}/agent-runs/{rid}/review-plan" in schema["paths"]
+    assert not any("checkpoint" in path for path in schema["paths"])
     assert schema["paths"]["/api/v1/projects"]["post"]["responses"]["201"]["content"]["application/json"]["schema"]["$ref"].endswith("/ProjectResponse")
     assert client.get("/api/v1/schema").status_code == 401
     client.headers["Authorization"] = "Bearer " + "a" * 48

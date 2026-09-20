@@ -14,7 +14,12 @@ export type HttpResponse =
   | Capabilities
   | JobDetail
   | JobPage
-  | ArtifactPage;
+  | ArtifactPage
+  | ResearchRun
+  | ResearchRuns
+  | RunDetail
+  | RunResult
+  | RunEvents;
 export type ProtocolId = string;
 export type State = 'sealed' | 'released';
 export type Exploratory = boolean;
@@ -575,6 +580,163 @@ export type CreatedAt14 = string;
  */
 export type Items1 = ArtifactSummary[];
 export type NextCursor1 = string | null;
+export type SchemaVersion15 = '1.0';
+export type Id21 = string;
+export type ProjectId16 = string;
+export type CreatedAt15 = string;
+export type Contract1 = 'research_run';
+export type Objective = string;
+export type MaterialIds = string[];
+export type ArtifactIds1 = string[];
+export type ConversationId = string | null;
+export type MessageCutoff = number | null;
+export type Mode = 'autopilot' | 'review_plan';
+export type State6 =
+  | 'queued'
+  | 'running'
+  | 'waiting_for_job'
+  | 'waiting_for_input'
+  | 'paused'
+  | 'completed'
+  | 'partially_completed'
+  | 'failed'
+  | 'cancelled';
+export type ControlRevision = number;
+export type PlanRevision = number;
+export type ModelTokens = number;
+export type ModelRequests = number;
+export type ToolCalls = number;
+export type CoordinatorIterations = number;
+export type SpecialistAssignments = number;
+export type SpecialistConcurrency = number;
+export type DelegationDepth = number;
+export type ReviewRounds = number;
+export type ScientificAttempts = number;
+export type ActiveSeconds = number;
+export type TransientRetries = number;
+export type FinalizationModelTokens = number;
+export type FinalizationScientificAttempts = number;
+export type ReservedTokens = number;
+export type ModelRequests1 = number;
+export type ToolCalls1 = number;
+export type ScientificAttempts1 = number;
+export type ActiveSeconds1 = number;
+export type UnknownRequestIds = string[];
+export type Cost = UnknownCost | EstimatedCost;
+export type Status4 = 'unknown';
+export type Reason2 = string;
+export type Status5 = 'estimated';
+export type Amount = number;
+export type Currency = string;
+export type PricingRevision = string;
+export type OpenQuestionIds = string[];
+export type ResultArtifactIds = string[];
+export type ContinuedFromRunId = string | null;
+export type FinishedAt2 = string | null;
+export type StopReason = string | null;
+export type ResearchRuns = ResearchRun[];
+export type SchemaVersion16 = '1.0';
+export type Id22 = string;
+export type ProjectId17 = string;
+export type CreatedAt16 = string;
+export type Contract2 = 'research_plan';
+export type RunId2 = string;
+export type Revision3 = number;
+export type Id23 = string;
+export type Objective1 = string;
+export type DependsOn = string[];
+export type AllowedInputIds = string[];
+export type ExpectedArtifactKinds = string[];
+/**
+ * @minItems 1
+ */
+export type CompletionCriteria = string[];
+export type Status6 = 'pending' | 'ready' | 'running' | 'blocked' | 'completed' | 'failed' | 'skipped';
+export type ActionIds = string[];
+/**
+ * @minItems 1
+ * @maxItems 120
+ */
+export type Steps = ResearchStep[];
+export type RationaleSummary = string;
+export type SchemaVersion17 = '1.0';
+export type Id24 = string;
+export type ProjectId18 = string;
+export type CreatedAt17 = string;
+export type Contract3 = 'research_question';
+export type RunId3 = string;
+export type Revision4 = number;
+export type RunRevision = number;
+export type Id25 = string;
+export type Field = string;
+export type Prompt = string;
+/**
+ * @minItems 1
+ */
+export type BlockedStepIds = string[];
+export type Id26 = string;
+export type Label = string;
+export type Consequence = string;
+export type Options = QuestionOption[];
+export type Contract4 = 'evidence_reference';
+export type SchemaVersion18 = '1.0';
+export type Availability1 = 'unavailable';
+export type SourceArtifactId1 = string;
+export type SourceSha2561 = string;
+export type Reason3 = string;
+export type Evidence1 = (AvailableEvidenceReference | UnavailableEvidenceReference)[];
+/**
+ * @minItems 1
+ * @maxItems 20
+ */
+export type Questions1 = MaterialQuestion[];
+export type Status7 = 'open' | 'answered' | 'superseded' | 'expired' | 'cancelled';
+export type ExpiresAt = string | null;
+export type AnswerMessageId = string | null;
+export type Questions = ResearchQuestion[];
+export type ControlEffect = string;
+export type RunId4 = string;
+export type State7 =
+  | 'queued'
+  | 'running'
+  | 'waiting_for_job'
+  | 'waiting_for_input'
+  | 'paused'
+  | 'completed'
+  | 'partially_completed'
+  | 'failed'
+  | 'cancelled';
+export type ArtifactIds2 = string[];
+export type StopReason1 = string | null;
+export type Contract5 = 'run_event';
+export type SchemaVersion19 = '1.0';
+export type RunId5 = string;
+export type Sequence = number;
+export type CreatedAt18 = string;
+export type EventType =
+  | 'accepted'
+  | 'state_changed'
+  | 'plan_changed'
+  | 'action_changed'
+  | 'question_changed'
+  | 'usage_changed'
+  | 'result_published';
+export type RunRevision1 = number;
+export type State8 =
+  | 'queued'
+  | 'running'
+  | 'waiting_for_job'
+  | 'waiting_for_input'
+  | 'paused'
+  | 'completed'
+  | 'partially_completed'
+  | 'failed'
+  | 'cancelled';
+export type ActionId1 = string | null;
+export type QuestionId = string | null;
+export type ArtifactIds3 = string[];
+export type Summary = string | null;
+export type RunEvents = RunEvent[];
 
 export interface EvaluationStatusView {
   protocol_id: ProtocolId;
@@ -1233,4 +1395,154 @@ export interface ArtifactSummary {
   kind: Kind21;
   schema_version: SchemaVersion14;
   created_at: CreatedAt14;
+}
+export interface ResearchRun {
+  schema_version: SchemaVersion15;
+  id: Id21;
+  project_id: ProjectId16;
+  created_at: CreatedAt15;
+  contract: Contract1;
+  objective: Objective;
+  inputs: InputScope;
+  policy: PolicyReference;
+  mode: Mode;
+  state: State6;
+  control_revision: ControlRevision;
+  plan_revision: PlanRevision;
+  limits: ResourceLimits;
+  usage: UsageSnapshot;
+  open_question_ids: OpenQuestionIds;
+  result_artifact_ids: ResultArtifactIds;
+  continued_from_run_id: ContinuedFromRunId;
+  finished_at: FinishedAt2;
+  stop_reason: StopReason;
+}
+export interface InputScope {
+  material_ids: MaterialIds;
+  artifact_ids: ArtifactIds1;
+  conversation_id: ConversationId;
+  message_cutoff: MessageCutoff;
+}
+/**
+ * Values are required; E01 owns defaults and server/project intersections.
+ */
+export interface ResourceLimits {
+  model_tokens: ModelTokens;
+  model_requests: ModelRequests;
+  tool_calls: ToolCalls;
+  coordinator_iterations: CoordinatorIterations;
+  specialist_assignments: SpecialistAssignments;
+  specialist_concurrency: SpecialistConcurrency;
+  delegation_depth: DelegationDepth;
+  review_rounds: ReviewRounds;
+  scientific_attempts: ScientificAttempts;
+  active_seconds: ActiveSeconds;
+  transient_retries: TransientRetries;
+  finalization_model_tokens: FinalizationModelTokens;
+  finalization_scientific_attempts: FinalizationScientificAttempts;
+}
+export interface UsageSnapshot {
+  billed_token_categories: BilledTokenCategories;
+  reserved_tokens: ReservedTokens;
+  model_requests: ModelRequests1;
+  tool_calls: ToolCalls1;
+  scientific_attempts: ScientificAttempts1;
+  active_seconds: ActiveSeconds1;
+  unknown_request_ids: UnknownRequestIds;
+  cost: Cost;
+}
+export interface BilledTokenCategories {
+  [k: string]: number;
+}
+export interface UnknownCost {
+  status: Status4;
+  reason: Reason2;
+}
+export interface EstimatedCost {
+  status: Status5;
+  amount: Amount;
+  currency: Currency;
+  pricing_revision: PricingRevision;
+}
+export interface RunDetail {
+  run: ResearchRun;
+  plan: ResearchPlan | null;
+  questions: Questions;
+  control_effect: ControlEffect;
+}
+export interface ResearchPlan {
+  schema_version: SchemaVersion16;
+  id: Id22;
+  project_id: ProjectId17;
+  created_at: CreatedAt16;
+  contract: Contract2;
+  run_id: RunId2;
+  revision: Revision3;
+  steps: Steps;
+  rationale_summary: RationaleSummary;
+}
+export interface ResearchStep {
+  id: Id23;
+  objective: Objective1;
+  depends_on: DependsOn;
+  allowed_input_ids: AllowedInputIds;
+  expected_artifact_kinds: ExpectedArtifactKinds;
+  completion_criteria: CompletionCriteria;
+  status: Status6;
+  action_ids: ActionIds;
+}
+export interface ResearchQuestion {
+  schema_version: SchemaVersion17;
+  id: Id24;
+  project_id: ProjectId18;
+  created_at: CreatedAt17;
+  contract: Contract3;
+  run_id: RunId3;
+  revision: Revision4;
+  run_revision: RunRevision;
+  questions: Questions1;
+  status: Status7;
+  expires_at: ExpiresAt;
+  answer_message_id: AnswerMessageId;
+}
+export interface MaterialQuestion {
+  id: Id25;
+  field: Field;
+  prompt: Prompt;
+  blocked_step_ids: BlockedStepIds;
+  options: Options;
+  evidence: Evidence1;
+}
+export interface QuestionOption {
+  id: Id26;
+  label: Label;
+  consequence: Consequence;
+}
+export interface UnavailableEvidenceReference {
+  contract: Contract4;
+  schema_version: SchemaVersion18;
+  availability: Availability1;
+  source_artifact_id: SourceArtifactId1;
+  source_sha256: SourceSha2561;
+  reason: Reason3;
+}
+export interface RunResult {
+  run_id: RunId4;
+  state: State7;
+  artifact_ids: ArtifactIds2;
+  stop_reason: StopReason1;
+}
+export interface RunEvent {
+  contract: Contract5;
+  schema_version: SchemaVersion19;
+  run_id: RunId5;
+  sequence: Sequence;
+  created_at: CreatedAt18;
+  event_type: EventType;
+  run_revision: RunRevision1;
+  state: State8;
+  action_id: ActionId1;
+  question_id: QuestionId;
+  artifact_ids: ArtifactIds3;
+  summary: Summary;
 }

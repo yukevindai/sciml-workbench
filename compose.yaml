@@ -52,7 +52,7 @@ services:
         condition: service_completed_successfully
     restart: unless-stopped
     stop_grace_period: 20s
-  # Reserved process boundary. B11/D11 supply persistence and scheduling.
+  # Reserved process boundary. B11 supplies persistence; D11 supplies scheduling.
   # Explicit opt-in fails with an actionable message until those tickets land.
   agent-worker:
     <<: *backend

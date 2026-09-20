@@ -1,4 +1,4 @@
-"""Reserved agent process entry point. Durable scheduling requires B11/D11."""
+"""Reserved agent process entry point. Durable scheduling requires D11."""
 
 import sys
 

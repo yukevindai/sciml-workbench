@@ -1,5 +1,7 @@
 # Scientific metadata and migrations
 
+B11 adds application migration `0006` and separate explicit runtime checkpoint setup. See [agent persistence](agent-persistence.md) for the maintenance commands, retained ledgers and restore guarantees.
+
 B02 adds database invariants and claim/publication primitives while retaining the existing projects, artifacts, jobs, and four job states. The public job response remains the B01 legacy projection; internal claim tokens, worker identities, request digests, and payloads are not exposed by that response. No new environment variable or scientific artifact version is introduced.
 
 ## Upgrade procedure

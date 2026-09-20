@@ -3387,6 +3387,1738 @@
           }
         }
       }
+    },
+    "/api/v1/projects/{pid}/agent-runs": {
+      "post": {
+        "summary": "Create",
+        "operationId": "create_api_v1_projects__pid__agent_runs_post",
+        "parameters": [
+          {
+            "name": "pid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Pid"
+            }
+          },
+          {
+            "name": "idempotency-key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Idempotency-Key"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RunInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchRun"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Content Too Large"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Content"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        }
+      },
+      "get": {
+        "summary": "History",
+        "operationId": "history_api_v1_projects__pid__agent_runs_get",
+        "parameters": [
+          {
+            "name": "pid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Pid"
+            }
+          },
+          {
+            "name": "after",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 160,
+              "default": "",
+              "title": "After"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ResearchRun"
+                  },
+                  "title": "Response History Api V1 Projects  Pid  Agent Runs Get"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Content Too Large"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Content"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        }
+      }
+    },
+    "/api/v1/projects/{pid}/agent-runs/{rid}": {
+      "get": {
+        "summary": "Read",
+        "operationId": "read_api_v1_projects__pid__agent_runs__rid__get",
+        "parameters": [
+          {
+            "name": "pid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Pid"
+            }
+          },
+          {
+            "name": "rid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Rid"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RunDetail"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Content Too Large"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Content"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        }
+      }
+    },
+    "/api/v1/projects/{pid}/agent-runs/{rid}/amend": {
+      "post": {
+        "summary": "Amend",
+        "operationId": "amend_api_v1_projects__pid__agent_runs__rid__amend_post",
+        "parameters": [
+          {
+            "name": "pid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Pid"
+            }
+          },
+          {
+            "name": "rid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Rid"
+            }
+          },
+          {
+            "name": "idempotency-key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Idempotency-Key"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RunAmendmentInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchRun"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Content Too Large"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Content"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        }
+      }
+    },
+    "/api/v1/projects/{pid}/agent-runs/{rid}/review-plan": {
+      "post": {
+        "summary": "Review",
+        "operationId": "review_api_v1_projects__pid__agent_runs__rid__review_plan_post",
+        "parameters": [
+          {
+            "name": "pid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Pid"
+            }
+          },
+          {
+            "name": "rid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Rid"
+            }
+          },
+          {
+            "name": "idempotency-key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Idempotency-Key"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PlanAcceptanceInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchRun"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Content Too Large"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Content"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        }
+      }
+    },
+    "/api/v1/projects/{pid}/agent-runs/{rid}/questions/{qid}/answer": {
+      "post": {
+        "summary": "Answer",
+        "operationId": "answer_api_v1_projects__pid__agent_runs__rid__questions__qid__answer_post",
+        "parameters": [
+          {
+            "name": "pid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Pid"
+            }
+          },
+          {
+            "name": "rid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Rid"
+            }
+          },
+          {
+            "name": "qid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Qid"
+            }
+          },
+          {
+            "name": "idempotency-key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Idempotency-Key"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QuestionAnswerInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchRun"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Content Too Large"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Content"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        }
+      }
+    },
+    "/api/v1/projects/{pid}/agent-runs/{rid}/pause": {
+      "post": {
+        "summary": "Pause Agent Run",
+        "operationId": "pause_agent_run_api_v1_projects__pid__agent_runs__rid__pause_post",
+        "parameters": [
+          {
+            "name": "pid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Pid"
+            }
+          },
+          {
+            "name": "rid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Rid"
+            }
+          },
+          {
+            "name": "idempotency-key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Idempotency-Key"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RunControlInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchRun"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Content Too Large"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Content"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        }
+      }
+    },
+    "/api/v1/projects/{pid}/agent-runs/{rid}/resume": {
+      "post": {
+        "summary": "Resume Agent Run",
+        "operationId": "resume_agent_run_api_v1_projects__pid__agent_runs__rid__resume_post",
+        "parameters": [
+          {
+            "name": "pid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Pid"
+            }
+          },
+          {
+            "name": "rid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Rid"
+            }
+          },
+          {
+            "name": "idempotency-key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Idempotency-Key"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RunControlInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchRun"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Content Too Large"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Content"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        }
+      }
+    },
+    "/api/v1/projects/{pid}/agent-runs/{rid}/cancel": {
+      "post": {
+        "summary": "Cancel Agent Run",
+        "operationId": "cancel_agent_run_api_v1_projects__pid__agent_runs__rid__cancel_post",
+        "parameters": [
+          {
+            "name": "pid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Pid"
+            }
+          },
+          {
+            "name": "rid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Rid"
+            }
+          },
+          {
+            "name": "idempotency-key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Idempotency-Key"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RunControlInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchRun"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Content Too Large"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Content"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        }
+      }
+    },
+    "/api/v1/projects/{pid}/agent-runs/{rid}/events": {
+      "get": {
+        "summary": "Events",
+        "operationId": "events_api_v1_projects__pid__agent_runs__rid__events_get",
+        "parameters": [
+          {
+            "name": "pid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Pid"
+            }
+          },
+          {
+            "name": "rid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Rid"
+            }
+          },
+          {
+            "name": "after",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "After"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 500,
+              "minimum": 1,
+              "default": 100,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RunEvent"
+                  },
+                  "title": "Response Events Api V1 Projects  Pid  Agent Runs  Rid  Events Get"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Content Too Large"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Content"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        }
+      }
+    },
+    "/api/v1/projects/{pid}/agent-runs/{rid}/stream": {
+      "get": {
+        "summary": "Stream",
+        "operationId": "stream_api_v1_projects__pid__agent_runs__rid__stream_get",
+        "parameters": [
+          {
+            "name": "pid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Pid"
+            }
+          },
+          {
+            "name": "rid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Rid"
+            }
+          },
+          {
+            "name": "after",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "After"
+            }
+          },
+          {
+            "name": "last-event-id",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Last-Event-Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Content Too Large"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Content"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        }
+      }
+    },
+    "/api/v1/projects/{pid}/agent-runs/{rid}/result": {
+      "get": {
+        "summary": "Result",
+        "operationId": "result_api_v1_projects__pid__agent_runs__rid__result_get",
+        "parameters": [
+          {
+            "name": "pid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Pid"
+            }
+          },
+          {
+            "name": "rid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Rid"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RunResult"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Content Too Large"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Content"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -4787,6 +6519,40 @@
         "title": "ErrorResponse",
         "description": "Additive API error fields: the original error string/details remain."
       },
+      "EstimatedCost": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "const": "estimated",
+            "title": "Status"
+          },
+          "amount": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Amount"
+          },
+          "currency": {
+            "type": "string",
+            "pattern": "^[A-Z]{3}$",
+            "title": "Currency"
+          },
+          "pricing_revision": {
+            "type": "string",
+            "maxLength": 160,
+            "minLength": 1,
+            "title": "Pricing Revision"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "status",
+          "amount",
+          "currency",
+          "pricing_revision"
+        ],
+        "title": "EstimatedCost"
+      },
       "EvaluationCandidate": {
         "properties": {
           "id": {
@@ -6051,6 +7817,61 @@
         ],
         "title": "InferredDeclaration[list[Annotated[str, StringConstraints]]]"
       },
+      "InputScope": {
+        "properties": {
+          "material_ids": {
+            "items": {
+              "type": "string",
+              "maxLength": 160,
+              "minLength": 1
+            },
+            "type": "array",
+            "title": "Material Ids"
+          },
+          "artifact_ids": {
+            "items": {
+              "type": "string",
+              "maxLength": 160,
+              "minLength": 1
+            },
+            "type": "array",
+            "title": "Artifact Ids"
+          },
+          "conversation_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 160,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Conversation Id"
+          },
+          "message_cutoff": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 9007199254740991.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Message Cutoff"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "material_ids",
+          "artifact_ids"
+        ],
+        "title": "InputScope"
+      },
       "JobDetail": {
         "properties": {
           "id": {
@@ -6372,6 +8193,77 @@
         ],
         "title": "LegacyJobResponse"
       },
+      "MaterialQuestion": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "maxLength": 160,
+            "minLength": 1,
+            "title": "Id"
+          },
+          "field": {
+            "type": "string",
+            "maxLength": 160,
+            "minLength": 1,
+            "title": "Field"
+          },
+          "prompt": {
+            "type": "string",
+            "maxLength": 4000,
+            "minLength": 1,
+            "title": "Prompt"
+          },
+          "blocked_step_ids": {
+            "items": {
+              "type": "string",
+              "maxLength": 160,
+              "minLength": 1
+            },
+            "type": "array",
+            "minItems": 1,
+            "title": "Blocked Step Ids"
+          },
+          "options": {
+            "items": {
+              "$ref": "#/components/schemas/QuestionOption"
+            },
+            "type": "array",
+            "title": "Options"
+          },
+          "evidence": {
+            "items": {
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/AvailableEvidenceReference"
+                },
+                {
+                  "$ref": "#/components/schemas/UnavailableEvidenceReference"
+                }
+              ],
+              "discriminator": {
+                "propertyName": "availability",
+                "mapping": {
+                  "available": "#/components/schemas/AvailableEvidenceReference",
+                  "unavailable": "#/components/schemas/UnavailableEvidenceReference"
+                }
+              }
+            },
+            "type": "array",
+            "title": "Evidence"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "field",
+          "prompt",
+          "blocked_step_ids",
+          "options",
+          "evidence"
+        ],
+        "title": "MaterialQuestion"
+      },
       "MaterialResponse": {
         "properties": {
           "id": {
@@ -6479,6 +8371,29 @@
           "value"
         ],
         "title": "MetricReference"
+      },
+      "PlanAcceptanceInput": {
+        "properties": {
+          "expected_run_revision": {
+            "type": "integer",
+            "maximum": 9007199254740991.0,
+            "minimum": 1.0,
+            "title": "Expected Run Revision"
+          },
+          "expected_plan_revision": {
+            "type": "integer",
+            "maximum": 9007199254740991.0,
+            "minimum": 1.0,
+            "title": "Expected Plan Revision"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "expected_run_revision",
+          "expected_plan_revision"
+        ],
+        "title": "PlanAcceptanceInput"
       },
       "PolicyReference": {
         "properties": {
@@ -6633,6 +8548,75 @@
         ],
         "title": "Provenance"
       },
+      "QuestionAnswerInput": {
+        "properties": {
+          "expected_run_revision": {
+            "type": "integer",
+            "maximum": 9007199254740991.0,
+            "minimum": 1.0,
+            "title": "Expected Run Revision"
+          },
+          "expected_question_revision": {
+            "type": "integer",
+            "maximum": 9007199254740991.0,
+            "minimum": 1.0,
+            "title": "Expected Question Revision"
+          },
+          "answers": {
+            "additionalProperties": {
+              "type": "string",
+              "maxLength": 4000,
+              "minLength": 1
+            },
+            "propertyNames": {
+              "maxLength": 160,
+              "minLength": 1
+            },
+            "type": "object",
+            "maxProperties": 20,
+            "minProperties": 1,
+            "title": "Answers"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "expected_run_revision",
+          "expected_question_revision",
+          "answers"
+        ],
+        "title": "QuestionAnswerInput"
+      },
+      "QuestionOption": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "maxLength": 160,
+            "minLength": 1,
+            "title": "Id"
+          },
+          "label": {
+            "type": "string",
+            "maxLength": 4000,
+            "minLength": 1,
+            "title": "Label"
+          },
+          "consequence": {
+            "type": "string",
+            "maxLength": 4000,
+            "minLength": 1,
+            "title": "Consequence"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "label",
+          "consequence"
+        ],
+        "title": "QuestionOption"
+      },
       "ReferenceCheck": {
         "properties": {
           "status": {
@@ -6740,6 +8724,435 @@
         ],
         "title": "Report"
       },
+      "ResearchPlan": {
+        "properties": {
+          "schema_version": {
+            "type": "string",
+            "const": "1.0",
+            "title": "Schema Version",
+            "default": "1.0"
+          },
+          "id": {
+            "type": "string",
+            "maxLength": 160,
+            "minLength": 1,
+            "title": "Id"
+          },
+          "project_id": {
+            "type": "string",
+            "maxLength": 160,
+            "minLength": 1,
+            "title": "Project Id"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "contract": {
+            "type": "string",
+            "const": "research_plan",
+            "title": "Contract",
+            "default": "research_plan"
+          },
+          "run_id": {
+            "type": "string",
+            "maxLength": 160,
+            "minLength": 1,
+            "title": "Run Id"
+          },
+          "revision": {
+            "type": "integer",
+            "maximum": 9007199254740991.0,
+            "minimum": 1.0,
+            "title": "Revision"
+          },
+          "steps": {
+            "items": {
+              "$ref": "#/components/schemas/ResearchStep"
+            },
+            "type": "array",
+            "maxItems": 120,
+            "minItems": 1,
+            "title": "Steps"
+          },
+          "rationale_summary": {
+            "type": "string",
+            "maxLength": 4000,
+            "minLength": 1,
+            "title": "Rationale Summary"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "project_id",
+          "created_at",
+          "run_id",
+          "revision",
+          "steps",
+          "rationale_summary"
+        ],
+        "title": "ResearchPlan"
+      },
+      "ResearchQuestion": {
+        "properties": {
+          "schema_version": {
+            "type": "string",
+            "const": "1.0",
+            "title": "Schema Version",
+            "default": "1.0"
+          },
+          "id": {
+            "type": "string",
+            "maxLength": 160,
+            "minLength": 1,
+            "title": "Id"
+          },
+          "project_id": {
+            "type": "string",
+            "maxLength": 160,
+            "minLength": 1,
+            "title": "Project Id"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "contract": {
+            "type": "string",
+            "const": "research_question",
+            "title": "Contract",
+            "default": "research_question"
+          },
+          "run_id": {
+            "type": "string",
+            "maxLength": 160,
+            "minLength": 1,
+            "title": "Run Id"
+          },
+          "revision": {
+            "type": "integer",
+            "maximum": 9007199254740991.0,
+            "minimum": 1.0,
+            "title": "Revision"
+          },
+          "run_revision": {
+            "type": "integer",
+            "maximum": 9007199254740991.0,
+            "minimum": 1.0,
+            "title": "Run Revision"
+          },
+          "questions": {
+            "items": {
+              "$ref": "#/components/schemas/MaterialQuestion"
+            },
+            "type": "array",
+            "maxItems": 20,
+            "minItems": 1,
+            "title": "Questions"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "open",
+              "answered",
+              "superseded",
+              "expired",
+              "cancelled"
+            ],
+            "title": "Status"
+          },
+          "expires_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expires At"
+          },
+          "answer_message_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 160,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Answer Message Id"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "project_id",
+          "created_at",
+          "run_id",
+          "revision",
+          "run_revision",
+          "questions",
+          "status"
+        ],
+        "title": "ResearchQuestion"
+      },
+      "ResearchRun": {
+        "properties": {
+          "schema_version": {
+            "type": "string",
+            "const": "1.0",
+            "title": "Schema Version",
+            "default": "1.0"
+          },
+          "id": {
+            "type": "string",
+            "maxLength": 160,
+            "minLength": 1,
+            "title": "Id"
+          },
+          "project_id": {
+            "type": "string",
+            "maxLength": 160,
+            "minLength": 1,
+            "title": "Project Id"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "contract": {
+            "type": "string",
+            "const": "research_run",
+            "title": "Contract",
+            "default": "research_run"
+          },
+          "objective": {
+            "type": "string",
+            "maxLength": 4000,
+            "minLength": 1,
+            "title": "Objective"
+          },
+          "inputs": {
+            "$ref": "#/components/schemas/InputScope"
+          },
+          "policy": {
+            "$ref": "#/components/schemas/PolicyReference"
+          },
+          "mode": {
+            "type": "string",
+            "enum": [
+              "autopilot",
+              "review_plan"
+            ],
+            "title": "Mode"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "queued",
+              "running",
+              "waiting_for_job",
+              "waiting_for_input",
+              "paused",
+              "completed",
+              "partially_completed",
+              "failed",
+              "cancelled"
+            ],
+            "title": "State"
+          },
+          "control_revision": {
+            "type": "integer",
+            "maximum": 9007199254740991.0,
+            "minimum": 1.0,
+            "title": "Control Revision"
+          },
+          "plan_revision": {
+            "type": "integer",
+            "maximum": 9007199254740991.0,
+            "minimum": 0.0,
+            "title": "Plan Revision"
+          },
+          "limits": {
+            "$ref": "#/components/schemas/ResourceLimits"
+          },
+          "usage": {
+            "$ref": "#/components/schemas/UsageSnapshot"
+          },
+          "open_question_ids": {
+            "items": {
+              "type": "string",
+              "maxLength": 160,
+              "minLength": 1
+            },
+            "type": "array",
+            "title": "Open Question Ids"
+          },
+          "result_artifact_ids": {
+            "items": {
+              "type": "string",
+              "maxLength": 160,
+              "minLength": 1
+            },
+            "type": "array",
+            "title": "Result Artifact Ids"
+          },
+          "continued_from_run_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 160,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Continued From Run Id"
+          },
+          "finished_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Finished At"
+          },
+          "stop_reason": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 4000,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Stop Reason"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "project_id",
+          "created_at",
+          "objective",
+          "inputs",
+          "policy",
+          "mode",
+          "state",
+          "control_revision",
+          "plan_revision",
+          "limits",
+          "usage",
+          "open_question_ids",
+          "result_artifact_ids"
+        ],
+        "title": "ResearchRun"
+      },
+      "ResearchStep": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "maxLength": 160,
+            "minLength": 1,
+            "title": "Id"
+          },
+          "objective": {
+            "type": "string",
+            "maxLength": 4000,
+            "minLength": 1,
+            "title": "Objective"
+          },
+          "depends_on": {
+            "items": {
+              "type": "string",
+              "maxLength": 160,
+              "minLength": 1
+            },
+            "type": "array",
+            "title": "Depends On"
+          },
+          "allowed_input_ids": {
+            "items": {
+              "type": "string",
+              "maxLength": 160,
+              "minLength": 1
+            },
+            "type": "array",
+            "title": "Allowed Input Ids"
+          },
+          "expected_artifact_kinds": {
+            "items": {
+              "type": "string",
+              "maxLength": 160,
+              "minLength": 1
+            },
+            "type": "array",
+            "title": "Expected Artifact Kinds"
+          },
+          "completion_criteria": {
+            "items": {
+              "type": "string",
+              "maxLength": 4000,
+              "minLength": 1
+            },
+            "type": "array",
+            "minItems": 1,
+            "title": "Completion Criteria"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "ready",
+              "running",
+              "blocked",
+              "completed",
+              "failed",
+              "skipped"
+            ],
+            "title": "Status"
+          },
+          "action_ids": {
+            "items": {
+              "type": "string",
+              "maxLength": 160,
+              "minLength": 1
+            },
+            "type": "array",
+            "title": "Action Ids"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "objective",
+          "depends_on",
+          "allowed_input_ids",
+          "expected_artifact_kinds",
+          "completion_criteria",
+          "status"
+        ],
+        "title": "ResearchStep"
+      },
       "ResearcherAssessment": {
         "properties": {
           "kind": {
@@ -6761,6 +9174,443 @@
           "statement"
         ],
         "title": "ResearcherAssessment"
+      },
+      "ResourceLimits": {
+        "properties": {
+          "model_tokens": {
+            "type": "integer",
+            "maximum": 9007199254740991.0,
+            "minimum": 0.0,
+            "title": "Model Tokens"
+          },
+          "model_requests": {
+            "type": "integer",
+            "maximum": 9007199254740991.0,
+            "minimum": 0.0,
+            "title": "Model Requests"
+          },
+          "tool_calls": {
+            "type": "integer",
+            "maximum": 9007199254740991.0,
+            "minimum": 0.0,
+            "title": "Tool Calls"
+          },
+          "coordinator_iterations": {
+            "type": "integer",
+            "maximum": 9007199254740991.0,
+            "minimum": 0.0,
+            "title": "Coordinator Iterations"
+          },
+          "specialist_assignments": {
+            "type": "integer",
+            "maximum": 9007199254740991.0,
+            "minimum": 0.0,
+            "title": "Specialist Assignments"
+          },
+          "specialist_concurrency": {
+            "type": "integer",
+            "maximum": 9007199254740991.0,
+            "minimum": 0.0,
+            "title": "Specialist Concurrency"
+          },
+          "delegation_depth": {
+            "type": "integer",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Delegation Depth"
+          },
+          "review_rounds": {
+            "type": "integer",
+            "maximum": 9007199254740991.0,
+            "minimum": 0.0,
+            "title": "Review Rounds"
+          },
+          "scientific_attempts": {
+            "type": "integer",
+            "maximum": 9007199254740991.0,
+            "minimum": 0.0,
+            "title": "Scientific Attempts"
+          },
+          "active_seconds": {
+            "type": "integer",
+            "maximum": 9007199254740991.0,
+            "minimum": 0.0,
+            "title": "Active Seconds"
+          },
+          "transient_retries": {
+            "type": "integer",
+            "maximum": 9007199254740991.0,
+            "minimum": 0.0,
+            "title": "Transient Retries"
+          },
+          "finalization_model_tokens": {
+            "type": "integer",
+            "maximum": 9007199254740991.0,
+            "minimum": 0.0,
+            "title": "Finalization Model Tokens"
+          },
+          "finalization_scientific_attempts": {
+            "type": "integer",
+            "maximum": 9007199254740991.0,
+            "minimum": 0.0,
+            "title": "Finalization Scientific Attempts"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "model_tokens",
+          "model_requests",
+          "tool_calls",
+          "coordinator_iterations",
+          "specialist_assignments",
+          "specialist_concurrency",
+          "delegation_depth",
+          "review_rounds",
+          "scientific_attempts",
+          "active_seconds",
+          "transient_retries",
+          "finalization_model_tokens",
+          "finalization_scientific_attempts"
+        ],
+        "title": "ResourceLimits",
+        "description": "Values are required; E01 owns defaults and server/project intersections."
+      },
+      "RunAmendmentInput": {
+        "properties": {
+          "expected_run_revision": {
+            "type": "integer",
+            "maximum": 9007199254740991.0,
+            "minimum": 1.0,
+            "title": "Expected Run Revision"
+          },
+          "expected_plan_revision": {
+            "type": "integer",
+            "maximum": 9007199254740991.0,
+            "minimum": 0.0,
+            "title": "Expected Plan Revision"
+          },
+          "objective": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 4000,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Objective"
+          },
+          "inputs": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/InputScope"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "policy_revision": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 9007199254740991.0,
+                "minimum": 1.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Policy Revision"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "expected_run_revision",
+          "expected_plan_revision"
+        ],
+        "title": "RunAmendmentInput"
+      },
+      "RunControlInput": {
+        "properties": {
+          "expected_run_revision": {
+            "type": "integer",
+            "maximum": 9007199254740991.0,
+            "minimum": 1.0,
+            "title": "Expected Run Revision"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "expected_run_revision"
+        ],
+        "title": "RunControlInput"
+      },
+      "RunDetail": {
+        "properties": {
+          "run": {
+            "$ref": "#/components/schemas/ResearchRun"
+          },
+          "plan": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ResearchPlan"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "questions": {
+            "items": {
+              "$ref": "#/components/schemas/ResearchQuestion"
+            },
+            "type": "array",
+            "title": "Questions"
+          },
+          "control_effect": {
+            "type": "string",
+            "maxLength": 4000,
+            "minLength": 1,
+            "title": "Control Effect"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "run",
+          "plan",
+          "questions",
+          "control_effect"
+        ],
+        "title": "RunDetail"
+      },
+      "RunEvent": {
+        "properties": {
+          "contract": {
+            "type": "string",
+            "const": "run_event",
+            "title": "Contract",
+            "default": "run_event"
+          },
+          "schema_version": {
+            "type": "string",
+            "const": "1.0",
+            "title": "Schema Version",
+            "default": "1.0"
+          },
+          "run_id": {
+            "type": "string",
+            "maxLength": 160,
+            "minLength": 1,
+            "title": "Run Id"
+          },
+          "sequence": {
+            "type": "integer",
+            "maximum": 9007199254740991.0,
+            "minimum": 1.0,
+            "title": "Sequence"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "event_type": {
+            "type": "string",
+            "enum": [
+              "accepted",
+              "state_changed",
+              "plan_changed",
+              "action_changed",
+              "question_changed",
+              "usage_changed",
+              "result_published"
+            ],
+            "title": "Event Type"
+          },
+          "run_revision": {
+            "type": "integer",
+            "maximum": 9007199254740991.0,
+            "minimum": 1.0,
+            "title": "Run Revision"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "queued",
+              "running",
+              "waiting_for_job",
+              "waiting_for_input",
+              "paused",
+              "completed",
+              "partially_completed",
+              "failed",
+              "cancelled"
+            ],
+            "title": "State"
+          },
+          "action_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 160,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Action Id"
+          },
+          "question_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 160,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Question Id"
+          },
+          "artifact_ids": {
+            "items": {
+              "type": "string",
+              "maxLength": 160,
+              "minLength": 1
+            },
+            "type": "array",
+            "title": "Artifact Ids"
+          },
+          "summary": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 4000,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Summary"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "run_id",
+          "sequence",
+          "created_at",
+          "event_type",
+          "run_revision",
+          "state"
+        ],
+        "title": "RunEvent"
+      },
+      "RunInput": {
+        "properties": {
+          "objective": {
+            "type": "string",
+            "maxLength": 4000,
+            "minLength": 1,
+            "title": "Objective"
+          },
+          "inputs": {
+            "$ref": "#/components/schemas/InputScope"
+          },
+          "policy_revision": {
+            "type": "integer",
+            "maximum": 9007199254740991.0,
+            "minimum": 1.0,
+            "title": "Policy Revision"
+          },
+          "mode": {
+            "type": "string",
+            "enum": [
+              "autopilot",
+              "review_plan"
+            ],
+            "title": "Mode",
+            "default": "autopilot"
+          },
+          "limits": {
+            "$ref": "#/components/schemas/ResourceLimits"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "objective",
+          "inputs",
+          "policy_revision",
+          "limits"
+        ],
+        "title": "RunInput"
+      },
+      "RunResult": {
+        "properties": {
+          "run_id": {
+            "type": "string",
+            "maxLength": 160,
+            "minLength": 1,
+            "title": "Run Id"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "queued",
+              "running",
+              "waiting_for_job",
+              "waiting_for_input",
+              "paused",
+              "completed",
+              "partially_completed",
+              "failed",
+              "cancelled"
+            ],
+            "title": "State"
+          },
+          "artifact_ids": {
+            "items": {
+              "type": "string",
+              "maxLength": 160,
+              "minLength": 1
+            },
+            "type": "array",
+            "title": "Artifact Ids"
+          },
+          "stop_reason": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 4000,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Stop Reason"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "run_id",
+          "state",
+          "artifact_ids",
+          "stop_reason"
+        ],
+        "title": "RunResult"
       },
       "SemanticReview": {
         "properties": {
@@ -7369,6 +10219,75 @@
         ],
         "title": "TextSpan"
       },
+      "UnavailableEvidenceReference": {
+        "properties": {
+          "contract": {
+            "type": "string",
+            "const": "evidence_reference",
+            "title": "Contract",
+            "default": "evidence_reference"
+          },
+          "schema_version": {
+            "type": "string",
+            "const": "1.0",
+            "title": "Schema Version",
+            "default": "1.0"
+          },
+          "availability": {
+            "type": "string",
+            "const": "unavailable",
+            "title": "Availability"
+          },
+          "source_artifact_id": {
+            "type": "string",
+            "maxLength": 160,
+            "minLength": 1,
+            "title": "Source Artifact Id"
+          },
+          "source_sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Source Sha256"
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 4000,
+            "minLength": 1,
+            "title": "Reason"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "availability",
+          "source_artifact_id",
+          "source_sha256",
+          "reason"
+        ],
+        "title": "UnavailableEvidenceReference"
+      },
+      "UnknownCost": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "const": "unknown",
+            "title": "Status"
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 4000,
+            "minLength": 1,
+            "title": "Reason"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "status",
+          "reason"
+        ],
+        "title": "UnknownCost"
+      },
       "UnknownDeclaration": {
         "properties": {
           "origin": {
@@ -7405,6 +10324,93 @@
         "additionalProperties": false,
         "type": "object",
         "title": "UnknownDeclaration"
+      },
+      "UsageSnapshot": {
+        "properties": {
+          "billed_token_categories": {
+            "additionalProperties": {
+              "type": "integer",
+              "maximum": 9007199254740991.0,
+              "minimum": 0.0
+            },
+            "propertyNames": {
+              "maxLength": 160,
+              "minLength": 1
+            },
+            "type": "object",
+            "title": "Billed Token Categories"
+          },
+          "reserved_tokens": {
+            "type": "integer",
+            "maximum": 9007199254740991.0,
+            "minimum": 0.0,
+            "title": "Reserved Tokens"
+          },
+          "model_requests": {
+            "type": "integer",
+            "maximum": 9007199254740991.0,
+            "minimum": 0.0,
+            "title": "Model Requests"
+          },
+          "tool_calls": {
+            "type": "integer",
+            "maximum": 9007199254740991.0,
+            "minimum": 0.0,
+            "title": "Tool Calls"
+          },
+          "scientific_attempts": {
+            "type": "integer",
+            "maximum": 9007199254740991.0,
+            "minimum": 0.0,
+            "title": "Scientific Attempts"
+          },
+          "active_seconds": {
+            "type": "integer",
+            "maximum": 9007199254740991.0,
+            "minimum": 0.0,
+            "title": "Active Seconds"
+          },
+          "unknown_request_ids": {
+            "items": {
+              "type": "string",
+              "maxLength": 160,
+              "minLength": 1
+            },
+            "type": "array",
+            "title": "Unknown Request Ids"
+          },
+          "cost": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/UnknownCost"
+              },
+              {
+                "$ref": "#/components/schemas/EstimatedCost"
+              }
+            ],
+            "title": "Cost",
+            "discriminator": {
+              "propertyName": "status",
+              "mapping": {
+                "estimated": "#/components/schemas/EstimatedCost",
+                "unknown": "#/components/schemas/UnknownCost"
+              }
+            }
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "billed_token_categories",
+          "reserved_tokens",
+          "model_requests",
+          "tool_calls",
+          "scientific_attempts",
+          "active_seconds",
+          "unknown_request_ids",
+          "cost"
+        ],
+        "title": "UsageSnapshot"
       },
       "UserDeclaration_Annotated_dict_Annotated_str__FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1____PydanticGeneralMetadata_pattern____S_______Annotated_str__StringConstraints____FieldInfo_annotation_NoneType__required_True__metadata__MinLen_min_length_1_____": {
         "properties": {
@@ -8069,40 +11075,6 @@
         "title": "DecisionSummary",
         "type": "object"
       },
-      "EstimatedCost": {
-        "additionalProperties": false,
-        "properties": {
-          "status": {
-            "const": "estimated",
-            "title": "Status",
-            "type": "string"
-          },
-          "amount": {
-            "minimum": 0,
-            "title": "Amount",
-            "type": "number"
-          },
-          "currency": {
-            "pattern": "^[A-Z]{3}$",
-            "title": "Currency",
-            "type": "string"
-          },
-          "pricing_revision": {
-            "maxLength": 160,
-            "minLength": 1,
-            "title": "Pricing Revision",
-            "type": "string"
-          }
-        },
-        "required": [
-          "status",
-          "amount",
-          "currency",
-          "pricing_revision"
-        ],
-        "title": "EstimatedCost",
-        "type": "object"
-      },
       "EvaluationView": {
         "additionalProperties": false,
         "properties": {
@@ -8263,63 +11235,6 @@
           "tool_catalog"
         ],
         "title": "ExecutionVersions",
-        "type": "object"
-      },
-      "InputScope": {
-        "additionalProperties": false,
-        "properties": {
-          "material_ids": {
-            "items": {
-              "maxLength": 160,
-              "minLength": 1,
-              "type": "string"
-            },
-            "title": "Material Ids",
-            "type": "array"
-          },
-          "artifact_ids": {
-            "items": {
-              "maxLength": 160,
-              "minLength": 1,
-              "type": "string"
-            },
-            "title": "Artifact Ids",
-            "type": "array"
-          },
-          "conversation_id": {
-            "anyOf": [
-              {
-                "maxLength": 160,
-                "minLength": 1,
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null,
-            "title": "Conversation Id"
-          },
-          "message_cutoff": {
-            "anyOf": [
-              {
-                "maximum": 9007199254740991,
-                "minimum": 0,
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null,
-            "title": "Message Cutoff"
-          }
-        },
-        "required": [
-          "material_ids",
-          "artifact_ids"
-        ],
-        "title": "InputScope",
         "type": "object"
       },
       "JobResponse": {
@@ -8498,951 +11413,6 @@
           "finished_at"
         ],
         "title": "JobResponse",
-        "type": "object"
-      },
-      "MaterialQuestion": {
-        "additionalProperties": false,
-        "properties": {
-          "id": {
-            "maxLength": 160,
-            "minLength": 1,
-            "title": "Id",
-            "type": "string"
-          },
-          "field": {
-            "maxLength": 160,
-            "minLength": 1,
-            "title": "Field",
-            "type": "string"
-          },
-          "prompt": {
-            "maxLength": 4000,
-            "minLength": 1,
-            "title": "Prompt",
-            "type": "string"
-          },
-          "blocked_step_ids": {
-            "items": {
-              "maxLength": 160,
-              "minLength": 1,
-              "type": "string"
-            },
-            "minItems": 1,
-            "title": "Blocked Step Ids",
-            "type": "array"
-          },
-          "options": {
-            "items": {
-              "$ref": "#/components/schemas/QuestionOption"
-            },
-            "title": "Options",
-            "type": "array"
-          },
-          "evidence": {
-            "items": {
-              "discriminator": {
-                "mapping": {
-                  "available": "#/components/schemas/AvailableEvidenceReference",
-                  "unavailable": "#/components/schemas/UnavailableEvidenceReference"
-                },
-                "propertyName": "availability"
-              },
-              "oneOf": [
-                {
-                  "$ref": "#/components/schemas/AvailableEvidenceReference"
-                },
-                {
-                  "$ref": "#/components/schemas/UnavailableEvidenceReference"
-                }
-              ]
-            },
-            "title": "Evidence",
-            "type": "array"
-          }
-        },
-        "required": [
-          "id",
-          "field",
-          "prompt",
-          "blocked_step_ids",
-          "options",
-          "evidence"
-        ],
-        "title": "MaterialQuestion",
-        "type": "object"
-      },
-      "PlanAcceptanceInput": {
-        "additionalProperties": false,
-        "properties": {
-          "expected_run_revision": {
-            "maximum": 9007199254740991,
-            "minimum": 1,
-            "title": "Expected Run Revision",
-            "type": "integer"
-          },
-          "expected_plan_revision": {
-            "maximum": 9007199254740991,
-            "minimum": 1,
-            "title": "Expected Plan Revision",
-            "type": "integer"
-          }
-        },
-        "required": [
-          "expected_run_revision",
-          "expected_plan_revision"
-        ],
-        "title": "PlanAcceptanceInput",
-        "type": "object"
-      },
-      "QuestionAnswerInput": {
-        "additionalProperties": false,
-        "properties": {
-          "expected_run_revision": {
-            "maximum": 9007199254740991,
-            "minimum": 1,
-            "title": "Expected Run Revision",
-            "type": "integer"
-          },
-          "expected_question_revision": {
-            "maximum": 9007199254740991,
-            "minimum": 1,
-            "title": "Expected Question Revision",
-            "type": "integer"
-          },
-          "answers": {
-            "additionalProperties": {
-              "maxLength": 4000,
-              "minLength": 1,
-              "type": "string"
-            },
-            "maxProperties": 20,
-            "minProperties": 1,
-            "propertyNames": {
-              "maxLength": 160,
-              "minLength": 1
-            },
-            "title": "Answers",
-            "type": "object"
-          }
-        },
-        "required": [
-          "expected_run_revision",
-          "expected_question_revision",
-          "answers"
-        ],
-        "title": "QuestionAnswerInput",
-        "type": "object"
-      },
-      "QuestionOption": {
-        "additionalProperties": false,
-        "properties": {
-          "id": {
-            "maxLength": 160,
-            "minLength": 1,
-            "title": "Id",
-            "type": "string"
-          },
-          "label": {
-            "maxLength": 4000,
-            "minLength": 1,
-            "title": "Label",
-            "type": "string"
-          },
-          "consequence": {
-            "maxLength": 4000,
-            "minLength": 1,
-            "title": "Consequence",
-            "type": "string"
-          }
-        },
-        "required": [
-          "id",
-          "label",
-          "consequence"
-        ],
-        "title": "QuestionOption",
-        "type": "object"
-      },
-      "ResearchPlan": {
-        "additionalProperties": false,
-        "properties": {
-          "schema_version": {
-            "const": "1.0",
-            "default": "1.0",
-            "title": "Schema Version",
-            "type": "string"
-          },
-          "id": {
-            "maxLength": 160,
-            "minLength": 1,
-            "title": "Id",
-            "type": "string"
-          },
-          "project_id": {
-            "maxLength": 160,
-            "minLength": 1,
-            "title": "Project Id",
-            "type": "string"
-          },
-          "created_at": {
-            "format": "date-time",
-            "title": "Created At",
-            "type": "string"
-          },
-          "contract": {
-            "const": "research_plan",
-            "default": "research_plan",
-            "title": "Contract",
-            "type": "string"
-          },
-          "run_id": {
-            "maxLength": 160,
-            "minLength": 1,
-            "title": "Run Id",
-            "type": "string"
-          },
-          "revision": {
-            "maximum": 9007199254740991,
-            "minimum": 1,
-            "title": "Revision",
-            "type": "integer"
-          },
-          "steps": {
-            "items": {
-              "$ref": "#/components/schemas/ResearchStep"
-            },
-            "maxItems": 120,
-            "minItems": 1,
-            "title": "Steps",
-            "type": "array"
-          },
-          "rationale_summary": {
-            "maxLength": 4000,
-            "minLength": 1,
-            "title": "Rationale Summary",
-            "type": "string"
-          }
-        },
-        "required": [
-          "id",
-          "project_id",
-          "created_at",
-          "run_id",
-          "revision",
-          "steps",
-          "rationale_summary"
-        ],
-        "title": "ResearchPlan",
-        "type": "object"
-      },
-      "ResearchQuestion": {
-        "additionalProperties": false,
-        "properties": {
-          "schema_version": {
-            "const": "1.0",
-            "default": "1.0",
-            "title": "Schema Version",
-            "type": "string"
-          },
-          "id": {
-            "maxLength": 160,
-            "minLength": 1,
-            "title": "Id",
-            "type": "string"
-          },
-          "project_id": {
-            "maxLength": 160,
-            "minLength": 1,
-            "title": "Project Id",
-            "type": "string"
-          },
-          "created_at": {
-            "format": "date-time",
-            "title": "Created At",
-            "type": "string"
-          },
-          "contract": {
-            "const": "research_question",
-            "default": "research_question",
-            "title": "Contract",
-            "type": "string"
-          },
-          "run_id": {
-            "maxLength": 160,
-            "minLength": 1,
-            "title": "Run Id",
-            "type": "string"
-          },
-          "revision": {
-            "maximum": 9007199254740991,
-            "minimum": 1,
-            "title": "Revision",
-            "type": "integer"
-          },
-          "run_revision": {
-            "maximum": 9007199254740991,
-            "minimum": 1,
-            "title": "Run Revision",
-            "type": "integer"
-          },
-          "questions": {
-            "items": {
-              "$ref": "#/components/schemas/MaterialQuestion"
-            },
-            "maxItems": 20,
-            "minItems": 1,
-            "title": "Questions",
-            "type": "array"
-          },
-          "status": {
-            "enum": [
-              "open",
-              "answered",
-              "superseded",
-              "expired",
-              "cancelled"
-            ],
-            "title": "Status",
-            "type": "string"
-          },
-          "expires_at": {
-            "anyOf": [
-              {
-                "format": "date-time",
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null,
-            "title": "Expires At"
-          },
-          "answer_message_id": {
-            "anyOf": [
-              {
-                "maxLength": 160,
-                "minLength": 1,
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null,
-            "title": "Answer Message Id"
-          }
-        },
-        "required": [
-          "id",
-          "project_id",
-          "created_at",
-          "run_id",
-          "revision",
-          "run_revision",
-          "questions",
-          "status"
-        ],
-        "title": "ResearchQuestion",
-        "type": "object"
-      },
-      "ResearchRun": {
-        "additionalProperties": false,
-        "properties": {
-          "schema_version": {
-            "const": "1.0",
-            "default": "1.0",
-            "title": "Schema Version",
-            "type": "string"
-          },
-          "id": {
-            "maxLength": 160,
-            "minLength": 1,
-            "title": "Id",
-            "type": "string"
-          },
-          "project_id": {
-            "maxLength": 160,
-            "minLength": 1,
-            "title": "Project Id",
-            "type": "string"
-          },
-          "created_at": {
-            "format": "date-time",
-            "title": "Created At",
-            "type": "string"
-          },
-          "contract": {
-            "const": "research_run",
-            "default": "research_run",
-            "title": "Contract",
-            "type": "string"
-          },
-          "objective": {
-            "maxLength": 4000,
-            "minLength": 1,
-            "title": "Objective",
-            "type": "string"
-          },
-          "inputs": {
-            "$ref": "#/components/schemas/InputScope"
-          },
-          "policy": {
-            "$ref": "#/components/schemas/PolicyReference"
-          },
-          "mode": {
-            "enum": [
-              "autopilot",
-              "review_plan"
-            ],
-            "title": "Mode",
-            "type": "string"
-          },
-          "state": {
-            "enum": [
-              "queued",
-              "running",
-              "waiting_for_job",
-              "waiting_for_input",
-              "paused",
-              "completed",
-              "partially_completed",
-              "failed",
-              "cancelled"
-            ],
-            "title": "State",
-            "type": "string"
-          },
-          "control_revision": {
-            "maximum": 9007199254740991,
-            "minimum": 1,
-            "title": "Control Revision",
-            "type": "integer"
-          },
-          "plan_revision": {
-            "maximum": 9007199254740991,
-            "minimum": 0,
-            "title": "Plan Revision",
-            "type": "integer"
-          },
-          "limits": {
-            "$ref": "#/components/schemas/ResourceLimits"
-          },
-          "usage": {
-            "$ref": "#/components/schemas/UsageSnapshot"
-          },
-          "open_question_ids": {
-            "items": {
-              "maxLength": 160,
-              "minLength": 1,
-              "type": "string"
-            },
-            "title": "Open Question Ids",
-            "type": "array"
-          },
-          "result_artifact_ids": {
-            "items": {
-              "maxLength": 160,
-              "minLength": 1,
-              "type": "string"
-            },
-            "title": "Result Artifact Ids",
-            "type": "array"
-          },
-          "continued_from_run_id": {
-            "anyOf": [
-              {
-                "maxLength": 160,
-                "minLength": 1,
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null,
-            "title": "Continued From Run Id"
-          },
-          "finished_at": {
-            "anyOf": [
-              {
-                "format": "date-time",
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null,
-            "title": "Finished At"
-          },
-          "stop_reason": {
-            "anyOf": [
-              {
-                "maxLength": 4000,
-                "minLength": 1,
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null,
-            "title": "Stop Reason"
-          }
-        },
-        "required": [
-          "id",
-          "project_id",
-          "created_at",
-          "objective",
-          "inputs",
-          "policy",
-          "mode",
-          "state",
-          "control_revision",
-          "plan_revision",
-          "limits",
-          "usage",
-          "open_question_ids",
-          "result_artifact_ids"
-        ],
-        "title": "ResearchRun",
-        "type": "object"
-      },
-      "ResearchStep": {
-        "additionalProperties": false,
-        "properties": {
-          "id": {
-            "maxLength": 160,
-            "minLength": 1,
-            "title": "Id",
-            "type": "string"
-          },
-          "objective": {
-            "maxLength": 4000,
-            "minLength": 1,
-            "title": "Objective",
-            "type": "string"
-          },
-          "depends_on": {
-            "items": {
-              "maxLength": 160,
-              "minLength": 1,
-              "type": "string"
-            },
-            "title": "Depends On",
-            "type": "array"
-          },
-          "allowed_input_ids": {
-            "items": {
-              "maxLength": 160,
-              "minLength": 1,
-              "type": "string"
-            },
-            "title": "Allowed Input Ids",
-            "type": "array"
-          },
-          "expected_artifact_kinds": {
-            "items": {
-              "maxLength": 160,
-              "minLength": 1,
-              "type": "string"
-            },
-            "title": "Expected Artifact Kinds",
-            "type": "array"
-          },
-          "completion_criteria": {
-            "items": {
-              "maxLength": 4000,
-              "minLength": 1,
-              "type": "string"
-            },
-            "minItems": 1,
-            "title": "Completion Criteria",
-            "type": "array"
-          },
-          "status": {
-            "enum": [
-              "pending",
-              "ready",
-              "running",
-              "blocked",
-              "completed",
-              "failed",
-              "skipped"
-            ],
-            "title": "Status",
-            "type": "string"
-          },
-          "action_ids": {
-            "items": {
-              "maxLength": 160,
-              "minLength": 1,
-              "type": "string"
-            },
-            "title": "Action Ids",
-            "type": "array"
-          }
-        },
-        "required": [
-          "id",
-          "objective",
-          "depends_on",
-          "allowed_input_ids",
-          "expected_artifact_kinds",
-          "completion_criteria",
-          "status"
-        ],
-        "title": "ResearchStep",
-        "type": "object"
-      },
-      "ResourceLimits": {
-        "additionalProperties": false,
-        "description": "Values are required; E01 owns defaults and server/project intersections.",
-        "properties": {
-          "model_tokens": {
-            "maximum": 9007199254740991,
-            "minimum": 0,
-            "title": "Model Tokens",
-            "type": "integer"
-          },
-          "model_requests": {
-            "maximum": 9007199254740991,
-            "minimum": 0,
-            "title": "Model Requests",
-            "type": "integer"
-          },
-          "tool_calls": {
-            "maximum": 9007199254740991,
-            "minimum": 0,
-            "title": "Tool Calls",
-            "type": "integer"
-          },
-          "coordinator_iterations": {
-            "maximum": 9007199254740991,
-            "minimum": 0,
-            "title": "Coordinator Iterations",
-            "type": "integer"
-          },
-          "specialist_assignments": {
-            "maximum": 9007199254740991,
-            "minimum": 0,
-            "title": "Specialist Assignments",
-            "type": "integer"
-          },
-          "specialist_concurrency": {
-            "maximum": 9007199254740991,
-            "minimum": 0,
-            "title": "Specialist Concurrency",
-            "type": "integer"
-          },
-          "delegation_depth": {
-            "maximum": 1,
-            "minimum": 0,
-            "title": "Delegation Depth",
-            "type": "integer"
-          },
-          "review_rounds": {
-            "maximum": 9007199254740991,
-            "minimum": 0,
-            "title": "Review Rounds",
-            "type": "integer"
-          },
-          "scientific_attempts": {
-            "maximum": 9007199254740991,
-            "minimum": 0,
-            "title": "Scientific Attempts",
-            "type": "integer"
-          },
-          "active_seconds": {
-            "maximum": 9007199254740991,
-            "minimum": 0,
-            "title": "Active Seconds",
-            "type": "integer"
-          },
-          "transient_retries": {
-            "maximum": 9007199254740991,
-            "minimum": 0,
-            "title": "Transient Retries",
-            "type": "integer"
-          },
-          "finalization_model_tokens": {
-            "maximum": 9007199254740991,
-            "minimum": 0,
-            "title": "Finalization Model Tokens",
-            "type": "integer"
-          },
-          "finalization_scientific_attempts": {
-            "maximum": 9007199254740991,
-            "minimum": 0,
-            "title": "Finalization Scientific Attempts",
-            "type": "integer"
-          }
-        },
-        "required": [
-          "model_tokens",
-          "model_requests",
-          "tool_calls",
-          "coordinator_iterations",
-          "specialist_assignments",
-          "specialist_concurrency",
-          "delegation_depth",
-          "review_rounds",
-          "scientific_attempts",
-          "active_seconds",
-          "transient_retries",
-          "finalization_model_tokens",
-          "finalization_scientific_attempts"
-        ],
-        "title": "ResourceLimits",
-        "type": "object"
-      },
-      "RunAmendmentInput": {
-        "additionalProperties": false,
-        "properties": {
-          "expected_run_revision": {
-            "maximum": 9007199254740991,
-            "minimum": 1,
-            "title": "Expected Run Revision",
-            "type": "integer"
-          },
-          "expected_plan_revision": {
-            "maximum": 9007199254740991,
-            "minimum": 0,
-            "title": "Expected Plan Revision",
-            "type": "integer"
-          },
-          "objective": {
-            "anyOf": [
-              {
-                "maxLength": 4000,
-                "minLength": 1,
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null,
-            "title": "Objective"
-          },
-          "inputs": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/InputScope"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null
-          },
-          "policy_revision": {
-            "anyOf": [
-              {
-                "maximum": 9007199254740991,
-                "minimum": 1,
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null,
-            "title": "Policy Revision"
-          }
-        },
-        "required": [
-          "expected_run_revision",
-          "expected_plan_revision"
-        ],
-        "title": "RunAmendmentInput",
-        "type": "object"
-      },
-      "RunControlInput": {
-        "additionalProperties": false,
-        "properties": {
-          "expected_run_revision": {
-            "maximum": 9007199254740991,
-            "minimum": 1,
-            "title": "Expected Run Revision",
-            "type": "integer"
-          }
-        },
-        "required": [
-          "expected_run_revision"
-        ],
-        "title": "RunControlInput",
-        "type": "object"
-      },
-      "RunEvent": {
-        "additionalProperties": false,
-        "properties": {
-          "contract": {
-            "const": "run_event",
-            "default": "run_event",
-            "title": "Contract",
-            "type": "string"
-          },
-          "schema_version": {
-            "const": "1.0",
-            "default": "1.0",
-            "title": "Schema Version",
-            "type": "string"
-          },
-          "run_id": {
-            "maxLength": 160,
-            "minLength": 1,
-            "title": "Run Id",
-            "type": "string"
-          },
-          "sequence": {
-            "maximum": 9007199254740991,
-            "minimum": 1,
-            "title": "Sequence",
-            "type": "integer"
-          },
-          "created_at": {
-            "format": "date-time",
-            "title": "Created At",
-            "type": "string"
-          },
-          "event_type": {
-            "enum": [
-              "accepted",
-              "state_changed",
-              "plan_changed",
-              "action_changed",
-              "question_changed",
-              "usage_changed",
-              "result_published"
-            ],
-            "title": "Event Type",
-            "type": "string"
-          },
-          "run_revision": {
-            "maximum": 9007199254740991,
-            "minimum": 1,
-            "title": "Run Revision",
-            "type": "integer"
-          },
-          "state": {
-            "enum": [
-              "queued",
-              "running",
-              "waiting_for_job",
-              "waiting_for_input",
-              "paused",
-              "completed",
-              "partially_completed",
-              "failed",
-              "cancelled"
-            ],
-            "title": "State",
-            "type": "string"
-          },
-          "action_id": {
-            "anyOf": [
-              {
-                "maxLength": 160,
-                "minLength": 1,
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null,
-            "title": "Action Id"
-          },
-          "question_id": {
-            "anyOf": [
-              {
-                "maxLength": 160,
-                "minLength": 1,
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null,
-            "title": "Question Id"
-          },
-          "artifact_ids": {
-            "items": {
-              "maxLength": 160,
-              "minLength": 1,
-              "type": "string"
-            },
-            "title": "Artifact Ids",
-            "type": "array"
-          },
-          "summary": {
-            "anyOf": [
-              {
-                "maxLength": 4000,
-                "minLength": 1,
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null,
-            "title": "Summary"
-          }
-        },
-        "required": [
-          "run_id",
-          "sequence",
-          "created_at",
-          "event_type",
-          "run_revision",
-          "state"
-        ],
-        "title": "RunEvent",
-        "type": "object"
-      },
-      "RunInput": {
-        "additionalProperties": false,
-        "properties": {
-          "objective": {
-            "maxLength": 4000,
-            "minLength": 1,
-            "title": "Objective",
-            "type": "string"
-          },
-          "inputs": {
-            "$ref": "#/components/schemas/InputScope"
-          },
-          "policy_revision": {
-            "maximum": 9007199254740991,
-            "minimum": 1,
-            "title": "Policy Revision",
-            "type": "integer"
-          },
-          "mode": {
-            "default": "autopilot",
-            "enum": [
-              "autopilot",
-              "review_plan"
-            ],
-            "title": "Mode",
-            "type": "string"
-          },
-          "limits": {
-            "$ref": "#/components/schemas/ResourceLimits"
-          }
-        },
-        "required": [
-          "objective",
-          "inputs",
-          "policy_revision",
-          "limits"
-        ],
-        "title": "RunInput",
         "type": "object"
       },
       "SpecialistAssignment": {
@@ -10239,162 +12209,6 @@
           "job_id"
         ],
         "title": "ToolSubmitted",
-        "type": "object"
-      },
-      "UnavailableEvidenceReference": {
-        "additionalProperties": false,
-        "properties": {
-          "contract": {
-            "const": "evidence_reference",
-            "default": "evidence_reference",
-            "title": "Contract",
-            "type": "string"
-          },
-          "schema_version": {
-            "const": "1.0",
-            "default": "1.0",
-            "title": "Schema Version",
-            "type": "string"
-          },
-          "availability": {
-            "const": "unavailable",
-            "title": "Availability",
-            "type": "string"
-          },
-          "source_artifact_id": {
-            "maxLength": 160,
-            "minLength": 1,
-            "title": "Source Artifact Id",
-            "type": "string"
-          },
-          "source_sha256": {
-            "pattern": "^[a-f0-9]{64}$",
-            "title": "Source Sha256",
-            "type": "string"
-          },
-          "reason": {
-            "maxLength": 4000,
-            "minLength": 1,
-            "title": "Reason",
-            "type": "string"
-          }
-        },
-        "required": [
-          "availability",
-          "source_artifact_id",
-          "source_sha256",
-          "reason"
-        ],
-        "title": "UnavailableEvidenceReference",
-        "type": "object"
-      },
-      "UnknownCost": {
-        "additionalProperties": false,
-        "properties": {
-          "status": {
-            "const": "unknown",
-            "title": "Status",
-            "type": "string"
-          },
-          "reason": {
-            "maxLength": 4000,
-            "minLength": 1,
-            "title": "Reason",
-            "type": "string"
-          }
-        },
-        "required": [
-          "status",
-          "reason"
-        ],
-        "title": "UnknownCost",
-        "type": "object"
-      },
-      "UsageSnapshot": {
-        "additionalProperties": false,
-        "properties": {
-          "billed_token_categories": {
-            "additionalProperties": {
-              "maximum": 9007199254740991,
-              "minimum": 0,
-              "type": "integer"
-            },
-            "propertyNames": {
-              "maxLength": 160,
-              "minLength": 1
-            },
-            "title": "Billed Token Categories",
-            "type": "object"
-          },
-          "reserved_tokens": {
-            "maximum": 9007199254740991,
-            "minimum": 0,
-            "title": "Reserved Tokens",
-            "type": "integer"
-          },
-          "model_requests": {
-            "maximum": 9007199254740991,
-            "minimum": 0,
-            "title": "Model Requests",
-            "type": "integer"
-          },
-          "tool_calls": {
-            "maximum": 9007199254740991,
-            "minimum": 0,
-            "title": "Tool Calls",
-            "type": "integer"
-          },
-          "scientific_attempts": {
-            "maximum": 9007199254740991,
-            "minimum": 0,
-            "title": "Scientific Attempts",
-            "type": "integer"
-          },
-          "active_seconds": {
-            "maximum": 9007199254740991,
-            "minimum": 0,
-            "title": "Active Seconds",
-            "type": "integer"
-          },
-          "unknown_request_ids": {
-            "items": {
-              "maxLength": 160,
-              "minLength": 1,
-              "type": "string"
-            },
-            "title": "Unknown Request Ids",
-            "type": "array"
-          },
-          "cost": {
-            "discriminator": {
-              "mapping": {
-                "estimated": "#/components/schemas/EstimatedCost",
-                "unknown": "#/components/schemas/UnknownCost"
-              },
-              "propertyName": "status"
-            },
-            "oneOf": [
-              {
-                "$ref": "#/components/schemas/UnknownCost"
-              },
-              {
-                "$ref": "#/components/schemas/EstimatedCost"
-              }
-            ],
-            "title": "Cost"
-          }
-        },
-        "required": [
-          "billed_token_categories",
-          "reserved_tokens",
-          "model_requests",
-          "tool_calls",
-          "scientific_attempts",
-          "active_seconds",
-          "unknown_request_ids",
-          "cost"
-        ],
-        "title": "UsageSnapshot",
         "type": "object"
       }
     }

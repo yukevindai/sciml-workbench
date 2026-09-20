@@ -9,7 +9,21 @@ import {
   validateIntakeArtifact, validateMaterialResponse,
   validateJobDetail, validateJobPage, validateArtifactPage,
   validateEvaluationView,
+  validateRunResult, validateRunEvents,
 } from '../app/lib/generated/validators.cjs';
+
+test('B12 run projections reject private runtime state and invalid event sequences', () => {
+  const result = { run_id: 'r', state: 'cancelled', artifact_ids: [], stop_reason: 'Cancelled by operator' };
+  assert.equal(validateRunResult(result), true);
+  assert.equal(validateRunResult({ ...result, checkpoint: {} }), false);
+  assert.equal(validateRunResult({ ...result, state: 'made_up' }), false);
+  const event = { contract: 'run_event', schema_version: '1.0', run_id: 'r', sequence: 1,
+    created_at: '2026-09-19T12:00:00Z', event_type: 'accepted', run_revision: 1, state: 'queued',
+    action_id: null, question_id: null, artifact_ids: [], summary: null };
+  assert.equal(validateRunEvents([event]), true);
+  assert.equal(validateRunEvents([{ ...event, sequence: 0 }]), false);
+  assert.equal(validateRunEvents([{ ...event, claim_token: 1 }]), false);
+});
 
 test('B09 pages are bounded and reject private worker fields', () => {
   const job = { id: 'j', project_id: 'p', kind: 'failure', state: 'failed', result_id: null,

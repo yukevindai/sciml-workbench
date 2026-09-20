@@ -223,3 +223,9 @@ def install_metadata_guards(metadata, connection, **kwargs):
     install_external(connection)
     from .evaluation_guards_v5 import install as install_evaluations
     install_evaluations(connection)
+    from .agent_guards_v6 import install as install_agents
+    install_agents(connection)
+
+
+# Register application ledgers on the same metadata for migrations and test DBs.
+from . import agent_db  # noqa: E402,F401

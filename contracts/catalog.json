@@ -4958,6 +4958,45 @@
       "title": "RunControlInput",
       "type": "object"
     },
+    "RunDetail": {
+      "additionalProperties": false,
+      "properties": {
+        "run": {
+          "$ref": "#/$defs/ResearchRun"
+        },
+        "plan": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ResearchPlan"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "questions": {
+          "items": {
+            "$ref": "#/$defs/ResearchQuestion"
+          },
+          "title": "Questions",
+          "type": "array"
+        },
+        "control_effect": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Control Effect",
+          "type": "string"
+        }
+      },
+      "required": [
+        "run",
+        "plan",
+        "questions",
+        "control_effect"
+      ],
+      "title": "RunDetail",
+      "type": "object"
+    },
     "RunEvent": {
       "additionalProperties": false,
       "properties": {
@@ -5125,6 +5164,62 @@
         "limits"
       ],
       "title": "RunInput",
+      "type": "object"
+    },
+    "RunResult": {
+      "additionalProperties": false,
+      "properties": {
+        "run_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Run Id",
+          "type": "string"
+        },
+        "state": {
+          "enum": [
+            "queued",
+            "running",
+            "waiting_for_job",
+            "waiting_for_input",
+            "paused",
+            "completed",
+            "partially_completed",
+            "failed",
+            "cancelled"
+          ],
+          "title": "State",
+          "type": "string"
+        },
+        "artifact_ids": {
+          "items": {
+            "maxLength": 160,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Artifact Ids",
+          "type": "array"
+        },
+        "stop_reason": {
+          "anyOf": [
+            {
+              "maxLength": 4000,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Stop Reason"
+        }
+      },
+      "required": [
+        "run_id",
+        "state",
+        "artifact_ids",
+        "stop_reason"
+      ],
+      "title": "RunResult",
       "type": "object"
     },
     "SemanticReview": {
@@ -7498,6 +7593,12 @@
     },
     {
       "$ref": "#/$defs/AgentExecutionRecord"
+    },
+    {
+      "$ref": "#/$defs/RunDetail"
+    },
+    {
+      "$ref": "#/$defs/RunResult"
     },
     {
       "$ref": "#/$defs/EvaluationStatusView"
