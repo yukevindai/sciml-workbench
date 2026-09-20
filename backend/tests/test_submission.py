@@ -180,9 +180,11 @@ def test_benchmark_scope_and_source_admission(runtime, service):
     payload = {**json.loads((EXAMPLES / "benchmark.json").read_text()), "dataset_id": data.id, "split_id": part.id}
     identity = {"action_id": "baseline", "attempt_id": "one"}
     # The benchmark consumes its split's parent audit, not just explicit args.
-    assert_error("POLICY_DENIED", lambda: service.submit(SubmissionScope("p", {data.id, part.id}, set(), "run"),
+    assert_error("UNSUPPORTED_CAPABILITY", lambda: service.submit(SubmissionScope("p", {data.id, part.id}, set(), "run"),
         "benchmark", payload, **identity))
-    job = service.submit(SubmissionScope("p", {data.id, part.id, audit.id}, set(), "run"), "benchmark", payload, **identity)
+    assert_error("UNSUPPORTED_CAPABILITY", lambda: service.submit(SubmissionScope("p", {data.id, part.id, audit.id}, set(), "run"),
+        "benchmark", payload, **identity))
+    job = service.submit(SubmissionScope("p"), "benchmark", payload, request_key="manual-baseline")
     assert job.state == "queued"
     assert_error("ADMISSION_REJECTED", lambda: service.submit(SubmissionScope("p"), "benchmark",
         {**payload, "dataset_id": unknown.id, "split_id": unknown_part.id}, request_key="unknown"), 422)

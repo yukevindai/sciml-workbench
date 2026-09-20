@@ -133,6 +133,62 @@ class ExternalOperationRow(Base):
     submitted_at: Mapped[object | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
 
+class EvidenceSpanRow(Base):
+    __tablename__ = "evidence_spans"
+    __table_args__ = (
+        UniqueConstraint("project_id", "id", name="uq_evidence_spans_project_id"),
+        ForeignKeyConstraint(["project_id", "source_artifact_id"], ["artifacts.project_id", "artifacts.id"], name="fk_evidence_span_source"),
+    )
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=uid)
+    project_id: Mapped[str] = mapped_column(ForeignKey("projects.id"), index=True)
+    source_artifact_id: Mapped[str] = mapped_column(String(36))
+    reference: Mapped[dict] = mapped_column(JSON)
+    created_at: Mapped[object] = mapped_column(DateTime(timezone=True), default=now)
+
+
+class EvaluationRow(Base):
+    __tablename__ = "evaluations"
+    __table_args__ = (
+        UniqueConstraint("project_id", "protocol_id", name="uq_evaluations_project_protocol"),
+        ForeignKeyConstraint(["project_id", "protocol_id"], ["artifacts.project_id", "artifacts.id"], name="fk_evaluation_protocol"),
+    )
+    protocol_id: Mapped[str] = mapped_column(String(36), primary_key=True)
+    project_id: Mapped[str] = mapped_column(String(36), index=True)
+    run_id: Mapped[str | None] = mapped_column(String(160), nullable=True)
+    dataset_sha256: Mapped[str] = mapped_column(String(64))
+    split_sha256: Mapped[str] = mapped_column(String(64))
+    requests: Mapped[dict] = mapped_column(JSON)
+    exploratory: Mapped[bool] = mapped_column(default=False)
+    created_at: Mapped[object] = mapped_column(DateTime(timezone=True), default=now)
+    released_at: Mapped[object | None] = mapped_column(DateTime(timezone=True), nullable=True)
+
+
+class EvaluationJobRow(Base):
+    __tablename__ = "evaluation_jobs"
+    __table_args__ = (
+        ForeignKeyConstraint(["project_id", "protocol_id"], ["evaluations.project_id", "evaluations.protocol_id"], name="fk_evaluation_job_protocol"),
+        ForeignKeyConstraint(["project_id", "job_id"], ["jobs.project_id", "jobs.id"], name="fk_evaluation_job_source"),
+    )
+    protocol_id: Mapped[str] = mapped_column(String(36), primary_key=True)
+    candidate_id: Mapped[str] = mapped_column(String(160), primary_key=True)
+    project_id: Mapped[str] = mapped_column(String(36))
+    job_id: Mapped[str] = mapped_column(String(36), unique=True)
+
+
+class ExposureRow(Base):
+    __tablename__ = "test_exposures"
+    __table_args__ = (
+        UniqueConstraint("project_id", "dataset_sha256", "split_sha256", "artifact_id", "via", name="uq_exposure_access"),
+    )
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=uid)
+    project_id: Mapped[str] = mapped_column(ForeignKey("projects.id"), index=True)
+    dataset_sha256: Mapped[str] = mapped_column(String(64))
+    split_sha256: Mapped[str] = mapped_column(String(64))
+    artifact_id: Mapped[str] = mapped_column(String(160))
+    via: Mapped[str] = mapped_column(String(80))
+    created_at: Mapped[object] = mapped_column(DateTime(timezone=True), default=now)
+
+
 class Database:
     def __init__(self, url):
         self.engine = create_engine(url, pool_pre_ping=True)
@@ -165,3 +221,5 @@ def install_metadata_guards(metadata, connection, **kwargs):
     install_materials(connection)
     from .external_guards_v4 import install as install_external
     install_external(connection)
+    from .evaluation_guards_v5 import install as install_evaluations
+    install_evaluations(connection)

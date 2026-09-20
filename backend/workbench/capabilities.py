@@ -36,7 +36,7 @@ def capabilities(settings):
     readers = {}
     for kind, version in ARTIFACT_READERS:
         # Registration of a future schema does not enable runtime lineage reads.
-        if kind in KINDS and (version == "1.0" or (kind, version) == ("dataset", "2.0")):
+        if kind in KINDS and (version == "1.0" or (kind, version) in {("dataset", "2.0"), ("failure", "2.0")}):
             readers.setdefault(kind, []).append(version)
     writers = {kind: ["1.0"] for kind in ("dataset", "audit", "split", "benchmark", "evidence", "failure", "provenance", "report")}
     writers["dataset"].append("2.0")
@@ -48,8 +48,9 @@ def capabilities(settings):
         artifact_read_versions=readers, artifact_write_versions=writers, dependency_pins=PINS,
         limits=CapabilityLimits(max_upload_bytes=settings.max_upload_bytes, max_rows=settings.max_rows,
                                 job_timeout_seconds=settings.job_timeout_seconds),
-        limitations=["C12/B11 evaluation protocols and exposure history are not implemented; agent reads are blocked.",
-                     "Manual results may contain test metrics; clean-holdout exposure is not tracked yet.",
+        limitations=["Agent reads require trusted run/input scopes; full artifact and bundle access is quarantined.",
+                     "Manual result and raw-data reads record durable exposure; historical exposure may be unknown.",
+                     "Only predeclared comparisons are supported; validation-only selection and separate final-test execution are unavailable.",
                      "Upstream baseline execution returns validation and test outputs together.",
                      "Scaffold and molecular options are not advertised without an accepted chemistry integration.",
                      "OCR and automated digitization are not integrated.",

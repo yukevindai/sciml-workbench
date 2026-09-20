@@ -853,8 +853,8 @@
       "additionalProperties": false,
       "properties": {
         "schema_version": {
-          "const": "1.0",
-          "default": "1.0",
+          "const": "1.1",
+          "default": "1.1",
           "title": "Schema Version",
           "type": "string"
         },
@@ -914,14 +914,14 @@
           "$ref": "#/$defs/CapabilityLimits"
         },
         "agent_reads_available": {
-          "const": false,
-          "default": false,
+          "const": true,
+          "default": true,
           "title": "Agent Reads Available",
           "type": "boolean"
         },
         "evaluation_exposure": {
-          "const": "unavailable_pending_C12",
-          "default": "unavailable_pending_C12",
+          "const": "tracked_with_quarantine",
+          "default": "tracked_with_quarantine",
           "title": "Evaluation Exposure",
           "type": "string"
         },
@@ -2063,6 +2063,149 @@
         "exposure_status"
       ],
       "title": "EvaluationProtocol",
+      "type": "object"
+    },
+    "EvaluationStatusView": {
+      "additionalProperties": false,
+      "properties": {
+        "protocol_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Protocol Id",
+          "type": "string"
+        },
+        "state": {
+          "enum": [
+            "sealed",
+            "released"
+          ],
+          "title": "State",
+          "type": "string"
+        },
+        "exploratory": {
+          "title": "Exploratory",
+          "type": "boolean"
+        },
+        "clean_holdout_eligible": {
+          "title": "Clean Holdout Eligible",
+          "type": "boolean"
+        },
+        "exposure_status": {
+          "enum": [
+            "unexposed",
+            "exposed",
+            "unknown"
+          ],
+          "title": "Exposure Status",
+          "type": "string"
+        },
+        "exposure_event_ids": {
+          "items": {
+            "maxLength": 160,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Exposure Event Ids",
+          "type": "array"
+        },
+        "limitation": {
+          "title": "Limitation",
+          "type": "string"
+        }
+      },
+      "required": [
+        "protocol_id",
+        "state",
+        "exploratory",
+        "clean_holdout_eligible",
+        "exposure_status",
+        "exposure_event_ids",
+        "limitation"
+      ],
+      "title": "EvaluationStatusView",
+      "type": "object"
+    },
+    "EvaluationView": {
+      "additionalProperties": false,
+      "properties": {
+        "artifact_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Artifact Id",
+          "type": "string"
+        },
+        "protocol_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Protocol Id",
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "succeeded",
+            "failed"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "model": {
+          "enum": [
+            "mean",
+            "ridge"
+          ],
+          "title": "Model",
+          "type": "string"
+        },
+        "seed": {
+          "title": "Seed",
+          "type": "integer"
+        },
+        "metrics": {
+          "additionalProperties": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "propertyNames": {
+              "enum": [
+                "mae",
+                "rmse",
+                "r2",
+                "group_mae",
+                "group_rmse",
+                "rows",
+                "groups"
+              ]
+            },
+            "type": "object"
+          },
+          "propertyNames": {
+            "enum": [
+              "validation",
+              "test"
+            ]
+          },
+          "title": "Metrics",
+          "type": "object"
+        },
+        "test_visible": {
+          "title": "Test Visible",
+          "type": "boolean"
+        },
+        "evaluation": {
+          "$ref": "#/$defs/EvaluationStatusView"
+        }
+      },
+      "required": [
+        "artifact_id",
+        "protocol_id",
+        "status",
+        "model",
+        "seed",
+        "metrics",
+        "test_visible",
+        "evaluation"
+      ],
+      "title": "EvaluationView",
       "type": "object"
     },
     "Evidence": {
@@ -7125,13 +7268,33 @@
             "$ref": "#/$defs/Evidence"
           },
           {
-            "$ref": "#/$defs/Failure"
+            "oneOf": [
+              {
+                "$ref": "#/$defs/Failure"
+              },
+              {
+                "$ref": "#/$defs/FailureV2"
+              }
+            ],
+            "discriminator": {
+              "propertyName": "schema_version",
+              "mapping": {
+                "1.0": "#/$defs/Failure",
+                "2.0": "#/$defs/FailureV2"
+              }
+            }
           },
           {
             "$ref": "#/$defs/Provenance"
           },
           {
             "$ref": "#/$defs/Report"
+          },
+          {
+            "$ref": "#/$defs/EvaluationProtocol"
+          },
+          {
+            "$ref": "#/$defs/ClaimSet"
           }
         ],
         "discriminator": {
@@ -7158,9 +7321,27 @@
             "split": "#/$defs/Split",
             "benchmark": "#/$defs/Benchmark",
             "evidence": "#/$defs/Evidence",
-            "failure": "#/$defs/Failure",
+            "failure": {
+              "oneOf": [
+                {
+                  "$ref": "#/$defs/Failure"
+                },
+                {
+                  "$ref": "#/$defs/FailureV2"
+                }
+              ],
+              "discriminator": {
+                "propertyName": "schema_version",
+                "mapping": {
+                  "1.0": "#/$defs/Failure",
+                  "2.0": "#/$defs/FailureV2"
+                }
+              }
+            },
             "provenance": "#/$defs/Provenance",
-            "report": "#/$defs/Report"
+            "report": "#/$defs/Report",
+            "evaluation_protocol": "#/$defs/EvaluationProtocol",
+            "claim_set": "#/$defs/ClaimSet"
           }
         }
       }
@@ -7197,13 +7378,33 @@
           "$ref": "#/$defs/Evidence"
         },
         {
-          "$ref": "#/$defs/Failure"
+          "oneOf": [
+            {
+              "$ref": "#/$defs/Failure"
+            },
+            {
+              "$ref": "#/$defs/FailureV2"
+            }
+          ],
+          "discriminator": {
+            "propertyName": "schema_version",
+            "mapping": {
+              "1.0": "#/$defs/Failure",
+              "2.0": "#/$defs/FailureV2"
+            }
+          }
         },
         {
           "$ref": "#/$defs/Provenance"
         },
         {
           "$ref": "#/$defs/Report"
+        },
+        {
+          "$ref": "#/$defs/EvaluationProtocol"
+        },
+        {
+          "$ref": "#/$defs/ClaimSet"
         }
       ],
       "discriminator": {
@@ -7230,9 +7431,27 @@
           "split": "#/$defs/Split",
           "benchmark": "#/$defs/Benchmark",
           "evidence": "#/$defs/Evidence",
-          "failure": "#/$defs/Failure",
+          "failure": {
+            "oneOf": [
+              {
+                "$ref": "#/$defs/Failure"
+              },
+              {
+                "$ref": "#/$defs/FailureV2"
+              }
+            ],
+            "discriminator": {
+              "propertyName": "schema_version",
+              "mapping": {
+                "1.0": "#/$defs/Failure",
+                "2.0": "#/$defs/FailureV2"
+              }
+            }
+          },
           "provenance": "#/$defs/Provenance",
-          "report": "#/$defs/Report"
+          "report": "#/$defs/Report",
+          "evaluation_protocol": "#/$defs/EvaluationProtocol",
+          "claim_set": "#/$defs/ClaimSet"
         }
       }
     }
@@ -7279,6 +7498,12 @@
     },
     {
       "$ref": "#/$defs/AgentExecutionRecord"
+    },
+    {
+      "$ref": "#/$defs/EvaluationStatusView"
+    },
+    {
+      "$ref": "#/$defs/EvaluationView"
     },
     {
       "$ref": "#/$defs/EvidenceReference"

@@ -31,6 +31,7 @@ from .artifacts import ArtifactResolver
 from .capabilities import capabilities
 from .projections import ReadScope, ReadService, safe_job_fields
 from .read_contracts import Capabilities, JobDetail, JobPage, ArtifactPage
+from .read_contracts import EvaluationStatusView
 
 
 def job_json(j):
@@ -161,6 +162,12 @@ def create_app(settings=None):
                        limit: int = Query(default=50, ge=1, le=100), kind: str | None = Query(default=None, max_length=40), s=Depends(session)):
         return reads.artifact_index(s, ReadScope(pid), after=after, limit=limit, kind=kind)
 
+    @app.get("/api/v1/projects/{pid}/evaluations/{protocol_id}", dependencies=protected, response_model=EvaluationStatusView)
+    def get_evaluation(pid: str, protocol_id: str, s=Depends(session)):
+        from .evaluation import evaluation_status
+        project(s, pid)
+        return evaluation_status(s, ReadScope(pid), protocol_id)
+
     @app.get("/api/v1/projects/{pid}/job-index", dependencies=protected, response_model=JobPage)
     def job_index(pid: str, after: str | None = Query(default=None, max_length=2048),
                   limit: int = Query(default=50, ge=1, le=100), kind: str | None = Query(default=None, max_length=40), s=Depends(session)):
@@ -190,7 +197,7 @@ def create_app(settings=None):
     def artifacts(pid: str, s=Depends(session)):
         project(s, pid)
         resolver = ArtifactResolver(s, pid)
-        return [
+        values = [
             resolver.resolve(a.id)
             for a in s.scalars(
                 select(ArtifactRow)
@@ -198,10 +205,17 @@ def create_app(settings=None):
                 .order_by(ArtifactRow.created_at)
             )
         ]
+        from .evaluation import expose_artifact
+        for value in values:
+            expose_artifact(s, pid, value, via="artifact_list")
+        s.commit()  # Exposure must be durable before any result leaves the server.
+        return values
 
     @app.get("/api/v1/projects/{pid}/artifacts/{aid}", dependencies=protected, response_model=IntakeArtifact)
     def get_artifact(pid: str, aid: str, s=Depends(session)):
-        return reads.artifact(s, ReadScope(pid), aid)
+        value = reads.artifact(s, ReadScope(pid), aid)
+        s.commit()
+        return value
 
     @app.post(
         "/api/v1/projects/{pid}/datasets", dependencies=protected, status_code=201, response_model=IntakeDataset
@@ -250,7 +264,9 @@ def create_app(settings=None):
     @app.get("/api/v1/projects/{pid}/research-materials/{mid}/download", dependencies=protected)
     def download_material(pid: str, mid: str, s=Depends(session)):
         value = reads.download(s, ReadScope(pid), mid, material=True)
-        return Response(store.get(value.key), media_type=value.media_type,
+        raw = store.get(value.key)
+        s.commit()
+        return Response(raw, media_type=value.media_type,
                         headers={"Content-Disposition": f'attachment; filename="{value.filename}"'})
 
     @app.post("/api/v1/projects/{pid}/research-materials/{mid}/ingest", dependencies=protected,
@@ -327,8 +343,10 @@ def create_app(settings=None):
     @app.get("/api/v1/projects/{pid}/artifacts/{aid}/download", dependencies=protected)
     def download(pid: str, aid: str, representation: Literal["default", "original", "bundle"] = "default", s=Depends(session)):
         value = reads.download(s, ReadScope(pid), aid, representation=representation)
+        raw = store.get(value.key)
+        s.commit()
         return Response(
-            store.get(value.key),
+            raw,
             media_type=value.media_type,
             headers={
                 "Content-Disposition": f'attachment; filename="{value.filename}"'

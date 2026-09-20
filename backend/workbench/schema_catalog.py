@@ -10,9 +10,12 @@ from .contract_registry import LEGACY_MODELS, NEW_ARTIFACT_MODELS, VersionedArti
 from .http_contracts import JobResponse, LegacyJobResponse, ProjectResponse, IntakeArtifact, MaterialResponse
 
 from .read_contracts import Capabilities, ExternalReceiptProjection, JobDetail, JobPage, ArtifactPage, ArtifactSummary
+from .read_contracts import EvaluationStatusView, EvaluationView
 
 BASE_URI = "https://sciml-workbench.local/contracts"
 RECORD_TYPES = {
+    "evaluation_status_view": EvaluationStatusView,
+    "evaluation_view": EvaluationView,
     "evidence_reference": s.EvidenceReference,
     "metric_reference": s.MetricReference,
     "failure_receipt": s.FailureReceipt,
@@ -59,6 +62,8 @@ CATALOG_TYPES = {
 }
 
 HTTP_RESPONSE_TYPES = {
+    "EvaluationStatusView": EvaluationStatusView,
+    "EvaluationView": EvaluationView,
     "ProjectResponse": ProjectResponse,
     "ProjectsResponse": list[ProjectResponse],
     "LegacyJobResponse": LegacyJobResponse,

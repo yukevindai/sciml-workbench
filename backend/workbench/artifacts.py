@@ -10,7 +10,7 @@ from .contract_registry import read_artifact
 from .db import ArtifactRow, MaterialRow
 from .errors import DomainError
 
-KINDS = {"dataset", "audit", "split", "benchmark", "evidence", "failure", "provenance", "report"}
+KINDS = {"dataset", "audit", "split", "benchmark", "evidence", "failure", "provenance", "report", "evaluation_protocol", "claim_set"}
 DIGEST = re.compile(r"^[a-f0-9]{64}$")
 
 
@@ -18,12 +18,37 @@ def integrity(message="Artifact metadata or lineage is inconsistent"):
     return DomainError(message, 500, "INTEGRITY_FAILED")
 
 
-def references(value):
+def named_span_ids(value):
+    declarations = []
+    if value.kind == "dataset" and value.schema_version == "2.0":
+        declarations = [ref for name in type(value.source).model_fields
+                        for ref in getattr(value.source, name).supporting_references]
+    elif value.kind == "evaluation_protocol" and value.success_criterion:
+        declarations = [value.success_criterion.declaration_reference]
+    return {ref.id for ref in declarations if ref.kind == "source_span"}
+
+
+def references(value, session=None):
     """Return explicit dependency edges, even if legacy parents omitted them."""
     edges = [(aid, None) for aid in value.parents]
+    def span_edge(identifier):
+        from .db import EvidenceSpanRow
+        from .scientific_contracts import AvailableEvidenceReference
+        if session is None:
+            raise integrity("Named source anchors require project-scoped resolution")
+        row = session.get(EvidenceSpanRow, identifier)
+        if row is None or row.project_id != value.project_id:
+            raise integrity("Source anchor is missing from its project")
+        try:
+            ref = AvailableEvidenceReference.model_validate(row.reference)
+        except ValueError:
+            raise integrity("Source anchor does not match its contract") from None
+        if row.source_artifact_id != ref.source_artifact_id:
+            raise integrity("Source anchor identity is inconsistent")
+        return (ref.source_artifact_id, "evidence")
     if len(set(value.parents)) != len(value.parents):
         raise integrity("Artifact contains duplicate parents")
-    if value.kind not in KINDS or (value.schema_version != "1.0" and value.kind != "dataset"):
+    if value.kind not in KINDS or (value.schema_version != "1.0" and value.kind not in {"dataset", "failure"}):
         raise integrity("Artifact version has no supported runtime lineage resolver")
     if value.kind in {"audit", "split", "benchmark"}:
         edges.append((value.dataset_id, "dataset"))
@@ -36,6 +61,22 @@ def references(value):
                 raise integrity("Benchmark configuration disagrees with its lineage")
     elif value.kind == "failure":
         edges.append((value.benchmark_id, "benchmark"))
+        if value.schema_version == "2.0" and value.observation.kind == "criterion_missed":
+            edges.append((value.observation.protocol_id, "evaluation_protocol"))
+    elif value.kind == "evaluation_protocol":
+        edges.extend([(value.dataset_id, "dataset"), (value.split_id, "split")])
+        if value.success_criterion:
+            ref = value.success_criterion.declaration_reference
+            if ref.kind == "artifact":
+                edges.append((ref.id, None))
+            elif ref.kind == "source_span":
+                edges.append(span_edge(ref.id))
+    elif value.kind == "claim_set":
+        for claim in value.claims:
+            edges.extend((ref.source_artifact_id, "evidence") for ref in claim.source_references)
+            edges.extend((ref.artifact_id, "benchmark") for ref in claim.metric_references)
+            if claim.split_id:
+                edges.append((claim.split_id, "split"))
     elif value.kind == "provenance":
         edges.extend((aid, None) for aid in value.inputs + value.outputs)
     elif value.kind == "report":
@@ -46,7 +87,7 @@ def references(value):
                 if ref.kind == "artifact":
                     edges.append((ref.id, None))
                 elif ref.kind == "source_span":
-                    raise integrity("Source-span resolution is not implemented")
+                    edges.append(span_edge(ref.id))
     for field in ("blob_key", "bundle_key", "pdf_key"):
         key = getattr(value, field, None)
         if key is not None and not DIGEST.fullmatch(key):
@@ -121,6 +162,13 @@ class ArtifactResolver:
                     raise integrity("Split and audit reference different datasets")
                 if value.kind == "benchmark" and self.values[value.split_id].dataset_id != value.dataset_id:
                     raise integrity("Benchmark and split reference different datasets")
+                if value.kind == "evaluation_protocol" and self.values[value.split_id].dataset_id != value.dataset_id:
+                    raise integrity("Protocol and split reference different datasets")
+                if value.kind == "failure" and value.schema_version == "2.0":
+                    from .outcomes import OutcomeInput, validate_outcome
+                    payload = value.model_dump(mode="json")
+                    validate_outcome(self.session, self.project_id,
+                                     {key: payload[key] for key in OutcomeInput.model_fields}, self)
                 visiting.remove(current)
                 self.complete.add(current)
                 continue
@@ -132,7 +180,7 @@ class ArtifactResolver:
                 raise DomainError("Artifact graph exceeds supported resolution limits", 422, "UNSUPPORTED_CAPABILITY")
             visiting.add(current)
             stack.append((current, True, depth))
-            for target, kind in reversed(references(self.values[current])):
+            for target, kind in reversed(references(self.values[current], self.session)):
                 self._load(target, kind, parent=True)
                 if target in visiting:
                     raise integrity("Artifact dependency graph contains a cycle")
@@ -182,6 +230,9 @@ def operation_inputs(session, pid, kind, payload, *, allowed_ids=None, material_
                 raise DomainError("Split belongs to another dataset", 422, "LINEAGE_MISMATCH")
     elif kind == "failure":
         resolver.resolve(payload["benchmark_id"], "benchmark")
+        if "actor" in payload:
+            from .outcomes import validate_outcome
+            validate_outcome(session, pid, payload, resolver)
     elif kind == "evidence" and payload.get("material_id"):
         source = resolve_material(session, pid, payload["material_id"], allowed_ids=material_ids, artifact_ids=allowed_ids)
         if source.media_type != "application/pdf" or source.blob_key != payload["pdf_key"]:
@@ -208,6 +259,9 @@ def validate_result(value, work):
         parents.append(p["split_id"])
     elif work.kind == "failure":
         expected.update(benchmark_id=p["benchmark_id"], reason=p["reason"])
+        if "actor" in p:
+            expected.update(schema_version="2.0", **{field: p[field] for field in
+                ("source_job_id", "uncertainty_notes", "actor", "observation", "causal_hypotheses")})
         parents.append(p["benchmark_id"])
     elif work.kind == "evidence":
         expected.update(pdf_key=p["pdf_key"], sha256=p["pdf_key"], title=p["title"])
@@ -216,7 +270,7 @@ def validate_result(value, work):
         expected["artifact_ids"] = parents
     if ((value.id, value.project_id, value.kind) != (work.result_id, work.project_id, work.kind)
             or set(value.parents) != set(parents) or len(value.parents) != len(parents)
-            or any(getattr(value, field) != accepted for field, accepted in expected.items())):
+            or any(value.model_dump(mode="json").get(field) != accepted for field, accepted in expected.items())):
         raise integrity("Task result lineage does not match its accepted operation")
     if work.kind == "split":
         from .split_integrity import validate_split

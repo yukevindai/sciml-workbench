@@ -1,5 +1,81 @@
 {
   "$defs": {
+    "AgentActor": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "const": "agent",
+          "title": "Kind",
+          "type": "string"
+        },
+        "run_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Run Id",
+          "type": "string"
+        },
+        "assignment_id": {
+          "anyOf": [
+            {
+              "maxLength": 160,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Assignment Id"
+        },
+        "action_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Action Id",
+          "type": "string"
+        },
+        "provider": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Provider",
+          "type": "string"
+        },
+        "model": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Model",
+          "type": "string"
+        },
+        "prompt_version": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Prompt Version",
+          "type": "string"
+        },
+        "policy": {
+          "$ref": "#/$defs/PolicyReference"
+        },
+        "policy_rule_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Policy Rule Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "run_id",
+        "assignment_id",
+        "action_id",
+        "provider",
+        "model",
+        "prompt_version",
+        "policy",
+        "policy_rule_id"
+      ],
+      "title": "AgentActor",
+      "type": "object"
+    },
     "ArtifactPage": {
       "additionalProperties": false,
       "properties": {
@@ -145,6 +221,85 @@
       "title": "Audit",
       "type": "object"
     },
+    "AvailableEvidenceReference": {
+      "additionalProperties": false,
+      "properties": {
+        "contract": {
+          "const": "evidence_reference",
+          "default": "evidence_reference",
+          "title": "Contract",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "1.0",
+          "default": "1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "availability": {
+          "const": "available",
+          "title": "Availability",
+          "type": "string"
+        },
+        "source_artifact_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Source Artifact Id",
+          "type": "string"
+        },
+        "source_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Source Sha256",
+          "type": "string"
+        },
+        "representation_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Representation Sha256",
+          "type": "string"
+        },
+        "extraction_version": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Extraction Version",
+          "type": "string"
+        },
+        "locator": {
+          "$ref": "#/$defs/TextSpan"
+        },
+        "excerpt_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Excerpt Sha256",
+          "type": "string"
+        },
+        "page": {
+          "anyOf": [
+            {
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Page"
+        }
+      },
+      "required": [
+        "contract",
+        "schema_version",
+        "availability",
+        "source_artifact_id",
+        "source_sha256",
+        "representation_sha256",
+        "extraction_version",
+        "locator",
+        "excerpt_sha256",
+        "page"
+      ],
+      "title": "AvailableEvidenceReference",
+      "type": "object"
+    },
     "Benchmark": {
       "additionalProperties": false,
       "properties": {
@@ -275,8 +430,8 @@
       "additionalProperties": false,
       "properties": {
         "schema_version": {
-          "const": "1.0",
-          "default": "1.0",
+          "const": "1.1",
+          "default": "1.1",
           "title": "Schema Version",
           "type": "string"
         },
@@ -336,14 +491,14 @@
           "$ref": "#/$defs/CapabilityLimits"
         },
         "agent_reads_available": {
-          "const": false,
-          "default": false,
+          "const": true,
+          "default": true,
           "title": "Agent Reads Available",
           "type": "boolean"
         },
         "evaluation_exposure": {
-          "const": "unavailable_pending_C12",
-          "default": "unavailable_pending_C12",
+          "const": "tracked_with_quarantine",
+          "default": "tracked_with_quarantine",
           "title": "Evaluation Exposure",
           "type": "string"
         },
@@ -432,6 +587,249 @@
         "max_detail_bytes"
       ],
       "title": "CapabilityLimits",
+      "type": "object"
+    },
+    "Claim": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "statement": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Statement",
+          "type": "string"
+        },
+        "classification": {
+          "enum": [
+            "computed_result",
+            "source_supported",
+            "interpretation",
+            "hypothesis"
+          ],
+          "title": "Classification",
+          "type": "string"
+        },
+        "source_references": {
+          "items": {
+            "$ref": "#/$defs/AvailableEvidenceReference"
+          },
+          "title": "Source References",
+          "type": "array"
+        },
+        "metric_references": {
+          "items": {
+            "$ref": "#/$defs/MetricReference"
+          },
+          "title": "Metric References",
+          "type": "array"
+        },
+        "population": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Population",
+          "type": "string"
+        },
+        "split_id": {
+          "anyOf": [
+            {
+              "maxLength": 160,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Split Id"
+        },
+        "limitations": {
+          "items": {
+            "maxLength": 4000,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Limitations",
+          "type": "array"
+        },
+        "uncertainty": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Uncertainty",
+          "type": "string"
+        },
+        "reference_check": {
+          "$ref": "#/$defs/ReferenceCheck"
+        },
+        "semantic_review": {
+          "$ref": "#/$defs/SemanticReview"
+        }
+      },
+      "required": [
+        "id",
+        "statement",
+        "classification",
+        "source_references",
+        "metric_references",
+        "population",
+        "split_id",
+        "limitations",
+        "uncertainty",
+        "reference_check",
+        "semantic_review"
+      ],
+      "title": "Claim",
+      "type": "object"
+    },
+    "ClaimSet": {
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "1.0",
+          "default": "1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "project_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Project Id",
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        },
+        "parents": {
+          "items": {
+            "maxLength": 160,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Parents",
+          "type": "array"
+        },
+        "software": {
+          "additionalProperties": {
+            "maxLength": 4000,
+            "minLength": 1,
+            "type": "string"
+          },
+          "propertyNames": {
+            "maxLength": 160,
+            "minLength": 1
+          },
+          "title": "Software",
+          "type": "object"
+        },
+        "kind": {
+          "const": "claim_set",
+          "default": "claim_set",
+          "title": "Kind",
+          "type": "string"
+        },
+        "run_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Run Id",
+          "type": "string"
+        },
+        "revision": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "title": "Revision",
+          "type": "integer"
+        },
+        "claims": {
+          "items": {
+            "$ref": "#/$defs/Claim"
+          },
+          "minItems": 1,
+          "title": "Claims",
+          "type": "array"
+        }
+      },
+      "required": [
+        "schema_version",
+        "id",
+        "project_id",
+        "created_at",
+        "parents",
+        "software",
+        "kind",
+        "run_id",
+        "revision",
+        "claims"
+      ],
+      "title": "ClaimSet",
+      "type": "object"
+    },
+    "CriterionFailure": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "const": "criterion_missed",
+          "title": "Kind",
+          "type": "string"
+        },
+        "protocol_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Protocol Id",
+          "type": "string"
+        },
+        "protocol_revision": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "title": "Protocol Revision",
+          "type": "integer"
+        },
+        "criterion_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Criterion Id",
+          "type": "string"
+        },
+        "metric": {
+          "$ref": "#/$defs/MetricReference"
+        },
+        "success_comparison": {
+          "enum": [
+            "lt",
+            "lte",
+            "gt",
+            "gte"
+          ],
+          "title": "Success Comparison",
+          "type": "string"
+        },
+        "threshold": {
+          "title": "Threshold",
+          "type": "number"
+        }
+      },
+      "required": [
+        "kind",
+        "protocol_id",
+        "protocol_revision",
+        "criterion_id",
+        "metric",
+        "success_comparison",
+        "threshold"
+      ],
+      "title": "CriterionFailure",
       "type": "object"
     },
     "Dataset": {
@@ -826,6 +1224,432 @@
         }
       ]
     },
+    "EvaluationCandidate": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "model": {
+          "enum": [
+            "mean",
+            "ridge"
+          ],
+          "title": "Model",
+          "type": "string"
+        },
+        "seed": {
+          "exclusiveMaximum": 4294967296,
+          "minimum": 0,
+          "title": "Seed",
+          "type": "integer"
+        },
+        "configuration_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Configuration Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "model",
+        "seed",
+        "configuration_sha256"
+      ],
+      "title": "EvaluationCandidate",
+      "type": "object"
+    },
+    "EvaluationProtocol": {
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "1.0",
+          "default": "1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "project_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Project Id",
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        },
+        "parents": {
+          "items": {
+            "maxLength": 160,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Parents",
+          "type": "array"
+        },
+        "software": {
+          "additionalProperties": {
+            "maxLength": 4000,
+            "minLength": 1,
+            "type": "string"
+          },
+          "propertyNames": {
+            "maxLength": 160,
+            "minLength": 1
+          },
+          "title": "Software",
+          "type": "object"
+        },
+        "kind": {
+          "const": "evaluation_protocol",
+          "default": "evaluation_protocol",
+          "title": "Kind",
+          "type": "string"
+        },
+        "revision": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "title": "Revision",
+          "type": "integer"
+        },
+        "dataset_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Dataset Id",
+          "type": "string"
+        },
+        "dataset_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Dataset Sha256",
+          "type": "string"
+        },
+        "split_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Split Id",
+          "type": "string"
+        },
+        "split_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Split Sha256",
+          "type": "string"
+        },
+        "configuration_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Configuration Sha256",
+          "type": "string"
+        },
+        "target": {
+          "minLength": 1,
+          "pattern": "\\S",
+          "title": "Target",
+          "type": "string"
+        },
+        "features": {
+          "items": {
+            "minLength": 1,
+            "pattern": "\\S",
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Features",
+          "type": "array"
+        },
+        "preprocessing": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Preprocessing",
+          "type": "string"
+        },
+        "independent_unit": {
+          "$ref": "#/$defs/IndependentUnit"
+        },
+        "candidates": {
+          "items": {
+            "$ref": "#/$defs/EvaluationCandidate"
+          },
+          "minItems": 1,
+          "title": "Candidates",
+          "type": "array"
+        },
+        "primary_metric": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Primary Metric",
+          "type": "string"
+        },
+        "selection_rule": {
+          "enum": [
+            "validation",
+            "predeclared_comparison"
+          ],
+          "title": "Selection Rule",
+          "type": "string"
+        },
+        "success_criterion": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SuccessCriterion"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "state": {
+          "enum": [
+            "draft",
+            "sealed",
+            "released"
+          ],
+          "title": "State",
+          "type": "string"
+        },
+        "sealed_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Sealed At"
+        },
+        "released_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Released At"
+        },
+        "selected_candidate_id": {
+          "anyOf": [
+            {
+              "maxLength": 160,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Selected Candidate Id"
+        },
+        "exposure_status": {
+          "enum": [
+            "unexposed",
+            "exposed",
+            "unknown"
+          ],
+          "title": "Exposure Status",
+          "type": "string"
+        },
+        "exposure_event_ids": {
+          "items": {
+            "maxLength": 160,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Exposure Event Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "schema_version",
+        "id",
+        "project_id",
+        "created_at",
+        "parents",
+        "software",
+        "kind",
+        "revision",
+        "dataset_id",
+        "dataset_sha256",
+        "split_id",
+        "split_sha256",
+        "configuration_sha256",
+        "target",
+        "features",
+        "preprocessing",
+        "independent_unit",
+        "candidates",
+        "primary_metric",
+        "selection_rule",
+        "success_criterion",
+        "state",
+        "sealed_at",
+        "released_at",
+        "selected_candidate_id",
+        "exposure_status",
+        "exposure_event_ids"
+      ],
+      "title": "EvaluationProtocol",
+      "type": "object"
+    },
+    "EvaluationStatusView": {
+      "additionalProperties": false,
+      "properties": {
+        "protocol_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Protocol Id",
+          "type": "string"
+        },
+        "state": {
+          "enum": [
+            "sealed",
+            "released"
+          ],
+          "title": "State",
+          "type": "string"
+        },
+        "exploratory": {
+          "title": "Exploratory",
+          "type": "boolean"
+        },
+        "clean_holdout_eligible": {
+          "title": "Clean Holdout Eligible",
+          "type": "boolean"
+        },
+        "exposure_status": {
+          "enum": [
+            "unexposed",
+            "exposed",
+            "unknown"
+          ],
+          "title": "Exposure Status",
+          "type": "string"
+        },
+        "exposure_event_ids": {
+          "items": {
+            "maxLength": 160,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Exposure Event Ids",
+          "type": "array"
+        },
+        "limitation": {
+          "title": "Limitation",
+          "type": "string"
+        }
+      },
+      "required": [
+        "protocol_id",
+        "state",
+        "exploratory",
+        "clean_holdout_eligible",
+        "exposure_status",
+        "exposure_event_ids",
+        "limitation"
+      ],
+      "title": "EvaluationStatusView",
+      "type": "object"
+    },
+    "EvaluationView": {
+      "additionalProperties": false,
+      "properties": {
+        "artifact_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Artifact Id",
+          "type": "string"
+        },
+        "protocol_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Protocol Id",
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "succeeded",
+            "failed"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "model": {
+          "enum": [
+            "mean",
+            "ridge"
+          ],
+          "title": "Model",
+          "type": "string"
+        },
+        "seed": {
+          "title": "Seed",
+          "type": "integer"
+        },
+        "metrics": {
+          "additionalProperties": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "propertyNames": {
+              "enum": [
+                "mae",
+                "rmse",
+                "r2",
+                "group_mae",
+                "group_rmse",
+                "rows",
+                "groups"
+              ]
+            },
+            "type": "object"
+          },
+          "propertyNames": {
+            "enum": [
+              "validation",
+              "test"
+            ]
+          },
+          "title": "Metrics",
+          "type": "object"
+        },
+        "test_visible": {
+          "title": "Test Visible",
+          "type": "boolean"
+        },
+        "evaluation": {
+          "$ref": "#/$defs/EvaluationStatusView"
+        }
+      },
+      "required": [
+        "artifact_id",
+        "protocol_id",
+        "status",
+        "model",
+        "seed",
+        "metrics",
+        "test_visible",
+        "evaluation"
+      ],
+      "title": "EvaluationView",
+      "type": "object"
+    },
     "Evidence": {
       "additionalProperties": false,
       "properties": {
@@ -905,6 +1729,39 @@
         "bundle_key"
       ],
       "title": "Evidence",
+      "type": "object"
+    },
+    "ExecutionFailure": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "const": "execution_failure",
+          "title": "Kind",
+          "type": "string"
+        },
+        "error_code": {
+          "enum": [
+            "ADMISSION_REJECTED",
+            "JOB_TIMED_OUT",
+            "WORKER_INTERRUPTED",
+            "INTEGRITY_FAILED"
+          ],
+          "title": "Error Code",
+          "type": "string"
+        },
+        "observed_error": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Observed Error",
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "error_code",
+        "observed_error"
+      ],
+      "title": "ExecutionFailure",
       "type": "object"
     },
     "ExternalReceiptProjection": {
@@ -1096,6 +1953,237 @@
         "record"
       ],
       "title": "Failure",
+      "type": "object"
+    },
+    "FailureReceipt": {
+      "additionalProperties": false,
+      "properties": {
+        "connector": {
+          "const": "sciml-workbench",
+          "default": "sciml-workbench",
+          "title": "Connector",
+          "type": "string"
+        },
+        "external_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "External Id",
+          "type": "string"
+        },
+        "request_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Request Sha256",
+          "type": "string"
+        },
+        "state": {
+          "const": "confirmed",
+          "default": "confirmed",
+          "title": "State",
+          "type": "string"
+        },
+        "external_project_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "External Project Id",
+          "type": "string"
+        },
+        "external_record_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "External Record Id",
+          "type": "string"
+        },
+        "record": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Record",
+          "type": "object"
+        }
+      },
+      "required": [
+        "connector",
+        "external_id",
+        "request_sha256",
+        "state",
+        "external_project_id",
+        "external_record_id",
+        "record"
+      ],
+      "title": "FailureReceipt",
+      "type": "object"
+    },
+    "FailureV2": {
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "2.0",
+          "default": "2.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "project_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Project Id",
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        },
+        "parents": {
+          "items": {
+            "maxLength": 160,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Parents",
+          "type": "array"
+        },
+        "software": {
+          "additionalProperties": {
+            "maxLength": 4000,
+            "minLength": 1,
+            "type": "string"
+          },
+          "propertyNames": {
+            "maxLength": 160,
+            "minLength": 1
+          },
+          "title": "Software",
+          "type": "object"
+        },
+        "kind": {
+          "const": "failure",
+          "default": "failure",
+          "title": "Kind",
+          "type": "string"
+        },
+        "benchmark_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Benchmark Id",
+          "type": "string"
+        },
+        "source_job_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Source Job Id",
+          "type": "string"
+        },
+        "reason": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Reason",
+          "type": "string"
+        },
+        "uncertainty_notes": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Uncertainty Notes",
+          "type": "string"
+        },
+        "actor": {
+          "discriminator": {
+            "mapping": {
+              "agent": "#/$defs/AgentActor",
+              "human": "#/$defs/HumanActor"
+            },
+            "propertyName": "kind"
+          },
+          "oneOf": [
+            {
+              "$ref": "#/$defs/HumanActor"
+            },
+            {
+              "$ref": "#/$defs/AgentActor"
+            }
+          ],
+          "title": "Actor"
+        },
+        "observation": {
+          "discriminator": {
+            "mapping": {
+              "criterion_missed": "#/$defs/CriterionFailure",
+              "execution_failure": "#/$defs/ExecutionFailure",
+              "researcher_assessment": "#/$defs/ResearcherAssessment"
+            },
+            "propertyName": "kind"
+          },
+          "oneOf": [
+            {
+              "$ref": "#/$defs/ExecutionFailure"
+            },
+            {
+              "$ref": "#/$defs/CriterionFailure"
+            },
+            {
+              "$ref": "#/$defs/ResearcherAssessment"
+            }
+          ],
+          "title": "Observation"
+        },
+        "causal_hypotheses": {
+          "items": {
+            "maxLength": 4000,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Causal Hypotheses",
+          "type": "array"
+        },
+        "receipt": {
+          "$ref": "#/$defs/FailureReceipt"
+        }
+      },
+      "required": [
+        "schema_version",
+        "id",
+        "project_id",
+        "created_at",
+        "parents",
+        "software",
+        "kind",
+        "benchmark_id",
+        "source_job_id",
+        "reason",
+        "uncertainty_notes",
+        "actor",
+        "observation",
+        "causal_hypotheses",
+        "receipt"
+      ],
+      "title": "FailureV2",
+      "type": "object"
+    },
+    "HumanActor": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "const": "human",
+          "title": "Kind",
+          "type": "string"
+        },
+        "operator_session_reference": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Operator Session Reference",
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "operator_session_reference"
+      ],
+      "title": "HumanActor",
       "type": "object"
     },
     "IndependentUnit": {
@@ -1728,6 +2816,7 @@
       "title": "JobPage",
       "type": "object"
     },
+    "JsonValue": {},
     "LegacyJobResponse": {
       "additionalProperties": false,
       "properties": {
@@ -1890,6 +2979,88 @@
       "title": "MaterialResponse",
       "type": "object"
     },
+    "MetricReference": {
+      "additionalProperties": false,
+      "properties": {
+        "artifact_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Artifact Id",
+          "type": "string"
+        },
+        "field_path": {
+          "pattern": "^/(?:[^~/]|~[01])+(?:/(?:[^~/]|~[01])+)*$",
+          "title": "Field Path",
+          "type": "string"
+        },
+        "partition": {
+          "enum": [
+            "train",
+            "validation",
+            "test",
+            "excluded"
+          ],
+          "title": "Partition",
+          "type": "string"
+        },
+        "value": {
+          "title": "Value",
+          "type": "number"
+        },
+        "units": {
+          "anyOf": [
+            {
+              "maxLength": 4000,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Units"
+        }
+      },
+      "required": [
+        "artifact_id",
+        "field_path",
+        "partition",
+        "value",
+        "units"
+      ],
+      "title": "MetricReference",
+      "type": "object"
+    },
+    "PolicyReference": {
+      "additionalProperties": false,
+      "properties": {
+        "policy_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Policy Id",
+          "type": "string"
+        },
+        "revision": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "title": "Revision",
+          "type": "integer"
+        },
+        "sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "policy_id",
+        "revision",
+        "sha256"
+      ],
+      "title": "PolicyReference",
+      "type": "object"
+    },
     "ProjectResponse": {
       "additionalProperties": false,
       "properties": {
@@ -1998,6 +3169,49 @@
       "title": "Provenance",
       "type": "object"
     },
+    "ReferenceCheck": {
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "enum": [
+            "not_checked",
+            "valid",
+            "invalid"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "checked_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Checked At"
+        },
+        "issues": {
+          "items": {
+            "maxLength": 4000,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Issues",
+          "type": "array"
+        }
+      },
+      "required": [
+        "status",
+        "checked_at",
+        "issues"
+      ],
+      "title": "ReferenceCheck",
+      "type": "object"
+    },
     "Report": {
       "additionalProperties": false,
       "properties": {
@@ -2069,6 +3283,93 @@
         "artifact_ids"
       ],
       "title": "Report",
+      "type": "object"
+    },
+    "ResearcherAssessment": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "const": "researcher_assessment",
+          "title": "Kind",
+          "type": "string"
+        },
+        "statement": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Statement",
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "statement"
+      ],
+      "title": "ResearcherAssessment",
+      "type": "object"
+    },
+    "SemanticReview": {
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "enum": [
+            "supported",
+            "partially_supported",
+            "unsupported",
+            "conflicting",
+            "not_reviewed"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "reviewed_snapshot_sha256": {
+          "anyOf": [
+            {
+              "pattern": "^[a-f0-9]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Reviewed Snapshot Sha256"
+        },
+        "reviewer_assignment_id": {
+          "anyOf": [
+            {
+              "maxLength": 160,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Reviewer Assignment Id"
+        },
+        "explanation": {
+          "anyOf": [
+            {
+              "maxLength": 4000,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Explanation"
+        }
+      },
+      "required": [
+        "status",
+        "reviewed_snapshot_sha256",
+        "reviewer_assignment_id",
+        "explanation"
+      ],
+      "title": "SemanticReview",
       "type": "object"
     },
     "Source": {
@@ -2536,6 +3837,95 @@
       "title": "Split",
       "type": "object"
     },
+    "SuccessCriterion": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "metric": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Metric",
+          "type": "string"
+        },
+        "partition": {
+          "enum": [
+            "validation",
+            "test"
+          ],
+          "title": "Partition",
+          "type": "string"
+        },
+        "comparison": {
+          "enum": [
+            "lt",
+            "lte",
+            "gt",
+            "gte"
+          ],
+          "title": "Comparison",
+          "type": "string"
+        },
+        "threshold": {
+          "title": "Threshold",
+          "type": "number"
+        },
+        "declaration_reference": {
+          "$ref": "#/$defs/DeclarationReference"
+        }
+      },
+      "required": [
+        "id",
+        "metric",
+        "partition",
+        "comparison",
+        "threshold",
+        "declaration_reference"
+      ],
+      "title": "SuccessCriterion",
+      "type": "object"
+    },
+    "TextSpan": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "const": "text_span",
+          "default": "text_span",
+          "title": "Kind",
+          "type": "string"
+        },
+        "unit": {
+          "const": "unicode_codepoint",
+          "default": "unicode_codepoint",
+          "title": "Unit",
+          "type": "string"
+        },
+        "start": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "title": "Start",
+          "type": "integer"
+        },
+        "end": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "title": "End",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "kind",
+        "unit",
+        "start",
+        "end"
+      ],
+      "title": "TextSpan",
+      "type": "object"
+    },
     "UnknownDeclaration": {
       "additionalProperties": false,
       "properties": {
@@ -2955,13 +4345,33 @@
             "$ref": "#/$defs/Evidence"
           },
           {
-            "$ref": "#/$defs/Failure"
+            "oneOf": [
+              {
+                "$ref": "#/$defs/Failure"
+              },
+              {
+                "$ref": "#/$defs/FailureV2"
+              }
+            ],
+            "discriminator": {
+              "propertyName": "schema_version",
+              "mapping": {
+                "1.0": "#/$defs/Failure",
+                "2.0": "#/$defs/FailureV2"
+              }
+            }
           },
           {
             "$ref": "#/$defs/Provenance"
           },
           {
             "$ref": "#/$defs/Report"
+          },
+          {
+            "$ref": "#/$defs/EvaluationProtocol"
+          },
+          {
+            "$ref": "#/$defs/ClaimSet"
           }
         ],
         "discriminator": {
@@ -2988,9 +4398,27 @@
             "split": "#/$defs/Split",
             "benchmark": "#/$defs/Benchmark",
             "evidence": "#/$defs/Evidence",
-            "failure": "#/$defs/Failure",
+            "failure": {
+              "oneOf": [
+                {
+                  "$ref": "#/$defs/Failure"
+                },
+                {
+                  "$ref": "#/$defs/FailureV2"
+                }
+              ],
+              "discriminator": {
+                "propertyName": "schema_version",
+                "mapping": {
+                  "1.0": "#/$defs/Failure",
+                  "2.0": "#/$defs/FailureV2"
+                }
+              }
+            },
             "provenance": "#/$defs/Provenance",
-            "report": "#/$defs/Report"
+            "report": "#/$defs/Report",
+            "evaluation_protocol": "#/$defs/EvaluationProtocol",
+            "claim_set": "#/$defs/ClaimSet"
           }
         }
       }
@@ -3027,13 +4455,33 @@
           "$ref": "#/$defs/Evidence"
         },
         {
-          "$ref": "#/$defs/Failure"
+          "oneOf": [
+            {
+              "$ref": "#/$defs/Failure"
+            },
+            {
+              "$ref": "#/$defs/FailureV2"
+            }
+          ],
+          "discriminator": {
+            "propertyName": "schema_version",
+            "mapping": {
+              "1.0": "#/$defs/Failure",
+              "2.0": "#/$defs/FailureV2"
+            }
+          }
         },
         {
           "$ref": "#/$defs/Provenance"
         },
         {
           "$ref": "#/$defs/Report"
+        },
+        {
+          "$ref": "#/$defs/EvaluationProtocol"
+        },
+        {
+          "$ref": "#/$defs/ClaimSet"
         }
       ],
       "discriminator": {
@@ -3060,9 +4508,27 @@
           "split": "#/$defs/Split",
           "benchmark": "#/$defs/Benchmark",
           "evidence": "#/$defs/Evidence",
-          "failure": "#/$defs/Failure",
+          "failure": {
+            "oneOf": [
+              {
+                "$ref": "#/$defs/Failure"
+              },
+              {
+                "$ref": "#/$defs/FailureV2"
+              }
+            ],
+            "discriminator": {
+              "propertyName": "schema_version",
+              "mapping": {
+                "1.0": "#/$defs/Failure",
+                "2.0": "#/$defs/FailureV2"
+              }
+            }
+          },
           "provenance": "#/$defs/Provenance",
-          "report": "#/$defs/Report"
+          "report": "#/$defs/Report",
+          "evaluation_protocol": "#/$defs/EvaluationProtocol",
+          "claim_set": "#/$defs/ClaimSet"
         }
       }
     }
@@ -3071,6 +4537,12 @@
   "$id": "https://sciml-workbench.local/contracts/http-responses.json",
   "title": "HttpResponse",
   "anyOf": [
+    {
+      "$ref": "#/$defs/EvaluationStatusView"
+    },
+    {
+      "$ref": "#/$defs/EvaluationView"
+    },
     {
       "$ref": "#/$defs/ProjectResponse"
     },

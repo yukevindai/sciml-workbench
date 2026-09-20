@@ -8,6 +8,7 @@ import {
   validateProjectsResponse,
   validateIntakeArtifact, validateMaterialResponse,
   validateJobDetail, validateJobPage, validateArtifactPage,
+  validateEvaluationView,
 } from '../app/lib/generated/validators.cjs';
 
 test('B09 pages are bounded and reject private worker fields', () => {
@@ -25,6 +26,17 @@ test('B09 pages are bounded and reject private worker fields', () => {
   const summary = { id: 'a', project_id: 'p', kind: 'audit', schema_version: '1.0', created_at: job.created_at };
   assert.equal(validateArtifactPage({ items: [summary], next_cursor: null }), true);
   assert.equal(validateArtifactPage({ items: [{ ...summary, payload: {} }], next_cursor: null }), false);
+});
+
+test('C12 evaluation projections reject opaque outputs and expose only named scalar metrics', () => {
+  const view = { artifact_id: 'benchmark', protocol_id: 'protocol', status: 'succeeded', model: 'ridge', seed: 7,
+    metrics: { validation: { rmse: 1.25 } }, test_visible: false,
+    evaluation: { protocol_id: 'protocol', state: 'sealed', exploratory: false, clean_holdout_eligible: true,
+      exposure_status: 'unexposed', exposure_event_ids: [], limitation: 'Full-run outputs are quarantined.' } };
+  assert.equal(validateEvaluationView(view), true);
+  assert.equal(validateEvaluationView({ ...view, predictions: [99] }), false);
+  assert.equal(validateEvaluationView({ ...view, bundle_key: 'a'.repeat(64) }), false);
+  assert.equal(validateEvaluationView({ ...view, metrics: { validation: { unreviewed_field: 99 } } }), false);
 });
 
 const fixtures = JSON.parse(await readFile(new URL('../../backend/tests/fixtures/contracts/legacy-v1.json', import.meta.url), 'utf8'));
@@ -51,6 +63,22 @@ test('all eight legacy payloads pass the generated browser validators unchanged'
   assert.equal(validateArtifactsResponse(fixtures), true);
   for (const fixture of fixtures) assert.equal(validateLegacyArtifact(fixture), true, fixture.kind);
   assert.deepEqual(fixtures, original);
+});
+
+test('C07 reads Failure 2.0 with confirmed receipt and preserves the legacy reader', () => {
+  const value = { kind: 'failure', schema_version: '2.0', id: 'outcome', project_id: 'p',
+    created_at: '2026-09-19T12:00:00Z', parents: ['benchmark'], software: {},
+    benchmark_id: 'benchmark', source_job_id: 'source-job', reason: 'Observed runtime interruption',
+    uncertainty_notes: 'No scientific conclusion', causal_hypotheses: [],
+    actor: { kind: 'human', operator_session_reference: 'opaque-reference' },
+    observation: { kind: 'execution_failure', error_code: 'JOB_TIMED_OUT', observed_error: 'Deadline exceeded' },
+    receipt: { connector: 'sciml-workbench', external_id: 'import-job', request_sha256: 'a'.repeat(64),
+      state: 'confirmed', external_project_id: 'remote', external_record_id: 'record', record: {} } };
+  assert.equal(validateIntakeArtifact(value), true);
+  assert.equal(validateArtifactsResponse([...fixtures, value]), true);
+  assert.equal(validateLegacyArtifact(value), false);
+  assert.equal(validateIntakeArtifact({ ...value, receipt: { ...value.receipt, state: 'unknown' } }), false);
+  assert.equal(validateIntakeArtifact({ ...value, observation: { ...value.observation, error_code: 'RUN_CANCELLED' } }), false);
 });
 
 test('browser boundary rejects missing fields and unrecognized versions', () => {

@@ -106,6 +106,8 @@ def capture_report(session, pid):
 
 
 def report_bundle(snapshot, store):
+    from .references import verify_captured_references
+    verify_captured_references(snapshot, store)
     artifacts = snapshot["artifacts"]
     proj = SimpleNamespace(**snapshot["project"])
     files = {
@@ -114,6 +116,9 @@ def report_bundle(snapshot, store):
         "artifacts.json": adapters.encoded(artifacts),
         "project.json": adapters.encoded(snapshot["project"]),
         "jobs.json": adapters.encoded(snapshot["jobs"]),
+        "evaluation-states.json": adapters.encoded(snapshot.get("evaluation_states", [])),
+        "test-exposures.json": adapters.encoded(snapshot.get("test_exposures", [])),
+        "evidence-spans.json": adapters.encoded(snapshot.get("evidence_spans", [])),
         "software.json": adapters.encoded(software()),
     }
     files["environment.json"] = adapters.encoded(
@@ -130,8 +135,11 @@ def report_bundle(snapshot, store):
                 files[f"blobs/{a[field]}"] = store.get(a[field])
     for material in snapshot.get("materials", []):
         files[f"blobs/{material['blob_key']}"] = store.get(material["blob_key"])
-    from .scientific_contracts import DatasetV2
+    from .scientific_contracts import DatasetV2, FailureV2, EvaluationProtocol, ClaimSet
     files["contracts/v2/dataset.json"] = adapters.encoded(DatasetV2.model_json_schema())
+    files["contracts/v2/failure.json"] = adapters.encoded(FailureV2.model_json_schema())
+    files["contracts/evaluation_protocol.json"] = adapters.encoded(EvaluationProtocol.model_json_schema())
+    files["contracts/claim_set.json"] = adapters.encoded(ClaimSet.model_json_schema())
     from . import contracts
 
     for model in (
@@ -160,6 +168,8 @@ def report_bundle(snapshot, store):
         "Keep this archive private: it contains the uploaded data and evidence.\n"
     ).encode()
     summary = [f"# {proj.name}", proj.description, "## Artifacts"]
+    if snapshot.get("evaluation_states"):
+        summary.append("Exposure status at capture (later reads can add exposure): " + json.dumps(snapshot["evaluation_states"]))
     for a in artifacts:
         summary.append(
             f"- {a['kind']} `{a['id']}`; parents: {', '.join(a['parents']) or 'none'}"
@@ -171,7 +181,13 @@ def report_bundle(snapshot, store):
                 f"  Status: {a['status']}; metrics: {json.dumps(a['result'].get('metrics', {}))}; error: {a['error']}"
             )
         if a["kind"] == "failure":
-            summary.append(f"  Researcher assessment: {a['reason']}")
+            if a["schema_version"] == "2.0":
+                summary.append(f"  {a['actor']['kind']} observation ({a['observation']['kind']}): "
+                               f"{json.dumps(a['observation'])}\n\n  Assessment context: {a['reason']}\n\n"
+                               f"  Uncertainty: {a['uncertainty_notes']}\n\n"
+                               f"  Causal hypotheses (unverified): {json.dumps(a['causal_hypotheses'])}")
+            else:
+                summary.append(f"  Researcher assessment: {a['reason']}")
     files["report.md"] = "\n\n".join(summary).encode()
     files["manifest.json"] = adapters.encoded(
         {
@@ -204,6 +220,8 @@ def prepare_execution(session, job):
         include(part.audit_id, "audit")
     elif job.kind == "failure":
         include(p["benchmark_id"], "benchmark")
+        if "actor" in p and p["observation"]["kind"] == "criterion_missed":
+            include(p["observation"]["protocol_id"], "evaluation_protocol")
         proj = project(session, pid)
         work.project = {"id": proj.id, "name": proj.name, "description": proj.description}
     elif job.kind == "report":
@@ -283,6 +301,9 @@ def execute(store, settings, work):
         receipt = adapters.FailureMemory(settings).import_exact(
             work.project_id, work.external_project_id, work.external_import
         )
+        if "actor" in p:
+            from .outcomes import artifact_from_receipt
+            return artifact_from_receipt(work, receipt, software()), receipt
         value = Failure(
             **common,
             parents=[run.id],
@@ -345,4 +366,12 @@ def failure_record(work):
             "notes": "Computational run; unsuccessful is a researcher assessment, not a physical experiment.",
         },
     }
+    if "actor" in p:
+        record["summary"] = p["reason"]
+        record["outcomes"] = json.dumps(p["observation"], sort_keys=True, allow_nan=False)
+        record["source"]["notes"] = json.dumps({
+            "actor": p["actor"], "source_job_id": p["source_job_id"],
+            "causal_hypotheses": p["causal_hypotheses"],
+            "interpretation": "Computational observation; hypotheses are unverified. No physical experiment is implied.",
+        }, sort_keys=True, allow_nan=False)
     return record

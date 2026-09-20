@@ -1,4 +1,4 @@
-"""Scoped B09 reads. Agent exposure fails closed until C12 is implemented."""
+"""Scoped reads; C12 owns benchmark projection and exposure decisions."""
 import base64
 from dataclasses import dataclass
 from datetime import datetime, timezone
@@ -22,13 +22,27 @@ from .services import project
 class ReadScope:
     project_id: str
     audience: Literal["manual", "agent"] = "manual"
+    run_id: str | None = None
+    artifact_ids: frozenset[str] | None = None
+    job_ids: frozenset[str] | None = None
+    protocol_id: str | None = None
+    purpose: Literal["selection", "final"] = "selection"
+
+    def __post_init__(self):
+        for name in ("artifact_ids", "job_ids"):
+            values = getattr(self, name)
+            if values is not None:
+                if not isinstance(values, (set, frozenset, list, tuple)) or any(not isinstance(v, str) or not v for v in values):
+                    raise DomainError("Invalid trusted read scope", 403)
+                object.__setattr__(self, name, frozenset(values))
 
 
 def authorize(session, scope):
     if not isinstance(scope, ReadScope) or scope.audience not in {"manual", "agent"}:
         raise DomainError("A trusted read scope is required", 403)
-    if scope.audience == "agent":
-        raise DomainError("Agent reads require the C12 evaluation exposure service", 403, "DATA_EXPOSURE_DENIED")
+    if scope.audience == "agent" and (not scope.run_id or scope.artifact_ids is None or scope.job_ids is None
+                                      or scope.purpose not in {"selection", "final"}):
+        raise DomainError("Agent reads require an explicit run and input scope", 403, "DATA_EXPOSURE_DENIED")
     project(session, scope.project_id)
 
 
@@ -84,9 +98,15 @@ class ReadService:
         if type(limit) is not int or not 1 <= limit <= 100 or (kind is not None and kind not in kinds):
             raise DomainError("Invalid page limit or kind filter")
         context = [scope.project_id, scope.audience, resource, kind]
+        if scope.audience == "agent":
+            from .request_identity import request_digest
+            context.append(request_digest("read_scope", {"run_id": scope.run_id, "protocol_id": scope.protocol_id,
+                "purpose": scope.purpose, "artifact_ids": sorted(scope.artifact_ids), "job_ids": sorted(scope.job_ids)}))
         fields = (table.id, table.project_id, table.kind, table.created_at,
                   table.payload["schema_version"].as_string().label("schema_version")) if resource == "artifacts" else (table,)
         query = select(*fields).where(table.project_id == scope.project_id)
+        if scope.audience == "agent":
+            query = query.where(table.id.in_(scope.artifact_ids if resource == "artifacts" else scope.job_ids))
         if resource == "jobs":
             query = query.options(load_only(*JOB_FIELDS))
         if kind is not None:
@@ -112,6 +132,8 @@ class ReadService:
 
     def job(self, session, scope, job_id):
         authorize(session, scope)
+        if scope.audience == "agent" and job_id not in scope.job_ids:
+            raise DomainError("Job is outside the authorized input scope", 403)
         job = session.scalar(select(JobRow).options(load_only(*JOB_FIELDS)).where(JobRow.id == job_id, JobRow.project_id == scope.project_id))
         if job is None:
             raise DomainError("Job not found in this project", 404, "JOB_NOT_FOUND")
@@ -131,15 +153,33 @@ class ReadService:
 
     def artifact(self, session, scope, artifact_id):
         authorize(session, scope)
-        value = ArtifactResolver(session, scope.project_id).resolve(artifact_id)
+        value = ArtifactResolver(session, scope.project_id, scope.artifact_ids).resolve(artifact_id)
+        if scope.audience == "agent":
+            if value.kind != "benchmark":
+                raise DomainError("Use a typed evidence or evaluation projection; raw artifacts are quarantined", 403, "DATA_EXPOSURE_DENIED")
+            from .evaluation import evaluation_view
+            return evaluation_view(session, scope, value)
         if len(value.model_dump_json().encode()) > 32 * 1024 * 1024:
             raise DomainError("Artifact exceeds the bounded detail response limit", 422, "UNSUPPORTED_CAPABILITY")
+        from .evaluation import expose_artifact
+        expose_artifact(session, scope.project_id, value, via="artifact_detail")
         return value
 
     def download(self, session, scope, identifier, *, material=False, representation="default"):
         authorize(session, scope)
-        return (material_download(session, scope.project_id, identifier) if material else
-                artifact_download(session, scope.project_id, identifier, representation))
+        if scope.audience == "agent":
+            raise DomainError("Raw data, predictions, bundles and reports are quarantined; use typed projections", 403, "DATA_EXPOSURE_DENIED")
+        from .evaluation import expose_artifact
+        if material:
+            from .artifacts import resolve_material
+            value = resolve_material(session, scope.project_id, identifier)
+            if value.dataset_id:
+                expose_artifact(session, scope.project_id, ArtifactResolver(session, scope.project_id).resolve(value.dataset_id), via="material_download", raw=True)
+            return material_download(session, scope.project_id, identifier)
+        value = ArtifactResolver(session, scope.project_id).resolve(identifier)
+        result = artifact_download(session, scope.project_id, identifier, representation)
+        expose_artifact(session, scope.project_id, value, via="artifact_download", raw=True)
+        return result
 
 
 JOB_FIELDS = [getattr(JobRow, name) for name in ("id", "project_id", "kind", "state", "result_id", "error_code",

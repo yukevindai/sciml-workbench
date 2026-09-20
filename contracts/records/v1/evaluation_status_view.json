@@ -1,0 +1,62 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "protocol_id": {
+      "maxLength": 160,
+      "minLength": 1,
+      "title": "Protocol Id",
+      "type": "string"
+    },
+    "state": {
+      "enum": [
+        "sealed",
+        "released"
+      ],
+      "title": "State",
+      "type": "string"
+    },
+    "exploratory": {
+      "title": "Exploratory",
+      "type": "boolean"
+    },
+    "clean_holdout_eligible": {
+      "title": "Clean Holdout Eligible",
+      "type": "boolean"
+    },
+    "exposure_status": {
+      "enum": [
+        "unexposed",
+        "exposed",
+        "unknown"
+      ],
+      "title": "Exposure Status",
+      "type": "string"
+    },
+    "exposure_event_ids": {
+      "items": {
+        "maxLength": 160,
+        "minLength": 1,
+        "type": "string"
+      },
+      "title": "Exposure Event Ids",
+      "type": "array"
+    },
+    "limitation": {
+      "title": "Limitation",
+      "type": "string"
+    }
+  },
+  "required": [
+    "protocol_id",
+    "state",
+    "exploratory",
+    "clean_holdout_eligible",
+    "exposure_status",
+    "exposure_event_ids",
+    "limitation"
+  ],
+  "title": "EvaluationStatusView",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sciml-workbench.local/contracts/records/v1/evaluation_status_view.json"
+}

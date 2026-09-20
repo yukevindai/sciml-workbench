@@ -89,6 +89,12 @@ class SubmissionService:
         return self._submit(scope, kind, payload, request_key=request_key, action_id=action_id,
                             attempt_id=attempt_id, retry_of_job_id=retry_of_job_id)
 
+    def submit_outcome(self, scope, payload, *, actor, request_key=None, action_id=None, attempt_id=None):
+        """Actor comes from the trusted caller, never from provider arguments."""
+        from .outcomes import submit_outcome
+        return submit_outcome(self, scope, payload, actor=actor, request_key=request_key,
+                              action_id=action_id, attempt_id=attempt_id)
+
     def submit_pdf(self, scope, raw, title, *, request_key):
         """Compatibility upload; tools must reference an allowed material instead."""
         if not isinstance(scope, SubmissionScope):
@@ -192,6 +198,8 @@ class SubmissionService:
         return job
 
     def _scope(self, scope, kind, payload):
+        if scope.run_id is not None and kind == "benchmark":
+            raise DomainError("Agent baselines require a sealed evaluation candidate", 422, "UNSUPPORTED_CAPABILITY")
         if scope.run_id is not None and kind == "failure":
             raise DomainError("Agent outcome recording requires the actor-aware failure service", 422, "UNSUPPORTED_CAPABILITY")
         if kind == "report" and scope.report_selection is None and (scope.run_id is not None or scope.artifact_ids is not None or scope.material_ids is not None):

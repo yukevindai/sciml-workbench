@@ -150,9 +150,10 @@ def test_capabilities_match_integrated_models_and_fail_closed(runtime, monkeypat
     result = capability_module.capabilities(settings)
     assert result.benchmark_models == ["mean", "ridge"]
     assert "scaffold" not in result.split_strategies and "random_forest" not in result.benchmark_models
-    assert result.agent_reads_available is False and result.validation_only_execution is False
-    assert result.artifact_read_versions["failure"] == ["1.0"]
-    assert "evaluation_protocol" not in result.artifact_read_versions
+    assert result.agent_reads_available is True and result.validation_only_execution is False
+    assert result.evaluation_exposure == "tracked_with_quarantine"
+    assert result.artifact_read_versions["failure"] == ["1.0", "2.0"]
+    assert result.artifact_read_versions["evaluation_protocol"] == ["1.0"]
     assert result.limits.max_rows == settings.max_rows
     assert settings.api_token.get_secret_value() not in result.model_dump_json()
     class BadDistribution:

@@ -3,7 +3,8 @@
 Scientific computation, blob IO and upstream calls are never run in this module's
 metadata transaction. Run/assignment/action ownership belongs to B11/D12.
 """
-from .contracts import Provenance, artifact_adapter
+from .contracts import Provenance
+from .contract_registry import read_artifact
 from .db import JobRow
 from .execution import TaskFailure
 from .job_metadata import JobClaim, finish_claim, lock_claim
@@ -50,7 +51,7 @@ def publish_result(db, claimed, work, result, *, store=None, stopped=lambda: Fal
     if result.error is not None:
         raise TaskFailure(result.error, result.error_code)
     try:
-        value = artifact_adapter.validate_python(result.artifact)
+        value = read_artifact(result.artifact)
     except ValueError:
         raise TaskFailure("Task returned an invalid artifact.") from None
     if (value.id, value.project_id, value.kind) != (work.result_id, work.project_id, work.kind):

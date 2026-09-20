@@ -1,0 +1,147 @@
+{
+  "$defs": {
+    "EvaluationStatusView": {
+      "additionalProperties": false,
+      "properties": {
+        "protocol_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Protocol Id",
+          "type": "string"
+        },
+        "state": {
+          "enum": [
+            "sealed",
+            "released"
+          ],
+          "title": "State",
+          "type": "string"
+        },
+        "exploratory": {
+          "title": "Exploratory",
+          "type": "boolean"
+        },
+        "clean_holdout_eligible": {
+          "title": "Clean Holdout Eligible",
+          "type": "boolean"
+        },
+        "exposure_status": {
+          "enum": [
+            "unexposed",
+            "exposed",
+            "unknown"
+          ],
+          "title": "Exposure Status",
+          "type": "string"
+        },
+        "exposure_event_ids": {
+          "items": {
+            "maxLength": 160,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Exposure Event Ids",
+          "type": "array"
+        },
+        "limitation": {
+          "title": "Limitation",
+          "type": "string"
+        }
+      },
+      "required": [
+        "protocol_id",
+        "state",
+        "exploratory",
+        "clean_holdout_eligible",
+        "exposure_status",
+        "exposure_event_ids",
+        "limitation"
+      ],
+      "title": "EvaluationStatusView",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "artifact_id": {
+      "maxLength": 160,
+      "minLength": 1,
+      "title": "Artifact Id",
+      "type": "string"
+    },
+    "protocol_id": {
+      "maxLength": 160,
+      "minLength": 1,
+      "title": "Protocol Id",
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "succeeded",
+        "failed"
+      ],
+      "title": "Status",
+      "type": "string"
+    },
+    "model": {
+      "enum": [
+        "mean",
+        "ridge"
+      ],
+      "title": "Model",
+      "type": "string"
+    },
+    "seed": {
+      "title": "Seed",
+      "type": "integer"
+    },
+    "metrics": {
+      "additionalProperties": {
+        "additionalProperties": {
+          "type": "number"
+        },
+        "propertyNames": {
+          "enum": [
+            "mae",
+            "rmse",
+            "r2",
+            "group_mae",
+            "group_rmse",
+            "rows",
+            "groups"
+          ]
+        },
+        "type": "object"
+      },
+      "propertyNames": {
+        "enum": [
+          "validation",
+          "test"
+        ]
+      },
+      "title": "Metrics",
+      "type": "object"
+    },
+    "test_visible": {
+      "title": "Test Visible",
+      "type": "boolean"
+    },
+    "evaluation": {
+      "$ref": "#/$defs/EvaluationStatusView"
+    }
+  },
+  "required": [
+    "artifact_id",
+    "protocol_id",
+    "status",
+    "model",
+    "seed",
+    "metrics",
+    "test_visible",
+    "evaluation"
+  ],
+  "title": "EvaluationView",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sciml-workbench.local/contracts/records/v1/evaluation_view.json"
+}

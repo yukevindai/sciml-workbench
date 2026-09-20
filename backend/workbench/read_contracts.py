@@ -61,7 +61,7 @@ class CapabilityLimits(ContractModel):
 
 
 class Capabilities(ContractModel):
-    schema_version: Literal["1.0"] = "1.0"
+    schema_version: Literal["1.1"] = "1.1"
     operations: list[str] = Field(max_length=20)
     benchmark_models: list[str] = Field(max_length=20)
     split_strategies: list[str] = Field(max_length=20)
@@ -69,9 +69,38 @@ class Capabilities(ContractModel):
     artifact_write_versions: dict[str, list[str]]
     dependency_pins: dict[str, Annotated[str, Field(pattern="^[a-f0-9]{40}$")]]
     limits: CapabilityLimits
-    agent_reads_available: Literal[False] = False
-    evaluation_exposure: Literal["unavailable_pending_C12"] = "unavailable_pending_C12"
+    agent_reads_available: Literal[True] = True
+    evaluation_exposure: Literal["tracked_with_quarantine"] = "tracked_with_quarantine"
     validation_only_execution: Literal[False] = False
     ocr: Literal[False] = False
     failure_search: Literal["project_scoped_lexical"] = "project_scoped_lexical"
     limitations: list[str] = Field(max_length=20)
+
+
+class EvaluationStatusView(ContractModel):
+    protocol_id: Identifier
+    state: Literal["sealed", "released"]
+    exploratory: bool
+    clean_holdout_eligible: bool
+    exposure_status: Literal["unexposed", "exposed", "unknown"]
+    exposure_event_ids: list[Identifier]
+    limitation: str
+
+
+class EvaluationView(ContractModel):
+    artifact_id: Identifier
+    protocol_id: Identifier
+    status: Literal["succeeded", "failed"]
+    model: Literal["mean", "ridge"]
+    seed: int
+    metrics: dict[Literal["validation", "test"], dict[Literal["mae", "rmse", "r2", "group_mae", "group_rmse", "rows", "groups"], float]]
+    test_visible: bool
+    evaluation: EvaluationStatusView
+
+    @model_validator(mode="after")
+    def consistent_visibility(self):
+        if self.test_visible != ("test" in self.metrics):
+            raise ValueError("Test visibility must match the projected partitions")
+        if self.test_visible and self.evaluation.state != "released":
+            raise ValueError("Test projection requires a released comparison")
+        return self

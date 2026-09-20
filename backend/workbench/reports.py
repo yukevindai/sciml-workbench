@@ -111,11 +111,28 @@ def capture(session, pid, scope=None):
         raise DomainError("Nested report captures are unsupported", 422, "UNSUPPORTED_CAPABILITY")
     ids = {a.id for a in values}
     # Include every producer of the dependency closure, not only explicitly named jobs.
-    jobs = {j.id: j for j in jobs + [j for j in all_jobs if j.result_id in ids]}
+    outcome_jobs = {a.source_job_id for a in values if a.kind == "failure" and a.schema_version == "2.0"}
+    jobs = {j.id: j for j in jobs + [j for j in all_jobs if j.result_id in ids or j.id in outcome_jobs]}
     if any(j.state not in {"succeeded", "failed"} for j in jobs.values()):
         raise DomainError("Wait for selected producer jobs before exporting a report", 409, "PROJECT_BUSY")
     materials = [resolve_material(session, pid, mid, artifact_ids=scope.artifact_ids if scope else None) for mid in mids]
+    from .db import EvaluationRow, ExposureRow, EvidenceSpanRow
+    from .artifacts import named_span_ids
+    from .evaluation import evaluation_status
+    from .projections import ReadScope
+    dataset_hashes = {a.sha256 for a in values if a.kind == "dataset"}
+    span_ids = {identifier for a in values for identifier in named_span_ids(a)}
+    evidence_spans = [{"id": row.id, "source_artifact_id": row.source_artifact_id, "reference": row.reference}
+                     for row in session.scalars(select(EvidenceSpanRow).where(EvidenceSpanRow.project_id == pid,
+                                                                            EvidenceSpanRow.id.in_(span_ids)))]
+    evaluation_states = [evaluation_status(session, ReadScope(pid), row.protocol_id) for row in
+        session.scalars(select(EvaluationRow).where(EvaluationRow.project_id == pid, EvaluationRow.protocol_id.in_(ids)))]
+    exposure_events = [{"id": row.id, "dataset_sha256": row.dataset_sha256, "split_sha256": row.split_sha256,
+                        "artifact_id": row.artifact_id, "via": row.via, "created_at": row.created_at.isoformat()}
+        for row in session.scalars(select(ExposureRow).where(ExposureRow.project_id == pid,
+            ExposureRow.dataset_sha256.in_(dataset_hashes)).order_by(ExposureRow.created_at, ExposureRow.id))]
     snapshot = {
+        "evaluation_states": evaluation_states, "test_exposures": exposure_events, "evidence_spans": evidence_spans,
         "schema_version": "1.0", "captured_at": database_now(session).isoformat(),
         "scope": {"kind": "run" if selection else "project", "run_id": scope.run_id if selection else None,
                   "revision": selection.revision if selection else None,

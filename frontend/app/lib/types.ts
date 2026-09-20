@@ -16,7 +16,7 @@ export type AuditArtifact = Wire.Audit;
 export type SplitArtifact = Wire.Split;
 export type BenchmarkArtifact = Wire.Benchmark;
 export type EvidenceArtifact = Wire.Evidence;
-export type FailureArtifact = Wire.Failure;
+export type FailureArtifact = Wire.Failure | Wire.FailureV2;
 export type ProvenanceArtifact = Wire.Provenance;
 export type ReportArtifact = Wire.Report;
 
@@ -33,6 +33,8 @@ type ByKind = {
   dataset: DatasetArtifact; audit: AuditArtifact; split: SplitArtifact;
   benchmark: BenchmarkArtifact; evidence: EvidenceArtifact; failure: FailureArtifact;
   provenance: ProvenanceArtifact; report: ReportArtifact;
+  evaluation_protocol: Wire.EvaluationProtocol;
+  claim_set: Wire.ClaimSet;
 };
 export function kinds<K extends ArtifactKind>(artifacts: Artifact[], kind: K): ByKind[K][] {
   return artifacts.filter((a): a is ByKind[K] => a.kind === kind);

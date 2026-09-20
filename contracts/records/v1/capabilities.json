@@ -43,8 +43,8 @@
   "additionalProperties": false,
   "properties": {
     "schema_version": {
-      "const": "1.0",
-      "default": "1.0",
+      "const": "1.1",
+      "default": "1.1",
       "title": "Schema Version",
       "type": "string"
     },
@@ -104,14 +104,14 @@
       "$ref": "#/$defs/CapabilityLimits"
     },
     "agent_reads_available": {
-      "const": false,
-      "default": false,
+      "const": true,
+      "default": true,
       "title": "Agent Reads Available",
       "type": "boolean"
     },
     "evaluation_exposure": {
-      "const": "unavailable_pending_C12",
-      "default": "unavailable_pending_C12",
+      "const": "tracked_with_quarantine",
+      "default": "tracked_with_quarantine",
       "title": "Evaluation Exposure",
       "type": "string"
     },

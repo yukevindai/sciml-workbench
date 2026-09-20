@@ -33,6 +33,14 @@ def verify(row, expected_body=None):
 
 def prepare(session, work):
     lock_project(session, work.project_id)
+    # Legacy imports contain complete benchmark metrics; human prose may also
+    # disclose holdout results through the independently accessible upstream app.
+    actor = work.payload.get("actor")
+    if actor is None or actor["kind"] == "human":
+        from .artifacts import ArtifactResolver
+        from .evaluation import expose_artifact
+        value = ArtifactResolver(session, work.project_id).resolve(work.payload["benchmark_id"], "benchmark")
+        expose_artifact(session, work.project_id, value, via="failure_import")
     job = session.get(JobRow, work.job_id)
     if job.retry_of_job_id and session.get(ExternalOperationRow, job.retry_of_job_id) is not None:
         raise DomainError("Reconcile the original external operation; do not replace its import ID", 409)
@@ -97,6 +105,10 @@ def result_from_receipt(work, receipt):
     from .contracts import Failure
     from .services import software
     from .execution import TaskResult
+    if "actor" in work.payload:
+        from .outcomes import artifact_from_receipt
+        value = artifact_from_receipt(work, receipt, software())
+        return TaskResult(artifact=value.model_dump(mode="json"), receipt=receipt.model_dump(mode="json"))
     value = Failure(id=work.result_id, project_id=work.project_id, software=software(),
                     parents=[work.payload["benchmark_id"]], benchmark_id=work.payload["benchmark_id"],
                     external_project_id=receipt.external_project_id, external_record_id=receipt.external_record_id,
@@ -135,8 +147,9 @@ def link_artifact(session, work, value):
         raise DomainError("Failure publication requires a confirmed external receipt", 409)
     verify(row, work.external_import)
     receipt = FailureReceipt.model_validate(row.receipt)
-    if (value.external_project_id != receipt.external_project_id
-            or value.external_record_id != receipt.external_record_id or value.record != receipt.record):
+    if ((value.schema_version == "2.0" and value.receipt != receipt)
+            or (value.schema_version == "1.0" and (value.external_project_id != receipt.external_project_id
+            or value.external_record_id != receipt.external_record_id or value.record != receipt.record))):
         raise DomainError("Failure artifact differs from the confirmed receipt", 409)
     if row.artifact_id not in (None, value.id):
         raise DomainError("External receipt already published", 409)
