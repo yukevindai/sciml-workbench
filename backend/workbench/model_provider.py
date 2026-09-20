@@ -54,6 +54,7 @@ class ModelResult:
 
 
 class ModelProvider(Protocol):
+    def resolved_model(self, model: str) -> str | None: ...
     def complete(self, *, model: str, policy: AuthorityPolicy, context: list[ContextPart],
                  tools: list[ToolDefinition], max_tokens: int) -> ModelResult: ...
 
@@ -70,6 +71,9 @@ class AnthropicProvider:
 
     def close(self):
         self._client.close()
+
+    def resolved_model(self, model: str) -> str | None:
+        return self._verified.get(model)
 
     def _request(self, method: str, path: str, payload: dict | None = None) -> Any:
         sent = method == "POST"
@@ -158,6 +162,9 @@ class AnthropicProvider:
             raise ValueError()
         usage = value["usage"]
         categories = ("input_tokens", "output_tokens", "cache_creation_input_tokens", "cache_read_input_tokens")
+        if not isinstance(usage, dict) or set(usage) - set(categories):
+            # New billing categories require an explicit accounting integration.
+            raise ValueError()
         counts = {k: usage[k] for k in categories if k in usage}
         if not {"input_tokens", "output_tokens"} <= counts.keys() or any(type(n) is not int or n < 0 for n in counts.values()) or counts["output_tokens"] > max_tokens:
             raise ValueError()

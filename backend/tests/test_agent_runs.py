@@ -143,7 +143,7 @@ def test_action_job_intent_recovery_and_scope(db, service):
         assert replay.id == action.id and replay.state == 'submitted'
         restored = service.reconcile(s, 'p', run['id'])
         assert restored['jobs'][0]['job_id'] == job.id
-        assert s.scalar(select(ReservationRow)).payload['state'] == 'unknown'
+        assert s.scalar(select(ReservationRow).where(ReservationRow.request_id == 'provider-unknown')).payload['state'] == 'unknown'
         with pytest.raises(DomainError):
             service.get(s, 'q', run['id'])
     with pytest.raises(DomainError, match='different arguments'), db.session.begin() as s:

@@ -59,6 +59,12 @@ The D03 worker carries these claims through transaction-free subprocess executio
 
 ## Reproducing acceptance checks
 
+Migration `0008` adds guards to the B11 reservation table: accepted identities and
+resource/pricing snapshots cannot change, and unknown/settled usage cannot be
+refunded by a lifecycle rewrite. It preserves existing ledgers and refuses a
+populated downgrade. Legacy accounting blocks new spending until reconciled.
+See [E05 budget accounting](budgets.md).
+
 Migration `0007` adds `job_recoveries`: recorded bounded policy, recovery leases,
 attempt history and scientific retry linkage. It preserves existing job and
 external-operation rows, and refuses downgrade when recovery history exists.

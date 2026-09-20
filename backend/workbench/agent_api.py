@@ -28,7 +28,7 @@ def router(service: RunService, session, protected):
         row = service.get(s, pid, rid)
         plan = s.scalar(select(PlanRow).where(PlanRow.run_id == rid, PlanRow.revision == row.plan_revision))
         questions = [q.payload for q in s.scalars(select(QuestionRow).where(QuestionRow.run_id == rid).order_by(QuestionRow.id))]
-        return dict(run=row.payload, plan=plan.payload if plan else None, questions=questions,
+        return dict(run=service.projected_payload(s, row), plan=plan.payload if plan else None, questions=questions,
                     control_effect='New dispatch is fenced; accepted operations may still settle.'
                     if row.state in {'paused', 'cancelled'} else 'No stop control is active.')
 

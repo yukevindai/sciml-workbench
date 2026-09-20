@@ -64,6 +64,7 @@ def test_structured_calls_usage_and_metadata():
     lambda r: r["content"][0].update(input={"material_id": "m", "command": "bad"}),
     lambda r: r.update(stop_reason="end_turn"), lambda r: r.update(model="other"),
     lambda r: r["usage"].update(input_tokens=True), lambda r: r.update(content=None),
+    lambda r: r["usage"].update(unrecognized_billed_tokens=100),
 ])
 def test_malformed_responses_fail_closed(mutation):
     value = response()

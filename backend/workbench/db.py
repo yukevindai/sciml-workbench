@@ -245,6 +245,8 @@ def install_metadata_guards(metadata, connection, **kwargs):
     install_evaluations(connection)
     from .agent_guards_v6 import install as install_agents
     install_agents(connection)
+    from .budget_guards_v8 import install as install_budgets
+    install_budgets(connection)
 
 
 # Register application ledgers on the same metadata for migrations and test DBs.

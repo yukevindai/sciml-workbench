@@ -220,13 +220,18 @@ class RunService:
     def history(self, s, pid, after='', limit=50):
         from .services import project
         project(s, pid)
-        return [r.payload for r in s.scalars(select(RunRow).where(RunRow.project_id == pid,
+        return [self.projected_payload(s, r) for r in s.scalars(select(RunRow).where(RunRow.project_id == pid,
             RunRow.id > after).order_by(RunRow.id).limit(limit))]
 
     def reconcile(self, s, pid, rid):
         """Checkpoint recovery receives authoritative records, never a merged checkpoint."""
         row = self.get(s, pid, rid, lock=True)
-        return {'run': row.payload, 'policy': self.effective_policy(s, row).model_dump(mode='json'),
+        from .agent_db import ReservationRow, UsageRow
+        return {'run': self.projected_payload(s, row), 'policy': self.effective_policy(s, row).model_dump(mode='json'),
+            'reservations': [{'request_id': r.request_id, 'payload': r.payload} for r in s.scalars(
+                select(ReservationRow).where(ReservationRow.run_id == rid))],
+            'usage_entries': [{'request_id': r.request_id, 'payload': r.payload} for r in s.scalars(
+                select(UsageRow).where(UsageRow.run_id == rid))],
             'claim_token': row.claim_token,
             'actions': [{'id': a.id, 'state': a.state, 'request': a.request, 'outcome': a.outcome}
                 for a in s.scalars(select(ActionRow).where(ActionRow.run_id == rid))],
@@ -316,8 +321,12 @@ class RunService:
         s.flush()
         return action
 
-    def bind_job(self, s, pid, rid, aid, job_id, *, ownership='owned'):
-        """Call in the same transaction as idempotent scientific submission."""
+    def bind_job(self, s, pid, rid, aid, job_id, *, ownership='owned', finalization=False):
+        """Call in the project-locked transaction containing scientific submission.
+
+        Acquire the project barrier before submit_job's savepoint, as B04 does.
+        This is essential for rollback with SQLite's deferred transaction mode.
+        """
         row = self.get(s, pid, rid, lock=True)
         action = s.scalar(select(ActionRow).where(ActionRow.id == aid, ActionRow.run_id == rid))
         if not action:
@@ -343,12 +352,35 @@ class RunService:
                 scientific_model=action.request.get('scientific_model'))
         except PolicyDenied:
             raise DomainError('Action exceeds current authority', 403, 'POLICY_DENIED') from None
+        # E05: job acceptance, linkage and budget consumption share one transaction.
+        from .budgets import BudgetService, Resources
+        budgets = BudgetService(self)
+        request_id = 'job:' + aid
+        resources = Resources(tool_calls=1, scientific_attempts=1 if ownership == 'owned' else 0,
+                              transient_retries=1 if action.attempt > 1 else 0)
+        budgets.reserve(s, pid, rid, request_id, resources,
+            request_sha256=request_digest('scientific_job', {'job_id': job.id, 'ownership': ownership, 'finalization': finalization}),
+            expected_revision=action.control_revision, claim_token=action.claim_token,
+            assignment_id=action.assignment_id, finalization=finalization)
+        if budgets.dispatch(s, pid, rid, request_id):
+            budgets.settle(s, pid, rid, request_id, resources)
         link = RunJobRow(run_id=rid, action_id=aid, project_id=pid, job_id=job_id, ownership=ownership)
         s.add(link)
         action.state, action.outcome = 'submitted', {'job_id': job_id}
         self.event(s, row, 'action_changed', action_id=aid)
         s.flush()
         return link
+
+    def projected_payload(self, s, row):
+        """Terminal state stays immutable while late billed usage remains visible."""
+        from .agent_db import ReservationRow
+        from .budgets import BudgetService
+        rows = s.scalars(select(ReservationRow).where(ReservationRow.run_id == row.id)).all()
+        if not rows or any(r.payload.get('intent', {}).get('version') != 'e05.v1' for r in rows):
+            return row.payload
+        value = deepcopy(row.payload)
+        value['usage'] = BudgetService(self).snapshot(s, row.project_id, row.id).model_dump(mode='json')
+        return value
 
     def finish(self, s, pid, rid, expected_revision, *, state, artifact_ids, stop_reason=None):
         """Trusted finalization commits validated references and its event atomically."""
