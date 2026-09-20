@@ -2,6 +2,7 @@
 import json
 from fastapi import APIRouter, Depends, Header, Query
 from fastapi.responses import Response
+from fastapi.routing import APIRoute
 from sqlalchemy import select
 from .agent_db import PlanRow, QuestionRow
 from .agent_runs import RunService, TERMINAL
@@ -11,8 +12,28 @@ from .research_contracts import (RunInput, ResearchRun, RunControlInput, RunAmen
     QuestionAnswerInput, PlanAcceptanceInput, RunEvent)
 
 
-def router(service: RunService, session, protected):
-    routes = APIRouter(prefix='/api/v1/projects/{pid}/agent-runs', dependencies=protected)
+def router(service: RunService, session, protected, *, settings=None):
+    from .egress import SecretGuard, EgressDenied
+
+    class SafeAgentRoute(APIRoute):
+        def get_route_handler(self):
+            handler = super().get_route_handler()
+
+            async def guarded(request):
+                response = await handler(request)
+                try:
+                    guard = SecretGuard(settings)
+                    text = response.body.decode('utf-8')
+                    guard.check(text)
+                    if response.headers.get('content-type', '').startswith('application/json'):
+                        guard.check(json.loads(text))
+                except EgressDenied:
+                    raise DomainError('Agent response withheld by egress policy', 403, 'DATA_EXPOSURE_DENIED') from None
+                return response
+            return guarded
+
+    routes = APIRouter(prefix='/api/v1/projects/{pid}/agent-runs', dependencies=protected,
+                       route_class=SafeAgentRoute)
 
     @routes.post('', response_model=ResearchRun, status_code=202)
     def create(pid: str, body: RunInput, idempotency_key: str = Header(), s=Depends(session)):

@@ -334,16 +334,10 @@ def execute(store, settings, work):
 def safe_error(exc, settings):
     if isinstance(exc, httpx_error_types()):
         return "Failure Memory request failed. Check its server account and logs; credentials are never included in errors."
-    if isinstance(exc, (ValueError, TypeError, KeyError, DomainError)):
-        msg = str(exc)
-        for name in ("api_token", "efm_password", "database_url"):
-            secret = getattr(settings, name, None)
-            if hasattr(secret, "get_secret_value"):
-                secret = secret.get_secret_value()
-            if secret:
-                msg = msg.replace(secret, "[redacted]")
-        return msg[:1500]
-    return "Task could not complete. Check server logs using the job ID."
+    # Parser/adapter exceptions can quote entire raw rows or documents, even
+    # without credentials. Persist a fixed diagnostic rather than their text.
+    return "Task could not complete. Inspect the job error code and retained inputs."
+
 
 
 def httpx_error_types():

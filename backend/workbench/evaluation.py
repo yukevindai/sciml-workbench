@@ -61,7 +61,8 @@ def expose_artifact(session, pid, value, *, via, raw=False):
 
 
 def seal_evaluation(db, scope, candidates, *, primary_metric="group_mae", criterion=None,
-                    selection_rule="predeclared_comparison", exploratory=False):
+                    selection_rule="predeclared_comparison", exploratory=False, session=None):
+    from contextlib import nullcontext
     from .submission import SubmissionScope
     from .services import save
     if not isinstance(scope, SubmissionScope):
@@ -80,11 +81,17 @@ def seal_evaluation(db, scope, candidates, *, primary_metric="group_mae", criter
     success = SuccessCriterion.model_validate(criterion) if criterion is not None else None
     if primary_metric not in SCALAR_METRICS or (success is not None and success.metric not in SCALAR_METRICS):
         raise DomainError("Evaluation requires a supported scalar metric", 422, "UNSUPPORTED_CAPABILITY")
-    with db.session.begin() as session:
+    with (db.session.begin() if session is None else nullcontext(session)) as session:
         lock_project(session, scope.project_id)
+        if scope.run_id is not None:
+            from .agent_evaluation import assert_no_final_tuning
+            assert_no_final_tuning(session, scope.project_id, scope.run_id)
         resolver = ArtifactResolver(session, scope.project_id, scope.artifact_ids)
         data = resolver.resolve(first["dataset_id"], "dataset")
         split = resolver.resolve(first["split_id"], "split")
+        if scope.run_id is not None:
+            from .agent_evaluation import assert_predeclared_run
+            assert_predeclared_run(session, scope.project_id, scope.run_id, data.sha256)
         from .adapters import benchmark_source
         try:
             benchmark_source(data)
@@ -136,17 +143,21 @@ def evaluation_row(session, scope, protocol_id):
     return row
 
 
-def submit_candidate(service, scope, protocol_id, candidate_id, *, request_key=None, action_id=None, attempt_id=None):
+def submit_candidate(service, scope, protocol_id, candidate_id, *, request_key=None, action_id=None, attempt_id=None, session=None):
+    from contextlib import nullcontext
     from .submission import SubmissionScope, identity_key
     from .job_metadata import submit_job
     if not isinstance(scope, SubmissionScope):
         denied("A trusted submission scope is required")
     key = identity_key(scope, request_key, action_id, attempt_id)
-    with service.db.session.begin() as session:
+    with (service.db.session.begin() if session is None else nullcontext(session)) as session:
         lock_project(session, scope.project_id)
         row = evaluation_row(session, scope, protocol_id)
         if row.released_at is not None:
             denied("Released comparisons cannot submit or tune candidates")
+        if scope.run_id is not None:
+            from .agent_evaluation import assert_no_final_tuning
+            assert_no_final_tuning(session, scope.project_id, scope.run_id)
         if candidate_id not in row.requests:
             raise DomainError("Candidate was not predeclared")
         from .artifacts import operation_inputs
@@ -217,7 +228,9 @@ def authorize_metric(session, scope, benchmark, partition):
         if partition == "test":
             if scope.purpose != "final" or row.released_at is None:
                 denied("Test outputs are quarantined from selection and unreleased contexts")
+            from .agent_evaluation import final_exposure_marker
             expose_artifact(session, scope.project_id, benchmark, via="agent_final")
+            expose_artifact(session, scope.project_id, benchmark, via=final_exposure_marker(scope.run_id))
         elif partition != "validation":
             denied("Only validation projections are available during selection")
     elif partition == "test":

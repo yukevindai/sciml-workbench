@@ -72,7 +72,13 @@ class RunService:
 
     def effective_policy(self, s, row):
         server, project = self.policies(s, row.project_id)
-        return intersect_policy(server, project, AuthorityPolicy.model_validate(row.policy))
+        policy = intersect_policy(server, project, AuthorityPolicy.model_validate(row.policy))
+        # Generated artifacts are capabilities derived from accepted run actions,
+        # never IDs asserted by the model. Rebuild the closure against *current*
+        # authority so revoking an input also revokes its descendants.
+        from .tool_scope import derived_artifacts
+        derived = derived_artifacts(s, row, policy)
+        return policy.model_copy(update={'artifact_ids': policy.artifact_ids | derived})
 
     def event(self, s, row, event_type, **fields):
         row.event_sequence += 1

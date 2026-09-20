@@ -117,6 +117,10 @@ Replay verifies archive structure and source-pin compatibility before comparing 
 - [Durable external operation journal and reconciliation (B07)](docs/external-operations.md)
 - [Fenced result publication and cancellation barrier (B08)](docs/publication.md)
 - [Capabilities, bounded reads and receipt projections (B09)](docs/read-projections.md)
+- [Scoped typed agent tools and atomic dispatch (E03)](docs/tool-registry.md)
+- [Scoped memory, corrections and compatible scientific reuse (E09)](docs/agent-memory-reuse.md)
+- [Agent evaluation discipline and final-exposure fences (E12)](docs/agent-evaluation.md)
+- [Agent egress and untrusted-content defenses (E14)](docs/agent-egress.md)
 - [Operations, backups and troubleshooting](docs/operations.md)
 - [Versioned JSON Schemas](contracts/v1/)
 

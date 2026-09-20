@@ -15,6 +15,7 @@ from pydantic import Field
 from .budgets import BudgetService, Resources, Pricing
 from .contract_core import ContractModel, Identifier
 from .model_provider import ProviderError
+from .egress import SecretGuard, EgressDenied, check_context
 
 
 class ModelBound(ContractModel):
@@ -28,11 +29,12 @@ class ModelBound(ContractModel):
 
 
 class BudgetedProvider:
-    def __init__(self, db, provider, *, bounds: dict[str, ModelBound], prices: dict[str, Pricing] | None = None):
+    def __init__(self, db, provider, *, bounds: dict[str, ModelBound], prices: dict[str, Pricing] | None = None, backend_settings=None):
         self.db, self.provider = db, provider
         self.bounds = {key: value.model_copy(deep=True) for key, value in bounds.items()}
         self.prices = {key: value.model_copy(deep=True) for key, value in (prices or {}).items()}
         self.budgets = BudgetService()
+        self.guard = SecretGuard(backend_settings)
 
     def complete(self, *, project_id, run_id, request_id, expected_revision, claim_token,
                  model, context, tools, max_tokens, assignment_id=None, finalization=False, retry=False):
@@ -63,6 +65,18 @@ class BudgetedProvider:
                     "allowed_tools": policy.allowed_tools & frozenset(scope.allowed_tools),
                     "artifact_ids": policy.artifact_ids & frozenset(scope.allowed_artifact_ids),
                     "material_ids": policy.material_ids & frozenset(scope.allowed_material_ids)})
+            try:
+                check_context(policy, context)
+                self.guard.check(request)
+                if hasattr(self.provider, 'prepare_request'):
+                    prepared = self.provider.prepare_request(model=model, policy=policy, context=context,
+                                                             tools=tools, max_tokens=max_tokens)
+                    if len(json.dumps(prepared, ensure_ascii=False, allow_nan=False).encode()) > bound.max_request_bytes:
+                        raise ProviderError('token_bound_exceeded')
+                if hasattr(self.provider, 'guard'):
+                    self.provider.guard.check(request)
+            except EgressDenied as exc:
+                raise ProviderError(exc.code) from None
             self.budgets.reserve(s, project_id, run_id, request_id, resources,
                 request_sha256=hashlib.sha256(raw).hexdigest(), expected_revision=expected_revision,
                 claim_token=claim_token, assignment_id=assignment_id, finalization=finalization,

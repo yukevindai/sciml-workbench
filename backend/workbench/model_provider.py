@@ -1,7 +1,7 @@
 """Bounded Anthropic Messages adapter using the already pinned httpx transport.
 
 No retries, tool execution, logging, telemetry, or raw response persistence here.
-E05 owns reservations/retries. E14 must supply classified, filtered context.
+E05 owns reservations/retries. E14 checks every serialized request and response.
 """
 import json
 import re
@@ -14,6 +14,7 @@ from pydantic import BaseModel
 from .agent_policy import AuthorityPolicy
 from .config import AgentSettings, ConfigurationError
 from .contract_core import finite_json
+from .egress import SecretGuard, EgressDenied, check_context, context_records, SYSTEM_BOUNDARY
 
 API_VERSION = "2023-06-01"
 ADAPTER_VERSION = "anthropic-messages/1.0"
@@ -32,12 +33,28 @@ class ContextPart:
     project_id: str
     content_class: str
     text: str = field(repr=False)
+    artifact_ids: tuple[str, ...] = ()
+    material_ids: tuple[str, ...] = ()
+    source_classes: tuple[str, ...] = ()
+
+    @classmethod
+    def derived(cls, text: str, sources: list['ContextPart']):
+        """Trusted handoff/summary builder: never downgrade source exposure."""
+        if not sources or len({p.project_id for p in sources}) != 1:
+            raise ProviderError('data_exposure_denied')
+        rank = {'schema': 0, 'aggregates': 1, 'excerpt': 2, 'raw': 3}
+        if any(p.content_class not in rank for p in sources):
+            raise ProviderError('data_exposure_denied')
+        return cls(sources[0].project_id, max(sources, key=lambda p: rank[p.content_class]).content_class,
+                   text, tuple(sorted({a for p in sources for a in p.artifact_ids})),
+                   tuple(sorted({m for p in sources for m in p.material_ids})),
+                   tuple(sorted({c for p in sources for c in (p.content_class, *p.source_classes)})))
 
 
 @dataclass(frozen=True)
 class ToolDefinition:
     name: str
-    description: str
+    description: str = field(repr=False)
     input_model: type[BaseModel]
 
 
@@ -60,8 +77,9 @@ class ModelProvider(Protocol):
 
 
 class AnthropicProvider:
-    def __init__(self, settings: AgentSettings, *, transport: httpx.BaseTransport | None = None):
+    def __init__(self, settings: AgentSettings, *, transport: httpx.BaseTransport | None = None, backend_settings=None):
         settings.validate_provider()
+        self.guard = SecretGuard(settings, backend_settings)
         self._key = settings.anthropic_api_key
         self._models = frozenset({settings.coordinator_model, settings.specialist_model})
         self._verified: dict[str, str] = {}
@@ -93,13 +111,13 @@ class AnthropicProvider:
                     body.extend(chunk)
                     if len(body) > self._response_bytes:
                         raise ProviderError("response_too_large", usage_unknown=sent)
-                # Reject echoed credentials before parsing or exporting provider-controlled fields.
-                if self._key.get_secret_value().encode() in body:
-                    raise ProviderError("secret_in_response", usage_unknown=sent)
-                result = json.loads(body)
-                finite_json(result)
-                if self._key.get_secret_value() in json.dumps(result, ensure_ascii=False):
-                    raise ProviderError("secret_in_response", usage_unknown=sent)
+                try:
+                    self.guard.check(body.decode('utf-8'), 'secret_in_response')
+                    result = json.loads(body)
+                    finite_json(result)
+                    self.guard.check(result, 'secret_in_response')
+                except EgressDenied as exc:
+                    raise ProviderError(exc.code, usage_unknown=sent) from None
                 return result
         except ProviderError:
             raise
@@ -120,33 +138,37 @@ class AnthropicProvider:
         self._verified = verified
         return dict(verified)
 
-    def complete(self, *, model: str, policy: AuthorityPolicy, context: list[ContextPart],
-                 tools: list[ToolDefinition], max_tokens: int) -> ModelResult:
+    def prepare_request(self, *, model: str, policy: AuthorityPolicy, context: list[ContextPart],
+                 tools: list[ToolDefinition], max_tokens: int) -> dict:
         if model not in self._verified or model not in policy.provider_models:
             raise ProviderError("model_not_verified_or_allowed")
         if type(max_tokens) is not int or not 0 < max_tokens <= policy.limits.model_tokens or policy.limits.model_requests == 0:
             raise ProviderError("budget_exhausted")
         if len({t.name for t in tools}) != len(tools) or any(t.name not in policy.allowed_tools for t in tools):
             raise ProviderError("tool_not_allowed")
-        if not context or any(p.project_id not in policy.project_ids or p.content_class not in policy.content_classes for p in context):
-            raise ProviderError("data_exposure_denied")
-        exposure_classes = {"schema", "aggregates"}
-        if policy.exposure in {"selected_excerpts", "raw_project_content"}:
-            exposure_classes.add("excerpt")
-        if policy.exposure == "raw_project_content":
-            exposure_classes.add("raw")
-        if any(p.content_class not in exposure_classes for p in context):
-            raise ProviderError("data_exposure_denied")
+        try:
+            check_context(policy, context)
+        except EgressDenied as exc:
+            raise ProviderError(exc.code) from None
         payload = {"model": self._verified[model], "max_tokens": max_tokens,
-            "messages": [{"role": "user", "content": "\n".join(p.text for p in context)}]}
+            "system": SYSTEM_BOUNDARY,
+            "messages": [{"role": "user", "content": context_records(context)}]}
         if tools:
             payload["tools"] = [{"name": t.name, "description": t.description,
                                   "input_schema": t.input_model.model_json_schema()} for t in tools]
         encoded = json.dumps(payload, allow_nan=False, ensure_ascii=False).encode()
         if len(encoded) > policy.max_context_bytes:
             raise ProviderError("context_too_large")
-        if self._key.get_secret_value() in "\n".join(p.text for p in context) or self._key.get_secret_value().encode() in encoded:
-            raise ProviderError("secret_in_context")
+        try:
+            self.guard.check([p.text for p in context])
+            self.guard.check(payload)
+        except EgressDenied as exc:
+            raise ProviderError(exc.code) from None
+        return payload
+
+    def complete(self, *, model: str, policy: AuthorityPolicy, context: list[ContextPart],
+                 tools: list[ToolDefinition], max_tokens: int) -> ModelResult:
+        payload = self.prepare_request(model=model, policy=policy, context=context, tools=tools, max_tokens=max_tokens)
         value = self._request("POST", "/v1/messages", payload)
         try:
             return self._parse(value, tools, self._verified[model], max_tokens)

@@ -5,6 +5,7 @@ owns the submission transaction; it does not run science or implement agent poli
 """
 
 from dataclasses import dataclass
+from contextlib import nullcontext
 import hashlib
 import json
 
@@ -113,7 +114,7 @@ class SubmissionService:
                             request_key=request_key, raw_pdf=raw)
 
     def _submit(self, scope, kind, payload, *, request_key=None, action_id=None, attempt_id=None,
-                retry_of_job_id=None, raw_pdf=None):
+                retry_of_job_id=None, raw_pdf=None, session=None):
         if not isinstance(scope, SubmissionScope):
             raise DomainError("A trusted submission scope is required", 403)
         key = identity_key(scope, request_key, action_id, attempt_id)
@@ -183,13 +184,15 @@ class SubmissionService:
         if raw_pdf is not None:
             # Validate/replay before blob I/O; release metadata before fsync. The
             # locked transaction below rechecks state after immutable publication.
-            with self.db.session() as session:
-                _, old = prepare(session)
+            with self.db.session() as preflight:
+                _, old = prepare(preflight)
                 if old is not None:
                     return old
             self.store.put(raw_pdf)
 
-        with self.db.session.begin() as session:
+        # Internal dispatch may supply its project-locked transaction so action,
+        # job linkage and budget settlement commit (or roll back) together.
+        with (self.db.session.begin() if session is None else nullcontext(session)) as session:
             lock_project(session, scope.project_id)
             accepted, old = prepare(session)
             job = old if old is not None else submit_job(session, scope.project_id, kind, accepted, key,
