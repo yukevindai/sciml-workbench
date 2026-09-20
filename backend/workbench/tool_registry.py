@@ -243,6 +243,7 @@ class ToolRegistry:
             SplitConfig(**payload['config'])
         with self.db.session.begin() as s:
             run = self.runs.get(s, context.project_id, context.run_id, lock=True)
+            self.runs.assert_dispatch(s, run)
             if (run.control_revision != context.expected_revision or run.claim_token != context.claim_token
                     or run.state in TERMINAL | {'paused', 'waiting_for_input'}):
                 raise DomainError('Stale run control', 409, 'RUN_REVISION_CHANGED')

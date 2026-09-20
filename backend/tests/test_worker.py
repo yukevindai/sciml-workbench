@@ -80,6 +80,29 @@ def outcome(db, job_id):
         return row, audits
 
 
+def test_lost_claim_stops_supervised_process_without_publishing(runtime, monkeypatch):
+    from workbench.publication import fence_cancelled
+    from workbench.processes import run_bounded, ProcessInterrupted
+    db, settings, _ = runtime
+    jid = queue(runtime)
+    claimed = claim_next(db, 30, 'worker')
+    def cancelled_task(settings, work, deadline, stopped):
+        assert not stopped()
+        with db.session.begin() as s:
+            assert fence_cancelled(s, 'p', claimed)
+        started = time.monotonic()
+        with pytest.raises(ProcessInterrupted):
+            run_bounded([sys.executable, '-c', 'import time; time.sleep(30)'],
+                        deadline, stopped=stopped, grace=0.2)
+        assert time.monotonic() - started < 5
+        raise ProcessInterrupted()
+    monkeypatch.setattr(worker, 'run_task', cancelled_task)
+    worker.process_job(settings, claimed, db=db)
+    row, count = outcome(db, jid)
+    assert row.state == 'failed' and row.error_code == 'RUN_CANCELLED'
+    assert count == 0
+
+
 def test_real_subprocess_has_no_metadata_transaction_or_credentials(runtime, monkeypatch):
     db, settings, _ = runtime
     job_id = queue(runtime)

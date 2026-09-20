@@ -258,12 +258,20 @@ def test_api_auth_scope_unknown_fields_and_sse(tmp_path):
         assert client.post(base, json=request).json()['id'] == rid
         assert client.get(base + '/' + rid).json()['run']['id'] == rid
         assert client.get('/api/v1/projects/q/agent-runs/' + rid).status_code == 404
+        for endpoint in ('stream', 'events', 'result'):
+            scoped = f'/api/v1/projects/q/agent-runs/{rid}/{endpoint}'
+            assert client.get(scoped, headers={'Last-Event-ID': '999999'}).status_code == 404
         stream = client.get(base + '/' + rid + '/stream')
         assert 'id: 1' in stream.text and 'event: accepted' in stream.text
         assert 'id: 1' not in client.get(base + '/' + rid + '/stream', headers={'Last-Event-ID': '1'}).text
         assert client.get(base + '/' + rid + '/stream', headers={'Last-Event-ID': '-1'}).status_code == 422
         client.headers.pop('Authorization')
         assert client.get(base + '/' + rid + '/stream').status_code == 401
+        for endpoint in ('', '/events', '/result'):
+            assert client.get(base + '/' + rid + endpoint).status_code == 401
+        for path in ('/api/v1/projects', '/api/v1/projects/p/artifacts/a/download',
+                     '/api/v1/projects/p/research-materials/m/download'):
+            assert client.get(path).status_code == 401
     database.engine.dispose()
 
 

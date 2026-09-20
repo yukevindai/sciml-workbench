@@ -1,6 +1,6 @@
 # Agent persistence and operator controls
 
-B11/B12 add application persistence and authenticated operator APIs. They do not enable a coordinator. New HTTP submissions return `503 AGENT_UNAVAILABLE` until D11 supplies an operational admission/scheduling boundary; existing records remain readable and controllable. Tests inject a trusted admission callback without calling a model. An environment flag cannot bypass this gate.
+B11/B12 add application persistence and authenticated operator APIs. D11/D12 add [leased advancement and enforced controls](agent-scheduler.md). New HTTP submissions return `503 AGENT_UNAVAILABLE` until E04 supplies the adaptive coordinator integration; existing records remain readable and controllable. Tests inject a trusted admission callback without calling a model. An environment flag cannot bypass this gate.
 
 ## Database and checkpoint setup
 
@@ -44,7 +44,7 @@ All routes share the existing bearer-token and origin boundary. The base path is
 
 Control request keys are shared across a run's operations; reuse for different content or operations conflicts. A compatible replay returns the original recorded control response, even after subsequent state changes. Refetch the run for its current state. Generic Resume cannot bypass outstanding questions or plan review; answering while paused leaves the run paused. Terminal runs cannot be resumed or amended. Autopilot has no plan-acceptance step.
 
-Pause/cancel immediately fence new application dispatch. Responses explicitly say already accepted operations may still settle. These controls do not claim to have killed a scientific process, revoked shared job ownership, or enforced late-publication fencing; D12 owns those effects. Raw checkpoints, leases, arbitrary permissions, private action arguments and reservations have no client-write route.
+Pause/cancel immediately fence new application dispatch. Pause drains accepted jobs under their original fixed deadlines. Cancel atomically fences solely owned jobs and detaches shared consumers; workers observe lost claims and terminate their supervised tasks. Prior external effects may still have committed. See [D12 semantics](agent-scheduler.md). Raw checkpoints, leases, arbitrary permissions, private action arguments and reservations have no client-write route.
 
 ## Verification
 

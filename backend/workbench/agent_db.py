@@ -67,3 +67,10 @@ class EvaluationLinkRow(Base):
 
 class MemoryRow(Base):
     __table__ = Base.metadata.tables['project_memory']
+
+
+from .scheduler_schema_v10 import table as lease_table
+
+
+class LeaseRow(Base):
+    __table__ = lease_table(Base.metadata)

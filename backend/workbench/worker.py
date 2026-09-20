@@ -102,6 +102,28 @@ def process_job(settings, claimed, *, db=None, stopped=lambda: False):
         raise TypeError("Scientific execution requires the original JobClaim, not a job ID")
     owned_db = db is None
     db = db or Database(settings.database_url)
+    stop_requested = stopped
+    next_check = 0.0
+    lost_claim = False
+
+    def stopped():
+        nonlocal next_check, lost_claim
+        if stop_requested() or lost_claim:
+            return True
+        if time.monotonic() >= next_check:
+            next_check = time.monotonic() + 0.5
+            try:
+                with db.session() as session:
+                    from sqlalchemy import select
+                    from .job_metadata import claim_predicate
+                    # Deadline expiry is handled by the fixed process timer, so
+                    # it retains JOB_TIMED_OUT rather than becoming cancellation.
+                    lost_claim = session.scalar(select(JobRow.id).where(*claim_predicate(claimed))) is None
+            except Exception:
+                # Fail closed if metadata authority cannot be verified.
+                lost_claim = True
+        return lost_claim
+
     try:
         work, deadline = prepare_claim(db, claimed)
         if work.kind == "failure":

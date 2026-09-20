@@ -8,8 +8,7 @@ function equal(a: string, b: string) {
 export function proxy(request: NextRequest) {
   // Constant liveness response; no workspace data or backend access.
   if (request.nextUrl.pathname === '/healthz') return NextResponse.json({ status: 'ok' });
-  const required = process.env.WB_REQUIRE_LOGIN !== '0' &&
-    (process.env.NODE_ENV === 'production' || process.env.WB_REQUIRE_LOGIN === '1');
+  const required = process.env.NODE_ENV === 'production' || process.env.WB_REQUIRE_LOGIN === '1';
   if (!required) return NextResponse.next();
   const username = process.env.WB_LOGIN_USERNAME;
   const password = process.env.WB_LOGIN_PASSWORD;

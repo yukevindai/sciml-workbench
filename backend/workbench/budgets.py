@@ -232,6 +232,7 @@ class BudgetService:
             denied("Shared resource allowance exhausted")
 
     def _authority(self, s, row, intent):
+        self.runs.assert_dispatch(s, row)
         if (row.state in TERMINAL | {"paused", "waiting_for_input"} or row.payload["open_question_ids"]
                 or row.control_revision != intent.control_revision or row.claim_token != intent.claim_token):
             denied("Run control fences new spending", "RUN_REVISION_CHANGED")

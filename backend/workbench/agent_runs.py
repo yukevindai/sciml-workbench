@@ -28,12 +28,17 @@ def key_check(key):
 
 
 class RunService:
-    def __init__(self, admission=None):
+    def __init__(self, admission=None, *, claim=None):
         self.admission = admission or self.unavailable
+        self.claim = claim
+
+    def assert_dispatch(self, s, row):
+        from .agent_scheduler import assert_authority
+        assert_authority(s, row, self.claim)
 
     @staticmethod
     def unavailable():
-        raise DomainError('Agent scheduler is unavailable (D11)', 503, 'AGENT_UNAVAILABLE')
+        raise DomainError('Agent coordinator integration is unavailable (E04)', 503, 'AGENT_UNAVAILABLE')
 
     def get(self, s, pid, rid, *, lock=False):
         if lock:
@@ -143,6 +148,8 @@ class RunService:
                 conflict('Run is already paused')
             value['state'] = 'paused'
         elif operation == 'cancel':
+            from .agent_controls import cancel_jobs
+            cancel_jobs(s, row)
             value.update(state='cancelled', finished_at=now(), stop_reason='Cancelled by operator')
             for question in s.scalars(select(QuestionRow).where(QuestionRow.run_id == rid, QuestionRow.status == 'open')):
                 question.status = 'cancelled'
@@ -246,6 +253,7 @@ class RunService:
 
     def publish_plan(self, s, pid, rid, plan: ResearchPlan, expected_revision):
         row = self.get(s, pid, rid, lock=True)
+        self.assert_dispatch(s, row)
         if row.control_revision != expected_revision or row.state in TERMINAL | {'paused'}:
             conflict()
         if plan.project_id != pid or plan.run_id != rid or plan.revision != row.plan_revision + 1:
@@ -264,6 +272,7 @@ class RunService:
 
     def ask(self, s, pid, rid, question: ResearchQuestion, expected_revision):
         row = self.get(s, pid, rid, lock=True)
+        self.assert_dispatch(s, row)
         if row.control_revision != expected_revision or row.state in TERMINAL | {'paused'}:
             conflict()
         if question.project_id != pid or question.run_id != rid or question.run_revision != expected_revision or question.status != 'open':
@@ -286,6 +295,7 @@ class RunService:
         """
         key_check(action_key)
         row = self.get(s, pid, rid, lock=True)
+        self.assert_dispatch(s, row)
         digest = request_digest('agent_action', request)
         old = s.scalar(select(ActionRow).where(ActionRow.run_id == rid,
             ActionRow.action_key == action_key, ActionRow.attempt == attempt))
@@ -335,6 +345,7 @@ class RunService:
         """
         row = self.get(s, pid, rid, lock=True)
         action = s.scalar(select(ActionRow).where(ActionRow.id == aid, ActionRow.run_id == rid))
+        self.assert_dispatch(s, row)
         if not action:
             raise DomainError('Action does not belong to run', 404, 'REFERENCE_INVALID')
         old = s.get(RunJobRow, (rid, aid))
@@ -391,6 +402,7 @@ class RunService:
     def finish(self, s, pid, rid, expected_revision, *, state, artifact_ids, stop_reason=None):
         """Trusted finalization commits validated references and its event atomically."""
         row = self.get(s, pid, rid, lock=True)
+        self.assert_dispatch(s, row)
         if row.control_revision != expected_revision or row.state in TERMINAL | {'paused'}:
             conflict()
         if state not in {'completed', 'partially_completed', 'failed'}:

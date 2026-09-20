@@ -63,7 +63,7 @@ def main():
     settings = load_settings()
     agent = load_settings(AgentSettings)
     if agent.agents_enabled:
-        # Fail before migrations or child processes; D11 will supply the scheduler.
+        # Fail before migrations or child processes until E04 supplies a coordinator.
         agent.require_runtime()
     # Run at runtime: Render disks are unavailable to pre-deploy commands.
     setup(settings)

@@ -236,13 +236,17 @@ def test_exhausted_scientific_budget_rolls_back_job_and_action_link(db, service)
         assert s.scalar(select(RunJobRow).where(RunJobRow.action_id == action.id)) is None
 
 
-def test_populated_migration_retains_reservation_and_refuses_downgrade(db, service):
+def test_populated_migration_retains_reservation_and_refuses_downgrade(db, service, monkeypatch):
     from test_metadata import migrate
     run = create(db, service)
     # Downgrade only the new empty guard revision, retaining B11 tables and runs.
     migrate(db, '0007', downgrade=True)
-    held = reserve(db, service, run, 'unknown')
-    dispatch(db, service, run, 'unknown')
+    # Seed the historical pre-D11 service behavior before upgrading. Production
+    # code requires 0010 and must fail closed on an unmigrated database.
+    with monkeypatch.context() as patch:
+        patch.setattr(service, 'assert_dispatch', lambda s, row: None)
+        held = reserve(db, service, run, 'unknown')
+        dispatch(db, service, run, 'unknown')
     migrate(db)
     assert snapshot(db, service, run).unknown_request_ids == ['unknown']
     with pytest.raises(RuntimeError, match='budget reservations'):

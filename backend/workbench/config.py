@@ -100,7 +100,7 @@ class AgentSettings(BaseSettings):
         if not self.agents_enabled:
             raise ConfigurationError("Agent execution is disabled (WB_AGENTS_ENABLED=0); use the manual workflow.")
         raise ConfigurationError(
-            "Agent scheduling is not implemented in this revision (D11). "
+            "D11 scheduler infrastructure is available; the adaptive coordinator integration (E04) is not implemented. "
             "Set WB_AGENTS_ENABLED=0 and omit the Compose agents profile to use the manual workflow."
         )
 

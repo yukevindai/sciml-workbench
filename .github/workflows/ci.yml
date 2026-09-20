@@ -38,7 +38,7 @@ jobs:
       - name: Source-pinned scientific integration and backend regressions
         run: python scripts/check_scientific_integration.py --all
       - run: python scripts/export_schemas.py --check
-      - run: npm ci && npm run contracts:check && npm run test:contracts && npm run build
+      - run: npm ci && npm run contracts:check && npm run test:contracts && npm run test:boundary && npm run build
         working-directory: frontend
       - run: npx playwright install --with-deps chromium
         working-directory: frontend
@@ -79,7 +79,7 @@ jobs:
           status=$?
           set -e
           test "$status" = "2"
-          grep -q 'B11/D11' /tmp/agent-startup.log
+          grep -q 'E04' /tmp/agent-startup.log
           ! grep -q 'ci-only-canary' /tmp/agent-startup.log
       - run: |
           curl --fail http://localhost:3000/healthz

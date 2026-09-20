@@ -50,8 +50,10 @@ def router(service: RunService, session, protected, *, settings=None):
         plan = s.scalar(select(PlanRow).where(PlanRow.run_id == rid, PlanRow.revision == row.plan_revision))
         questions = [q.payload for q in s.scalars(select(QuestionRow).where(QuestionRow.run_id == rid).order_by(QuestionRow.id))]
         return dict(run=service.projected_payload(s, row), plan=plan.payload if plan else None, questions=questions,
-                    control_effect='New dispatch is fenced; accepted operations may still settle.'
-                    if row.state in {'paused', 'cancelled'} else 'No stop control is active.')
+                    control_effect=('New dispatch is fenced; accepted jobs drain under their fixed deadlines.'
+                        if row.state == 'paused' else
+                        'Owned jobs are fenced and shared jobs detached; prior external effects may have settled.'
+                        if row.state == 'cancelled' else 'No stop control is active.'))
 
     @routes.post('/{rid}/amend', response_model=ResearchRun)
     def amend(pid: str, rid: str, body: RunAmendmentInput, idempotency_key: str = Header(), s=Depends(session)):

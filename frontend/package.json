@@ -10,7 +10,8 @@
     "test:e2e": "playwright test",
     "contracts:generate": "node scripts/generate-contracts.mjs",
     "contracts:check": "node scripts/generate-contracts.mjs --check",
-    "test:contracts": "node --test tests/contracts.test.mjs"
+    "test:contracts": "node --test tests/contracts.test.mjs",
+    "test:boundary": "node --test tests/private-boundary.test.mjs"
   },
   "dependencies": {
     "ajv": "8.20.0",
