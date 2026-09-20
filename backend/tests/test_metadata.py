@@ -37,6 +37,16 @@ def migrate(db, revision="head", *, downgrade=False):
         (command.downgrade if downgrade else command.upgrade)(config, revision)
 
 
+def database_url(db):
+    """Let separately constructed API pools use the fixture's isolated schema."""
+    url = db.engine.url
+    if db.engine.dialect.name == "postgresql":
+        with db.engine.connect() as connection:
+            schema = connection.scalar(text("SELECT current_schema()"))
+        url = url.update_query_dict({"options": f"-csearch_path={schema}"})
+    return url.render_as_string(hide_password=False)
+
+
 @pytest.fixture(params=["sqlite", "postgresql"])
 def old_db(request, tmp_path):
     admin = None

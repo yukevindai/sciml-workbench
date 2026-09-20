@@ -13,25 +13,24 @@ from sqlalchemy import select, func, update
 from sqlalchemy.exc import IntegrityError
 from workbench.api import create_app
 from workbench.config import Settings
-from workbench.db import ArtifactRow, Base, MaterialRow, JobRow
-from workbench import intake, services
+from workbench.db import ArtifactRow, MaterialRow, JobRow
+from workbench import adapters, intake, services
 from workbench.contracts import uid
 from workbench.execution import Work
 from workbench.replay import replay
 from workbench.scientific_contracts import SourceDeclarations
 from workbench.storage import LocalStore
-from test_metadata import old_db, db, migrate
+from test_metadata import old_db, db, migrate, database_url
 
 RAW = b'\xef\xbb\xbf x ,target\r\n1,2\r\n2,3\r\n3,4\r\n'
 EXAMPLES = Path(__file__).resolve().parents[2] / "examples"
 
 
 @pytest.fixture
-def api(tmp_path):
-    settings = Settings(_env_file=None, database_url=f"sqlite:///{tmp_path}/test.db", storage_root=tmp_path / "blobs",
+def api(tmp_path, db):
+    settings = Settings(_env_file=None, database_url=database_url(db), storage_root=tmp_path / "blobs",
                         api_token="a" * 48, efm_password="b" * 24)
     app = create_app(settings)
-    Base.metadata.create_all(app.state.db.engine)
     with TestClient(app) as client:
         client.headers["Authorization"] = "Bearer " + "a" * 48
         pid = client.post("/api/v1/projects", json={"name": "Intake"}).json()["id"]
@@ -144,7 +143,8 @@ def test_v2_real_audit_benchmark_admission_and_replay(api, tmp_path, declared):
     binding = attach(client, pid, raw, **({"X-Source": json.dumps(declarations)} if declared else {})).json()
     aid = binding["dataset_id"]
     with app.state.db.session() as session:
-        data = services.artifact(session, pid, aid).model_dump(mode="json")
+        dataset = services.artifact(session, pid, aid)
+        data = dataset.model_dump(mode="json")
     config = json.loads((EXAMPLES / "audit.json").read_text())
     work = Work(job_id=uid(), result_id=uid(), project_id=pid, kind="audit",
                 payload={"dataset_id": aid, "config": config}, artifacts={aid: data})
@@ -158,7 +158,10 @@ def test_v2_real_audit_benchmark_admission_and_replay(api, tmp_path, declared):
         artifacts={aid: data, part.id: part.model_dump(mode="json"), result.id: result.model_dump(mode="json")}))
     assert baseline.status == ("succeeded" if declared else "failed"), baseline.error
     if not declared:
-        assert "resolved source declarations" in baseline.error and baseline.bundle_key is None
+        with pytest.raises(ValueError, match="resolved source declarations"):
+            adapters.benchmark_source(dataset)
+        assert baseline.error == "Task could not complete. Inspect the job error code and retained inputs."
+        assert baseline.bundle_key is None
     with app.state.db.session.begin() as session:
         services.save(session, result)
         services.save(session, part)

@@ -21,11 +21,12 @@ from workbench import adapters, worker
 from workbench.api import create_app
 from workbench.config import Settings
 from workbench.contracts import Audit, Source
-from workbench.db import ArtifactRow, Base, Database, JobRow, ProjectRow
+from workbench.db import ArtifactRow, Database, JobRow, ProjectRow
 from workbench.execution import TaskResult
 from workbench.job_metadata import JobClaim, StaleClaim, claim_next, database_now, fail_claim, submit_job
 from workbench.services import upload_csv
 from workbench.storage import LocalStore
+from test_metadata import migrate
 
 
 @pytest.fixture(params=["sqlite", "postgresql"])
@@ -46,7 +47,7 @@ def runtime(request, tmp_path):
                         api_token="a" * 48, efm_password="b" * 24)
     db = Database(url)
     try:
-        Base.metadata.create_all(db.engine)
+        migrate(db)
         with db.session.begin() as session:
             session.add(ProjectRow(id="p", name="Runtime"))
         with db.session.begin() as session:

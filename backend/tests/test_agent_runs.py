@@ -11,12 +11,11 @@ from workbench.agent_runs import RunService
 from workbench.api import create_app
 from workbench.config import Settings
 from workbench.contracts import uid, now
-from workbench.db import Base, ProjectRow
 from workbench.errors import DomainError
 from workbench.job_metadata import submit_job
 from workbench.research_contracts import (RunInput, RunControlInput, RunAmendmentInput,
     PlanAcceptanceInput, ResearchPlan, ResearchQuestion, QuestionAnswerInput)
-from test_metadata import old_db, db, migrate
+from test_metadata import old_db, db, migrate, database_url
 
 
 @pytest.fixture
@@ -232,15 +231,12 @@ def test_bind_rechecks_policy_after_preparation(db, service):
         service.bind_job(s, 'p', run['id'], action.id, job.id)
 
 
-def test_api_auth_scope_unknown_fields_and_sse(tmp_path):
-    app = create_app(Settings(database_url=f'sqlite:///{tmp_path}/api.sqlite', storage_root=tmp_path,
+def test_api_auth_scope_unknown_fields_and_sse(tmp_path, db):
+    app = create_app(Settings(database_url=database_url(db), storage_root=tmp_path,
         api_token='a' * 48, efm_password='strong-test-password'))
     database = app.state.db
-    Base.metadata.create_all(database.engine)
     policy = AuthorityPolicy(policy_id='policy', revision=1, project_ids={'p'})
     with database.session.begin() as s:
-        s.add(ProjectRow(id='p', name='Test'))
-        s.flush()
         s.add(ServerPolicyRow(revision=1, payload=policy.model_dump(mode='json')))
         s.add(ProjectPolicyRow(project_id='p', revision=1, payload=policy.model_dump(mode='json')))
     with TestClient(app) as client:

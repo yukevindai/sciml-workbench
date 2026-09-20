@@ -92,6 +92,10 @@ cd frontend && npx playwright install chromium && npm run test:e2e
 
 The Python tests use temporary SQLite metadata by default, **real pinned upstream packages**, and real Failure Memory HTTP routes via ASGI. For PostgreSQL queue/transaction coverage, set `TEST_DATABASE_URL` to a dedicated test database. Tests create projects but never clear existing data; do not use your research database. Run browser tests against the live API, worker and web processes above. CI runs migrations, the Python suite on PostgreSQL, a frontend production build, browser workflow tests, and a separate Compose startup check.
 
+For the strict PostgreSQL data/API acceptance matrix, set `TEST_DATABASE_URL` and
+run `python scripts/check_data_integration.py`. It rejects skipped or missing
+PostgreSQL coverage and records JUnit evidence. See [B10 checks](docs/data-integration.md).
+
 ### Replay an exported report
 
 ```bash
