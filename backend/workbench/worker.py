@@ -113,6 +113,9 @@ def process_job(settings, claimed, *, db=None, stopped=lambda: False):
             raise ProcessInterrupted()
         if time.monotonic() >= deadline:
             raise ProcessTimedOut()
+        if work.kind == "report" and result.artifact and not result.error:
+            from .archive import reject_configured_secrets
+            reject_configured_secrets(LocalStore(settings.storage_root).get(result.artifact["blob_key"]), settings)
         publish_result(db, claimed, work, result, store=LocalStore(settings.storage_root), stopped=stopped)
     except StaleClaim:
         fail_claim(db, claimed, error="Claim expired before publication; retry explicitly.", error_code="JOB_TIMED_OUT")

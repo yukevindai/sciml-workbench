@@ -98,7 +98,7 @@ The Python tests use temporary SQLite metadata by default, **real pinned upstrea
 python -m workbench.replay /path/to/report.zip /new/output-directory
 ```
 
-Replay validates every archived file against the manifest, regenerates audit and split results, verifies identical row assignments and executes successful baselines through the same upstream APIs. It never reimports failure records. Scores may have floating-point differences across platforms; exact data/configuration hashes and partitions must agree. Failed runs remain recorded but are not retried by replay.
+Replay verifies archive structure and source-pin compatibility before comparing audits, exact split assignments, baseline metrics and predictions (rtol=1e-9, atol=1e-12). It writes a structured comparison and never reimports failure records or replays agent text. Use `--verify-only` for structural verification without computation. See [report verification and replay](docs/report-replay.md) for fresh-environment setup, compatibility and limits.
 
 ## Architecture and contracts
 

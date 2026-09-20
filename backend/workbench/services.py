@@ -2,8 +2,7 @@ import hashlib
 import io
 import json
 import zipfile
-from importlib.metadata import version, distributions
-import platform
+from importlib.metadata import version
 from copy import deepcopy
 from pathlib import Path
 from types import SimpleNamespace
@@ -106,8 +105,8 @@ def capture_report(session, pid):
 
 
 def report_bundle(snapshot, store):
-    from .references import verify_captured_references
-    verify_captured_references(snapshot, store)
+    from .archive import verify_snapshot, verify_archive, environment
+    verify_snapshot(snapshot, store)
     artifacts = snapshot["artifacts"]
     proj = SimpleNamespace(**snapshot["project"])
     files = {
@@ -119,15 +118,10 @@ def report_bundle(snapshot, store):
         "evaluation-states.json": adapters.encoded(snapshot.get("evaluation_states", [])),
         "test-exposures.json": adapters.encoded(snapshot.get("test_exposures", [])),
         "evidence-spans.json": adapters.encoded(snapshot.get("evidence_spans", [])),
-        "software.json": adapters.encoded(software()),
+        "software.json": adapters.encoded(snapshot.get("software", software())),
     }
     files["environment.json"] = adapters.encoded(
-        {
-            "python": platform.python_version(),
-            "platform": platform.platform(),
-            "packages": {d.metadata["Name"]: d.version for d in distributions()},
-            "upstream_commits": PINS,
-        }
+        snapshot.get("environment", environment())
     )
     for a in artifacts:
         for field in ("blob_key", "bundle_key", "pdf_key"):
@@ -163,6 +157,8 @@ def report_bundle(snapshot, store):
         "## Replay\nInstall the workbench backend at version 0.1.0 using its pinned dependencies.\n"
         "Run `python -m workbench.replay /path/to/report.zip /new/output-directory`.\n"
         "This verifies every manifest digest and reruns audits, partitions and successful baselines.\n"
+        "Export verifies structure only; scientific replay has not run. Replay comparisons use rtol=1e-9, atol=1e-12.\n"
+        "Agent text and external side effects are not deterministically replayed. Hashes do not prove authorship.\n"
         "It never reimports Failure Memory records. Each benchmark bundle also contains the upstream\n"
         "task card, input, frozen partitions, prepared files, predictions and metrics.\n"
         "Keep this archive private: it contains the uploaded data and evidence.\n"
@@ -188,17 +184,28 @@ def report_bundle(snapshot, store):
                                f"  Causal hypotheses (unverified): {json.dumps(a['causal_hypotheses'])}")
             else:
                 summary.append(f"  Researcher assessment: {a['reason']}")
+        if a["kind"] == "claim_set":
+            for claim in a["claims"]:
+                summary.append(f"  {claim['classification']}: {claim['statement']}\n\n"
+                               f"  Population: {claim['population']}; uncertainty: {claim['uncertainty']}\n\n"
+                               f"  Limitations: {json.dumps(claim['limitations'])}\n\n"
+                               f"  References: {json.dumps(claim['source_references'] + claim['metric_references'])}\n\n"
+                               f"  Semantic review: {claim['semantic_review']['status']}")
     files["report.md"] = "\n\n".join(summary).encode()
     files["manifest.json"] = adapters.encoded(
         {
-            "schema_version": "1.0",
+            "schema_version": "2.0" if "environment" in snapshot else "1.0",
+            "verification": "structural", "scientific_replay": "not_run",
             "files": {k: hashlib.sha256(v).hexdigest() for k, v in files.items()},
         }
     )
     out = io.BytesIO()
     with zipfile.ZipFile(out, "w", zipfile.ZIP_DEFLATED) as z:
         for key, raw in sorted(files.items()):
-            z.writestr(key, raw)
+            info = zipfile.ZipInfo(key, date_time=(1980, 1, 1, 0, 0, 0))
+            info.compress_type = zipfile.ZIP_DEFLATED
+            z.writestr(info, raw)
+    verify_archive(io.BytesIO(out.getvalue()))
     return out.getvalue(), [a["id"] for a in artifacts]
 
 

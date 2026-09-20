@@ -63,8 +63,18 @@ def publish_result(db, claimed, work, result, *, store=None, stopped=lambda: Fal
         raise TaskFailure("Successful benchmark is missing its output bundle", "INTEGRITY_FAILED")
     if keys and store is None:
         raise TaskFailure("Publication requires verified blob storage", "INTEGRITY_FAILED")
+    report_raw = None
     for key in sorted(keys):
-        store.get(key)
+        raw = store.get(key)
+        if value.kind == "report":
+            report_raw = raw
+    if value.kind == "report":
+        import io
+        import json
+        from .archive import verify_archive
+        files, _ = verify_archive(io.BytesIO(report_raw))
+        if json.loads(files["snapshot.json"]) != work.report:
+            raise TaskFailure("Report bytes differ from the accepted capture", "INTEGRITY_FAILED")
     if stopped():
         raise ProcessInterrupted()
     with db.session.begin() as session:

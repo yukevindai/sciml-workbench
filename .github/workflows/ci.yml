@@ -35,7 +35,8 @@ jobs:
       - run: python scripts/check_scientific_surface.py
       - run: python -m workbench.config
       - run: alembic -c backend/alembic.ini upgrade head
-      - run: pytest backend/tests -q
+      - name: Source-pinned scientific integration and backend regressions
+        run: python scripts/check_scientific_integration.py --all
       - run: python scripts/export_schemas.py --check
       - run: npm ci && npm run contracts:check && npm run test:contracts && npm run build
         working-directory: frontend

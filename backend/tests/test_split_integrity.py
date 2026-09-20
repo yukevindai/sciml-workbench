@@ -179,20 +179,29 @@ def test_report_replay_checks_split_cover_and_exact_input(tmp_path, fault):
     elif fault == "row_order":
         lines = raw.splitlines(keepends=True)
         raw = b"".join([lines[0], *reversed(lines[1:])])
-    files = {"artifacts.json": adapters.encoded([dataset.model_dump(mode="json"), part.model_dump(mode="json")]),
-             f"blobs/{dataset.blob_key}": raw}
-    manifest = {"schema_version": "1.0", "files": {name: hashlib.sha256(value).hexdigest() for name, value in files.items()}}
+    from workbench.services import report_bundle, software
+    from workbench.archive import environment
+    audited = Audit(id=part.audit_id, project_id="p", dataset_id=dataset.id, config={},
+                    result=adapters.run_audit(raw, {}).result.model_dump(mode="json"))
+    audited.software = part.software = software()
+    snapshot = {"project": {"id": "p", "name": "Replay", "description": "Fixture"}, "jobs": [],
+                "environment": environment(), "materials": [],
+                "artifacts": [a.model_dump(mode="json") for a in (dataset, audited, part)]}
+    store = LocalStore(tmp_path / "blobs")
+    store.put(raw)
     archive = tmp_path / "split.zip"
-    with zipfile.ZipFile(archive, "w") as bundle:
-        for name, value in files.items():
-            bundle.writestr(name, value)
-        bundle.writestr("manifest.json", adapters.encoded(manifest))
-    if fault:
-        with pytest.raises(SplitIntegrityError):
-            replay(archive, tmp_path / "replayed")
+    if fault == "row_order":
+        from workbench.storage import StorageError
+        with pytest.raises(StorageError):
+            report_bundle(snapshot, store)
     else:
-        destination = replay(archive, tmp_path / "replayed")
-        assert json.loads((destination / f"{part.id}.json").read_text()) == part.result
+        archive.write_bytes(report_bundle(snapshot, store)[0])
+        if fault:
+            with pytest.raises(SplitIntegrityError):
+                replay(archive, tmp_path / "replayed")
+        else:
+            destination = replay(archive, tmp_path / "replayed")
+            assert json.loads((destination / f"{part.id}.json").read_text()) == part.result
 
 
 def test_corrupt_exchange_is_not_a_scientific_benchmark_result(tmp_path):

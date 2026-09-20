@@ -266,10 +266,11 @@ def test_c07_multi_candidate_criterion_and_report_capture(comparison):
             ReportSelection(artifact_ids=frozenset([protocol.id, bench.id]), job_ids=frozenset([job.id]), revision=1, execution_cutoff=1))
         snapshot = capture(session, "p", report_scope)
         assert snapshot["evaluation_states"][0]["protocol_id"] == protocol.id
-        blob, _ = report_bundle(snapshot, service.store)
-    with zipfile.ZipFile(io.BytesIO(blob)) as archive:
-        assert json.loads(archive.read("evaluation-states.json"))[0]["state"] == "sealed"
-        assert json.loads(archive.read("test-exposures.json")) == []
+        assert snapshot["evaluation_states"][0]["state"] == "sealed"
+        assert snapshot["test_exposures"] == []
+        # The read-boundary canary is deliberately not a scientific ZIP bundle.
+        with pytest.raises(zipfile.BadZipFile):
+            report_bundle(snapshot, service.store)
 
 
 def test_real_upstream_full_result_is_quarantined_until_release(env):

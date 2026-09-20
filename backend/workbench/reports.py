@@ -131,7 +131,10 @@ def capture(session, pid, scope=None):
                         "artifact_id": row.artifact_id, "via": row.via, "created_at": row.created_at.isoformat()}
         for row in session.scalars(select(ExposureRow).where(ExposureRow.project_id == pid,
             ExposureRow.dataset_sha256.in_(dataset_hashes)).order_by(ExposureRow.created_at, ExposureRow.id))]
+    from .archive import environment
+    from .services import software
     snapshot = {
+        "environment": environment(), "software": software(),
         "evaluation_states": evaluation_states, "test_exposures": exposure_events, "evidence_spans": evidence_spans,
         "schema_version": "1.0", "captured_at": database_now(session).isoformat(),
         "scope": {"kind": "run" if selection else "project", "run_id": scope.run_id if selection else None,
@@ -145,6 +148,7 @@ def capture(session, pid, scope=None):
                        ("id", "project_id", "filename", "media_type", "blob_key", "sha256", "dataset_id")} for m in materials],
         # Free-form worker errors, request keys, credentials and payloads are not job export fields.
         "jobs": [{"id": j.id, "kind": j.kind, "state": j.state, "result_id": j.result_id,
+                  "created_at": j.created_at.isoformat(),
                   "error_code": j.error_code, "error": "Job failed; see error_code" if j.state == "failed" else None}
                  for j in sorted(jobs.values(), key=lambda j: j.id)],
     }

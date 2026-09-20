@@ -86,13 +86,9 @@ def test_confirmed_actor_outcome_publication_and_report(outcome):
         assert saved.schema_version == "2.0" and saved.actor.kind == "agent"
         assert saved.observation.metric.value == 2.5
         assert session.get(ExternalOperationRow, job.id).artifact_id == saved.id
-        raw, _ = report_bundle(capture(session, "p"), service.store)
-    with zipfile.ZipFile(io.BytesIO(raw)) as archive:
-        report = archive.read("report.md").decode()
-        assert "agent observation (criterion_missed)" in report
-        assert "Researcher assessment:" not in report
-        assert "Causal hypotheses (unverified)" in report
-        assert "contracts/v2/failure.json" in archive.namelist()
+        # Metadata-only fixtures cannot be exported as complete scientific evidence.
+        with pytest.raises(ValueError, match="missing its output bundle"):
+            report_bundle(capture(session, "p"), service.store)
     with service.db.session() as session:
         body = json.loads(session.get(ExternalOperationRow, job.id).body)
     assert json.loads(body["record"]["source"]["notes"])["actor"] == saved.actor.model_dump(mode="json")

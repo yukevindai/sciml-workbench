@@ -190,7 +190,10 @@ def test_full_real_upstream_workflow(env, tmp_path):
             "provenance",
         } <= {x["kind"] for x in records}
         assert b"a-strong-test-password" not in z.read("artifacts.json")
+    memory_path = settings.storage_root / "failure-memory.sqlite"
+    memory_before = memory_path.read_bytes()
     replay(archive, tmp_path / "replayed")
+    assert memory_path.read_bytes() == memory_before
     assert (tmp_path / "replayed" / f"{baseline['id']}.json").exists()
     assert json.loads((tmp_path / "replayed" / f"{audited['id']}.json").read_text()) == audited["result"]
 
