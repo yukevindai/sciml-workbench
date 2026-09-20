@@ -1,6 +1,6 @@
 # Runtime setup (D01)
 
-The manual scientific workflow runs without model credentials. This revision reserves an independent agent-worker process and its private configuration; it does not implement a provider adapter or agent scheduler. E02, B11 and D11 supply those capabilities. Enabling the agent process now exits with a configuration or runtime-unavailable error rather than reporting a healthy agent.
+The manual scientific workflow runs without model credentials. A bounded Anthropic provider adapter and authority policy module are available for backend integration. The independent agent-worker process still requires B11 persistence and D11 scheduling. Enabling it exits with a configuration or runtime-unavailable error. See [E01](tickets/E01.md) and [E02](tickets/E02.md) for implementation evidence and the outstanding live-provider acceptance gate.
 
 ## Supported environment
 
@@ -57,7 +57,13 @@ The Next.js server necessarily holds the existing proxy bearer token and web log
 
 Missing/invalid backend values name the relevant environment variables without echoing their values. API tokens require 32+ characters and Failure Memory passwords 12+; blank values and example placeholders are rejected. Row, upload and timeout limits must be positive. The database URL is required; there is no implicit development password fallback. SQLite is accepted only to support isolated tests and schema generation; the deployed runtime uses PostgreSQL.
 
-`WB_AGENTS_ENABLED=0` permits absent model IDs and keys. Opting in requires the reserved `anthropic` provider, both configured model IDs and a non-placeholder `ANTHROPIC_API_KEY`, then fails with the explicit E02/B11/D11 runtime-unavailable message. No paid call occurs. Other provider names are not advertised as supported. Checkpoints will use the application PostgreSQL database with their schema/pool supplied by B11/D11; this revision creates no checkpoints.
+`WB_AGENTS_ENABLED=0` permits absent model IDs and keys. Opting in requires the `anthropic` provider, both configured model IDs and a non-placeholder `ANTHROPIC_API_KEY`, then fails with the explicit B11/D11 runtime-unavailable message. No paid call occurs. Other providers are unsupported. Checkpoints will use the application PostgreSQL database with their schema/pool supplied by B11/D11; this revision creates no checkpoints.
+
+For an account availability check, configure `WB_COORDINATOR_MODEL`, `WB_SPECIALIST_MODEL` and `ANTHROPIC_API_KEY` server-side, leave agents disabled, then run `python -m workbench.model_provider`. This calls only the authenticated Models API and prints resolved model IDs and adapter/API versions. It does not generate text, execute tools, or prove structured generation works for that account. The adapter refuses generation until this lookup succeeds on its own instance. A live bounded structured-tool generation check is still required for E02 acceptance. No model ID or price is assumed by default.
+
+Run `python -m workbench.model_provider --smoke` to opt into one paid generation request per distinct configured model (maximum 256 output tokens each), using synthetic context and a harmless `inspect_project` schema. It validates the returned call without executing it and prints only model, usage and status. The account check without `--smoke` remains non-generating.
+
+The adapter uses existing `httpx==0.28.1` and Anthropic API version `2023-06-01`; there is no extra provider SDK. Defaults are a 60-second transport timeout and a 262144-byte decoded response limit. Native backend configuration can narrow these with `WB_PROVIDER_TIMEOUT_SECONDS` and `WB_PROVIDER_MAX_RESPONSE_BYTES`. Redirects, environment proxies, automatic retries, provider server tools, and telemetry are disabled. E05 must reserve budgets before generation; the adapter reports unknown costs and uncertain usage explicitly. E14 must classify and filter all context before passing it to the adapter.
 
 `docker compose --profile agents run --rm agent-worker` exercises this reserved entry point. It exits with code 2, including when disabled, and is not configured to restart repeatedly. Merely setting `WB_AGENTS_ENABLED` does not activate a Compose profile. The hosted launcher checks agent opt-in before any setup or child launch; leave it disabled until the real runtime is integrated.
 

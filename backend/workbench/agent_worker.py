@@ -1,4 +1,4 @@
-"""Reserved agent process entry point. No scheduler or provider calls exist yet."""
+"""Reserved agent process entry point. Durable scheduling requires B11/D11."""
 
 import sys
 

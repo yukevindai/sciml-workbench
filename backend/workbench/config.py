@@ -67,7 +67,7 @@ class Settings(BaseSettings):
 
 
 class AgentSettings(BaseSettings):
-    """Private configuration boundary; runtime/provider support belongs to E02/D11."""
+    """Private provider configuration; durable execution still requires B11/D11."""
 
     model_config = SettingsConfigDict(
         env_prefix="WB_", env_file=".env", extra="ignore", hide_input_in_errors=True
@@ -77,14 +77,21 @@ class AgentSettings(BaseSettings):
     coordinator_model: str = ""
     specialist_model: str = ""
     anthropic_api_key: SecretStr = Field(default=SecretStr(""), validation_alias="ANTHROPIC_API_KEY")
+    provider_timeout_seconds: float = Field(default=60, gt=0, le=300)
+    provider_max_response_bytes: int = Field(default=262144, ge=1024, le=2000000)
 
     def validate_configuration(self):
         if not self.agents_enabled:
             return
+        self.validate_provider()
+
+    def validate_provider(self):
+        import re
+
         if self.model_provider != "anthropic":
             raise ConfigurationError("WB_MODEL_PROVIDER must be anthropic; other provider adapters are not implemented.")
         for name in ("coordinator_model", "specialist_model"):
-            if not getattr(self, name).strip():
+            if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]{0,159}", getattr(self, name)):
                 raise ConfigurationError(f"Set WB_{name.upper()} to a model ID available to your provider account.")
         validate_secret(self.anthropic_api_key, "ANTHROPIC_API_KEY", 1)
 
@@ -93,7 +100,7 @@ class AgentSettings(BaseSettings):
         if not self.agents_enabled:
             raise ConfigurationError("Agent execution is disabled (WB_AGENTS_ENABLED=0); use the manual workflow.")
         raise ConfigurationError(
-            "Agent runtime is not implemented in this revision (E02/B11/D11). "
+            "Agent runtime is not implemented in this revision (B11/D11). "
             "Set WB_AGENTS_ENABLED=0 and omit the Compose agents profile to use the manual workflow."
         )
 

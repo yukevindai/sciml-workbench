@@ -90,7 +90,7 @@ def test_agent_disabled_needs_no_credentials():
     ({"specialist_model": " "}, "WB_SPECIALIST_MODEL"),
     ({"ANTHROPIC_API_KEY": ""}, "ANTHROPIC_API_KEY"),
     ({"ANTHROPIC_API_KEY": "replace-with-a-key"}, "ANTHROPIC_API_KEY"),
-    ({}, "E02/B11/D11"),
+    ({}, "B11/D11"),
 ])
 def test_agent_opt_in_never_claims_an_available_runtime(updates, expected):
     values = dict(agents_enabled=True, coordinator_model="account-model", specialist_model="account-model", ANTHROPIC_API_KEY="canary-key")

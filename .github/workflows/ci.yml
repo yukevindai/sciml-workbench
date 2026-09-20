@@ -79,7 +79,7 @@ jobs:
           status=$?
           set -e
           test "$status" = "2"
-          grep -q 'E02/B11/D11' /tmp/agent-startup.log
+          grep -q 'B11/D11' /tmp/agent-startup.log
           ! grep -q 'ci-only-canary' /tmp/agent-startup.log
       - run: |
           curl --fail http://localhost:3000/healthz
