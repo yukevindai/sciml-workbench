@@ -43,7 +43,8 @@ current exposure label; it never returns a cached clean-holdout claim after a
 manual or final read has exposed the data. The original action receipt remains
 historical evidence. Replay does not charge another tool call or run science.
 
-No provider-controlled release tool or autonomous finalization is enabled here.
-E13 must supply the trusted final-purpose boundary. E10 specialists must use this
-same consumer when they are enabled. Tests use synthetic retained metric canaries
+No provider-controlled release tool is enabled. [E13](tickets/E13.md) now supplies
+the trusted frozen-export final-purpose boundary; [E11](tickets/E11.md) reviewers
+remain in selection scope. E10 specialists must use this same consumer.
+Tests use synthetic retained metric canaries
 to verify masking, not to claim scientific model performance.

@@ -68,8 +68,12 @@ These checks are defense in depth, not an arbitrary-secret detector or a semanti
 classifier. New trusted readers must implement an explicit projection; they must
 not relabel raw text as aggregates. New runtime/specialist integration must use
 these boundaries and pass backend settings when configuration is injected rather
-than loaded from environment. Agent scheduling remains disabled pending D11 and
-coordinator integration; no live prompt-injection resistance claim is made.
+than loaded from environment. Agent scheduling defaults to disabled and requires
+reviewed runtime configuration; no live prompt-injection resistance claim is made.
+
+The optional `share_operator_messages` policy flag separately authorizes authenticated
+goals and answers. Every authority layer must consent; it grants no raw-file access.
+Source text and model output cannot self-label as operator messages.
 
 ## Verification
 

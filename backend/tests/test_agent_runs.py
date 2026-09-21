@@ -261,6 +261,15 @@ def test_api_auth_scope_unknown_fields_and_sse(tmp_path, db):
         assert 'id: 1' in stream.text and 'event: accepted' in stream.text
         assert 'id: 1' not in client.get(base + '/' + rid + '/stream', headers={'Last-Event-ID': '1'}).text
         assert client.get(base + '/' + rid + '/stream', headers={'Last-Event-ID': '-1'}).status_code == 422
+        assert client.post(base + '/' + rid + '/continue', json=request).status_code == 409
+        with database.session.begin() as s:
+            app.state.runs.finish(s, 'p', rid, 1, state='completed', artifact_ids=[])
+        continued = client.post(base + '/' + rid + '/continue', json=request,
+            headers={'Idempotency-Key': 'continuation'})
+        assert continued.status_code == 202, continued.text
+        assert continued.json()['continued_from_run_id'] == rid
+        assert client.post(base + '/' + rid + '/continue', json=request,
+            headers={'Idempotency-Key': 'continuation'}).json()['id'] == continued.json()['id']
         client.headers.pop('Authorization')
         assert client.get(base + '/' + rid + '/stream').status_code == 401
         for endpoint in ('', '/events', '/result'):

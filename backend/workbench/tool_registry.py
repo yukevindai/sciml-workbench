@@ -85,6 +85,12 @@ class EvidenceInput(ToolInput):
     material_id: Identifier
 
 
+class EvidenceSpanInput(ArtifactInput):
+    page: int = Field(ge=1)
+    start: int = Field(ge=0)
+    end: int = Field(gt=0)
+
+
 class MemoryInput(ToolInput):
     after: str = Field(default='', max_length=160)
     limit: int = Field(default=20, ge=1, le=50)
@@ -114,7 +120,7 @@ class ToolResult(ContractModel):
     data: dict[str, JsonValue] = Field(default_factory=dict, repr=False)
     error_code: ErrorCode | None = None
     message: str | None = None
-    content_class: Literal['aggregates', 'schema'] = 'aggregates'
+    content_class: Literal['aggregates', 'schema', 'excerpt'] = 'aggregates'
     untrusted_data: Literal[True] = True
 
     def context(self, project_id):
@@ -182,23 +188,28 @@ DESCRIPTORS = {d.name: d for d in (
     Descriptor('run_baseline', 'Submit one sealed ChemE baseline candidate.', CandidateInput, 'benchmark'),
     Descriptor('read_evaluation', 'Read sealed comparison status without releasing test results.', EvaluationInput),
     Descriptor('ingest_evidence', 'Submit text-layer PDF ingestion for an authorized attachment.', EvidenceInput, 'evidence'),
+    Descriptor('read_evidence_span', 'Read at most 4000 characters at exact page offsets with a verified citation.', EvidenceSpanInput, content_class='excerpt'),
+    Descriptor('record_outcome', 'Record an eligible objective execution failure from a linked benchmark job; actor and observation come from trusted records.', JobInput, 'failure'),
     Descriptor('build_report', 'Freeze authorized run artifacts and submit report construction.', Empty, 'report'),
 )}
 
 
 class ToolRegistry:
-    def __init__(self, db, store, settings, *, runs=None):
+    def __init__(self, db, store, settings, *, runs=None, versions=None):
         self.db, self.store, self.settings = db, store, settings
         self.runs = runs or RunService()
         self.submissions = SubmissionService(db, store, settings)
         self.reads = ReadService(settings.api_token.get_secret_value())
         self.budgets = BudgetService(self.runs)
+        self.versions = versions
 
     def definitions(self, policy, *, role='coordinator'):
         installed = capabilities(self.settings)
         return [ToolDefinition(d.name, d.purpose, d.input_model) for d in DESCRIPTORS.values()
                 if d.name in policy.allowed_tools and role in d.allowed_roles
                 and d.required_content_classes <= policy.content_classes
+                and (d.name != 'record_outcome' or (policy.automatic_failure_recording and self.versions is not None))
+                and (d.content_class != 'excerpt' or policy.exposure in {'selected_excerpts', 'raw_project_content'})
                 and (d.operation is None or d.operation in installed.operations)]
 
     def dispatch(self, context, name, arguments):
@@ -308,6 +319,21 @@ class ToolRegistry:
                 elif name == 'run_baseline':
                     job = submit_candidate(self.submissions, scope, args.protocol_id, args.candidate_id,
                         action_id=action.id, attempt_id='1', session=s)
+                elif name == 'record_outcome':
+                    from .outcomes import submit_outcome
+                    source = s.get(JobRow, args.job_id)
+                    code = 'ADMISSION_REJECTED' if source.error_code == 'VALIDATION_FAILED' else source.error_code
+                    actor = dict(kind='agent', run_id=run.id, action_id=action.id,
+                        provider=self.versions.provider, model=self.versions.model,
+                        prompt_version=self.versions.prompt, policy=policy.reference().model_dump(mode='json'),
+                        policy_rule_id='automatic-execution-failure-v1')
+                    observation = dict(benchmark_id=source.result_id, source_job_id=source.id,
+                        reason='Recorded execution failure; scientific validity is not inferred.',
+                        uncertainty_notes='The recorded error does not establish a causal explanation.',
+                        observation=dict(kind='execution_failure', error_code=code, observed_error=source.error))
+                    SecretGuard(self.settings).check(observation)
+                    job = submit_outcome(self.submissions, scope, observation, actor=actor,
+                        action_id=action.id, attempt_id='1', session=s)
                 else:
                     job = self.submissions._submit(scope, descriptor.operation, payload,
                         action_id=action.id, attempt_id='1', session=s)
@@ -350,6 +376,20 @@ class ToolRegistry:
         if name == 'read_failure':
             aids.add(args.artifact_id)
             resolver.resolve(args.artifact_id, 'failure')
+        if name == 'read_evidence_span':
+            aids.add(args.artifact_id)
+            resolver.resolve(args.artifact_id, 'evidence')
+            if policy.exposure not in {'selected_excerpts', 'raw_project_content'}:
+                raise DomainError('Excerpt exposure unavailable', 403, 'DATA_EXPOSURE_DENIED')
+        if name == 'record_outcome':
+            self.reads.job(s, read, args.job_id)
+            job = s.get(JobRow, args.job_id)
+            if (self.versions is None or job.kind != 'benchmark' or job.state != 'failed'
+                    or not job.result_id or job.error_code not in {'ADMISSION_REJECTED', 'VALIDATION_FAILED',
+                        'JOB_TIMED_OUT', 'WORKER_INTERRUPTED', 'INTEGRITY_FAILED'}):
+                raise DomainError('No eligible retained execution failure', 422, 'REFERENCE_INVALID')
+            aids.add(job.result_id)
+            resolver.resolve(job.result_id, 'benchmark')
         if name == 'generate_split':
             aids.add(args.audit_id)
             operation_inputs(s, scope.project_id, 'split', args.model_dump(mode='json'), allowed_ids=scope.artifact_ids)
@@ -387,6 +427,12 @@ class ToolRegistry:
         return aids, mids, model
 
     def _read_or_seal(self, s, name, args, read, scope, installed):
+        if name == 'read_evidence_span':
+            from .references import make_reference, read_span
+            reference = make_reference(s, self.store, read, args.artifact_id, args.start, args.end, page=args.page)
+            data = (read_span(s, self.store, read, reference) if reference.availability == 'available'
+                    else {'reference': reference.model_dump(mode='json')})
+            return ToolResult(status='completed', content_class='excerpt', artifact_ids=[args.artifact_id], data=data)
         if name == 'inspect_project':
             data = {'project_id': scope.project_id, 'artifact_count': len(scope.artifact_ids),
                     'material_count': len(scope.material_ids), 'job_count': len(read.job_ids),

@@ -355,6 +355,7 @@ def create_app(settings=None):
 
     from .agent_runs import RunService
     from .agent_api import router as agent_router
-    app.state.runs = RunService()
+    from .agent_runtime import admission
+    app.state.runs = RunService(admission=admission)
     app.include_router(agent_router(app.state.runs, session, protected, settings=settings))
     return app

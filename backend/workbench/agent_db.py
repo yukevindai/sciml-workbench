@@ -74,3 +74,22 @@ from .scheduler_schema_v10 import table as lease_table
 
 class LeaseRow(Base):
     __table__ = lease_table(Base.metadata)
+
+
+from .finalization_schema_v11 import table as finalization_table, versions_table
+
+
+class FinalizationRow(Base):
+    __table__ = finalization_table(Base.metadata)
+
+
+class RuntimeVersionRow(Base):
+    __table__ = versions_table(Base.metadata)
+
+
+def finalization_for(session, run_id):
+    """Older retained ledgers can still be inspected during staged migrations."""
+    from sqlalchemy import inspect
+    if 'has_finalizations' not in session.info:
+        session.info['has_finalizations'] = inspect(session.connection()).has_table('agent_finalizations')
+    return session.get(FinalizationRow, run_id) if session.info['has_finalizations'] else None

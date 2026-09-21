@@ -67,7 +67,7 @@ class Settings(BaseSettings):
 
 
 class AgentSettings(BaseSettings):
-    """Private provider configuration; durable execution still requires D11."""
+    """Private provider configuration and reviewed durable runtime limits."""
 
     model_config = SettingsConfigDict(
         env_prefix="WB_", env_file=".env", extra="ignore", hide_input_in_errors=True
@@ -77,8 +77,31 @@ class AgentSettings(BaseSettings):
     coordinator_model: str = ""
     specialist_model: str = ""
     anthropic_api_key: SecretStr = Field(default=SecretStr(""), validation_alias="ANTHROPIC_API_KEY")
-    provider_timeout_seconds: float = Field(default=60, gt=0, le=300)
+    provider_timeout_seconds: float = Field(default=20, gt=0, le=300)
     provider_max_response_bytes: int = Field(default=262144, ge=1024, le=2000000)
+    agent_model_bounds: str = Field(default="{}", repr=False)
+    agent_model_prices: str = Field(default="{}", repr=False)
+    agent_lease_seconds: int = Field(default=180, ge=10, le=300)
+    agent_max_output_tokens: int = Field(default=1024, ge=1)
+
+    def runtime_limits(self):
+        import json
+        from .budgeted_provider import ModelBound
+        from .budgets import Pricing
+        try:
+            bounds = {k: ModelBound.model_validate(v) for k, v in json.loads(self.agent_model_bounds).items()}
+            prices = {k: Pricing.model_validate(v) for k, v in json.loads(self.agent_model_prices or '{}').items()}
+            for model in {self.coordinator_model, self.specialist_model}:
+                bound = bounds[model]
+                if (bound.model != model or bound.max_output_tokens < self.agent_max_output_tokens
+                        or bound.max_active_seconds < 5 * self.provider_timeout_seconds
+                        or bound.max_active_seconds + 10 >= self.agent_lease_seconds):
+                    raise ValueError()
+            if any(k != v.model or k not in bounds for k, v in prices.items()):
+                raise ValueError()
+        except (ValueError, TypeError, AttributeError, KeyError):
+            raise ConfigurationError("Set WB_AGENT_MODEL_BOUNDS and optional WB_AGENT_MODEL_PRICES to reviewed model records; output and transport bounds must fit WB_AGENT_LEASE_SECONDS with 10 seconds of headroom.") from None
+        return bounds, prices
 
     def validate_configuration(self):
         if not self.agents_enabled:
@@ -99,10 +122,7 @@ class AgentSettings(BaseSettings):
         self.validate_configuration()
         if not self.agents_enabled:
             raise ConfigurationError("Agent execution is disabled (WB_AGENTS_ENABLED=0); use the manual workflow.")
-        raise ConfigurationError(
-            "D11 scheduler infrastructure is available; the adaptive coordinator integration (E04) is not implemented. "
-            "Set WB_AGENTS_ENABLED=0 and omit the Compose agents profile to use the manual workflow."
-        )
+        self.runtime_limits()
 
 
 def load_settings(settings_type=Settings):
@@ -140,4 +160,4 @@ if __name__ == "__main__":
             agent.require_runtime()
     except ConfigurationError as exc:
         sys.exit(str(exc))
-    print("Configuration valid; agent execution disabled. No services were contacted.")
+    print("Configuration valid. No services were contacted.")

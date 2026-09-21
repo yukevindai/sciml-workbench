@@ -1,16 +1,20 @@
 # Durable scheduling and controls (D11/D12)
 
-Apply application migration `0010` and run `python -m workbench.checkpoints` as
-explicit maintenance before starting an integrated agent worker. Scheduler
+Apply application migration `0011` and checkpoint setup through
+`python -m workbench.setup` as maintenance before starting an agent worker. Scheduler
 metadata and LangGraph checkpoint tables have separate lifecycles. Populated
 scheduler history prevents downgrade. SQLite supports isolated development tests;
 production checkpoints require PostgreSQL.
 
+The E11/E13 coordinator finalization integration additionally requires migration
+`0011` for immutable runtime-version history and the durable finalization cursor.
+See [E13](tickets/E13.md) for capture, retry and verification semantics.
+
 `agent_worker.run(settings, step, stopping)` owns an independent database engine
-and PostgresSaver connection, closing both on exit. E04 supplies the trusted
-bounded coordinator step. The CLI and HTTP admission remain unavailable until
-that coordinator integration exists; setting an environment variable does not
-accept unschedulable requests or initiate paid calls.
+and PostgresSaver connection, closing both on exit. The CLI constructs the trusted
+bounded coordinator after validating reviewed bounds and verifying pinned provider
+identities. HTTP admission requires enabled, valid runtime configuration. See
+[coordinator setup](agent-coordinator.md); live-provider acceptance is still pending.
 
 Each lease advances one run once. Project-before-run locking serializes claim,
 control and publication with scientific submission. Leases use database time,

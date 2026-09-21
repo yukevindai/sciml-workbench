@@ -54,7 +54,7 @@ def test_registry_schemas_and_no_arbitrary_execution(registry):
     with tool.db.session() as s:
         policy = tool.runs.effective_policy(s, tool.runs.get(s, 'p', ctx.run_id))
     offered = tool.definitions(policy)
-    assert {d.name for d in offered} == set(DESCRIPTORS)
+    assert {d.name for d in offered} == set(DESCRIPTORS) - {'read_evidence_span', 'record_outcome'}
     for d in offered:
         assert d.input_model.model_json_schema()['additionalProperties'] is False
         assert DESCRIPTORS[d.name].output_model.model_json_schema()

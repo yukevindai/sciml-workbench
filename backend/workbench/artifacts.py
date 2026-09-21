@@ -10,7 +10,7 @@ from .contract_registry import read_artifact
 from .db import ArtifactRow, MaterialRow
 from .errors import DomainError
 
-KINDS = {"dataset", "audit", "split", "benchmark", "evidence", "failure", "provenance", "report", "evaluation_protocol", "claim_set"}
+KINDS = {"dataset", "audit", "split", "benchmark", "evidence", "failure", "provenance", "report", "evaluation_protocol", "claim_set", "agent_execution"}
 DIGEST = re.compile(r"^[a-f0-9]{64}$")
 
 

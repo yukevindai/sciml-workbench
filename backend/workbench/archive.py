@@ -261,7 +261,8 @@ def verify_archive(source):
     for key, filename in (("artifacts", "artifacts.json"), ("project", "project.json"),
                           ("materials", "materials.json"), ("jobs", "jobs.json"),
                           ("evaluation_states", "evaluation-states.json"),
-                          ("test_exposures", "test-exposures.json"), ("evidence_spans", "evidence-spans.json")):
+                            ("test_exposures", "test-exposures.json"), ("evidence_spans", "evidence-spans.json"),
+                            ("agent_finalization", "agent-finalization.json")):
         if key in snapshot and json.loads(files[filename]) != snapshot[key]:
             raise ValueError("Archive projection disagrees with frozen snapshot")
     values = verify_snapshot(snapshot, BlobReader(files))
@@ -269,7 +270,7 @@ def verify_archive(source):
     allowed = {"snapshot.json", "artifacts.json", "project.json", "jobs.json", "materials.json", "software.json",
                "environment.json", "README.md", "report.md", "evaluation-states.json", "test-exposures.json",
                "evidence-spans.json", "contracts/v2/dataset.json", "contracts/v2/failure.json",
-               "contracts/evaluation_protocol.json", "contracts/claim_set.json"}
+               "contracts/evaluation_protocol.json", "contracts/claim_set.json", "contracts/agent_execution.json", "agent-finalization.json"}
     allowed.update(f"contracts/{m.model_fields['kind'].default}.json" for m in LEGACY_MODELS)
     allowed.update(f"blobs/{key}" for a in values for field in ("blob_key", "pdf_key", "bundle_key")
                    if (key := getattr(a, field, None)))

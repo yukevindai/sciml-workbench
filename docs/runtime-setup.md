@@ -1,6 +1,6 @@
 # Runtime setup (D01)
 
-The manual scientific workflow runs without model credentials. A bounded Anthropic provider adapter, authority policy module and B11/B12 persistence/control APIs are available for backend integration. D11 provides the [durable scheduler](agent-scheduler.md); E04 still must supply the adaptive coordinator before agent HTTP/CLI execution is enabled. See [agent persistence](agent-persistence.md), [E01](tickets/E01.md) and [E02](tickets/E02.md) for implementation evidence and outstanding runtime/live-provider gates.
+The manual scientific workflow runs without model credentials. The optional [adaptive coordinator](agent-coordinator.md) integrates provider, policy, durable scheduling and run controls. It defaults to disabled and requires reviewed model bounds and trusted policies. Live account/model acceptance remains pending under [E02](tickets/E02.md).
 
 ## Supported environment
 
@@ -49,7 +49,7 @@ Copy `frontend/.env.example` to `frontend/.env.local`; set its API token to the 
 | Process | Configuration |
 |---|---|
 | Setup, API, scientific worker | `WB_DATABASE_URL`, `WB_STORAGE_ROOT`, `WB_API_TOKEN`, `WB_EFM_USERNAME`, `WB_EFM_PASSWORD`, positive scientific limits |
-| Reserved agent worker only (Compose) | Backend variables plus `WB_AGENTS_ENABLED`, `WB_MODEL_PROVIDER`, `WB_COORDINATOR_MODEL`, `WB_SPECIALIST_MODEL`, `ANTHROPIC_API_KEY` |
+| API and agent worker (Compose) | Backend variables plus agent enablement, provider/model settings, private key, reviewed bounds/prices, lease and transport limits; see `.env.example` |
 | Next.js server | `WB_API_URL`, server-to-server `WB_API_TOKEN`, `WB_PUBLIC_ORIGIN`, web login settings |
 | Browser | No database, upstream, API bearer or provider credentials |
 
@@ -57,7 +57,7 @@ The Next.js server necessarily holds the existing proxy bearer token and web log
 
 Missing/invalid backend values name the relevant environment variables without echoing their values. API tokens require 32+ characters and Failure Memory passwords 12+; blank values and example placeholders are rejected. Row, upload and timeout limits must be positive. The database URL is required; there is no implicit development password fallback. SQLite is accepted only to support isolated tests and schema generation; the deployed runtime uses PostgreSQL.
 
-`WB_AGENTS_ENABLED=0` permits absent model IDs and keys. Opting in requires the `anthropic` provider, both configured model IDs and a non-placeholder `ANTHROPIC_API_KEY`, then fails with the explicit E04 integration-unavailable message. No paid call occurs. Other providers are unsupported. PostgreSQL checkpoint setup uses `python -m workbench.checkpoints`; D11 owns scheduler and connection lifecycle. Apply application migration `0010` before integration. API startup does not create checkpoint tables.
+`WB_AGENTS_ENABLED=0` permits absent model IDs and keys. Opting in requires `anthropic`, both pinned model IDs, a private key and reviewed model bounds fitting the configured lease. Invalid configuration fails before model IO. Startup verifies model identities without generation; generation occurs only for admitted runs. Apply migration `0011` and PostgreSQL checkpoint setup through `python -m workbench.setup`. API startup does not create checkpoint tables.
 
 For an account availability check, configure `WB_COORDINATOR_MODEL`, `WB_SPECIALIST_MODEL` and `ANTHROPIC_API_KEY` server-side, leave agents disabled, then run `python -m workbench.model_provider`. This calls only the authenticated Models API and prints resolved model IDs and adapter/API versions. It does not generate text, execute tools, or prove structured generation works for that account. The adapter refuses generation until this lookup succeeds on its own instance. A live bounded structured-tool generation check is still required for E02 acceptance. No model ID or price is assumed by default.
 
@@ -65,7 +65,7 @@ Run `python -m workbench.model_provider --smoke` to opt into one paid generation
 
 The adapter uses existing `httpx==0.28.1` and Anthropic API version `2023-06-01`; there is no extra provider SDK. Defaults are a 60-second transport timeout and a 262144-byte decoded response limit. Native backend configuration can narrow these with `WB_PROVIDER_TIMEOUT_SECONDS` and `WB_PROVIDER_MAX_RESPONSE_BYTES`. Redirects, environment proxies, automatic retries, provider server tools, and telemetry are disabled. The [E05 budgeted provider](budgets.md) reserves budgets before agent generation; the adapter reports unknown costs and uncertain usage explicitly. E14 must classify and filter all context before passing it to the adapter.
 
-`docker compose --profile agents run --rm agent-worker` exercises this reserved entry point. It exits with code 2, including when disabled, and is not configured to restart repeatedly. Merely setting `WB_AGENTS_ENABLED` does not activate a Compose profile. The hosted launcher checks agent opt-in before any setup or child launch; leave it disabled until the real runtime is integrated.
+`docker compose --profile agents run --rm agent-worker` starts the configured runtime, or exits 2 when disabled or misconfigured. It is not configured to restart repeatedly. Setting `WB_AGENTS_ENABLED` alone does not activate a Compose profile. The hosted launcher validates opt-in before setup and supervises the enabled agent independently. Complete the [coordinator setup](agent-coordinator.md) and live-provider check before enabling a deployment.
 
 ## Verification
 

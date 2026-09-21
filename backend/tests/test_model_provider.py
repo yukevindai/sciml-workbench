@@ -43,6 +43,21 @@ def arguments(**updates):
     return data
 
 
+def test_slow_trickle_cannot_reset_overall_response_deadline(monkeypatch):
+    clock = [0.0]
+    class Trickle(httpx.SyncByteStream):
+        def __iter__(self):
+            for chunk in (b'{', b' ', b' ', b'}'):
+                clock[0] += 10
+                yield chunk
+    provider, seen = setup_provider(lambda _: httpx.Response(200, stream=Trickle()))
+    monkeypatch.setattr('workbench.model_provider.time.monotonic', lambda: clock[0])
+    with pytest.raises(ProviderError, match='provider_deadline_exceeded') as error:
+        provider.complete(**arguments())
+    assert error.value.usage_unknown
+    provider.close()
+
+
 def test_structured_calls_usage_and_metadata():
     provider, seen = setup_provider()
     try:

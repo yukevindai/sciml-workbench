@@ -14,6 +14,10 @@ def main(settings=None):
         [sys.executable, "-m", "alembic", "-c", "backend/alembic.ini", "upgrade", "head"],
         check=True,
     )
+    from sqlalchemy.engine import make_url
+    if make_url(settings.database_url).get_backend_name() == 'postgresql':
+        from .checkpoints import setup as setup_checkpoints
+        setup_checkpoints(settings.database_url)
     bootstrap(settings)
 
 

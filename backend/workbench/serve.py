@@ -63,7 +63,7 @@ def main():
     settings = load_settings()
     agent = load_settings(AgentSettings)
     if agent.agents_enabled:
-        # Fail before migrations or child processes until E04 supplies a coordinator.
+        # Validate reviewed bounds before migrations or child processes.
         agent.require_runtime()
     # Run at runtime: Render disks are unavailable to pre-deploy commands.
     setup(settings)
@@ -81,7 +81,7 @@ def main():
                 os.environ.get("PORT", "8000"),
             ],
             [sys.executable, "-m", "workbench.worker"],
-        ]
+        ] + ([[sys.executable, "-m", "workbench.agent_worker"]] if agent.agents_enabled else [])
     )
 
 

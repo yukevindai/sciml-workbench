@@ -145,7 +145,7 @@ def seal_outcome_protocol(db, scope, benchmark_request, criterion):
             state="sealed", sealed_at=stamp, exposure_status="unknown"))
 
 
-def submit_outcome(service, scope, payload, *, actor, request_key=None, action_id=None, attempt_id=None):
+def submit_outcome(service, scope, payload, *, actor, request_key=None, action_id=None, attempt_id=None, session=None):
     """Trusted actor-aware entry point; actor is never accepted in payload.
 
     Runtime-only benchmark snapshots preserve objective errors and absent metrics;
@@ -170,7 +170,8 @@ def submit_outcome(service, scope, payload, *, actor, request_key=None, action_i
     if len(p.model_dump_json().encode("utf-8")) > service.settings.max_upload_bytes:
         raise DomainError("Request exceeds configured byte limit", 413)
     key = identity_key(scope, request_key, action_id, attempt_id)
-    with service.db.session.begin() as session:
+    from contextlib import nullcontext
+    with (nullcontext(session) if session is not None else service.db.session.begin()) as session:
         lock_project(session, scope.project_id)
         resolver = ArtifactResolver(session, scope.project_id, scope.artifact_ids)
         job = session.get(JobRow, p.source_job_id)

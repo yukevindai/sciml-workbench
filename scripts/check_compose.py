@@ -12,11 +12,13 @@ import sys
 def check(document):
     services = document["services"]
     private = {"WB_DATABASE_URL", "WB_STORAGE_ROOT", "WB_API_TOKEN", "WB_EFM_USERNAME", "WB_EFM_PASSWORD", "WB_JOB_TIMEOUT_SECONDS"}
-    agent = {"WB_AGENTS_ENABLED", "WB_MODEL_PROVIDER", "WB_COORDINATOR_MODEL", "WB_SPECIALIST_MODEL", "ANTHROPIC_API_KEY"}
+    agent = {"WB_AGENTS_ENABLED", "WB_MODEL_PROVIDER", "WB_COORDINATOR_MODEL", "WB_SPECIALIST_MODEL", "ANTHROPIC_API_KEY",
+             "WB_AGENT_MODEL_BOUNDS", "WB_AGENT_MODEL_PRICES", "WB_AGENT_LEASE_SECONDS",
+             "WB_AGENT_MAX_OUTPUT_TOKENS", "WB_PROVIDER_TIMEOUT_SECONDS"}
     web = {"WB_API_URL", "WB_API_TOKEN", "WB_PUBLIC_ORIGIN", "WB_REQUIRE_LOGIN", "WB_LOGIN_USERNAME", "WB_LOGIN_PASSWORD"}
     for name in ("api", "worker", "setup", "agent-worker", "web"):
         service = services[name]
-        allowed = web if name == "web" else private | (agent if name == "agent-worker" else set())
+        allowed = web if name == "web" else private | (agent if name in {"api", "agent-worker"} else set())
         assert set(service["environment"]) == allowed, f"Unexpected environment keys for {name}"
         assert not service["build"].get("args"), f"Build arguments forbidden for {name}"
         assert not service["build"].get("secrets"), f"Build secrets forbidden for {name}"

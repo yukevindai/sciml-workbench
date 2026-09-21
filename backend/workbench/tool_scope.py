@@ -1,7 +1,7 @@
 """Reconstruct generated-input authority from committed E03 receipts."""
 from sqlalchemy import select
 
-from .agent_db import ActionRow, RunJobRow
+from .agent_db import ActionRow, RunJobRow, finalization_for
 from .db import ArtifactRow, JobRow
 
 
@@ -10,7 +10,7 @@ def derived_artifacts(session, run, policy):
     pending = []
     actions = session.scalars(select(ActionRow).where(
         ActionRow.run_id == run.id, ActionRow.project_id == run.project_id,
-        ActionRow.state.in_(['submitted', 'completed'])))
+        ActionRow.state.in_(['submitted', 'completed', 'failed'])))
     for action in actions:
         request = action.request
         if request.get('registry_version') != '1.0' or request.get('tool') not in policy.allowed_tools:
@@ -31,6 +31,13 @@ def derived_artifacts(session, run, policy):
             artifact = session.get(ArtifactRow, aid)
             if artifact and artifact.project_id == run.project_id:
                 pending.append((aid, set(request.get('artifact_ids', [])) | set(artifact.payload.get('parents', []))))
+    finalization = finalization_for(session, run.id)
+    if (finalization and finalization.project_id == run.project_id
+            and set(run.payload['inputs']['material_ids']) <= policy.material_ids):
+        for aid in (finalization.claim_set_id, finalization.execution_id):
+            artifact = session.get(ArtifactRow, aid) if aid else None
+            if artifact and artifact.project_id == run.project_id:
+                pending.append((aid, set(artifact.payload['parents']) | set(run.payload['inputs']['artifact_ids'])))
     while pending:
         ready = {aid for aid, parents in pending if parents <= allowed}
         if not ready - allowed:

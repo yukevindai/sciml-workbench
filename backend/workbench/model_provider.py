@@ -5,6 +5,7 @@ E05 owns reservations/retries. E14 checks every serialized request and response.
 """
 import json
 import re
+import time
 from dataclasses import dataclass, field
 from typing import Any, Protocol
 
@@ -42,7 +43,7 @@ class ContextPart:
         """Trusted handoff/summary builder: never downgrade source exposure."""
         if not sources or len({p.project_id for p in sources}) != 1:
             raise ProviderError('data_exposure_denied')
-        rank = {'schema': 0, 'aggregates': 1, 'excerpt': 2, 'raw': 3}
+        rank = {'schema': 0, 'aggregates': 1, 'operator': 2, 'excerpt': 3, 'raw': 4}
         if any(p.content_class not in rank for p in sources):
             raise ProviderError('data_exposure_denied')
         return cls(sources[0].project_id, max(sources, key=lambda p: rank[p.content_class]).content_class,
@@ -84,6 +85,7 @@ class AnthropicProvider:
         self._models = frozenset({settings.coordinator_model, settings.specialist_model})
         self._verified: dict[str, str] = {}
         self._response_bytes = settings.provider_max_response_bytes
+        self._timeout_seconds = settings.provider_timeout_seconds
         self._client = httpx.Client(base_url="https://api.anthropic.com", transport=transport,
             timeout=settings.provider_timeout_seconds, follow_redirects=False, trust_env=False)
 
@@ -95,10 +97,11 @@ class AnthropicProvider:
 
     def _request(self, method: str, path: str, payload: dict | None = None) -> Any:
         sent = method == "POST"
+        deadline = time.monotonic() + self._timeout_seconds
         try:
             with self._client.stream(method, path, json=payload, headers={
                 "x-api-key": self._key.get_secret_value(), "anthropic-version": API_VERSION,
-                "content-type": "application/json",
+                "content-type": "application/json", "accept-encoding": "identity",
             }) as response:
                 if response.status_code != 200:
                     code = ("authentication_failed" if response.status_code in {401, 403} else
@@ -106,11 +109,19 @@ class AnthropicProvider:
                             "provider_unavailable" if response.status_code >= 500 else "request_rejected")
                     raise ProviderError(code, retryable=response.status_code == 429 or response.status_code >= 500,
                                         usage_unknown=sent)
+                if response.headers.get('content-encoding', 'identity') != 'identity':
+                    raise ProviderError('unsupported_response_encoding', usage_unknown=sent)
                 body = bytearray()
-                for chunk in response.iter_bytes(chunk_size=8192):
+                # Do not buffer to a fixed chunk size: slow trickles must reach
+                # the elapsed-time check instead of resetting socket timeouts.
+                for chunk in response.iter_bytes():
+                    if time.monotonic() > deadline:
+                        raise ProviderError('provider_deadline_exceeded', usage_unknown=sent)
                     body.extend(chunk)
                     if len(body) > self._response_bytes:
                         raise ProviderError("response_too_large", usage_unknown=sent)
+                if time.monotonic() > deadline:
+                    raise ProviderError('provider_deadline_exceeded', usage_unknown=sent)
                 try:
                     self.guard.check(body.decode('utf-8'), 'secret_in_response')
                     result = json.loads(body)

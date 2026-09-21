@@ -8,7 +8,7 @@ action key before invoking a tool; provider call IDs are not authority.
 
 ## Available surface
 
-The registry exposes fifteen versioned descriptors with Pydantic input/result
+The registry exposes seventeen versioned descriptors with Pydantic input/result
 schemas, role restrictions, prerequisites, artifact versions, resource estimates,
 effect/retry classes, expected outputs and response byte limits:
 
@@ -17,6 +17,8 @@ effect/retry classes, expected outputs and response byte limits:
 - `seal_evaluation`, `run_baseline`, `read_evaluation`
 - `build_report`
 - `read_memory`, `read_failure`, `search_failures` (retained, filtered snapshots)
+- `read_evidence_span` (exact page offsets, at most 4000 characters, verified citation)
+- `record_outcome` (eligible linked execution failures, trusted actor and observation)
 
 Definitions are filtered by installed capabilities and current policy. Audit and
 split option schemas come from the pinned public configuration dataclasses; the
@@ -26,13 +28,21 @@ Benchmark execution accepts a sealed candidate ID, never an arbitrary replacemen
 task card. Sealing currently supports predeclared comparisons without a success
 criterion declaration; trusted criterion provenance is a later extension.
 
-Only the coordinator role is enabled. Specialist dispatch requires E10 assignment
-authority and is denied today. Evidence excerpt/search, live failure-memory retrieval
-and mutation, reconciliation, claim validation, standalone report
+Only the coordinator role dispatches tools. E10 specialists receive scoped context
+and return advisory typed results without tools or recursive delegation.
+Evidence search, live failure-memory retrieval, arbitrary outcome mutation,
+reconciliation, claim validation, standalone report
 verification and scientific replay are not offered through this registry yet.
 Unknown names return `UNSUPPORTED_CAPABILITY`; there is no shell, code, SQL,
 filesystem path, storage-key or URL-fetch tool. Existing manual services retain
 their own interfaces.
+
+`record_outcome` requires automatic-failure policy and trusted runtime versions.
+Its only argument is a linked job ID; the backend derives actor attribution and
+the objective observation. Unsupported errors, absent retained benchmark outputs,
+researcher assessments and test-informed thresholds are not eligible. Submission,
+action linkage and budget accounting commit together. E13 handles report review,
+capture and verification; the coordinator does not offer direct `build_report`.
 
 ## Atomicity and authority
 

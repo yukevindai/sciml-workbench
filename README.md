@@ -12,7 +12,7 @@ The [agent-operated release blueprint](sciml-workbench-mvp-design.md) defines th
 
 Requires Docker Engine with Compose v2 and network access to GitHub/PyPI/npm during the build. No external model API keys are required.
 
-See [runtime setup and configuration ownership](docs/runtime-setup.md) for clean Python 3.12 installation, startup ordering, the Linux/WSL process boundary, and the reserved agent-worker configuration. Agent execution remains disabled until its provider and scheduler tickets are implemented.
+See [runtime setup and configuration ownership](docs/runtime-setup.md) for clean Python 3.12 installation, startup ordering and the Linux process boundary. The optional [agent backend](docs/agent-coordinator.md) requires verified provider configuration, reviewed bounds and trusted policies; it defaults to disabled. Live-provider acceptance remains pending.
 
 The [scientific worker runtime](docs/scientific-worker.md) describes fixed job deadlines, bounded subprocesses, fenced parent publication and restart behavior implemented in D03.
 

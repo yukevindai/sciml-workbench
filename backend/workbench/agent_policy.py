@@ -46,6 +46,8 @@ class AuthorityPolicy(ContractModel):
     # Exact rule identities include conditions/justification in the trusted registry.
     warning_rule_ids: frozenset[Identifier] = frozenset()
     verify_reports: bool = True
+    # Explicit consent for operator-entered goals/answers, independent of file exposure.
+    share_operator_messages: bool = False
 
     def reference(self) -> PolicyReference:
         def canonical(value):
@@ -80,7 +82,7 @@ def intersect_policy(server: AuthorityPolicy, project: AuthorityPolicy,
     data["max_context_bytes"] = min(p.max_context_bytes for p in layers)
     ceilings = [p.spend_ceiling_usd for p in layers if p.spend_ceiling_usd is not None]
     data["spend_ceiling_usd"] = min(ceilings) if ceilings else None
-    for name in ("allow_reuse", "automatic_failure_recording"):
+    for name in ("allow_reuse", "automatic_failure_recording", "share_operator_messages"):
         data[name] = all(getattr(p, name) for p in layers)
     data["verify_reports"] = any(p.verify_reports for p in layers)
     return AuthorityPolicy.model_validate(data)

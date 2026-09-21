@@ -29,11 +29,11 @@ class ModelBound(ContractModel):
 
 
 class BudgetedProvider:
-    def __init__(self, db, provider, *, bounds: dict[str, ModelBound], prices: dict[str, Pricing] | None = None, backend_settings=None):
+    def __init__(self, db, provider, *, bounds: dict[str, ModelBound], prices: dict[str, Pricing] | None = None, backend_settings=None, runs=None):
         self.db, self.provider = db, provider
         self.bounds = {key: value.model_copy(deep=True) for key, value in bounds.items()}
         self.prices = {key: value.model_copy(deep=True) for key, value in (prices or {}).items()}
-        self.budgets = BudgetService()
+        self.budgets = BudgetService(runs)
         self.guard = SecretGuard(backend_settings)
 
     def complete(self, *, project_id, run_id, request_id, expected_revision, claim_token,

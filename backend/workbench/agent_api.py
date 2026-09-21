@@ -44,6 +44,10 @@ def router(service: RunService, session, protected, *, settings=None):
                 limit: int = Query(default=50, ge=1, le=100), s=Depends(session)):
         return service.history(s, pid, after, limit)
 
+    @routes.post('/{rid}/continue', response_model=ResearchRun, status_code=202)
+    def continue_run(pid: str, rid: str, body: RunInput, idempotency_key: str = Header(), s=Depends(session)):
+        return service.continue_from(s, pid, rid, body, idempotency_key)
+
     @routes.get('/{rid}', response_model=RunDetail)
     def read(pid: str, rid: str, s=Depends(session)):
         row = service.get(s, pid, rid)

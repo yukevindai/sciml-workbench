@@ -183,11 +183,12 @@ def submit_candidate(service, scope, protocol_id, candidate_id, *, request_key=N
         return job
 
 
-def release_evaluation(db, scope, protocol_id):
+def release_evaluation(db, scope, protocol_id, *, session=None):
+    from contextlib import nullcontext
     from .submission import SubmissionScope
     if not isinstance(scope, SubmissionScope):
         denied("A trusted submission scope is required")
-    with db.session.begin() as session:
+    with (db.session.begin() if session is None else nullcontext(session)) as session:
         lock_project(session, scope.project_id)
         row = evaluation_row(session, scope, protocol_id)
         bindings = list(session.scalars(select(EvaluationJobRow).where(EvaluationJobRow.protocol_id == protocol_id)))

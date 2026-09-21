@@ -68,6 +68,10 @@ class SecretGuard:
 
 def check_context(policy, context):
     classes = {'schema', 'aggregates'}
+    permitted = set(policy.content_classes)
+    if policy.share_operator_messages:
+        classes.add('operator')
+        permitted.add('operator')
     if policy.exposure in {'selected_excerpts', 'raw_project_content'}:
         classes.add('excerpt')
     if policy.exposure == 'raw_project_content':
@@ -77,7 +81,7 @@ def check_context(policy, context):
     for part in context:
         required = {part.content_class, *part.source_classes}
         if (part.project_id not in policy.project_ids or not required <= classes
-                or not required <= policy.content_classes
+                or not required <= permitted
                 or not set(part.artifact_ids) <= policy.artifact_ids
                 or not set(part.material_ids) <= policy.material_ids):
             raise EgressDenied('data_exposure_denied')

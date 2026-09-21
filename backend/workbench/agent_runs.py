@@ -169,6 +169,9 @@ class RunService:
             if row.state == 'waiting_for_input' and not value['open_question_ids']:
                 value['state'] = 'queued'
         elif operation == 'amend':
+            from .agent_db import finalization_for
+            if finalization_for(s, rid):
+                conflict('Finalization has frozen the run; use a linked continuation after termination')
             if body.expected_plan_revision != row.plan_revision:
                 conflict('Plan revision changed')
             server, project = self.policies(s, pid, body.policy_revision)
@@ -225,6 +228,26 @@ class RunService:
         s.flush()
         return row.payload
 
+    def continue_from(self, s, pid, rid, body, key):
+        """Continue terminal research with a new policy-checked, linked identity.
+
+        The source run and its accounting remain immutable. Normal creation
+        admission, input authority and request-key checks apply to the new run.
+        """
+        source = self.get(s, pid, rid, lock=True)
+        if source.state not in TERMINAL:
+            conflict('Only terminal runs require a linked continuation')
+        old = s.scalar(select(RunRow).where(RunRow.project_id == pid, RunRow.request_key == key))
+        if old and old.payload.get('continued_from_run_id') != rid:
+            conflict('Request key belongs to a different continuation', 'IDEMPOTENCY_CONFLICT')
+        value = self.create(s, pid, body, key)
+        if old:
+            return value
+        row = self.get(s, pid, value['id'], lock=True)
+        self.save(row, {**value, 'continued_from_run_id': rid})
+        s.flush()
+        return row.payload
+
     def events(self, s, pid, rid, after=0, limit=100):
         self.get(s, pid, rid)
         return [e.payload for e in s.scalars(select(EventRow).where(EventRow.run_id == rid,
@@ -245,7 +268,7 @@ class RunService:
                 select(ReservationRow).where(ReservationRow.run_id == rid))],
             'usage_entries': [{'request_id': r.request_id, 'payload': r.payload} for r in s.scalars(
                 select(UsageRow).where(UsageRow.run_id == rid))],
-            'claim_token': row.claim_token,
+            'claim_token': row.claim_token, 'plan_dirty': row.plan_dirty,
             'actions': [{'id': a.id, 'state': a.state, 'request': a.request, 'outcome': a.outcome}
                 for a in s.scalars(select(ActionRow).where(ActionRow.run_id == rid))],
             'jobs': [{'action_id': j.action_id, 'job_id': j.job_id, 'ownership': j.ownership}
@@ -296,6 +319,12 @@ class RunService:
         key_check(action_key)
         row = self.get(s, pid, rid, lock=True)
         self.assert_dispatch(s, row)
+        from .agent_db import finalization_for
+        if finalization_for(s, rid) and request['tool'] not in {
+                'build_report', 'verify_report', 'inspect_project', 'inspect_dataset',
+                'list_artifacts', 'read_artifact', 'read_job', 'read_evaluation',
+                'read_memory', 'read_failure', 'search_failures', 'read_evidence_span', 'search_evidence'}:
+            conflict('Finalization fences further scientific work')
         digest = request_digest('agent_action', request)
         old = s.scalar(select(ActionRow).where(ActionRow.run_id == rid,
             ActionRow.action_key == action_key, ActionRow.attempt == attempt))

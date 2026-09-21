@@ -134,6 +134,8 @@ def report_bundle(snapshot, store):
     files["contracts/v2/failure.json"] = adapters.encoded(FailureV2.model_json_schema())
     files["contracts/evaluation_protocol.json"] = adapters.encoded(EvaluationProtocol.model_json_schema())
     files["contracts/claim_set.json"] = adapters.encoded(ClaimSet.model_json_schema())
+    from .research_contracts import AgentExecutionRecord
+    files["contracts/agent_execution.json"] = adapters.encoded(AgentExecutionRecord.model_json_schema())
     from . import contracts
 
     for model in (
@@ -164,6 +166,9 @@ def report_bundle(snapshot, store):
         "Keep this archive private: it contains the uploaded data and evidence.\n"
     ).encode()
     summary = [f"# {proj.name}", proj.description, "## Artifacts"]
+    if snapshot.get('agent_finalization'):
+        files['agent-finalization.json'] = adapters.encoded(snapshot['agent_finalization'])
+        summary.append('## Finalization at capture\n\n' + json.dumps(snapshot['agent_finalization']))
     if snapshot.get("evaluation_states"):
         summary.append("Exposure status at capture (later reads can add exposure): " + json.dumps(snapshot["evaluation_states"]))
     for a in artifacts:
@@ -191,6 +196,12 @@ def report_bundle(snapshot, store):
                                f"  Limitations: {json.dumps(claim['limitations'])}\n\n"
                                f"  References: {json.dumps(claim['source_references'] + claim['metric_references'])}\n\n"
                                f"  Semantic review: {claim['semantic_review']['status']}")
+        if a['kind'] == 'agent_execution':
+            summary.append('## Research execution\n\nObjective: ' + a['objective']
+                + '\n\nVersions: ' + json.dumps(a['versions'])
+                + '\n\nUsage at capture: ' + json.dumps(a['usage'])
+                + '\n\nExecution cutoff: ' + str(a['event_cutoff'])
+                + '\n\nExport and verification were pending at capture; scientific replay was not run.')
     files["report.md"] = "\n\n".join(summary).encode()
     files["manifest.json"] = adapters.encoded(
         {

@@ -152,6 +152,19 @@ def capture(session, pid, scope=None):
                   "error_code": j.error_code, "error": "Job failed; see error_code" if j.state == "failed" else None}
                  for j in sorted(jobs.values(), key=lambda j: j.id)],
     }
+    if selection and scope.run_id:
+        from .agent_db import finalization_for, RuntimeVersionRow
+        finalization = finalization_for(session, scope.run_id)
+        if finalization and finalization.project_id == pid:
+            snapshot['agent_finalization'] = {
+                'candidate_sha256': finalization.candidate_sha256,
+                'execution_record_id': finalization.execution_id,
+                'claim_set_id': finalization.claim_set_id,
+                'review': finalization.result.get('review'),
+                'runtime_versions': [r.payload for r in session.scalars(select(RuntimeVersionRow)
+                    .where(RuntimeVersionRow.run_id == scope.run_id).order_by(RuntimeVersionRow.created_at, RuntimeVersionRow.sha256))],
+                'gaps': finalization.result.get('issues', []),
+                'export_status_at_cutoff': 'pending', 'scientific_replay': 'not_run'}
     return deepcopy(snapshot)
 
 
