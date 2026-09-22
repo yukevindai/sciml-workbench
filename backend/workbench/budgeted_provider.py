@@ -35,6 +35,7 @@ class BudgetedProvider:
         self.prices = {key: value.model_copy(deep=True) for key, value in (prices or {}).items()}
         self.budgets = BudgetService(runs)
         self.guard = SecretGuard(backend_settings)
+        self.backend_settings = backend_settings
 
     def complete(self, *, project_id, run_id, request_id, expected_revision, claim_token,
                  model, context, tools, max_tokens, assignment_id=None, finalization=False, retry=False):
@@ -84,13 +85,18 @@ class BudgetedProvider:
             if not self.budgets.dispatch(s, project_id, run_id, request_id):
                 raise ProviderError("request_already_dispatched", usage_unknown=True)
         started = time.monotonic()
+        from .telemetry import model_observation
         try:
             result = self.provider.complete(model=model, policy=policy, context=context, tools=tools, max_tokens=max_tokens)
         except ProviderError as exc:
+            model_observation(self.backend_settings, 'usage_unknown' if exc.usage_unknown else 'failed')
             if not exc.usage_unknown:
                 with self.db.session.begin() as s:
                     self.budgets.settle(s, project_id, run_id, request_id, Resources(model_requests=1,
                         active_seconds=math.ceil(time.monotonic() - started), transient_retries=int(retry)))
+            raise
+        except Exception:
+            model_observation(self.backend_settings, 'usage_unknown')
             raise
         # Arbitrary failures and process death deliberately leave unknown usage.
         with self.db.session.begin() as s:
@@ -99,5 +105,7 @@ class BudgetedProvider:
                           active_seconds=math.ceil(time.monotonic() - started), transient_retries=int(retry)), tokens=result.usage)
             exceeded = entry.payload["overrun"]
         if exceeded:
+            model_observation(self.backend_settings, 'failed')
             raise ProviderError("usage_exceeded_trusted_bound")
+        model_observation(self.backend_settings, 'succeeded')
         return result

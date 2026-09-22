@@ -29,6 +29,11 @@ The Failure Memory CLI can serve the same stopped SQLite store independently for
 
 ## Troubleshooting
 
+Use the [private diagnostics command](diagnostics.md) to correlate run/action/job
+IDs, distinguish operator waits from expired leases, inspect independent worker and
+model observations, and check queue age, unknown usage and resource alerts. It is
+read-only and does not treat public API health as evidence of worker/model health.
+
 | Symptom | Check |
 |---|---|
 | Backend unavailable | `docker compose ps` and `docker compose logs api setup postgres`; setup must complete and PostgreSQL must be healthy. |

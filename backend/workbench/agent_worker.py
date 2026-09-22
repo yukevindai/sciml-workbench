@@ -16,13 +16,16 @@ def run(settings, step, stopping, *, worker_id=None, lease_seconds=60):
     scheduler = Scheduler(db, lease_seconds=lease_seconds)
     identity = worker_id or uid()
     try:
-        with saver(settings.database_url) as checkpointer:
+        from .telemetry import Heartbeat
+        with saver(settings.database_url) as checkpointer, Heartbeat(settings.storage_root, 'agent') as heartbeat:
             while not stopping.is_set():
                 claim = scheduler.claim(identity)
                 if claim is None:
+                    heartbeat.progress('idle')
                     stopping.wait(0.5)
                     continue
                 try:
+                    heartbeat.progress('busy', project_id=claim.project_id, run_id=claim.run_id)
                     scheduler.advance(claim, checkpointer, step)
                 except DomainError as exc:
                     if exc.error_code != 'RUN_REVISION_CHANGED':

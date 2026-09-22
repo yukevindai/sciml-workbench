@@ -163,16 +163,21 @@ def main():
     db = Database(settings.database_url)
     worker_id = uid()
     try:
-        while not stopping.is_set():
-            from .recovery import recover_once
-            recover_once(db, settings, stopped=stopping.is_set)
-            if stopping.is_set():
-                break
-            claimed = claim_next(db, settings.job_timeout_seconds, worker_id)
-            if claimed:
-                process_job(settings, claimed, db=db, stopped=stopping.is_set)
-            else:
-                stopping.wait(1)
+        from .telemetry import Heartbeat
+        with Heartbeat(settings.storage_root, 'scientific') as heartbeat:
+            while not stopping.is_set():
+                from .recovery import recover_once
+                heartbeat.progress('recovering')
+                recover_once(db, settings, stopped=stopping.is_set)
+                if stopping.is_set():
+                    break
+                claimed = claim_next(db, settings.job_timeout_seconds, worker_id)
+                if claimed:
+                    heartbeat.progress('busy', job_id=claimed.job_id)
+                    process_job(settings, claimed, db=db, stopped=stopping.is_set)
+                else:
+                    heartbeat.progress('idle')
+                    stopping.wait(1)
     finally:
         db.engine.dispose()
         for sig, handler in previous.items():
