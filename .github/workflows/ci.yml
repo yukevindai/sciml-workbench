@@ -43,9 +43,7 @@ jobs:
       - run: npx playwright install --with-deps chromium
         working-directory: frontend
       - run: |
-          python -m workbench.bootstrap
-          uvicorn workbench.api:create_app --factory --port 8000 > /tmp/api.log 2>&1 &
-          python -m workbench.worker > /tmp/worker.log 2>&1 &
+          python -m workbench.serve > /tmp/runtime.log 2>&1 &
           npm --prefix frontend run start > /tmp/web.log 2>&1 &
           for i in $(seq 1 60); do curl -fsS http://localhost:3000/healthz >/dev/null && break || sleep 1; done
           npm --prefix frontend run test:e2e
@@ -55,8 +53,7 @@ jobs:
           name: test-diagnostics
           path: |
             frontend/test-results
-            /tmp/api.log
-            /tmp/worker.log
+            /tmp/runtime.log
             /tmp/web.log
   compose:
     runs-on: ubuntu-latest
