@@ -8,16 +8,18 @@ For code updates, back up first and stop `web api worker` (plus `agent-worker` i
 
 ## Backup and restore
 
-For a consistent small-workspace backup, stop writes and the worker first:
+Use the [coordinated backup and isolated restore procedure](backup-restore.md).
+`python -m workbench.backup` creates and verifies a matched full PostgreSQL dump,
+entire data directory and versioned manifest. Stop **all** writers, including the
+agent worker and any standalone Failure Memory process. Pausing runs alone does
+not stop accepted scientific jobs or upstream writes. Restore only to a new empty
+database and new data directory; the command never overwrites an existing target
+or automatically starts services.
 
-```bash
-docker compose stop web api worker
-docker compose exec -T postgres pg_dump -U workbench -d workbench > metadata.sql
-# Save the workbench-data named volume using your Docker volume backup tooling.
-# It contains blobs/, failure-memory.sqlite and the provisioning marker.
-```
-
-Back up the entire stopped file volume, not just blobs. Restore PostgreSQL and the matching file volume together before starting the app. For Failure Memory-only operator backups, use its `failure-memory --database /data/failure-memory.sqlite backup /data/backup.sqlite` CLI through a backend container. This does not back up the workbench's PostgreSQL records or blobs.
+The bundle includes checkpoints, ledgers, blobs, `failure-memory.sqlite`, SQLite
+sidecars and `.efm-provisioned`. It records a non-secret reference to the separately
+secured configuration/version. A PostgreSQL dump alone, a disk snapshot alone or
+Failure Memory's supported standalone backup CLI is not a complete workbench backup.
 
 ## Credentials
 
