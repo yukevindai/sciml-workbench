@@ -251,3 +251,7 @@
 .claim { padding: var(--space-5) var(--space-6); border: 1px solid var(--color-border-subtle); border-radius: var(--radius-md); }
 .claim-statement { font-size: var(--text-base); color: var(--color-text-primary); font-weight: var(--weight-medium); }
 .audit-config dd.mono { overflow-wrap: anywhere; }
+
+/* ---------------------------------- failure memory (A07) --------------- */
+.receipt { padding: var(--space-5) var(--space-6); border: 1px solid var(--color-border-subtle); border-radius: var(--radius-md); }
+.failure-record:focus-visible, .receipt:target { outline: 2px solid var(--color-accent-solid); outline-offset: 2px; }

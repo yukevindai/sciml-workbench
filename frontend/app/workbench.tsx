@@ -25,7 +25,7 @@ import { ReportView } from './views/report';
 const PROJECT_STORAGE_KEY = 'sciml-project';
 const POLL_INTERVAL = 2500;
 
-export default function Workbench({ view, fixture, children, requestedProjectId, requestedAuditId, requestedSplitId, requestedBenchmarkId, requestedEvidenceId, requestedClaimSetId }: { view: View; fixture?: ShellFixture; children?: ReactNode; requestedProjectId?: string; requestedAuditId?: string; requestedSplitId?: string; requestedBenchmarkId?: string; requestedEvidenceId?: string; requestedClaimSetId?: string }) {
+export default function Workbench({ view, fixture, children, requestedProjectId, requestedAuditId, requestedSplitId, requestedBenchmarkId, requestedEvidenceId, requestedClaimSetId, requestedFailureId }: { view: View; fixture?: ShellFixture; children?: ReactNode; requestedProjectId?: string; requestedAuditId?: string; requestedSplitId?: string; requestedBenchmarkId?: string; requestedEvidenceId?: string; requestedClaimSetId?: string; requestedFailureId?: string }) {
   const [projects, setProjects] = useState<Project[]>(fixture?.projects ?? []);
   const [projectId, updateProjectId] = useState(fixture?.projects[0]?.id ?? '');
   const [artifacts, setArtifacts] = useState<Artifact[]>(fixture?.artifacts ?? []);
@@ -254,7 +254,7 @@ export default function Workbench({ view, fixture, children, requestedProjectId,
               {view === 'dataset-audit' && <AuditView key={projectId} wb={model} requestedAuditId={projectId === requestedProjectId ? requestedAuditId : undefined} />}
               {view === 'split-designer' && <SplitView wb={model} requestedSplitId={projectId === requestedProjectId ? requestedSplitId : undefined} />}
               {view === 'benchmark' && <BenchmarkView key={projectId} wb={model} requestedBenchmarkId={projectId === requestedProjectId ? requestedBenchmarkId : undefined} />}
-              {view === 'failure-memory' && <FailureMemoryView wb={model} />}
+              {view === 'failure-memory' && <FailureMemoryView key={projectId} wb={model} requestedFailureId={projectId === requestedProjectId ? requestedFailureId : undefined} requestedBenchmarkId={projectId === requestedProjectId ? requestedBenchmarkId : undefined} />}
               {view === 'evidence' && <EvidenceView key={projectId} wb={model} requestedEvidenceId={projectId === requestedProjectId ? requestedEvidenceId : undefined} requestedClaimSetId={projectId === requestedProjectId ? requestedClaimSetId : undefined} />}
               {view === 'provenance' && <ProvenanceView wb={model} />}
               {view === 'report' && <ReportView wb={model} />}

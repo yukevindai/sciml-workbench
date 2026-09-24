@@ -21,6 +21,11 @@ export default async function Page({ params, searchParams }: { params: Promise<{
     if (!project || !/^[a-zA-Z0-9_-]+$/.test(project) || (query.benchmark !== undefined && (!benchmark || !/^[a-zA-Z0-9_-]+$/.test(benchmark)))) notFound();
     return <Workbench key={`${project}:${benchmark ?? ''}`} view={view} requestedProjectId={project} requestedBenchmarkId={benchmark} />;
   }
+  const failure = typeof query.failure === 'string' ? query.failure : undefined;
+  if (view === 'failure-memory' && (query.failure !== undefined || query.benchmark !== undefined || query.project !== undefined)) {
+    if (!project || !/^[a-zA-Z0-9_-]+$/.test(project) || !valid(query.failure, failure) || !valid(query.benchmark, benchmark)) notFound();
+    return <Workbench key={`${project}:${failure ?? ''}:${benchmark ?? ''}`} view={view} requestedProjectId={project} requestedFailureId={failure} requestedBenchmarkId={benchmark} />;
+  }
   if (view === 'split-designer' && (query.split !== undefined || query.project !== undefined)) {
     if (!project || !/^[a-zA-Z0-9_-]+$/.test(project) || (query.split !== undefined && (!split || !/^[a-zA-Z0-9_-]+$/.test(split)))) notFound();
     return <Workbench key={`${project}:${split ?? ''}`} view={view} requestedProjectId={project} requestedSplitId={split} />;

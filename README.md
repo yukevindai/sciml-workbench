@@ -56,11 +56,17 @@ check and review status; opening a citation reverifies it and highlights the
 exact span, on its page when one was recorded. See the
 [A06 handoff](docs/tickets/A06.md).
 
+Failure memory shows who recorded each failure (researcher or agent run/action),
+what was observed (exact error, missed predeclared criterion or researcher
+assessment), uncertainty and the exact run, plus every import's receipt. Unknown
+import outcomes stay separate from confirmed records, and a retried or
+double-clicked save reuses one request. See the [A07 handoff](docs/tickets/A07.md).
+
 1. **Projects:** create a project and describe its research question.
 2. **Dataset audit:** upload `examples/demo.csv`, then explicitly choose **Use bundled synthetic demo declarations** for this fixture. Ordinary uploads start with unknown source metadata and can be audited without a license declaration. Click **Run audit** using the prefilled configuration.
 3. **Split designer:** click **Generate partition**. SciSplit produces a 60/20/20 requested train/validation/test split by generated family; actual group-constrained counts are visualized.
 4. **Benchmarks:** run the prefilled ridge baseline. All 60 CSV rows are used by the upstream admission and evaluation protocol. The run shows validation metrics and the validation grid; choose **Reveal test results…** and confirm to read the held-out scores, which records exposure of that holdout.
-5. **Failure memory:** select the run, explain why it was unsuccessful for your research objective, and record uncertainty. For this fixture, a valid example is “The synthetic demonstration cannot establish empirical predictive performance.” This assessment does not change execution status or claim an experimental failure.
+5. **Failure memory:** explicitly select the run, explain why it was unsuccessful for your research objective, and record uncertainty. For this fixture, a valid example is “The synthetic demonstration cannot establish empirical predictive performance.” This assessment does not change execution status or claim an experimental failure.
 6. To exercise an **execution failure**, run another benchmark with `units: {}` in the task card. Upstream admission rejects missing units. Select that failed run and save the reason to Failure Memory.
 7. **Evidence:** attach a PDF to preserve its original bytes, then optionally choose **Extract text**. The filename becomes the extraction title. Originals remain downloadable even if extraction fails. After extraction, choose **Show text** on a page to read its exact text layer; pages without one say so. Ingestion is not OCR, figure digitization or automatic claim verification.
 8. **Provenance:** inspect linked artifact IDs and configurations.

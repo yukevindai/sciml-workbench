@@ -11,6 +11,7 @@ import { parseEvaluationStatus } from '../lib/decode';
 import { benchmarkHref, benchmarkLineage, HOLDOUT_EXPOSURE, revealedTest, SCALAR_METRICS, scalarMetrics } from '../lib/benchmark';
 import { record, splitHref, strings } from '../lib/split';
 import { formatDate, formatMetric, humanise } from '../lib/format';
+import { assessRunHref, failureHref } from '../lib/failure';
 import { Alert, Badge, JsonBox, Panel } from './ui';
 
 export function MetricTable({ label, metrics, caption }: { label: string; metrics: ReturnType<typeof scalarMetrics>; caption: string }) {
@@ -179,9 +180,9 @@ export function RunInspection({ wb, run, focus, revealed, onReveal }: {
         {jobs.length ? <ul>{jobs.map(job => <li key={job.id}>Job {job.id}: {job.state}{job.finished_at ? ` · finished ${formatDate(job.finished_at)}` : ''}</li>)}</ul>
           : <p>No job in the current job list links to this result.</p>}
         {outcomes.length ? <ul>{outcomes.map(outcome => <li key={outcome.id}>
-          {'reason' in outcome ? outcome.reason : 'Recorded outcome'} · {outcome.schema_version === '2.0' ? `${outcome.actor.kind} · ${humanise(outcome.observation.kind)} · receipt ${outcome.receipt.state}` : 'legacy human record'} · {formatDate(outcome.created_at)}
+          <Link className="text-link" href={failureHref(run.project_id, outcome.id)}>{'reason' in outcome ? outcome.reason : 'Recorded outcome'}</Link> · {outcome.schema_version === '2.0' ? `${outcome.actor.kind} · ${humanise(outcome.observation.kind)} · receipt ${outcome.receipt.state}` : 'legacy human record'} · {formatDate(outcome.created_at)}
         </li>)}</ul> : <p>No unsuccessful outcome is recorded for this run. Absence of a record is not evidence of success.</p>}
-        <Link className="text-link" href="/failure-memory">Record that this run did not meet my objective <ArrowUpRight size={14} aria-hidden="true" /></Link>
+        <Link className="text-link" href={assessRunHref(run.project_id, run.id)}>Record that this run did not meet my objective <ArrowUpRight size={14} aria-hidden="true" /></Link>
       </div>
       <JsonBox value={run} summary="Inspect preview projection (test output withheld)" />
     </div>

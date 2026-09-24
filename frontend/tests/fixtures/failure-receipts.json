@@ -1,0 +1,1791 @@
+{
+ "project": {
+  "id": "80b1b152-bcc9-4dbf-a075-a4a8f42daf76",
+  "name": "Failure study",
+  "description": ""
+ },
+ "previews": [
+  {
+   "schema_version": "1.0",
+   "id": "6a3f8a15-3d43-4d95-afee-70acefc33636",
+   "project_id": "80b1b152-bcc9-4dbf-a075-a4a8f42daf76",
+   "created_at": "2026-09-24T22:11:36.546013Z",
+   "parents": [],
+   "software": {
+    "chemdata-auditor": "0.3.0@eff3ed3c43ec71e9ceecabc1f04d1dfb5c91c116",
+    "cheme-ml-benchmarks": "0.1.0@db02d8963725a1d406b9b07eb6f4cc3436fbb082",
+    "scientific-evidence-engine": "0.1.0@09f5ec810e8f04bf8d233ec12eb9448342ee5121",
+    "experiment-failure-memory": "0.1.0@63492787cbbea6d03662db63f2d958a6eec8d804",
+    "workbench": "0.1.0"
+   },
+   "kind": "dataset",
+   "filename": "demo.csv",
+   "blob_key": "aa0e1db7ba154779d11787120c4ea7dd87aab22d8a8fbd1e4a5b1446507afe3c",
+   "sha256": "aa0e1db7ba154779d11787120c4ea7dd87aab22d8a8fbd1e4a5b1446507afe3c",
+   "rows": 60,
+   "columns": [
+    "row_id",
+    "group_id",
+    "source_id",
+    "temperature",
+    "response"
+   ],
+   "source": {
+    "citation": "Workbench synthetic demonstration",
+    "url": "Not applicable: generated fixture",
+    "license": "CC0-1.0",
+    "data_kind": "synthetic",
+    "transformations": "Deterministic toy fixture; no empirical claims."
+   }
+  },
+  {
+   "schema_version": "1.0",
+   "id": "da7adda5-8d04-48a3-b8f5-8a230a6844ef",
+   "project_id": "80b1b152-bcc9-4dbf-a075-a4a8f42daf76",
+   "created_at": "2026-09-24T22:11:36.548214Z",
+   "parents": [],
+   "software": {
+    "chemdata-auditor": "0.3.0@eff3ed3c43ec71e9ceecabc1f04d1dfb5c91c116",
+    "cheme-ml-benchmarks": "0.1.0@db02d8963725a1d406b9b07eb6f4cc3436fbb082",
+    "scientific-evidence-engine": "0.1.0@09f5ec810e8f04bf8d233ec12eb9448342ee5121",
+    "experiment-failure-memory": "0.1.0@63492787cbbea6d03662db63f2d958a6eec8d804",
+    "workbench": "0.1.0"
+   },
+   "kind": "provenance",
+   "activity": "upload",
+   "inputs": [],
+   "outputs": [
+    "6a3f8a15-3d43-4d95-afee-70acefc33636"
+   ],
+   "parameters": {
+    "source": {
+     "citation": "Workbench synthetic demonstration",
+     "url": "Not applicable: generated fixture",
+     "license": "CC0-1.0",
+     "data_kind": "synthetic",
+     "transformations": "Deterministic toy fixture; no empirical claims."
+    }
+   }
+  },
+  {
+   "schema_version": "1.0",
+   "id": "a981bb39-5c9a-49b5-be7a-79c030cb6310",
+   "project_id": "80b1b152-bcc9-4dbf-a075-a4a8f42daf76",
+   "created_at": "2026-09-24T22:11:39.821487Z",
+   "parents": [
+    "6a3f8a15-3d43-4d95-afee-70acefc33636"
+   ],
+   "software": {
+    "chemdata-auditor": "0.3.0@eff3ed3c43ec71e9ceecabc1f04d1dfb5c91c116",
+    "cheme-ml-benchmarks": "0.1.0@db02d8963725a1d406b9b07eb6f4cc3436fbb082",
+    "scientific-evidence-engine": "0.1.0@09f5ec810e8f04bf8d233ec12eb9448342ee5121",
+    "experiment-failure-memory": "0.1.0@63492787cbbea6d03662db63f2d958a6eec8d804",
+    "workbench": "0.1.0"
+   },
+   "kind": "audit",
+   "dataset_id": "6a3f8a15-3d43-4d95-afee-70acefc33636",
+   "config": {
+    "numeric_columns": [
+     "temperature",
+     "response"
+    ],
+    "feature_columns": [
+     "temperature"
+    ],
+    "target_column": "response",
+    "provenance_columns": [
+     "source_id",
+     "group_id"
+    ]
+   },
+   "result": {
+    "n_rows": 60,
+    "findings": [
+     {
+      "code": "constant_column",
+      "severity": "info",
+      "columns": [
+       "source_id"
+      ],
+      "rows": [
+       0,
+       1,
+       2,
+       3,
+       4,
+       5,
+       6,
+       7,
+       8,
+       9,
+       10,
+       11,
+       12,
+       13,
+       14,
+       15,
+       16,
+       17,
+       18,
+       19,
+       20,
+       21,
+       22,
+       23,
+       24,
+       25,
+       26,
+       27,
+       28,
+       29,
+       30,
+       31,
+       32,
+       33,
+       34,
+       35,
+       36,
+       37,
+       38,
+       39,
+       40,
+       41,
+       42,
+       43,
+       44,
+       45,
+       46,
+       47,
+       48,
+       49,
+       50,
+       51,
+       52,
+       53,
+       54,
+       55,
+       56,
+       57,
+       58,
+       59
+      ],
+      "message": "Column has one observed value.",
+      "suggestion": "Keep useful metadata; avoid treating a constant feature as predictive evidence.",
+      "details": {
+       "affected_count": 60,
+       "raw_examples": [
+        {
+         "source_id": "synthetic-fixture"
+        },
+        {
+         "source_id": "synthetic-fixture"
+        },
+        {
+         "source_id": "synthetic-fixture"
+        },
+        {
+         "source_id": "synthetic-fixture"
+        },
+        {
+         "source_id": "synthetic-fixture"
+        },
+        {
+         "source_id": "synthetic-fixture"
+        },
+        {
+         "source_id": "synthetic-fixture"
+        },
+        {
+         "source_id": "synthetic-fixture"
+        },
+        {
+         "source_id": "synthetic-fixture"
+        },
+        {
+         "source_id": "synthetic-fixture"
+        },
+        {
+         "source_id": "synthetic-fixture"
+        },
+        {
+         "source_id": "synthetic-fixture"
+        },
+        {
+         "source_id": "synthetic-fixture"
+        },
+        {
+         "source_id": "synthetic-fixture"
+        },
+        {
+         "source_id": "synthetic-fixture"
+        },
+        {
+         "source_id": "synthetic-fixture"
+        },
+        {
+         "source_id": "synthetic-fixture"
+        },
+        {
+         "source_id": "synthetic-fixture"
+        },
+        {
+         "source_id": "synthetic-fixture"
+        },
+        {
+         "source_id": "synthetic-fixture"
+        }
+       ],
+       "row_examples": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19
+       ],
+       "examples_truncated": true
+      }
+     }
+    ],
+    "checks_run": [
+     "duplicates",
+     "feature_leakage",
+     "numeric_validity",
+     "provenance",
+     "missing_values",
+     "schema_quality"
+    ],
+    "checks_skipped": {
+     "split_leakage": "No split_column configured.",
+     "bounds": "No physical bounds configured.",
+     "units": "No unit rules configured.",
+     "sparse_regions": "No sparse_bins configured.",
+     "conflicting_samples": "Configure identity_columns and conflict_columns.",
+     "near_duplicates": "No per-column absolute tolerances configured.",
+     "molecular_identity": "No smiles_column configured.",
+     "multivariate_density": "No density_columns and density_scales configured.",
+     "domain_constraints": "No compositions or rules configured."
+    },
+    "metadata": {
+     "tool_version": "0.3.0",
+     "row_reference": "zero-based row position; use df.iloc, not df.loc",
+     "dataset_sha256": "0eb2ca1f5e808f352e36b767fdf74f5494253bed6b024ff6e7631ad657ef45bc",
+     "fingerprint_format": "pandas split JSON, index excluded, 15-digit float precision",
+     "config": {
+      "duplicate_columns": null,
+      "group_columns": [],
+      "split_column": null,
+      "bounds": {},
+      "units": {},
+      "provenance_columns": [
+       "source_id",
+       "group_id"
+      ],
+      "sparse_bins": {},
+      "min_bin_count": 3,
+      "feature_columns": [
+       "temperature"
+      ],
+      "unavailable_features": [],
+      "target_column": "response",
+      "check_missing": true,
+      "numeric_columns": [
+       "temperature",
+       "response"
+      ],
+      "identity_columns": [],
+      "conflict_columns": [],
+      "conflict_tolerance": 0.0,
+      "identifier_columns": [],
+      "correlation_threshold": 0.995,
+      "unit_aliases": {},
+      "compositions": [],
+      "rules": [],
+      "near_duplicates": {},
+      "smiles_column": null,
+      "molecular_similarity": null,
+      "density_columns": [],
+      "density_scales": {},
+      "density_radius": 1.0,
+      "min_neighbors": 3,
+      "max_pair_comparisons": 2000000,
+      "provenance_patterns": {}
+     },
+     "dependencies": {
+      "numpy": "2.5.3",
+      "pandas": "3.0.5",
+      "pint": "0.26.1",
+      "scikit-learn": "1.9.1"
+     },
+     "canonical_units": {},
+     "limitations": [
+      "Configured checks cannot certify scientific validity or causal leakage.",
+      "Evidence examples are capped at 20 rows; affected row positions are complete.",
+      "Near-duplicate pair examples are capped at 100; counts are complete.",
+      "Provenance syntax is checked locally; source authenticity is not verified."
+     ]
+    }
+   }
+  },
+  {
+   "schema_version": "1.0",
+   "id": "6e92de27-1816-49e4-8d4f-19acc26b6265",
+   "project_id": "80b1b152-bcc9-4dbf-a075-a4a8f42daf76",
+   "created_at": "2026-09-24T22:11:40.222788Z",
+   "parents": [
+    "6a3f8a15-3d43-4d95-afee-70acefc33636"
+   ],
+   "software": {
+    "chemdata-auditor": "0.3.0@eff3ed3c43ec71e9ceecabc1f04d1dfb5c91c116",
+    "cheme-ml-benchmarks": "0.1.0@db02d8963725a1d406b9b07eb6f4cc3436fbb082",
+    "scientific-evidence-engine": "0.1.0@09f5ec810e8f04bf8d233ec12eb9448342ee5121",
+    "experiment-failure-memory": "0.1.0@63492787cbbea6d03662db63f2d958a6eec8d804",
+    "workbench": "0.1.0"
+   },
+   "kind": "provenance",
+   "activity": "audit",
+   "inputs": [
+    "6a3f8a15-3d43-4d95-afee-70acefc33636"
+   ],
+   "outputs": [
+    "a981bb39-5c9a-49b5-be7a-79c030cb6310"
+   ],
+   "parameters": {
+    "dataset_id": "6a3f8a15-3d43-4d95-afee-70acefc33636",
+    "config": {
+     "numeric_columns": [
+      "temperature",
+      "response"
+     ],
+     "feature_columns": [
+      "temperature"
+     ],
+     "target_column": "response",
+     "provenance_columns": [
+      "source_id",
+      "group_id"
+     ]
+    }
+   }
+  },
+  {
+   "schema_version": "1.0",
+   "id": "8fcaac75-32d0-4c60-b416-81cc5cf32d3b",
+   "project_id": "80b1b152-bcc9-4dbf-a075-a4a8f42daf76",
+   "created_at": "2026-09-24T22:11:43.233214Z",
+   "parents": [
+    "6a3f8a15-3d43-4d95-afee-70acefc33636",
+    "a981bb39-5c9a-49b5-be7a-79c030cb6310"
+   ],
+   "software": {
+    "chemdata-auditor": "0.3.0@eff3ed3c43ec71e9ceecabc1f04d1dfb5c91c116",
+    "cheme-ml-benchmarks": "0.1.0@db02d8963725a1d406b9b07eb6f4cc3436fbb082",
+    "scientific-evidence-engine": "0.1.0@09f5ec810e8f04bf8d233ec12eb9448342ee5121",
+    "experiment-failure-memory": "0.1.0@63492787cbbea6d03662db63f2d958a6eec8d804",
+    "workbench": "0.1.0"
+   },
+   "kind": "split",
+   "dataset_id": "6a3f8a15-3d43-4d95-afee-70acefc33636",
+   "audit_id": "a981bb39-5c9a-49b5-be7a-79c030cb6310",
+   "config": {
+    "strategy": "composition",
+    "columns": [
+     "group_id"
+    ],
+    "group_columns": [
+     "group_id"
+    ],
+    "target_column": "response",
+    "validation_size": 0.2,
+    "test_size": 0.2,
+    "seed": 42
+   },
+   "assignments": [
+    "train",
+    "train",
+    "train",
+    "train",
+    "train",
+    "train",
+    "train",
+    "train",
+    "train",
+    "train",
+    "train",
+    "train",
+    "test",
+    "test",
+    "test",
+    "test",
+    "test",
+    "test",
+    "train",
+    "train",
+    "train",
+    "train",
+    "train",
+    "train",
+    "train",
+    "train",
+    "train",
+    "validation",
+    "validation",
+    "validation",
+    "train",
+    "train",
+    "train",
+    "train",
+    "train",
+    "train",
+    "train",
+    "train",
+    "train",
+    "validation",
+    "validation",
+    "validation",
+    "test",
+    "test",
+    "test",
+    "validation",
+    "validation",
+    "validation",
+    "train",
+    "train",
+    "train",
+    "train",
+    "train",
+    "train",
+    "validation",
+    "validation",
+    "validation",
+    "test",
+    "test",
+    "test"
+   ],
+   "result": {
+    "train": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11,
+     18,
+     19,
+     20,
+     21,
+     22,
+     23,
+     24,
+     25,
+     26,
+     30,
+     31,
+     32,
+     33,
+     34,
+     35,
+     36,
+     37,
+     38,
+     48,
+     49,
+     50,
+     51,
+     52,
+     53
+    ],
+    "test": [
+     12,
+     13,
+     14,
+     15,
+     16,
+     17,
+     42,
+     43,
+     44,
+     57,
+     58,
+     59
+    ],
+    "excluded": [],
+    "diagnostics": {
+     "strategy": "composition",
+     "warnings": [
+      "Numeric composition representations are normalized by decimal value; rounding is explicit. Units and chemical equivalence are not inferred."
+     ],
+     "selection": "seeded connected-group holdout",
+     "requested_test_group_fraction": 0.2,
+     "requested_validation_group_fraction": 0.2,
+     "heldout_components": 4,
+     "validation_components": 4,
+     "scientific_groups": 20,
+     "independent_components": 20,
+     "group_overlap_counts": {
+      "group_id": 0
+     },
+     "scientific_group_overlap": 0,
+     "n_train": 36,
+     "n_validation": 12,
+     "n_test": 12,
+     "n_excluded": 0,
+     "actual_test_row_fraction": 0.2,
+     "actual_validation_row_fraction": 0.2,
+     "generalization": {
+      "supports": "Transfer to compositions absent from training under declared representation and rounding.",
+      "does_not_establish": "Composition holdout alone does not establish extrapolation, novel scaffold transfer, or new-laboratory performance.",
+      "conditional_on": "Sample independence, provenance, measurement validity, and absence of target leakage must be checked separately."
+     },
+     "evaluation": {
+      "partition_sizes": {
+       "train": 36,
+       "validation": 12,
+       "test": 12
+      },
+      "excluded_count": 0,
+      "pairwise_overlap": {
+       "train:validation": {
+        "groups": {
+         "group_id": 0
+        },
+        "exact_duplicate_pairs": 0
+       },
+       "train:test": {
+        "groups": {
+         "group_id": 0
+        },
+        "exact_duplicate_pairs": 0
+       },
+       "validation:test": {
+        "groups": {
+         "group_id": 0
+        },
+        "exact_duplicate_pairs": 0
+       }
+      },
+      "distribution_shift": {
+       "validation": {
+        "numeric": {},
+        "categorical": {}
+       },
+       "test": {
+        "numeric": {},
+        "categorical": {}
+       }
+      },
+      "training_domain": {
+       "status": "not_configured"
+      },
+      "checks_not_configured": [
+       "numeric_similarity",
+       "molecular_similarity",
+       "numeric_shift",
+       "categorical_shift",
+       "training_domain"
+      ]
+     }
+    },
+    "metadata": {
+     "tool_version": "0.3.0",
+     "row_reference": "zero-based row position; use df.iloc, not df.loc",
+     "dataset_sha256": "0eb2ca1f5e808f352e36b767fdf74f5494253bed6b024ff6e7631ad657ef45bc",
+     "fingerprint_format": "pandas split JSON, index excluded, 15-digit float precision",
+     "config": {
+      "strategy": "composition",
+      "columns": [
+       "group_id"
+      ],
+      "group_columns": [
+       "group_id"
+      ],
+      "test_size": 0.2,
+      "validation_size": 0.2,
+      "seed": 42,
+      "holdout_values": null,
+      "validation_values": null,
+      "cutoff": null,
+      "validation_cutoff": null,
+      "threshold": null,
+      "validation_threshold": null,
+      "direction": "high",
+      "extrapolation_bounds": {},
+      "validation_bounds": {},
+      "crossing_policy": "error",
+      "composition_decimals": null,
+      "n_clusters": 5,
+      "cluster_scales": {},
+      "group_near_duplicates": {},
+      "group_smiles_column": null,
+      "group_molecular_similarity": null,
+      "target_column": "response",
+      "allow_target_in_split": false,
+      "max_pair_comparisons": 2000000,
+      "diagnostics": {}
+     },
+     "dependencies": {
+      "numpy": "2.5.3",
+      "pandas": "3.0.5",
+      "pint": "0.26.1",
+      "scikit-learn": "1.9.1"
+     },
+     "effective_diagnostics_config": {
+      "group_columns": [
+       "group_id"
+      ],
+      "duplicate_columns": null,
+      "near_duplicates": {},
+      "smiles_column": null,
+      "molecular_similarity": null,
+      "numeric_columns": [],
+      "categorical_columns": [],
+      "shift_threshold": 0.2,
+      "domain_columns": [],
+      "domain_scales": {},
+      "domain_quantile": 0.95,
+      "domain_distance_threshold": null,
+      "max_pair_comparisons": 2000000
+     }
+    },
+    "validation": [
+     27,
+     28,
+     29,
+     39,
+     40,
+     41,
+     45,
+     46,
+     47,
+     54,
+     55,
+     56
+    ],
+    "findings": [
+     {
+      "code": "generalization_scope",
+      "severity": "info",
+      "columns": [
+       "group_id"
+      ],
+      "rows": [
+       27,
+       28,
+       29,
+       39,
+       40,
+       41,
+       45,
+       46,
+       47,
+       54,
+       55,
+       56,
+       12,
+       13,
+       14,
+       15,
+       16,
+       17,
+       42,
+       43,
+       44,
+       57,
+       58,
+       59
+      ],
+      "message": "Transfer to compositions absent from training under declared representation and rounding.",
+      "suggestion": "Report this evaluation scope and its limitations alongside model metrics.",
+      "details": {
+       "supports": "Transfer to compositions absent from training under declared representation and rounding.",
+       "does_not_establish": "Composition holdout alone does not establish extrapolation, novel scaffold transfer, or new-laboratory performance.",
+       "conditional_on": "Sample independence, provenance, measurement validity, and absence of target leakage must be checked separately."
+      }
+     }
+    ]
+   }
+  },
+  {
+   "schema_version": "1.0",
+   "id": "26902be3-f205-4e67-bb4c-df193b211b1f",
+   "project_id": "80b1b152-bcc9-4dbf-a075-a4a8f42daf76",
+   "created_at": "2026-09-24T22:11:43.672377Z",
+   "parents": [
+    "6a3f8a15-3d43-4d95-afee-70acefc33636",
+    "a981bb39-5c9a-49b5-be7a-79c030cb6310"
+   ],
+   "software": {
+    "chemdata-auditor": "0.3.0@eff3ed3c43ec71e9ceecabc1f04d1dfb5c91c116",
+    "cheme-ml-benchmarks": "0.1.0@db02d8963725a1d406b9b07eb6f4cc3436fbb082",
+    "scientific-evidence-engine": "0.1.0@09f5ec810e8f04bf8d233ec12eb9448342ee5121",
+    "experiment-failure-memory": "0.1.0@63492787cbbea6d03662db63f2d958a6eec8d804",
+    "workbench": "0.1.0"
+   },
+   "kind": "provenance",
+   "activity": "split",
+   "inputs": [
+    "6a3f8a15-3d43-4d95-afee-70acefc33636",
+    "a981bb39-5c9a-49b5-be7a-79c030cb6310"
+   ],
+   "outputs": [
+    "8fcaac75-32d0-4c60-b416-81cc5cf32d3b"
+   ],
+   "parameters": {
+    "dataset_id": "6a3f8a15-3d43-4d95-afee-70acefc33636",
+    "audit_id": "a981bb39-5c9a-49b5-be7a-79c030cb6310",
+    "config": {
+     "strategy": "composition",
+     "columns": [
+      "group_id"
+     ],
+     "group_columns": [
+      "group_id"
+     ],
+     "target_column": "response",
+     "validation_size": 0.2,
+     "test_size": 0.2,
+     "seed": 42
+    }
+   }
+  },
+  {
+   "schema_version": "1.0",
+   "id": "9f758f9a-8ade-4175-8663-d58ba2ca6598",
+   "project_id": "80b1b152-bcc9-4dbf-a075-a4a8f42daf76",
+   "created_at": "2026-09-24T22:11:43.696634Z",
+   "parents": [
+    "6a3f8a15-3d43-4d95-afee-70acefc33636",
+    "8fcaac75-32d0-4c60-b416-81cc5cf32d3b"
+   ],
+   "software": {},
+   "kind": "evaluation_protocol",
+   "revision": 1,
+   "dataset_id": "6a3f8a15-3d43-4d95-afee-70acefc33636",
+   "dataset_sha256": "aa0e1db7ba154779d11787120c4ea7dd87aab22d8a8fbd1e4a5b1446507afe3c",
+   "split_id": "8fcaac75-32d0-4c60-b416-81cc5cf32d3b",
+   "split_sha256": "f6cdf5259f50df85ca29adf4f9c899979448956f85e0f209cf4a7b8c113f227f",
+   "configuration_sha256": "58928ee35785f87a51ed490f73627c8b106a20fc2dd7eb3570c8cffc33bfb107",
+   "target": "response",
+   "features": [
+    "temperature"
+   ],
+   "preprocessing": "Pinned benchmark task-card preprocessing",
+   "independent_unit": {
+    "name": "Generated family",
+    "group_columns": [
+     "group_id"
+    ],
+    "rationale": "Each family is held entirely within a partition."
+   },
+   "candidates": [
+    {
+     "id": "candidate",
+     "model": "ridge",
+     "seed": 0,
+     "configuration_sha256": "58928ee35785f87a51ed490f73627c8b106a20fc2dd7eb3570c8cffc33bfb107"
+    }
+   ],
+   "primary_metric": "rmse",
+   "selection_rule": "predeclared_comparison",
+   "success_criterion": {
+    "id": "validation-rmse",
+    "metric": "rmse",
+    "partition": "validation",
+    "comparison": "lt",
+    "threshold": 0.05,
+    "declaration_reference": {
+     "kind": "operator_assertion",
+     "id": "criterion-declared"
+    }
+   },
+   "state": "sealed",
+   "sealed_at": "2026-09-24T22:11:43.696634Z",
+   "released_at": null,
+   "selected_candidate_id": null,
+   "exposure_status": "unknown",
+   "exposure_event_ids": []
+  },
+  {
+   "schema_version": "1.0",
+   "id": "048d7150-69a2-46d6-ab2c-2520fc701ce2",
+   "project_id": "80b1b152-bcc9-4dbf-a075-a4a8f42daf76",
+   "created_at": "2026-09-24T22:11:48.158543Z",
+   "parents": [
+    "6a3f8a15-3d43-4d95-afee-70acefc33636",
+    "8fcaac75-32d0-4c60-b416-81cc5cf32d3b"
+   ],
+   "software": {
+    "chemdata-auditor": "0.3.0@eff3ed3c43ec71e9ceecabc1f04d1dfb5c91c116",
+    "cheme-ml-benchmarks": "0.1.0@db02d8963725a1d406b9b07eb6f4cc3436fbb082",
+    "scientific-evidence-engine": "0.1.0@09f5ec810e8f04bf8d233ec12eb9448342ee5121",
+    "experiment-failure-memory": "0.1.0@63492787cbbea6d03662db63f2d958a6eec8d804",
+    "workbench": "0.1.0"
+   },
+   "kind": "provenance",
+   "activity": "benchmark",
+   "inputs": [
+    "6a3f8a15-3d43-4d95-afee-70acefc33636",
+    "8fcaac75-32d0-4c60-b416-81cc5cf32d3b"
+   ],
+   "outputs": [
+    "0da72ba0-5faf-4b20-b014-bf7b8d79af35"
+   ],
+   "parameters": {
+    "dataset_id": "6a3f8a15-3d43-4d95-afee-70acefc33636",
+    "split_id": "8fcaac75-32d0-4c60-b416-81cc5cf32d3b",
+    "target": "response",
+    "numeric_features": [
+     "temperature"
+    ],
+    "categorical_features": [],
+    "row_id": "row_id",
+    "group_columns": [
+     "group_id"
+    ],
+    "units": {
+     "temperature": "kelvin",
+     "response": "dimensionless"
+    },
+    "independence_unit": "Generated family",
+    "independence_status": "synthetic",
+    "independence_rationale": "Each family is held entirely within a partition.",
+    "generalization": "Held-out generated families only.",
+    "limitations": [
+     "Synthetic software fixture; not experimental evidence."
+    ],
+    "domain": "materials",
+    "accepted_warnings": {},
+    "model": "ridge",
+    "seed": 0
+   }
+  },
+  {
+   "kind": "benchmark_preview",
+   "schema_version": "1.0",
+   "id": "0da72ba0-5faf-4b20-b014-bf7b8d79af35",
+   "project_id": "80b1b152-bcc9-4dbf-a075-a4a8f42daf76",
+   "created_at": "2026-09-24T22:11:46.555447Z",
+   "parents": [
+    "6a3f8a15-3d43-4d95-afee-70acefc33636",
+    "8fcaac75-32d0-4c60-b416-81cc5cf32d3b"
+   ],
+   "software": {
+    "chemdata-auditor": "0.3.0@eff3ed3c43ec71e9ceecabc1f04d1dfb5c91c116",
+    "cheme-ml-benchmarks": "0.1.0@db02d8963725a1d406b9b07eb6f4cc3436fbb082",
+    "scientific-evidence-engine": "0.1.0@09f5ec810e8f04bf8d233ec12eb9448342ee5121",
+    "experiment-failure-memory": "0.1.0@63492787cbbea6d03662db63f2d958a6eec8d804",
+    "workbench": "0.1.0"
+   },
+   "dataset_id": "6a3f8a15-3d43-4d95-afee-70acefc33636",
+   "split_id": "8fcaac75-32d0-4c60-b416-81cc5cf32d3b",
+   "model": "ridge",
+   "seed": 0,
+   "status": "succeeded",
+   "error": null,
+   "config": {
+    "dataset_id": "6a3f8a15-3d43-4d95-afee-70acefc33636",
+    "split_id": "8fcaac75-32d0-4c60-b416-81cc5cf32d3b",
+    "target": "response",
+    "numeric_features": [
+     "temperature"
+    ],
+    "categorical_features": [],
+    "row_id": "row_id",
+    "group_columns": [
+     "group_id"
+    ],
+    "units": {
+     "temperature": "kelvin",
+     "response": "dimensionless"
+    },
+    "independence_unit": "Generated family",
+    "independence_status": "synthetic",
+    "independence_rationale": "Each family is held entirely within a partition.",
+    "generalization": "Held-out generated families only.",
+    "limitations": [
+     "Synthetic software fixture; not experimental evidence."
+    ],
+    "domain": "materials",
+    "accepted_warnings": {},
+    "model": "ridge",
+    "seed": 0
+   },
+   "protocol_ids": [],
+   "validation_metrics": {
+    "mae": 0.16984272938345749,
+    "rmse": 0.19447236139612203,
+    "r2": 0.6351353369931175,
+    "group_mae": 0.1698427293834575,
+    "group_rmse": 0.19447236139612206,
+    "rows": 12.0,
+    "groups": 4.0
+   },
+   "method": {
+    "name": "ridge",
+    "seed": 0,
+    "parameters": {
+     "alpha": 0.1
+    },
+    "validation_search": [
+     {
+      "parameters": {
+       "alpha": 0.1
+      },
+      "validation_primary": 0.1698427293834575
+     },
+     {
+      "parameters": {
+       "alpha": 1.0
+      },
+      "validation_primary": 0.17463033866872474
+     },
+     {
+      "parameters": {
+       "alpha": 10.0
+      },
+      "validation_primary": 0.2269964192763999
+     }
+    ],
+    "training_description": "Protocol preprocessing fit on train only; fixed grid selected on validation primary metric; no train+validation refit; one selected model evaluated on test."
+   },
+   "verification_scope": "Predictions and scores verified against official data/partitions. Training provenance is a declaration; public test labels cannot be secured by local software.",
+   "test_results": "withheld",
+   "holdout_exposure": "exposed",
+   "bundle_available": true
+  },
+  {
+   "kind": "benchmark_preview",
+   "schema_version": "1.0",
+   "id": "fa82d05e-2bdf-4ff4-84fa-547d331b2193",
+   "project_id": "80b1b152-bcc9-4dbf-a075-a4a8f42daf76",
+   "created_at": "2026-09-24T22:11:51.110169Z",
+   "parents": [
+    "6a3f8a15-3d43-4d95-afee-70acefc33636",
+    "8fcaac75-32d0-4c60-b416-81cc5cf32d3b"
+   ],
+   "software": {
+    "chemdata-auditor": "0.3.0@eff3ed3c43ec71e9ceecabc1f04d1dfb5c91c116",
+    "cheme-ml-benchmarks": "0.1.0@db02d8963725a1d406b9b07eb6f4cc3436fbb082",
+    "scientific-evidence-engine": "0.1.0@09f5ec810e8f04bf8d233ec12eb9448342ee5121",
+    "experiment-failure-memory": "0.1.0@63492787cbbea6d03662db63f2d958a6eec8d804",
+    "workbench": "0.1.0"
+   },
+   "dataset_id": "6a3f8a15-3d43-4d95-afee-70acefc33636",
+   "split_id": "8fcaac75-32d0-4c60-b416-81cc5cf32d3b",
+   "model": "ridge",
+   "seed": 0,
+   "status": "failed",
+   "error": "Task could not complete. Inspect the job error code and retained inputs.",
+   "config": {
+    "dataset_id": "6a3f8a15-3d43-4d95-afee-70acefc33636",
+    "split_id": "8fcaac75-32d0-4c60-b416-81cc5cf32d3b",
+    "target": "response",
+    "numeric_features": [
+     "row_id"
+    ],
+    "categorical_features": [],
+    "row_id": "row_id",
+    "group_columns": [
+     "group_id"
+    ],
+    "units": {
+     "temperature": "kelvin",
+     "response": "dimensionless"
+    },
+    "independence_unit": "Generated family",
+    "independence_status": "synthetic",
+    "independence_rationale": "Each family is held entirely within a partition.",
+    "generalization": "Held-out generated families only.",
+    "limitations": [
+     "Synthetic software fixture; not experimental evidence."
+    ],
+    "domain": "materials",
+    "accepted_warnings": {},
+    "model": "ridge",
+    "seed": 0
+   },
+   "protocol_ids": [],
+   "validation_metrics": null,
+   "method": null,
+   "verification_scope": null,
+   "test_results": "not_produced",
+   "holdout_exposure": "exposed",
+   "bundle_available": false
+  },
+  {
+   "schema_version": "1.0",
+   "id": "b7b37083-7f04-4518-bf17-246b19087126",
+   "project_id": "80b1b152-bcc9-4dbf-a075-a4a8f42daf76",
+   "created_at": "2026-09-24T22:11:51.523045Z",
+   "parents": [
+    "6a3f8a15-3d43-4d95-afee-70acefc33636",
+    "8fcaac75-32d0-4c60-b416-81cc5cf32d3b"
+   ],
+   "software": {
+    "chemdata-auditor": "0.3.0@eff3ed3c43ec71e9ceecabc1f04d1dfb5c91c116",
+    "cheme-ml-benchmarks": "0.1.0@db02d8963725a1d406b9b07eb6f4cc3436fbb082",
+    "scientific-evidence-engine": "0.1.0@09f5ec810e8f04bf8d233ec12eb9448342ee5121",
+    "experiment-failure-memory": "0.1.0@63492787cbbea6d03662db63f2d958a6eec8d804",
+    "workbench": "0.1.0"
+   },
+   "kind": "provenance",
+   "activity": "benchmark",
+   "inputs": [
+    "6a3f8a15-3d43-4d95-afee-70acefc33636",
+    "8fcaac75-32d0-4c60-b416-81cc5cf32d3b"
+   ],
+   "outputs": [
+    "fa82d05e-2bdf-4ff4-84fa-547d331b2193"
+   ],
+   "parameters": {
+    "dataset_id": "6a3f8a15-3d43-4d95-afee-70acefc33636",
+    "split_id": "8fcaac75-32d0-4c60-b416-81cc5cf32d3b",
+    "target": "response",
+    "numeric_features": [
+     "row_id"
+    ],
+    "categorical_features": [],
+    "row_id": "row_id",
+    "group_columns": [
+     "group_id"
+    ],
+    "units": {
+     "temperature": "kelvin",
+     "response": "dimensionless"
+    },
+    "independence_unit": "Generated family",
+    "independence_status": "synthetic",
+    "independence_rationale": "Each family is held entirely within a partition.",
+    "generalization": "Held-out generated families only.",
+    "limitations": [
+     "Synthetic software fixture; not experimental evidence."
+    ],
+    "domain": "materials",
+    "accepted_warnings": {},
+    "model": "ridge",
+    "seed": 0
+   }
+  },
+  {
+   "schema_version": "1.0",
+   "id": "1fb2993d-8ce7-4ad3-828d-20bf73c5e06c",
+   "project_id": "80b1b152-bcc9-4dbf-a075-a4a8f42daf76",
+   "created_at": "2026-09-24T22:12:00.043064Z",
+   "parents": [
+    "0da72ba0-5faf-4b20-b014-bf7b8d79af35"
+   ],
+   "software": {
+    "chemdata-auditor": "0.3.0@eff3ed3c43ec71e9ceecabc1f04d1dfb5c91c116",
+    "cheme-ml-benchmarks": "0.1.0@db02d8963725a1d406b9b07eb6f4cc3436fbb082",
+    "scientific-evidence-engine": "0.1.0@09f5ec810e8f04bf8d233ec12eb9448342ee5121",
+    "experiment-failure-memory": "0.1.0@63492787cbbea6d03662db63f2d958a6eec8d804",
+    "workbench": "0.1.0"
+   },
+   "kind": "failure",
+   "benchmark_id": "0da72ba0-5faf-4b20-b014-bf7b8d79af35",
+   "external_project_id": "960e77ba-40f4-4efb-a74d-f2f6433c3fd3",
+   "external_record_id": "2fb042b9-3d55-4d41-bdc8-a71adab825ec",
+   "reason": "Validation error is acceptable, but the synthetic demo cannot answer the research question.",
+   "record": {
+    "id": "2fb042b9-3d55-4d41-bdc8-a71adab825ec",
+    "project_id": "960e77ba-40f4-4efb-a74d-f2f6433c3fd3",
+    "version": 1,
+    "archived": false,
+    "created_by": "e21891d3-ba14-4203-97a2-47dce7fc240e",
+    "created_at": "2026-09-24T22:11:59.620282+00:00",
+    "updated_at": "2026-09-24T22:11:59.620282+00:00",
+    "record": {
+     "conditions": [],
+     "equipment": [],
+     "fixes": [],
+     "materials": [],
+     "measurements": [],
+     "outcomes": "{\"validation\": {\"mae\": 0.16984272938345749, \"rmse\": 0.19447236139612203, \"r2\": 0.6351353369931175, \"group_mae\": 0.1698427293834575, \"group_rmse\": 0.19447236139612206, \"group_mae_interval95\": [0.11643473873705477, 0.20618190303162104], \"rows\": 12, \"groups\": 4, \"interval_scope\": \"Percentile bootstrap of declared groups, conditional on this fixed test set/model; proxy groups do not prove experimental independence.\"}, \"test\": {\"mae\": 0.13337193095760871, \"rmse\": 0.15049367657183668, \"r2\": 0.8781666097194835, \"group_mae\": 0.13337193095760874, \"group_rmse\": 0.15049367657183665, \"group_mae_interval95\": [0.09369569933685468, 0.18224140843171785], \"rows\": 12, \"groups\": 4, \"interval_scope\": \"Percentile bootstrap of declared groups, conditional on this fixed test set/model; proxy groups do not prove experimental independence.\"}}",
+     "performed_at": "2026-09-24T22:11:46.555447Z",
+     "procedure": [
+      "Run ridge with seed 0",
+      "Dataset 6a3f8a15-3d43-4d95-afee-70acefc33636; split 8fcaac75-32d0-4c60-b416-81cc5cf32d3b"
+     ],
+     "source": {
+      "kind": "file",
+      "notes": "Computational run; unsuccessful is a researcher assessment, not a physical experiment.",
+      "reference": "workbench:80b1b152-bcc9-4dbf-a075-a4a8f42daf76/artifacts/0da72ba0-5faf-4b20-b014-bf7b8d79af35"
+     },
+     "status": "failed",
+     "summary": "Validation error is acceptable, but the synthetic demo cannot answer the research question.",
+     "suspected_causes": [],
+     "tags": [
+      "computational-run",
+      "sciml-workbench"
+     ],
+     "title": "Unsuccessful ridge benchmark",
+     "uncertainty_notes": "Observed: synthetic families only. Unknown: behavior on measured data."
+    }
+   }
+  },
+  {
+   "schema_version": "1.0",
+   "id": "b26ece1d-bade-4b76-9810-3913e0301256",
+   "project_id": "80b1b152-bcc9-4dbf-a075-a4a8f42daf76",
+   "created_at": "2026-09-24T22:12:00.052728Z",
+   "parents": [
+    "0da72ba0-5faf-4b20-b014-bf7b8d79af35"
+   ],
+   "software": {
+    "chemdata-auditor": "0.3.0@eff3ed3c43ec71e9ceecabc1f04d1dfb5c91c116",
+    "cheme-ml-benchmarks": "0.1.0@db02d8963725a1d406b9b07eb6f4cc3436fbb082",
+    "scientific-evidence-engine": "0.1.0@09f5ec810e8f04bf8d233ec12eb9448342ee5121",
+    "experiment-failure-memory": "0.1.0@63492787cbbea6d03662db63f2d958a6eec8d804",
+    "workbench": "0.1.0"
+   },
+   "kind": "provenance",
+   "activity": "failure",
+   "inputs": [
+    "0da72ba0-5faf-4b20-b014-bf7b8d79af35"
+   ],
+   "outputs": [
+    "1fb2993d-8ce7-4ad3-828d-20bf73c5e06c"
+   ],
+   "parameters": {
+    "benchmark_id": "0da72ba0-5faf-4b20-b014-bf7b8d79af35",
+    "reason": "Validation error is acceptable, but the synthetic demo cannot answer the research question.",
+    "uncertainty_notes": "Observed: synthetic families only. Unknown: behavior on measured data."
+   }
+  },
+  {
+   "schema_version": "2.0",
+   "id": "71a11f2c-d9fa-4623-b558-31420ad119f5",
+   "project_id": "80b1b152-bcc9-4dbf-a075-a4a8f42daf76",
+   "created_at": "2026-09-24T22:12:04.369059Z",
+   "parents": [
+    "0da72ba0-5faf-4b20-b014-bf7b8d79af35"
+   ],
+   "software": {
+    "chemdata-auditor": "0.3.0@eff3ed3c43ec71e9ceecabc1f04d1dfb5c91c116",
+    "cheme-ml-benchmarks": "0.1.0@db02d8963725a1d406b9b07eb6f4cc3436fbb082",
+    "scientific-evidence-engine": "0.1.0@09f5ec810e8f04bf8d233ec12eb9448342ee5121",
+    "experiment-failure-memory": "0.1.0@63492787cbbea6d03662db63f2d958a6eec8d804",
+    "workbench": "0.1.0"
+   },
+   "kind": "failure",
+   "benchmark_id": "0da72ba0-5faf-4b20-b014-bf7b8d79af35",
+   "source_job_id": "62a8df66-f5db-45d1-8877-efc2ecbbd37f",
+   "reason": "Validation RMSE missed the predeclared threshold.",
+   "uncertainty_notes": "Single seed; the threshold was declared before the run.",
+   "actor": {
+    "kind": "agent",
+    "run_id": "research-run-1",
+    "assignment_id": null,
+    "action_id": "record-outcome-1",
+    "provider": "fixture-provider",
+    "model": "fixture-model",
+    "prompt_version": "coordinator-v3",
+    "policy": {
+     "policy_id": "default-autonomy",
+     "revision": 2,
+     "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "policy_rule_id": "objective-observations-only"
+   },
+   "observation": {
+    "kind": "criterion_missed",
+    "protocol_id": "9f758f9a-8ade-4175-8663-d58ba2ca6598",
+    "protocol_revision": 1,
+    "criterion_id": "validation-rmse",
+    "metric": {
+     "artifact_id": "0da72ba0-5faf-4b20-b014-bf7b8d79af35",
+     "field_path": "/result/metrics/validation/rmse",
+     "partition": "validation",
+     "value": 0.19447236139612203,
+     "units": null
+    },
+    "success_comparison": "lt",
+    "threshold": 0.05
+   },
+   "causal_hypotheses": [
+    "Too few high-temperature families to learn from"
+   ],
+   "receipt": {
+    "connector": "sciml-workbench",
+    "external_id": "b7ef625a-f47e-4ff2-b40c-f26f9e19b883",
+    "request_sha256": "8dc199cd0707f533856b175925c7c8fbe432137525e807298448c09d3be9a0aa",
+    "state": "confirmed",
+    "external_project_id": "960e77ba-40f4-4efb-a74d-f2f6433c3fd3",
+    "external_record_id": "f54b1c7d-d296-498f-8086-571c828a6c18",
+    "record": {
+     "id": "f54b1c7d-d296-498f-8086-571c828a6c18",
+     "project_id": "960e77ba-40f4-4efb-a74d-f2f6433c3fd3",
+     "version": 1,
+     "archived": false,
+     "created_by": "e21891d3-ba14-4203-97a2-47dce7fc240e",
+     "created_at": "2026-09-24T22:12:03.859614+00:00",
+     "updated_at": "2026-09-24T22:12:03.859614+00:00",
+     "record": {
+      "conditions": [],
+      "equipment": [],
+      "fixes": [],
+      "materials": [],
+      "measurements": [],
+      "outcomes": "{\"criterion_id\": \"validation-rmse\", \"kind\": \"criterion_missed\", \"metric\": {\"artifact_id\": \"0da72ba0-5faf-4b20-b014-bf7b8d79af35\", \"field_path\": \"/result/metrics/validation/rmse\", \"partition\": \"validation\", \"units\": null, \"value\": 0.19447236139612203}, \"protocol_id\": \"9f758f9a-8ade-4175-8663-d58ba2ca6598\", \"protocol_revision\": 1, \"success_comparison\": \"lt\", \"threshold\": 0.05}",
+      "performed_at": "2026-09-24T22:11:46.555447Z",
+      "procedure": [
+       "Run ridge with seed 0",
+       "Dataset 6a3f8a15-3d43-4d95-afee-70acefc33636; split 8fcaac75-32d0-4c60-b416-81cc5cf32d3b"
+      ],
+      "source": {
+       "kind": "file",
+       "notes": "{\"actor\": {\"action_id\": \"record-outcome-1\", \"assignment_id\": null, \"kind\": \"agent\", \"model\": \"fixture-model\", \"policy\": {\"policy_id\": \"default-autonomy\", \"revision\": 2, \"sha256\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"}, \"policy_rule_id\": \"objective-observations-only\", \"prompt_version\": \"coordinator-v3\", \"provider\": \"fixture-provider\", \"run_id\": \"research-run-1\"}, \"causal_hypotheses\": [\"Too few high-temperature families to learn from\"], \"interpretation\": \"Computational observation; hypotheses are unverified. No physical experiment is implied.\", \"source_job_id\": \"62a8df66-f5db-45d1-8877-efc2ecbbd37f\"}",
+       "reference": "workbench:80b1b152-bcc9-4dbf-a075-a4a8f42daf76/artifacts/0da72ba0-5faf-4b20-b014-bf7b8d79af35"
+      },
+      "status": "failed",
+      "summary": "Validation RMSE missed the predeclared threshold.",
+      "suspected_causes": [],
+      "tags": [
+       "computational-run",
+       "sciml-workbench"
+      ],
+      "title": "Unsuccessful ridge benchmark",
+      "uncertainty_notes": "Single seed; the threshold was declared before the run."
+     }
+    }
+   }
+  },
+  {
+   "schema_version": "1.0",
+   "id": "977719de-7d11-4c44-b273-670dd67395b8",
+   "project_id": "80b1b152-bcc9-4dbf-a075-a4a8f42daf76",
+   "created_at": "2026-09-24T22:12:04.385843Z",
+   "parents": [
+    "0da72ba0-5faf-4b20-b014-bf7b8d79af35"
+   ],
+   "software": {
+    "chemdata-auditor": "0.3.0@eff3ed3c43ec71e9ceecabc1f04d1dfb5c91c116",
+    "cheme-ml-benchmarks": "0.1.0@db02d8963725a1d406b9b07eb6f4cc3436fbb082",
+    "scientific-evidence-engine": "0.1.0@09f5ec810e8f04bf8d233ec12eb9448342ee5121",
+    "experiment-failure-memory": "0.1.0@63492787cbbea6d03662db63f2d958a6eec8d804",
+    "workbench": "0.1.0"
+   },
+   "kind": "provenance",
+   "activity": "failure",
+   "inputs": [
+    "0da72ba0-5faf-4b20-b014-bf7b8d79af35"
+   ],
+   "outputs": [
+    "71a11f2c-d9fa-4623-b558-31420ad119f5"
+   ],
+   "parameters": {
+    "benchmark_id": "0da72ba0-5faf-4b20-b014-bf7b8d79af35",
+    "source_job_id": "62a8df66-f5db-45d1-8877-efc2ecbbd37f",
+    "reason": "Validation RMSE missed the predeclared threshold.",
+    "uncertainty_notes": "Single seed; the threshold was declared before the run.",
+    "actor": {
+     "kind": "agent",
+     "run_id": "research-run-1",
+     "assignment_id": null,
+     "action_id": "record-outcome-1",
+     "provider": "fixture-provider",
+     "model": "fixture-model",
+     "prompt_version": "coordinator-v3",
+     "policy": {
+      "policy_id": "default-autonomy",
+      "revision": 2,
+      "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+     },
+     "policy_rule_id": "objective-observations-only"
+    },
+    "observation": {
+     "kind": "criterion_missed",
+     "protocol_id": "9f758f9a-8ade-4175-8663-d58ba2ca6598",
+     "protocol_revision": 1,
+     "criterion_id": "validation-rmse",
+     "metric": {
+      "artifact_id": "0da72ba0-5faf-4b20-b014-bf7b8d79af35",
+      "field_path": "/result/metrics/validation/rmse",
+      "partition": "validation",
+      "value": 0.19447236139612203,
+      "units": null
+     },
+     "success_comparison": "lt",
+     "threshold": 0.05
+    },
+    "causal_hypotheses": [
+     "Too few high-temperature families to learn from"
+    ]
+   }
+  },
+  {
+   "schema_version": "2.0",
+   "id": "77bb63c1-d840-493c-8988-95fcd1b0c27d",
+   "project_id": "80b1b152-bcc9-4dbf-a075-a4a8f42daf76",
+   "created_at": "2026-09-24T22:12:08.734164Z",
+   "parents": [
+    "fa82d05e-2bdf-4ff4-84fa-547d331b2193"
+   ],
+   "software": {
+    "chemdata-auditor": "0.3.0@eff3ed3c43ec71e9ceecabc1f04d1dfb5c91c116",
+    "cheme-ml-benchmarks": "0.1.0@db02d8963725a1d406b9b07eb6f4cc3436fbb082",
+    "scientific-evidence-engine": "0.1.0@09f5ec810e8f04bf8d233ec12eb9448342ee5121",
+    "experiment-failure-memory": "0.1.0@63492787cbbea6d03662db63f2d958a6eec8d804",
+    "workbench": "0.1.0"
+   },
+   "kind": "failure",
+   "benchmark_id": "fa82d05e-2bdf-4ff4-84fa-547d331b2193",
+   "source_job_id": "e8d4c824-6662-4592-8512-9d40ed1830da",
+   "reason": "Upstream admission rejected the task card.",
+   "uncertainty_notes": "Deterministic rejection; no model was fitted.",
+   "actor": {
+    "kind": "human",
+    "operator_session_reference": "operator-session-7f3a"
+   },
+   "observation": {
+    "kind": "execution_failure",
+    "error_code": "ADMISSION_REJECTED",
+    "observed_error": "Task could not complete. Inspect the job error code and retained inputs."
+   },
+   "causal_hypotheses": [],
+   "receipt": {
+    "connector": "sciml-workbench",
+    "external_id": "5b199c26-4522-4e93-bc9e-f69d16ca6fe6",
+    "request_sha256": "a7083f059821a4334680ff7abe9d36f5965651fb50585002e02ff9f7e23c0f99",
+    "state": "confirmed",
+    "external_project_id": "960e77ba-40f4-4efb-a74d-f2f6433c3fd3",
+    "external_record_id": "1e775de4-3226-4e5a-a2d8-35593cacb2e7",
+    "record": {
+     "id": "1e775de4-3226-4e5a-a2d8-35593cacb2e7",
+     "project_id": "960e77ba-40f4-4efb-a74d-f2f6433c3fd3",
+     "version": 1,
+     "archived": false,
+     "created_by": "e21891d3-ba14-4203-97a2-47dce7fc240e",
+     "created_at": "2026-09-24T22:12:08.331277+00:00",
+     "updated_at": "2026-09-24T22:12:08.331277+00:00",
+     "record": {
+      "conditions": [],
+      "equipment": [],
+      "fixes": [],
+      "materials": [],
+      "measurements": [],
+      "outcomes": "{\"error_code\": \"ADMISSION_REJECTED\", \"kind\": \"execution_failure\", \"observed_error\": \"Task could not complete. Inspect the job error code and retained inputs.\"}",
+      "performed_at": "2026-09-24T22:11:51.110169Z",
+      "procedure": [
+       "Run ridge with seed 0",
+       "Dataset 6a3f8a15-3d43-4d95-afee-70acefc33636; split 8fcaac75-32d0-4c60-b416-81cc5cf32d3b"
+      ],
+      "source": {
+       "kind": "file",
+       "notes": "{\"actor\": {\"kind\": \"human\", \"operator_session_reference\": \"operator-session-7f3a\"}, \"causal_hypotheses\": [], \"interpretation\": \"Computational observation; hypotheses are unverified. No physical experiment is implied.\", \"source_job_id\": \"e8d4c824-6662-4592-8512-9d40ed1830da\"}",
+       "reference": "workbench:80b1b152-bcc9-4dbf-a075-a4a8f42daf76/artifacts/fa82d05e-2bdf-4ff4-84fa-547d331b2193"
+      },
+      "status": "failed",
+      "summary": "Upstream admission rejected the task card.",
+      "suspected_causes": [],
+      "tags": [
+       "computational-run",
+       "sciml-workbench"
+      ],
+      "title": "Unsuccessful ridge benchmark",
+      "uncertainty_notes": "Deterministic rejection; no model was fitted."
+     }
+    }
+   }
+  },
+  {
+   "schema_version": "1.0",
+   "id": "7a3015d8-f54f-4e63-b412-27104ab792a8",
+   "project_id": "80b1b152-bcc9-4dbf-a075-a4a8f42daf76",
+   "created_at": "2026-09-24T22:12:08.743152Z",
+   "parents": [
+    "fa82d05e-2bdf-4ff4-84fa-547d331b2193"
+   ],
+   "software": {
+    "chemdata-auditor": "0.3.0@eff3ed3c43ec71e9ceecabc1f04d1dfb5c91c116",
+    "cheme-ml-benchmarks": "0.1.0@db02d8963725a1d406b9b07eb6f4cc3436fbb082",
+    "scientific-evidence-engine": "0.1.0@09f5ec810e8f04bf8d233ec12eb9448342ee5121",
+    "experiment-failure-memory": "0.1.0@63492787cbbea6d03662db63f2d958a6eec8d804",
+    "workbench": "0.1.0"
+   },
+   "kind": "provenance",
+   "activity": "failure",
+   "inputs": [
+    "fa82d05e-2bdf-4ff4-84fa-547d331b2193"
+   ],
+   "outputs": [
+    "77bb63c1-d840-493c-8988-95fcd1b0c27d"
+   ],
+   "parameters": {
+    "benchmark_id": "fa82d05e-2bdf-4ff4-84fa-547d331b2193",
+    "source_job_id": "e8d4c824-6662-4592-8512-9d40ed1830da",
+    "reason": "Upstream admission rejected the task card.",
+    "uncertainty_notes": "Deterministic rejection; no model was fitted.",
+    "actor": {
+     "kind": "human",
+     "operator_session_reference": "operator-session-7f3a"
+    },
+    "observation": {
+     "kind": "execution_failure",
+     "error_code": "ADMISSION_REJECTED",
+     "observed_error": "Task could not complete. Inspect the job error code and retained inputs."
+    },
+    "causal_hypotheses": []
+   }
+  },
+  {
+   "schema_version": "1.0",
+   "id": "c52dfbc8-2193-4708-8b63-c73dd9746b47",
+   "project_id": "80b1b152-bcc9-4dbf-a075-a4a8f42daf76",
+   "created_at": "2026-09-24T22:12:09.948837Z",
+   "parents": [
+    "fa82d05e-2bdf-4ff4-84fa-547d331b2193"
+   ],
+   "software": {
+    "chemdata-auditor": "0.3.0@eff3ed3c43ec71e9ceecabc1f04d1dfb5c91c116",
+    "cheme-ml-benchmarks": "0.1.0@db02d8963725a1d406b9b07eb6f4cc3436fbb082",
+    "scientific-evidence-engine": "0.1.0@09f5ec810e8f04bf8d233ec12eb9448342ee5121",
+    "experiment-failure-memory": "0.1.0@63492787cbbea6d03662db63f2d958a6eec8d804",
+    "workbench": "0.1.0"
+   },
+   "kind": "failure",
+   "benchmark_id": "fa82d05e-2bdf-4ff4-84fa-547d331b2193",
+   "external_project_id": "960e77ba-40f4-4efb-a74d-f2f6433c3fd3",
+   "external_record_id": "f059ffda-7db7-4ae9-ac3c-7404878b3267",
+   "reason": "Rejected card is a lesson worth keeping.",
+   "record": {
+    "id": "f059ffda-7db7-4ae9-ac3c-7404878b3267",
+    "project_id": "960e77ba-40f4-4efb-a74d-f2f6433c3fd3",
+    "version": 1,
+    "archived": false,
+    "created_by": "e21891d3-ba14-4203-97a2-47dce7fc240e",
+    "created_at": "2026-09-24T22:12:09.515104+00:00",
+    "updated_at": "2026-09-24T22:12:09.515104+00:00",
+    "record": {
+     "conditions": [],
+     "equipment": [],
+     "fixes": [],
+     "materials": [],
+     "measurements": [],
+     "outcomes": "Task could not complete. Inspect the job error code and retained inputs.",
+     "performed_at": "2026-09-24T22:11:51.110169Z",
+     "procedure": [
+      "Run ridge with seed 0",
+      "Dataset 6a3f8a15-3d43-4d95-afee-70acefc33636; split 8fcaac75-32d0-4c60-b416-81cc5cf32d3b"
+     ],
+     "source": {
+      "kind": "file",
+      "notes": "Computational run; unsuccessful is a researcher assessment, not a physical experiment.",
+      "reference": "workbench:80b1b152-bcc9-4dbf-a075-a4a8f42daf76/artifacts/fa82d05e-2bdf-4ff4-84fa-547d331b2193"
+     },
+     "status": "failed",
+     "summary": "Rejected card is a lesson worth keeping.",
+     "suspected_causes": [],
+     "tags": [
+      "computational-run",
+      "sciml-workbench"
+     ],
+     "title": "Unsuccessful ridge benchmark",
+     "uncertainty_notes": "The rejection reason is exact; its cause in the source data is not."
+    }
+   }
+  },
+  {
+   "schema_version": "1.0",
+   "id": "30fde293-56e5-4a0f-beda-0393d6f2e5f1",
+   "project_id": "80b1b152-bcc9-4dbf-a075-a4a8f42daf76",
+   "created_at": "2026-09-24T22:12:09.952186Z",
+   "parents": [
+    "fa82d05e-2bdf-4ff4-84fa-547d331b2193"
+   ],
+   "software": {
+    "chemdata-auditor": "0.3.0@eff3ed3c43ec71e9ceecabc1f04d1dfb5c91c116",
+    "cheme-ml-benchmarks": "0.1.0@db02d8963725a1d406b9b07eb6f4cc3436fbb082",
+    "scientific-evidence-engine": "0.1.0@09f5ec810e8f04bf8d233ec12eb9448342ee5121",
+    "experiment-failure-memory": "0.1.0@63492787cbbea6d03662db63f2d958a6eec8d804",
+    "workbench": "0.1.0"
+   },
+   "kind": "provenance",
+   "activity": "failure",
+   "inputs": [
+    "fa82d05e-2bdf-4ff4-84fa-547d331b2193"
+   ],
+   "outputs": [
+    "c52dfbc8-2193-4708-8b63-c73dd9746b47"
+   ],
+   "parameters": {
+    "request": {
+     "benchmark_id": "fa82d05e-2bdf-4ff4-84fa-547d331b2193",
+     "reason": "Rejected card is a lesson worth keeping.",
+     "uncertainty_notes": "The rejection reason is exact; its cause in the source data is not."
+    },
+    "recovered_job_id": "3398280a-b1a7-4eb0-8317-ad88b01c12ef",
+    "recovery_policy": "manual-recovery-v1"
+   }
+  }
+ ],
+ "jobs": [
+  {
+   "id": "63fc1541-76a0-4d4b-8cb4-507dce50e096",
+   "project_id": "80b1b152-bcc9-4dbf-a075-a4a8f42daf76",
+   "kind": "failure",
+   "state": "failed",
+   "result_id": null,
+   "error": "Operation did not complete; inspect its safe error code.",
+   "created_at": "2026-09-24T22:12:09.971104Z",
+   "started_at": "2026-09-24T22:12:09.982000Z",
+   "finished_at": "2026-09-24T22:12:10.258000Z"
+  },
+  {
+   "id": "3398280a-b1a7-4eb0-8317-ad88b01c12ef",
+   "project_id": "80b1b152-bcc9-4dbf-a075-a4a8f42daf76",
+   "kind": "failure",
+   "state": "failed",
+   "result_id": null,
+   "error": "Operation did not complete; inspect its safe error code.",
+   "created_at": "2026-09-24T22:12:08.760702Z",
+   "started_at": "2026-09-24T22:12:08.767000Z",
+   "finished_at": "2026-09-24T22:12:09.547000Z"
+  },
+  {
+   "id": "5b199c26-4522-4e93-bc9e-f69d16ca6fe6",
+   "project_id": "80b1b152-bcc9-4dbf-a075-a4a8f42daf76",
+   "kind": "failure",
+   "state": "succeeded",
+   "result_id": "77bb63c1-d840-493c-8988-95fcd1b0c27d",
+   "error": null,
+   "created_at": "2026-09-24T22:12:04.407250Z",
+   "started_at": "2026-09-24T22:12:04.421000Z",
+   "finished_at": "2026-09-24T22:12:08.747000Z"
+  },
+  {
+   "id": "b7ef625a-f47e-4ff2-b40c-f26f9e19b883",
+   "project_id": "80b1b152-bcc9-4dbf-a075-a4a8f42daf76",
+   "kind": "failure",
+   "state": "succeeded",
+   "result_id": "71a11f2c-d9fa-4623-b558-31420ad119f5",
+   "error": null,
+   "created_at": "2026-09-24T22:12:00.072754Z",
+   "started_at": "2026-09-24T22:12:00.076000Z",
+   "finished_at": "2026-09-24T22:12:04.395000Z"
+  },
+  {
+   "id": "c2c48cd7-89a1-4ee3-bc52-a8e1005d4868",
+   "project_id": "80b1b152-bcc9-4dbf-a075-a4a8f42daf76",
+   "kind": "failure",
+   "state": "succeeded",
+   "result_id": "1fb2993d-8ce7-4ad3-828d-20bf73c5e06c",
+   "error": null,
+   "created_at": "2026-09-24T22:11:51.590547Z",
+   "started_at": "2026-09-24T22:11:51.598000Z",
+   "finished_at": "2026-09-24T22:12:00.053000Z"
+  },
+  {
+   "id": "e8d4c824-6662-4592-8512-9d40ed1830da",
+   "project_id": "80b1b152-bcc9-4dbf-a075-a4a8f42daf76",
+   "kind": "benchmark",
+   "state": "failed",
+   "result_id": "fa82d05e-2bdf-4ff4-84fa-547d331b2193",
+   "error": "Operation did not complete; inspect its safe error code.",
+   "created_at": "2026-09-24T22:11:48.206513Z",
+   "started_at": "2026-09-24T22:11:48.210000Z",
+   "finished_at": "2026-09-24T22:11:51.560000Z"
+  },
+  {
+   "id": "62a8df66-f5db-45d1-8877-efc2ecbbd37f",
+   "project_id": "80b1b152-bcc9-4dbf-a075-a4a8f42daf76",
+   "kind": "benchmark",
+   "state": "succeeded",
+   "result_id": "0da72ba0-5faf-4b20-b014-bf7b8d79af35",
+   "error": null,
+   "created_at": "2026-09-24T22:11:43.717357Z",
+   "started_at": "2026-09-24T22:11:43.723000Z",
+   "finished_at": "2026-09-24T22:11:48.158000Z"
+  },
+  {
+   "id": "c91e05b2-bc46-41e3-b6fe-116cc6fc8576",
+   "project_id": "80b1b152-bcc9-4dbf-a075-a4a8f42daf76",
+   "kind": "split",
+   "state": "succeeded",
+   "result_id": "8fcaac75-32d0-4c60-b416-81cc5cf32d3b",
+   "error": null,
+   "created_at": "2026-09-24T22:11:40.254737Z",
+   "started_at": "2026-09-24T22:11:40.262000Z",
+   "finished_at": "2026-09-24T22:11:43.686000Z"
+  },
+  {
+   "id": "01b7c4e0-fe5d-45ea-a387-45868849313c",
+   "project_id": "80b1b152-bcc9-4dbf-a075-a4a8f42daf76",
+   "kind": "audit",
+   "state": "succeeded",
+   "result_id": "a981bb39-5c9a-49b5-be7a-79c030cb6310",
+   "error": null,
+   "created_at": "2026-09-24T22:11:36.569367Z",
+   "started_at": "2026-09-24T22:11:36.577000Z",
+   "finished_at": "2026-09-24T22:11:40.230000Z"
+  }
+ ],
+ "failure_index": {
+  "items": [
+   {
+    "id": "c2c48cd7-89a1-4ee3-bc52-a8e1005d4868",
+    "project_id": "80b1b152-bcc9-4dbf-a075-a4a8f42daf76",
+    "kind": "failure",
+    "state": "succeeded",
+    "result_id": "1fb2993d-8ce7-4ad3-828d-20bf73c5e06c",
+    "error": null,
+    "created_at": "2026-09-24T22:11:51.590547Z",
+    "started_at": "2026-09-24T22:11:51.598000Z",
+    "finished_at": "2026-09-24T22:12:00.053000Z",
+    "error_code": null,
+    "retry_of_job_id": null,
+    "deadline_at": "2026-09-24T22:26:51.598000Z",
+    "external_receipt": {
+     "external_id": "c2c48cd7-89a1-4ee3-bc52-a8e1005d4868",
+     "connector": "sciml-workbench",
+     "state": "confirmed",
+     "request_sha256": "94541cb218d1cf62c10fccec26e0a39b08794e20eb3449333157b25aa7fa94d5",
+     "body_sha256": "00b50cc876b36de5e9db56e8d3427ee06b6eb8c990039ea5536c950c6268a6a9",
+     "attempts": 1,
+     "submitted_at": "2026-09-24T22:11:55.860122Z",
+     "external_project_id": "960e77ba-40f4-4efb-a74d-f2f6433c3fd3",
+     "external_record_id": "2fb042b9-3d55-4d41-bdc8-a71adab825ec",
+     "artifact_id": "1fb2993d-8ce7-4ad3-828d-20bf73c5e06c",
+     "reconciliation_required": false
+    }
+   },
+   {
+    "id": "b7ef625a-f47e-4ff2-b40c-f26f9e19b883",
+    "project_id": "80b1b152-bcc9-4dbf-a075-a4a8f42daf76",
+    "kind": "failure",
+    "state": "succeeded",
+    "result_id": "71a11f2c-d9fa-4623-b558-31420ad119f5",
+    "error": null,
+    "created_at": "2026-09-24T22:12:00.072754Z",
+    "started_at": "2026-09-24T22:12:00.076000Z",
+    "finished_at": "2026-09-24T22:12:04.395000Z",
+    "error_code": null,
+    "retry_of_job_id": null,
+    "deadline_at": "2026-09-24T22:27:00.076000Z",
+    "external_receipt": {
+     "external_id": "b7ef625a-f47e-4ff2-b40c-f26f9e19b883",
+     "connector": "sciml-workbench",
+     "state": "confirmed",
+     "request_sha256": "8dc199cd0707f533856b175925c7c8fbe432137525e807298448c09d3be9a0aa",
+     "body_sha256": "dc949a414f3ebd53079497086d822a27a498959ecde3802c300d7cd242d6c6ef",
+     "attempts": 1,
+     "submitted_at": "2026-09-24T22:12:00.093266Z",
+     "external_project_id": "960e77ba-40f4-4efb-a74d-f2f6433c3fd3",
+     "external_record_id": "f54b1c7d-d296-498f-8086-571c828a6c18",
+     "artifact_id": "71a11f2c-d9fa-4623-b558-31420ad119f5",
+     "reconciliation_required": false
+    }
+   },
+   {
+    "id": "5b199c26-4522-4e93-bc9e-f69d16ca6fe6",
+    "project_id": "80b1b152-bcc9-4dbf-a075-a4a8f42daf76",
+    "kind": "failure",
+    "state": "succeeded",
+    "result_id": "77bb63c1-d840-493c-8988-95fcd1b0c27d",
+    "error": null,
+    "created_at": "2026-09-24T22:12:04.407250Z",
+    "started_at": "2026-09-24T22:12:04.421000Z",
+    "finished_at": "2026-09-24T22:12:08.747000Z",
+    "error_code": null,
+    "retry_of_job_id": null,
+    "deadline_at": "2026-09-24T22:27:04.421000Z",
+    "external_receipt": {
+     "external_id": "5b199c26-4522-4e93-bc9e-f69d16ca6fe6",
+     "connector": "sciml-workbench",
+     "state": "confirmed",
+     "request_sha256": "a7083f059821a4334680ff7abe9d36f5965651fb50585002e02ff9f7e23c0f99",
+     "body_sha256": "97b74b7ed33fa9d5e5cd3e549e45933f0c091e4d3251012acec40bde5cb62c27",
+     "attempts": 1,
+     "submitted_at": "2026-09-24T22:12:04.437242Z",
+     "external_project_id": "960e77ba-40f4-4efb-a74d-f2f6433c3fd3",
+     "external_record_id": "1e775de4-3226-4e5a-a2d8-35593cacb2e7",
+     "artifact_id": "77bb63c1-d840-493c-8988-95fcd1b0c27d",
+     "reconciliation_required": false
+    }
+   },
+   {
+    "id": "3398280a-b1a7-4eb0-8317-ad88b01c12ef",
+    "project_id": "80b1b152-bcc9-4dbf-a075-a4a8f42daf76",
+    "kind": "failure",
+    "state": "failed",
+    "result_id": null,
+    "error": "Operation did not complete; inspect its safe error code.",
+    "created_at": "2026-09-24T22:12:08.760702Z",
+    "started_at": "2026-09-24T22:12:08.767000Z",
+    "finished_at": "2026-09-24T22:12:09.547000Z",
+    "error_code": "INTERNAL_ERROR",
+    "retry_of_job_id": null,
+    "deadline_at": "2026-09-24T22:14:08.767000Z",
+    "external_receipt": {
+     "external_id": "3398280a-b1a7-4eb0-8317-ad88b01c12ef",
+     "connector": "sciml-workbench",
+     "state": "confirmed",
+     "request_sha256": "36bc54f9774f3d2ff5fb03315d691a384944f3e09a1f67f805045a8452f07e81",
+     "body_sha256": "c2222a342c75c24950d874d0a28bd3fa67201db152b854de94d304561f3aac8a",
+     "attempts": 2,
+     "submitted_at": "2026-09-24T22:12:09.625530Z",
+     "external_project_id": "960e77ba-40f4-4efb-a74d-f2f6433c3fd3",
+     "external_record_id": "f059ffda-7db7-4ae9-ac3c-7404878b3267",
+     "artifact_id": "c52dfbc8-2193-4708-8b63-c73dd9746b47",
+     "reconciliation_required": false
+    }
+   },
+   {
+    "id": "63fc1541-76a0-4d4b-8cb4-507dce50e096",
+    "project_id": "80b1b152-bcc9-4dbf-a075-a4a8f42daf76",
+    "kind": "failure",
+    "state": "failed",
+    "result_id": null,
+    "error": "Operation did not complete; inspect its safe error code.",
+    "created_at": "2026-09-24T22:12:09.971104Z",
+    "started_at": "2026-09-24T22:12:09.982000Z",
+    "finished_at": "2026-09-24T22:12:10.258000Z",
+    "error_code": "INTERNAL_ERROR",
+    "retry_of_job_id": null,
+    "deadline_at": "2026-09-24T22:14:09.982000Z",
+    "external_receipt": {
+     "external_id": "63fc1541-76a0-4d4b-8cb4-507dce50e096",
+     "connector": "sciml-workbench",
+     "state": "unknown",
+     "request_sha256": "2dde781f0a3fb4b26d3f780d735ff3d4841757adf1c9a52849401cf1911e5c2e",
+     "body_sha256": "b916b111337940130e3aab286b3ba8e139327da6152e50270a7bebdbe0b7ea3d",
+     "attempts": 1,
+     "submitted_at": "2026-09-24T22:12:10.000749Z",
+     "external_project_id": "960e77ba-40f4-4efb-a74d-f2f6433c3fd3",
+     "external_record_id": null,
+     "artifact_id": null,
+     "reconciliation_required": true
+    }
+   }
+  ],
+  "next_cursor": null
+ },
+ "ids": {
+  "ridge": "0da72ba0-5faf-4b20-b014-bf7b8d79af35",
+  "rejected": "fa82d05e-2bdf-4ff4-84fa-547d331b2193",
+  "recovered_job": "3398280a-b1a7-4eb0-8317-ad88b01c12ef",
+  "recovered_record": "f059ffda-7db7-4ae9-ac3c-7404878b3267",
+  "unknown_job": "63fc1541-76a0-4d4b-8cb4-507dce50e096",
+  "protocol": "9f758f9a-8ade-4175-8663-d58ba2ca6598"
+ }
+}
