@@ -3877,6 +3877,25 @@
             }
           ],
           "default": null
+        },
+        "run_links": {
+          "items": {
+            "$ref": "#/$defs/JobRunLink"
+          },
+          "maxItems": 100,
+          "title": "Run Links",
+          "type": "array"
+        },
+        "recovery": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/JobRecoveryProjection"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
         }
       },
       "required": [
@@ -3922,6 +3941,115 @@
         "items"
       ],
       "title": "JobPage",
+      "type": "object"
+    },
+    "JobRecoveryProjection": {
+      "additionalProperties": false,
+      "description": "D04 decision for a failed job; the original attempt is never rewritten.",
+      "properties": {
+        "state": {
+          "enum": [
+            "pending",
+            "running",
+            "completed",
+            "exhausted"
+          ],
+          "title": "State",
+          "type": "string"
+        },
+        "eligible": {
+          "title": "Eligible",
+          "type": "boolean"
+        },
+        "attempts": {
+          "minimum": 0,
+          "title": "Attempts",
+          "type": "integer"
+        },
+        "max_attempts": {
+          "minimum": 0,
+          "title": "Max Attempts",
+          "type": "integer"
+        },
+        "retry_job_id": {
+          "anyOf": [
+            {
+              "maxLength": 160,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Retry Job Id"
+        },
+        "next_attempt_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Next Attempt At"
+        },
+        "last_error_code": {
+          "anyOf": [
+            {
+              "enum": [
+                "UNAUTHORIZED",
+                "ORIGIN_REJECTED",
+                "PROJECT_NOT_FOUND",
+                "ARTIFACT_NOT_FOUND",
+                "JOB_NOT_FOUND",
+                "IDEMPOTENCY_CONFLICT",
+                "PROJECT_BUSY",
+                "VALIDATION_FAILED",
+                "LINEAGE_MISMATCH",
+                "UPLOAD_TOO_LARGE",
+                "STORAGE_UNAVAILABLE",
+                "DEPENDENCY_UNAVAILABLE",
+                "INTERNAL_ERROR",
+                "ADMISSION_REJECTED",
+                "JOB_TIMED_OUT",
+                "WORKER_INTERRUPTED",
+                "INTEGRITY_FAILED",
+                "EXTERNAL_OUTCOME_UNKNOWN",
+                "AGENT_UNAVAILABLE",
+                "POLICY_DENIED",
+                "DATA_EXPOSURE_DENIED",
+                "RUN_REVISION_CHANGED",
+                "QUESTION_STALE",
+                "BUDGET_EXHAUSTED",
+                "PROVIDER_UNAVAILABLE",
+                "TOOL_SCHEMA_INVALID",
+                "UNSUPPORTED_CAPABILITY",
+                "REFERENCE_INVALID",
+                "TEST_PROTOCOL_SEALED",
+                "RUN_CANCELLED"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Last Error Code"
+        }
+      },
+      "required": [
+        "state",
+        "eligible",
+        "attempts",
+        "max_attempts",
+        "retry_job_id",
+        "next_attempt_at",
+        "last_error_code"
+      ],
+      "title": "JobRecoveryProjection",
       "type": "object"
     },
     "JobResponse": {
@@ -4100,6 +4228,40 @@
         "finished_at"
       ],
       "title": "JobResponse",
+      "type": "object"
+    },
+    "JobRunLink": {
+      "additionalProperties": false,
+      "description": "An agent run's recorded use of a job; absence is not proof of a manual origin.",
+      "properties": {
+        "run_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Run Id",
+          "type": "string"
+        },
+        "action_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Action Id",
+          "type": "string"
+        },
+        "ownership": {
+          "enum": [
+            "owned",
+            "shared",
+            "detached"
+          ],
+          "title": "Ownership",
+          "type": "string"
+        }
+      },
+      "required": [
+        "run_id",
+        "action_id",
+        "ownership"
+      ],
+      "title": "JobRunLink",
       "type": "object"
     },
     "JsonValue": {},

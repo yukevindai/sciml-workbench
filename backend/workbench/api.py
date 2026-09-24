@@ -170,8 +170,9 @@ def create_app(settings=None):
 
     @app.get("/api/v1/projects/{pid}/job-index", dependencies=protected, response_model=JobPage)
     def job_index(pid: str, after: str | None = Query(default=None, max_length=2048),
-                  limit: int = Query(default=50, ge=1, le=100), kind: str | None = Query(default=None, max_length=40), s=Depends(session)):
-        return reads.job_index(s, ReadScope(pid), after=after, limit=limit, kind=kind)
+                  limit: int = Query(default=50, ge=1, le=100), kind: str | None = Query(default=None, max_length=40),
+                  order: Literal["asc", "desc"] = "asc", s=Depends(session)):
+        return reads.job_index(s, ReadScope(pid), after=after, limit=limit, kind=kind, order=order)
 
     @app.get("/api/v1/projects/{pid}/jobs/{jid}", dependencies=protected, response_model=JobDetail)
     def get_job(pid: str, jid: str, s=Depends(session)):

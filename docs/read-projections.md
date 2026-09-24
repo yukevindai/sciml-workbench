@@ -13,7 +13,7 @@ The manual read surface is implemented. B09's C12 prerequisite is not present: e
 | `GET /api/v1/projects/{p}/evidence-spans` and `/evidence-spans/{s}` | `EvidenceAnchor` list (no text) and one named anchor as a reverified `EvidenceSpanView` (A06). |
 | `GET /api/v1/projects/{p}/reports/{r}/summary` | `ReportSummary` (A08): current structural reverification of the stored archive, plus frozen scope, artifact identities (no values), settled jobs, attachments, environment, agent execution versions and finalization gaps. A failed check returns `status: failed` with a reason and no contents. `scientific_replay` is always `not_run`. Agent scopes are denied. |
 | `GET /api/v1/projects/{p}/artifact-index` | `ArtifactPage`: lightweight identity, kind, schema version and creation time. |
-| `GET /api/v1/projects/{p}/job-index` | `JobPage`: safe job details and optional external-receipt projections. |
+| `GET /api/v1/projects/{p}/job-index` | `JobPage`: safe job details and optional external-receipt projections. `order=desc` (A09) pages newest first; cursors are bound to their order. |
 | `GET /api/v1/projects/{p}/jobs/{j}` | One project-scoped `JobDetail`, including a receipt when journaled. |
 
 All routes use the existing server-held operator bearer authentication, `no-store` caching, structured safe errors and request IDs. They do not accept a client-selected audience or provide an agent authentication channel. Existing `/artifacts` and `/jobs` array shapes remain available for compatibility; growing-project clients should use the new bounded indexes. The legacy job array/submission responses now also replace free-form worker error text with a fixed safe message.
@@ -29,6 +29,8 @@ Cursors are versioned and HMAC-authenticated with a purpose-specific key derived
 These are live indexes, not a database snapshot. Job state/receipts may advance between pages; rows explicitly backdated behind an already traversed cursor are not retroactively returned. Current writers create timestamps at insertion and there is no public backdating API. Restart from the first page to refresh current state. Artifact indexes select only envelope columns and the schema-version JSON scalar; they do not load scientific payloads. Job indexes omit request payloads, and receipt queries select metadata/record ID without loading the original body or snapshot.
 
 ## Receipt and error semantics
+
+For manual reads, `JobDetail.run_links` lists recorded agent-run uses of the job (run, action, `owned`/`shared`/`detached`), and `JobDetail.recovery` projects the D04 decision for a failed job: state, eligibility, attempts, `retry_job_id`, next attempt time and last safe error code (A09). Lease tokens, policy bodies and history text are omitted. Agent-scoped reads return no run links and no recovery decision. An empty `run_links` does not prove a job was manual.
 
 `JobDetail.external_receipt` contains the original external ID, connector, `prepared`/`unknown`/`confirmed` state, body/request digests, submission count/time, external IDs, optional linked artifact ID and `reconciliation_required`. It omits the exact import body and upstream snapshot. The snapshot remains in the unchanged scientific Failure artifact when publication exists.
 

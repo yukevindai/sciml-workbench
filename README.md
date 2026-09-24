@@ -68,6 +68,12 @@ reverify each archive's structure and list its frozen scope, inputs,
 environment and agent versions; scientific replay is always shown as not run.
 See the [A08 handoff](docs/tickets/A08.md).
 
+Job activity lists failed jobs with their safe error, any recorded outcome
+artifact, automatic recovery decisions, retry attempts and linked agent runs.
+A submission whose response was lost keeps its request key across reloads and
+is only resent when you choose to; polling backs off during outages and keeps
+earlier results visible. See the [A09 handoff](docs/tickets/A09.md).
+
 1. **Projects:** create a project and describe its research question.
 2. **Dataset audit:** upload `examples/demo.csv`, then explicitly choose **Use bundled synthetic demo declarations** for this fixture. Ordinary uploads start with unknown source metadata and can be audited without a license declaration. Click **Run audit** using the prefilled configuration.
 3. **Split designer:** click **Generate partition**. SciSplit produces a 60/20/20 requested train/validation/test split by generated family; actual group-constrained counts are visualized.

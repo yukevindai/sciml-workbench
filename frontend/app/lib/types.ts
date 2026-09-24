@@ -3,7 +3,8 @@ import type * as Wire from './generated/http';
 import type { BenchmarkInput } from './generated/contracts';
 
 export type Project = Wire.ProjectResponse;
-export type Job = Wire.LegacyJobResponse;
+/** Scoped B09 job read: receipts, agent-run links and recovery decisions included. */
+export type Job = Wire.JobDetail;
 export type JobState = Job['state'];
 
 export type Partition = 'train' | 'validation' | 'test' | 'excluded';

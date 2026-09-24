@@ -2,8 +2,10 @@
 
 import Link from 'next/link';
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import { api, json } from './lib/api';
-import { parseArtifactPreviews, parseJobs, parseProjects, parseJob } from './lib/decode';
+import { api } from './lib/api';
+import { parseArtifactPreviews, parseProjects } from './lib/decode';
+import { ARTIFACT_REFRESH, isActive, jobFingerprint, loadJobs, pollDelay } from './lib/jobs';
+import { submitOperation, type OperationKind } from './lib/submissions';
 import { deriveWorkflow, navItem, type View } from './lib/pipeline';
 import type { Workbench as WorkbenchModel } from './lib/context';
 import { kinds, type Artifact, type Job, type Project } from './lib/types';
@@ -23,13 +25,16 @@ import { ProvenanceView } from './views/provenance';
 import { ReportView } from './views/report';
 
 const PROJECT_STORAGE_KEY = 'sciml-project';
-const POLL_INTERVAL = 2500;
+const READ_TIMEOUT = 30_000;
 
 export default function Workbench({ view, fixture, children, requestedProjectId, requestedAuditId, requestedSplitId, requestedBenchmarkId, requestedEvidenceId, requestedClaimSetId, requestedFailureId, requestedArtifactId, requestedReportId }: { view: View; fixture?: ShellFixture; children?: ReactNode; requestedProjectId?: string; requestedAuditId?: string; requestedSplitId?: string; requestedBenchmarkId?: string; requestedEvidenceId?: string; requestedClaimSetId?: string; requestedFailureId?: string; requestedArtifactId?: string; requestedReportId?: string }) {
   const [projects, setProjects] = useState<Project[]>(fixture?.projects ?? []);
   const [projectId, updateProjectId] = useState(fixture?.projects[0]?.id ?? '');
   const [artifacts, setArtifacts] = useState<Artifact[]>(fixture?.artifacts ?? []);
   const [jobs, setJobs] = useState<Job[]>(fixture?.jobs ?? []);
+  const [jobsTruncated, setJobsTruncated] = useState(false);
+  const [lastUpdated, setLastUpdated] = useState('');
+  const [nextRetryAt, setNextRetryAt] = useState<number | null>(null);
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
   const [busy, setBusy] = useState(false);
@@ -48,12 +53,18 @@ export default function Workbench({ view, fixture, children, requestedProjectId,
   const auditLinkApplied = useRef(false);
   const splitLinkApplied = useRef(false);
   const benchmarkLinkApplied = useRef(false);
+  const jobPrint = useRef('');
+  const artifactsReadAt = useRef(0);
+  const jobsRunning = useRef(false);
+  const pollNow = useRef<(() => void) | null>(null);
 
   const setProjectId = useCallback((id: string) => {
     if (fixture || activeProject.current === id) return;
     activeProject.current = id;
     requestSequence.current += 1;
-    setArtifacts([]); setJobs([]); updateDatasetId(''); setSplitId(''); setRunId('');
+    setArtifacts([]); setJobs([]); setJobsTruncated(false); setLastUpdated(''); setNextRetryAt(null);
+    jobPrint.current = ''; artifactsReadAt.current = 0; jobsRunning.current = false;
+    updateDatasetId(''); setSplitId(''); setRunId('');
     setError(''); setNotice(''); setProjectError(''); setProjectLoaded(false);
     setProjectLoading(Boolean(id));
     updateProjectId(id);
@@ -66,50 +77,69 @@ export default function Workbench({ view, fixture, children, requestedProjectId,
     try { localStorage.setItem(`sciml-dataset:${activeProject.current}`, id); } catch { /* storage unavailable */ }
   }, [fixture]);
 
-  const refresh = useCallback(async () => {
-    if (fixture || !projectId || activeProject.current !== projectId) return;
+  const applyLinks = useCallback((nextArtifacts: Artifact[]) => {
+    if (requestedSplitId && projectId === requestedProjectId && !splitLinkApplied.current) {
+      const split = kinds(nextArtifacts, 'split').find(value => value.id === requestedSplitId);
+      if (split) {
+        setDatasetId(split.dataset_id); setSplitId(split.id);
+        splitLinkApplied.current = true;
+      }
+    }
+    if (requestedBenchmarkId && projectId === requestedProjectId && !benchmarkLinkApplied.current) {
+      const run = kinds(nextArtifacts, 'benchmark_preview').find(value => value.id === requestedBenchmarkId);
+      if (run) {
+        setDatasetId(run.dataset_id); setSplitId(run.split_id); setRunId(run.id);
+        benchmarkLinkApplied.current = true;
+      }
+    }
+    if (requestedAuditId && projectId === requestedProjectId && !auditLinkApplied.current) {
+      const audit = kinds(nextArtifacts, 'audit').find(value => value.id === requestedAuditId);
+      if (audit) {
+        setDatasetId(audit.dataset_id);
+        auditLinkApplied.current = true;
+      }
+    }
+  }, [projectId, requestedAuditId, requestedSplitId, requestedBenchmarkId, requestedProjectId, setDatasetId]);
+
+  /** Reads jobs every time; artifacts only when a job changed (including reaching a terminal
+   *  state), when forced, or after ARTIFACT_REFRESH for work created outside jobs.
+   *  Returns false only when a current read failed; earlier data stays visible. */
+  const refresh = useCallback(async (forceArtifacts = false): Promise<boolean> => {
+    if (fixture || !projectId || activeProject.current !== projectId) return true;
     const sequence = ++requestSequence.current;
     const current = () => activeProject.current === projectId && requestSequence.current === sequence;
     try {
-      const [nextArtifacts, nextJobs] = await Promise.all([
-        api(`projects/${projectId}/artifact-previews`, parseArtifactPreviews),
-        api(`projects/${projectId}/jobs`, parseJobs),
-      ]);
-      if (!current()) return;
-      if (nextArtifacts.some(a => a.project_id !== projectId) || nextJobs.some(j => j.project_id !== projectId)) {
+      const listing = await loadJobs(projectId);
+      if (!current()) return true;
+      const print = jobFingerprint(listing.jobs);
+      const nextArtifacts = forceArtifacts || print !== jobPrint.current || Date.now() - artifactsReadAt.current >= ARTIFACT_REFRESH
+        ? await api(`projects/${projectId}/artifact-previews`, parseArtifactPreviews, undefined, READ_TIMEOUT) : null;
+      if (!current()) return true;
+      if (nextArtifacts?.some(a => a.project_id !== projectId)) {
         throw new Error('The server returned data for a different project.');
       }
-      setArtifacts(nextArtifacts);
-      setJobs(nextJobs);
-      if (requestedSplitId && projectId === requestedProjectId && !splitLinkApplied.current) {
-        const split = kinds(nextArtifacts, 'split').find(value => value.id === requestedSplitId);
-        if (split) {
-          setDatasetId(split.dataset_id); setSplitId(split.id);
-          splitLinkApplied.current = true;
-        }
+      setJobs(listing.jobs);
+      setJobsTruncated(listing.truncated);
+      jobsRunning.current = listing.jobs.some(isActive);
+      if (nextArtifacts) {
+        // Advance the job snapshot only with its artifacts, so a failed artifact read is retried.
+        setArtifacts(nextArtifacts);
+        jobPrint.current = print;
+        artifactsReadAt.current = Date.now();
+        applyLinks(nextArtifacts);
       }
-      if (requestedBenchmarkId && projectId === requestedProjectId && !benchmarkLinkApplied.current) {
-        const run = kinds(nextArtifacts, 'benchmark_preview').find(value => value.id === requestedBenchmarkId);
-        if (run) {
-          setDatasetId(run.dataset_id); setSplitId(run.split_id); setRunId(run.id);
-          benchmarkLinkApplied.current = true;
-        }
-      }
-      if (requestedAuditId && projectId === requestedProjectId && !auditLinkApplied.current) {
-        const audit = kinds(nextArtifacts, 'audit').find(value => value.id === requestedAuditId);
-        if (audit) {
-          setDatasetId(audit.dataset_id);
-          auditLinkApplied.current = true;
-        }
-      }
+      setLastUpdated(new Date().toISOString());
       setProjectLoaded(true);
       setProjectError('');
+      return true;
     } catch (e) {
-      if (current()) setProjectError(e instanceof Error ? e.message : 'Could not load this project');
+      if (!current()) return true;
+      setProjectError(e instanceof Error ? e.message : 'Could not load this project');
+      return false;
     } finally {
       if (current()) setProjectLoading(false);
     }
-  }, [projectId, fixture, requestedAuditId, requestedSplitId, requestedBenchmarkId, requestedProjectId, setDatasetId]);
+  }, [projectId, fixture, applyLinks]);
 
   useEffect(() => {
     if (fixture) return;
@@ -137,13 +167,33 @@ export default function Workbench({ view, fixture, children, requestedProjectId,
     if (fixture || !projectId) return;
     try { updateDatasetId(localStorage.getItem(`sciml-dataset:${projectId}`) || ''); } catch { /* storage unavailable */ }
     let disposed = false;
-    let timer: ReturnType<typeof setTimeout>;
-    const poll = async () => {
-      await refresh();
-      if (!disposed) timer = setTimeout(poll, POLL_INTERVAL);
+    let polling = false;
+    let failures = 0;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    // One loop per project. Failures back off exponentially; success returns to the
+    // normal cadence, which is slower while nothing runs or the tab is hidden.
+    const poll = async (force = false) => {
+      if (disposed || polling) return;
+      polling = true;
+      clearTimeout(timer);
+      try {
+        failures = await refresh(force) ? 0 : failures + 1;
+      } finally {
+        polling = false;
+      }
+      if (disposed) return;
+      const delay = pollDelay({ failures, active: jobsRunning.current, hidden: document.visibilityState === 'hidden' });
+      setNextRetryAt(failures ? Date.now() + delay : null);
+      timer = setTimeout(() => void poll(), delay);
     };
-    void poll();
-    return () => { disposed = true; clearTimeout(timer); requestSequence.current += 1; };
+    const visible = () => { if (document.visibilityState === 'visible') void poll(); };
+    pollNow.current = () => void poll(true);
+    document.addEventListener('visibilitychange', visible);
+    void poll(true);
+    return () => {
+      disposed = true; clearTimeout(timer); requestSequence.current += 1; pollNow.current = null;
+      document.removeEventListener('visibilitychange', visible);
+    };
   }, [projectId, refresh, fixture]);
 
   const act = useCallback(async (fn: () => Promise<void>) => {
@@ -152,7 +202,7 @@ export default function Workbench({ view, fixture, children, requestedProjectId,
     setBusy(true); setError(''); setNotice('');
     try {
       await fn();
-      await refresh();
+      await refresh(true);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'That operation did not complete');
     } finally {
@@ -161,9 +211,9 @@ export default function Workbench({ view, fixture, children, requestedProjectId,
     }
   }, [refresh, fixture]);
 
-  const submit = useCallback(async (kind: string, payload: object = {}) => {
+  const submit = useCallback(async (kind: OperationKind, payload: object = {}) => {
     if (fixture) return;
-    await api(`projects/${projectId}/${kind}`, parseJob, json(payload));
+    await submitOperation(projectId, kind, payload);
     setNotice('Job queued. Progress appears under job activity below.');
   }, [projectId, fixture]);
 
@@ -178,8 +228,8 @@ export default function Workbench({ view, fixture, children, requestedProjectId,
     return {
       projects, setProjects, projectId, setProjectId,
       activeProject: projects.find(p => p.id === projectId),
-      artifacts, jobs, busy: busy || Boolean(fixture),
-      jobsActive: jobs.some(j => j.state === 'queued' || j.state === 'running'),
+      artifacts, jobs, jobsTruncated, lastUpdated, busy: busy || Boolean(fixture),
+      jobsActive: jobs.some(isActive),
       workflow: deriveWorkflow(artifacts, Boolean(projectId)),
       act, submit, setNotice,
       datasets, selectedDataset, setDatasetId,
@@ -187,7 +237,7 @@ export default function Workbench({ view, fixture, children, requestedProjectId,
       partitions, selectedSplit, setSplitId,
       runs, selectedRun, setRunId,
     };
-  }, [projects, projectId, artifacts, jobs, busy, datasetId, splitId, runId, act, submit, setProjectId, setDatasetId, fixture]);
+  }, [projects, projectId, artifacts, jobs, jobsTruncated, lastUpdated, busy, datasetId, splitId, runId, act, submit, setProjectId, setDatasetId, fixture]);
 
   const item = navItem(view);
   const needsProject = view !== 'projects' && view !== 'research' && !projectId;
@@ -205,7 +255,7 @@ export default function Workbench({ view, fixture, children, requestedProjectId,
           projects={projects}
           projectId={projectId}
           onProjectChange={setProjectId}
-          busyJobs={jobs.filter(j => j.state === 'queued' || j.state === 'running').length}
+          busyJobs={jobs.filter(isActive).length}
           datasets={model.datasets}
           datasetId={model.selectedDataset?.id ?? ''}
           onDatasetChange={setDatasetId}
@@ -227,10 +277,14 @@ export default function Workbench({ view, fixture, children, requestedProjectId,
             {fixture && <Alert variant="warning" title="Development-only fixture preview">Synthetic sample data. No API requests or mutations run here. Navigation links leave the preview and open the live workspace.</Alert>}
             {loading && <Alert role={notice ? undefined : 'status'}>{projectsLoading ? 'Loading workspace…' : 'Loading project data…'}</Alert>}
             {loadError && <div className="stack stack--tight">
-              <Alert variant="error" role="alert" title="Workspace data unavailable">{loadError}{projectLoaded ? ' Previously loaded data remains visible.' : ''}</Alert>
+              <Alert variant="error" role="alert" title="Workspace data unavailable">
+                {loadError}
+                {projectLoaded ? ` Previously loaded data remains visible${lastUpdated ? ` (last read at ${new Date(lastUpdated).toLocaleTimeString()})` : ''} and may be out of date.` : ''}
+                {!projectsError && nextRetryAt ? ` Retrying automatically; next attempt at ${new Date(nextRetryAt).toLocaleTimeString()}.` : ''}
+              </Alert>
               <div><button className="button button--secondary" disabled={loading} onClick={() => {
                 if (projectsError) setLoadAttempt(value => value + 1);
-                else { setProjectLoading(true); void refresh(); }
+                else { setProjectLoading(true); pollNow.current?.(); }
               }}>Retry loading</button></div>
             </div>}
             {error && <Alert variant="error" role="alert" title="Something went wrong">{error}</Alert>}
@@ -259,7 +313,7 @@ export default function Workbench({ view, fixture, children, requestedProjectId,
               {view === 'provenance' && <ProvenanceView key={projectId} wb={model} requestedArtifactId={projectId === requestedProjectId ? requestedArtifactId : undefined} />}
               {view === 'report' && <ReportView key={projectId} wb={model} requestedReportId={projectId === requestedProjectId ? requestedReportId : undefined} />}
 
-              <JobActivity jobs={jobs} />
+              <JobActivity wb={model} />
               {children}
             </>}
           </div>

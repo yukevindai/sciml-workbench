@@ -2,7 +2,7 @@
 from datetime import datetime
 from typing import Annotated, Literal
 from pydantic import AwareDatetime, Field, JsonValue, model_validator
-from .contract_core import ContractModel, Counter, Digest, Identifier, Text
+from .contract_core import ContractModel, Counter, Digest, ErrorCode, Identifier, Text
 from .contracts import Audit, Evidence, Provenance, Report, Split
 from .http_contracts import IntakeDataset, IntakeFailure, JobResponse
 from .scientific_contracts import AvailableEvidenceReference, ClaimSet, EvaluationProtocol
@@ -35,8 +35,28 @@ class ExternalReceiptProjection(ContractModel):
         return self
 
 
+class JobRunLink(ContractModel):
+    """An agent run's recorded use of a job; absence is not proof of a manual origin."""
+    run_id: Identifier
+    action_id: Identifier
+    ownership: Literal["owned", "shared", "detached"]
+
+
+class JobRecoveryProjection(ContractModel):
+    """D04 decision for a failed job; the original attempt is never rewritten."""
+    state: Literal["pending", "running", "completed", "exhausted"]
+    eligible: bool
+    attempts: int = Field(ge=0)
+    max_attempts: int = Field(ge=0)
+    retry_job_id: Identifier | None
+    next_attempt_at: AwareDatetime | None
+    last_error_code: ErrorCode | None
+
+
 class JobDetail(JobResponse):
     external_receipt: ExternalReceiptProjection | None = None
+    run_links: list[JobRunLink] = Field(default_factory=list, max_length=100)
+    recovery: JobRecoveryProjection | None = None
 
 
 class ArtifactSummary(ContractModel):

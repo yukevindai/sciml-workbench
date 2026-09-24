@@ -1,13 +1,16 @@
 import { expect, test, type Page, type Route } from '@playwright/test';
+import { jobDetail, jobPage } from './job-page';
 import fixtures from './fixtures/failure-receipts.json';
 import { parseArtifactPreviews, parseJobPage, parseJobs } from '../app/lib/decode';
-import { assessRunHref, describeFailure, draftFingerprint, failureHref, receiptStatus } from '../app/lib/failure';
+import { assessRunHref, describeFailure, failureHref, receiptStatus } from '../app/lib/failure';
+import { fingerprint } from '../app/lib/submissions';
 import { kinds, type Artifact } from '../app/lib/types';
 import type { JobDetail } from '../app/lib/generated/http';
 
 const previews = parseArtifactPreviews(fixtures.previews);
 const jobs = parseJobs(fixtures.jobs);
-const index = parseJobPage(fixtures.failure_index);
+// Captured before A09 added run links and recovery decisions; absent reads as none recorded.
+const index = parseJobPage({ ...fixtures.failure_index, items: fixtures.failure_index.items.map(jobDetail) });
 const project = fixtures.project;
 const ids = fixtures.ids;
 const failures = kinds(previews, 'failure');
@@ -27,8 +30,8 @@ async function workspace(page: Page, override?: Override, artifacts: Artifact[] 
     if (override && await override(route, url.pathname)) return;
     if (route.request().method() !== 'GET') throw new Error(`Unexpected mutation: ${url.pathname}`);
     await route.fulfill({ json: url.pathname === '/api/projects' ? [project]
-      : url.pathname.endsWith('/artifact-previews') ? artifacts : url.pathname.endsWith('/jobs') ? jobs
-        : url.pathname.endsWith('/job-index') ? index : [] });
+      : url.pathname.endsWith('/artifact-previews') ? artifacts
+        : url.pathname.endsWith('/job-index') ? (url.searchParams.get('kind') === 'failure' ? index : jobPage(jobs.map(job => index.items.find(item => item.id === job.id) ?? job))) : [] });
   });
   return posts;
 }
@@ -160,7 +163,7 @@ test('editing a failed draft starts a new request key', async ({ page }) => {
 test('unknown run and record links substitute nothing; receipt read failures are explicit and retryable', async ({ page }) => {
   let failIndex = true;
   await workspace(page, async (route, pathname) => {
-    if (pathname.endsWith('/job-index') && failIndex) { failIndex = false; await route.fulfill({ status: 503, json: { error: 'Database unavailable' } }); return true; }
+    if (pathname.endsWith('/job-index') && new URL(route.request().url()).searchParams.get('kind') === 'failure' && failIndex) { failIndex = false; await route.fulfill({ status: 503, json: { error: 'Database unavailable' } }); return true; }
     return false;
   });
   await page.goto(`/failure-memory?project=${project.id}&benchmark=missing-run&failure=missing-record`);
@@ -197,5 +200,7 @@ test('failure helpers never infer agent authorship or success', () => {
   expect(receiptStatus(prepared).label).toBe('Prepared, not sent');
   expect(receiptStatus({ ...job, state: 'queued', external_receipt: null }).label).toBe('Not yet journaled');
   expect(receiptStatus({ ...job, external_receipt: null }).label).toBe('No receipt recorded');
-  expect(draftFingerprint('a', 'b', 'c')).not.toBe(draftFingerprint('a', 'b ', 'c'));
+  const draft = { benchmark_id: 'a', reason: 'b', uncertainty_notes: 'c' };
+  expect(fingerprint('failure', draft)).not.toBe(fingerprint('failure', { ...draft, reason: 'b ' }));
+  expect(fingerprint('failure', draft)).toBe(fingerprint('failure', { uncertainty_notes: 'c', reason: 'b', benchmark_id: 'a' }));
 });

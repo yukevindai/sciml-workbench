@@ -6,9 +6,10 @@ import { FlaskConical, Search } from 'lucide-react';
 import type { Workbench } from '../lib/context';
 import type { JobDetail, JobPage } from '../lib/generated/http';
 import { api } from '../lib/api';
-import { parseJob, parseJobPage } from '../lib/decode';
+import { parseJobPage } from '../lib/decode';
 import { benchmarkHref } from '../lib/benchmark';
-import { describeFailure, draftFingerprint } from '../lib/failure';
+import { describeFailure } from '../lib/failure';
+import { fingerprint, submitOperation, usePendingSubmissions } from '../lib/submissions';
 import { kinds } from '../lib/types';
 import { shortId } from '../lib/format';
 import { Alert, EmptyState, Field, Panel } from '../components/ui';
@@ -29,7 +30,7 @@ export function FailureMemoryView({ wb, requestedFailureId, requestedBenchmarkId
   const [receiptsLoaded, setReceiptsLoaded] = useState(false);
   const [receiptsError, setReceiptsError] = useState('');
   const [truncated, setTruncated] = useState(false);
-  const request = useRef<{ fingerprint: string; key: string } | null>(null);
+  const pending = usePendingSubmissions(wb.projectId);
   const submitting = useRef(false);
   const sequence = useRef(0);
 
@@ -71,22 +72,16 @@ export function FailureMemoryView({ wb, requestedFailureId, requestedBenchmarkId
   useEffect(() => { void loadReceipts(); }, [loadReceipts, failureJobs]);
   useEffect(() => () => { sequence.current += 1; }, []);
 
+  const draft = run ? { benchmark_id: run.id, reason, uncertainty_notes: uncertainty } : null;
+  const retained = draft ? pending.some(entry => entry.fingerprint === fingerprint('failure', draft)) : false;
   const submit = () => {
-    if (submitting.current || !run) return;
-    const fingerprint = draftFingerprint(run.id, reason, uncertainty);
-    // The same draft always reuses its key, so a double click or a retry after a lost
-    // response resolves to the one original job. Any edit is a new request.
-    if (request.current?.fingerprint !== fingerprint) request.current = { fingerprint, key: crypto.randomUUID() };
-    const key = request.current.key;
+    if (submitting.current || !draft) return;
+    // The same draft reuses its retained key (also after a reload), so a double click or a
+    // retry after a lost response resolves to the one original job. Any edit is a new request.
     submitting.current = true;
     setAccepted('');
     void wb.act(async () => {
-      const job = await api(`projects/${wb.projectId}/failure`, parseJob, {
-        method: 'POST', headers: { 'Content-Type': 'application/json', 'Idempotency-Key': key },
-        body: JSON.stringify({ benchmark_id: run.id, reason, uncertainty_notes: uncertainty }),
-      });
-      if (job.project_id !== wb.projectId || job.kind !== 'failure') throw new Error('The server returned a different job.');
-      request.current = null;
+      const job = await submitOperation(wb.projectId, 'failure', draft);
       setReason(''); setUncertainty(''); setAccepted(job.id);
       wb.setNotice('Assessment accepted. Its import status appears under import receipts; acceptance is not a confirmed record.');
     }).finally(() => { submitting.current = false; });
@@ -124,7 +119,7 @@ export function FailureMemoryView({ wb, requestedFailureId, requestedBenchmarkId
         </div>
         <UnknownImportsNotice count={unknown} />
         <div className="panel-foot">
-          <span className="field-hint">{request.current && request.current.fingerprint === (run ? draftFingerprint(run.id, reason, uncertainty) : '')
+          <span className="field-hint">{retained
             ? 'Retrying reuses the original request, so it cannot create a duplicate record.'
             : 'Saved to the independent Failure Memory service, which keeps its own records. Your draft is kept if saving fails.'}</span>
           <button type="button" className="button" disabled={wb.busy || !run || !reason.trim() || !uncertainty.trim()} onClick={submit}>

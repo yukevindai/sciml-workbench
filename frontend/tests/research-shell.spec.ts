@@ -1,4 +1,5 @@
 import { expect, test, type Page, type Route } from '@playwright/test';
+import { jobPage } from './job-page';
 import { shellFixture } from '../app/dev/research-shell/fixtures';
 import { kinds } from '../app/lib/types';
 
@@ -14,6 +15,7 @@ async function mockWorkspace(page: Page, override?: (route: Route, path: string)
     if (route.request().method() !== 'GET') throw new Error('Shell must not submit work');
     const body = path === '/api/projects' ? [project, second]
       : path === `/api/projects/${project.id}/artifact-previews` ? [dataset]
+      : path.endsWith('/job-index') ? jobPage()
       : [];
     await route.fulfill({ json: body });
   });
@@ -123,14 +125,17 @@ test('dataset selection survives navigation and refresh and is scoped by project
 test('a polling outage retains the last validated project data and clears on retry', async ({ page }) => {
   let outage = false;
   await mockWorkspace(page, async (route, path) => {
-    if (!outage || !path.endsWith('/artifact-previews')) return false;
+    // Jobs are read on every poll; artifacts only when jobs change or periodically.
+    if (!outage || !path.endsWith('/job-index')) return false;
     await route.fulfill({ status: 503, json: { detail: 'Connection lost' } });
     return true;
   });
   await page.goto('/research');
   await expect(page.getByText(dataset.filename, { exact: true })).toBeVisible();
   outage = true;
-  await expect(page.getByRole('main').getByRole('alert')).toContainText('Previously loaded data remains visible.');
+  // Idle projects poll every 10 s.
+  await expect(page.getByRole('main').getByRole('alert')).toContainText('Previously loaded data remains visible', { timeout: 15_000 });
+  await expect(page.getByRole('main').getByRole('alert')).toContainText('Retrying automatically');
   await expect(page.getByText(dataset.filename, { exact: true })).toBeVisible();
   outage = false;
   await page.getByRole('button', { name: 'Retry loading' }).click();
@@ -144,9 +149,9 @@ test('foreign project payloads are rejected and queued jobs are not called runni
       await route.fulfill({ json: [{ ...dataset, project_id: foreign ? second.id : project.id }] });
       return true;
     }
-    if (path.endsWith('/jobs')) {
-      await route.fulfill({ json: [{ id: 'queued-job', project_id: project.id, kind: 'audit', state: 'queued',
-        result_id: null, error: null, created_at: '2026-09-23T12:00:00Z', started_at: null, finished_at: null }] });
+    if (path.endsWith('/job-index')) {
+      await route.fulfill({ json: jobPage([{ id: 'queued-job', project_id: project.id, kind: 'audit', state: 'queued',
+        result_id: null, error: null, created_at: '2026-09-23T12:00:00Z', started_at: null, finished_at: null }]) });
       return true;
     }
     return false;

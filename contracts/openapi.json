@@ -673,6 +673,20 @@
             }
           },
           {
+            "name": "order",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "enum": [
+                "asc",
+                "desc"
+              ],
+              "type": "string",
+              "default": "asc",
+              "title": "Order"
+            }
+          },
+          {
             "name": "authorization",
             "in": "header",
             "required": false,
@@ -9945,6 +9959,24 @@
                 "type": "null"
               }
             ]
+          },
+          "run_links": {
+            "items": {
+              "$ref": "#/components/schemas/JobRunLink"
+            },
+            "type": "array",
+            "maxItems": 100,
+            "title": "Run Links"
+          },
+          "recovery": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/JobRecoveryProjection"
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         },
         "additionalProperties": false,
@@ -9991,6 +10023,149 @@
           "items"
         ],
         "title": "JobPage"
+      },
+      "JobRecoveryProjection": {
+        "properties": {
+          "state": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "running",
+              "completed",
+              "exhausted"
+            ],
+            "title": "State"
+          },
+          "eligible": {
+            "type": "boolean",
+            "title": "Eligible"
+          },
+          "attempts": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Attempts"
+          },
+          "max_attempts": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Max Attempts"
+          },
+          "retry_job_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 160,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Retry Job Id"
+          },
+          "next_attempt_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Attempt At"
+          },
+          "last_error_code": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "UNAUTHORIZED",
+                  "ORIGIN_REJECTED",
+                  "PROJECT_NOT_FOUND",
+                  "ARTIFACT_NOT_FOUND",
+                  "JOB_NOT_FOUND",
+                  "IDEMPOTENCY_CONFLICT",
+                  "PROJECT_BUSY",
+                  "VALIDATION_FAILED",
+                  "LINEAGE_MISMATCH",
+                  "UPLOAD_TOO_LARGE",
+                  "STORAGE_UNAVAILABLE",
+                  "DEPENDENCY_UNAVAILABLE",
+                  "INTERNAL_ERROR",
+                  "ADMISSION_REJECTED",
+                  "JOB_TIMED_OUT",
+                  "WORKER_INTERRUPTED",
+                  "INTEGRITY_FAILED",
+                  "EXTERNAL_OUTCOME_UNKNOWN",
+                  "AGENT_UNAVAILABLE",
+                  "POLICY_DENIED",
+                  "DATA_EXPOSURE_DENIED",
+                  "RUN_REVISION_CHANGED",
+                  "QUESTION_STALE",
+                  "BUDGET_EXHAUSTED",
+                  "PROVIDER_UNAVAILABLE",
+                  "TOOL_SCHEMA_INVALID",
+                  "UNSUPPORTED_CAPABILITY",
+                  "REFERENCE_INVALID",
+                  "TEST_PROTOCOL_SEALED",
+                  "RUN_CANCELLED"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Error Code"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "state",
+          "eligible",
+          "attempts",
+          "max_attempts",
+          "retry_job_id",
+          "next_attempt_at",
+          "last_error_code"
+        ],
+        "title": "JobRecoveryProjection",
+        "description": "D04 decision for a failed job; the original attempt is never rewritten."
+      },
+      "JobRunLink": {
+        "properties": {
+          "run_id": {
+            "type": "string",
+            "maxLength": 160,
+            "minLength": 1,
+            "title": "Run Id"
+          },
+          "action_id": {
+            "type": "string",
+            "maxLength": 160,
+            "minLength": 1,
+            "title": "Action Id"
+          },
+          "ownership": {
+            "type": "string",
+            "enum": [
+              "owned",
+              "shared",
+              "detached"
+            ],
+            "title": "Ownership"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "run_id",
+          "action_id",
+          "ownership"
+        ],
+        "title": "JobRunLink",
+        "description": "An agent run's recorded use of a job; absence is not proof of a manual origin."
       },
       "JsonValue": {},
       "LegacyJobResponse": {

@@ -12,9 +12,10 @@ from sqlalchemy.orm import load_only
 from .artifacts import ArtifactResolver, artifact_download, material_download
 from .contract_core import ErrorCode
 from .contract_registry import ARTIFACT_READERS
-from .db import ArtifactRow, ExternalOperationRow, JobRow
+from .db import ArtifactRow, ExternalOperationRow, JobRow, RecoveryRow
 from .errors import DomainError
-from .read_contracts import ArtifactPage, ArtifactSummary, ExternalReceiptProjection, JobDetail, JobPage
+from .read_contracts import (ArtifactPage, ArtifactSummary, ExternalReceiptProjection, JobDetail, JobPage,
+    JobRecoveryProjection, JobRunLink)
 from .services import project
 
 
@@ -68,6 +69,19 @@ def receipt_projection(row):
         artifact_id=row.artifact_id, reconciliation_required=row.state == "unknown")
 
 
+def recovery_projection(row):
+    if row is None:
+        return None
+    history = row.history or []
+    failed = [entry.get("code") for entry in history if isinstance(entry, dict) and entry.get("event") == "failed"]
+    code = failed[-1] if failed and failed[-1] in get_args(ErrorCode) else None
+    return JobRecoveryProjection(state=row.state,
+        eligible=not any(isinstance(entry, dict) and entry.get("event") == "ineligible" for entry in history),
+        attempts=row.attempts, max_attempts=int((row.policy or {}).get("max_attempts", 0)),
+        retry_job_id=row.retry_job_id, next_attempt_at=utc(row.due_at) if row.state == "pending" else None,
+        last_error_code=code)
+
+
 class ReadService:
     def __init__(self, cursor_secret):
         self.key = hmac.digest(cursor_secret.encode(), b"workbench-read-cursor-v1", "sha256")
@@ -92,12 +106,14 @@ class ReadService:
         except (ValueError, TypeError, UnicodeError):
             raise DomainError("Invalid pagination cursor", 422) from None
 
-    def _page(self, session, scope, table, resource, kind, after, limit):
+    def _page(self, session, scope, table, resource, kind, after, limit, order="asc"):
         authorize(session, scope)
+        if order not in {"asc", "desc"}:
+            raise DomainError("Invalid page order")
         kinds = {k for k, _ in ARTIFACT_READERS} if resource == "artifacts" else {"audit", "split", "benchmark", "evidence", "failure", "report"}
         if type(limit) is not int or not 1 <= limit <= 100 or (kind is not None and kind not in kinds):
             raise DomainError("Invalid page limit or kind filter")
-        context = [scope.project_id, scope.audience, resource, kind]
+        context = [scope.project_id, scope.audience, resource, kind] + (["desc"] if order == "desc" else [])
         if scope.audience == "agent":
             from .request_identity import request_digest
             context.append(request_digest("read_scope", {"run_id": scope.run_id, "protocol_id": scope.protocol_id,
@@ -113,8 +129,10 @@ class ReadService:
             query = query.where(table.kind == kind)
         if after is not None:
             stamp, identifier = self._after(after, context)
-            query = query.where(or_(table.created_at > stamp, and_(table.created_at == stamp, table.id > identifier)))
-        query = query.order_by(table.created_at, table.id).limit(limit + 1)
+            query = query.where(or_(table.created_at < stamp, and_(table.created_at == stamp, table.id < identifier))
+                                if order == "desc" else
+                                or_(table.created_at > stamp, and_(table.created_at == stamp, table.id > identifier)))
+        query = query.order_by(*((table.created_at.desc(), table.id.desc()) if order == "desc" else (table.created_at, table.id))).limit(limit + 1)
         rows = session.execute(query).all() if resource == "artifacts" else session.scalars(query).all()
         cursor = self._cursor(context, rows[limit - 1]) if len(rows) > limit else None
         return rows[:limit], cursor
@@ -124,11 +142,9 @@ class ReadService:
         return ArtifactPage(items=[ArtifactSummary(id=r.id, project_id=r.project_id, kind=r.kind,
             schema_version=r.schema_version, created_at=utc(r.created_at)) for r in rows], next_cursor=cursor)
 
-    def job_index(self, session, scope, *, kind=None, after=None, limit=50):
-        rows, cursor = self._page(session, scope, JobRow, "jobs", kind, after, limit)
-        receipts = self._receipts(session, scope.project_id, [r.id for r in rows])
-        return JobPage(items=[JobDetail(**safe_job_fields(r), external_receipt=receipt_projection(receipts.get(r.id)))
-                              for r in rows], next_cursor=cursor)
+    def job_index(self, session, scope, *, kind=None, after=None, limit=50, order="asc"):
+        rows, cursor = self._page(session, scope, JobRow, "jobs", kind, after, limit, order)
+        return JobPage(items=self._details(session, scope, rows), next_cursor=cursor)
 
     def job(self, session, scope, job_id):
         authorize(session, scope)
@@ -137,8 +153,31 @@ class ReadService:
         job = session.scalar(select(JobRow).options(load_only(*JOB_FIELDS)).where(JobRow.id == job_id, JobRow.project_id == scope.project_id))
         if job is None:
             raise DomainError("Job not found in this project", 404, "JOB_NOT_FOUND")
-        receipt = self._receipts(session, scope.project_id, [job.id]).get(job.id)
-        return JobDetail(**safe_job_fields(job), external_receipt=receipt_projection(receipt))
+        return self._details(session, scope, [job])[0]
+
+    def _details(self, session, scope, rows):
+        ids = [r.id for r in rows]
+        receipts = self._receipts(session, scope.project_id, ids)
+        # Run links and recovery decisions are operator context; agent reads stay within their input scope.
+        manual = scope.audience == "manual"
+        links = self._run_links(session, scope.project_id, ids) if manual else {}
+        recoveries = {r.job_id: r for r in session.scalars(select(RecoveryRow).where(
+            RecoveryRow.project_id == scope.project_id, RecoveryRow.job_id.in_(ids)))} if manual and ids else {}
+        return [JobDetail(**safe_job_fields(r), external_receipt=receipt_projection(receipts.get(r.id)),
+                          run_links=links.get(r.id, []), recovery=recovery_projection(recoveries.get(r.id)))
+                for r in rows]
+
+    @staticmethod
+    def _run_links(session, project_id, job_ids):
+        if not job_ids:
+            return {}
+        from .agent_db import RunJobRow
+        links = {}
+        for row in session.scalars(select(RunJobRow).where(RunJobRow.project_id == project_id,
+                RunJobRow.job_id.in_(job_ids)).order_by(RunJobRow.run_id, RunJobRow.action_id)):
+            links.setdefault(row.job_id, []).append(JobRunLink(run_id=row.run_id, action_id=row.action_id,
+                                                               ownership=row.ownership))
+        return links
 
     @staticmethod
     def _receipts(session, project_id, job_ids):

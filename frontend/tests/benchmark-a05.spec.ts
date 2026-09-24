@@ -1,4 +1,5 @@
 import { expect, test, type Page, type Route } from '@playwright/test';
+import { jobPage } from './job-page';
 import fixtures from './fixtures/benchmark-reports.json';
 import { parseArtifact, parseArtifactPreviews, parseEvaluationStatus, parseJobs, parseResearchRuns } from '../app/lib/decode';
 import {
@@ -47,7 +48,7 @@ async function workspace(page: Page, artifacts: Artifact[] = previews, override?
       await route.fulfill({ status: 404, json: { detail: 'Not found' } }); return;
     }
     await route.fulfill({ json: pathname === '/api/projects' ? [project]
-      : pathname.endsWith('/artifact-previews') ? artifacts : pathname.endsWith('/jobs') ? jobs
+      : pathname.endsWith('/artifact-previews') ? artifacts : pathname.endsWith('/job-index') ? jobPage(jobs)
         : pathname.endsWith('/agent-runs') ? [run] : pathname.includes('/evaluations/') ? (seen.reveals ? after : before) : [] });
   });
   return seen;

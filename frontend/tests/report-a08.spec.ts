@@ -1,4 +1,5 @@
 import { expect, test, type Page, type Route } from '@playwright/test';
+import { jobPage } from './job-page';
 import manual from './fixtures/report-manual.json';
 import agent from './fixtures/report-agent.json';
 import { parseArtifactPreviews, parseJobs, parseReportSummary } from '../app/lib/decode';
@@ -29,7 +30,7 @@ async function workspace(page: Page, fixture: Fixture, override?: (route: Route,
       return;
     }
     await route.fulfill({ json: pathname === '/api/projects' ? [fixture.project]
-      : pathname.endsWith('/artifact-previews') ? fixture.previews : pathname.endsWith('/jobs') ? fixture.jobs : [] });
+      : pathname.endsWith('/artifact-previews') ? fixture.previews : pathname.endsWith('/job-index') ? jobPage(fixture.jobs) : [] });
   });
   return seen;
 }

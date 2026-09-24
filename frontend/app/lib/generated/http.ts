@@ -816,6 +816,53 @@ export type ExternalProjectId2 = string | null;
 export type ExternalRecordId2 = string | null;
 export type ArtifactId2 = string | null;
 export type ReconciliationRequired = boolean;
+export type RunId6 = string;
+export type ActionId3 = string;
+export type Ownership = 'owned' | 'shared' | 'detached';
+/**
+ * @maxItems 100
+ */
+export type RunLinks = JobRunLink[];
+export type State8 = 'pending' | 'running' | 'completed' | 'exhausted';
+export type Eligible = boolean;
+export type Attempts1 = number;
+export type MaxAttempts = number;
+export type RetryJobId = string | null;
+export type NextAttemptAt = string | null;
+export type LastErrorCode =
+  | (
+      | 'UNAUTHORIZED'
+      | 'ORIGIN_REJECTED'
+      | 'PROJECT_NOT_FOUND'
+      | 'ARTIFACT_NOT_FOUND'
+      | 'JOB_NOT_FOUND'
+      | 'IDEMPOTENCY_CONFLICT'
+      | 'PROJECT_BUSY'
+      | 'VALIDATION_FAILED'
+      | 'LINEAGE_MISMATCH'
+      | 'UPLOAD_TOO_LARGE'
+      | 'STORAGE_UNAVAILABLE'
+      | 'DEPENDENCY_UNAVAILABLE'
+      | 'INTERNAL_ERROR'
+      | 'ADMISSION_REJECTED'
+      | 'JOB_TIMED_OUT'
+      | 'WORKER_INTERRUPTED'
+      | 'INTEGRITY_FAILED'
+      | 'EXTERNAL_OUTCOME_UNKNOWN'
+      | 'AGENT_UNAVAILABLE'
+      | 'POLICY_DENIED'
+      | 'DATA_EXPOSURE_DENIED'
+      | 'RUN_REVISION_CHANGED'
+      | 'QUESTION_STALE'
+      | 'BUDGET_EXHAUSTED'
+      | 'PROVIDER_UNAVAILABLE'
+      | 'TOOL_SCHEMA_INVALID'
+      | 'UNSUPPORTED_CAPABILITY'
+      | 'REFERENCE_INVALID'
+      | 'TEST_PROTOCOL_SEALED'
+      | 'RUN_CANCELLED'
+    )
+  | null;
 /**
  * @maxItems 100
  */
@@ -838,7 +885,7 @@ export type CreatedAt20 = string;
 export type Contract3 = 'research_run';
 export type Objective3 = string;
 export type Mode = 'autopilot' | 'review_plan';
-export type State8 =
+export type State9 =
   | 'queued'
   | 'running'
   | 'waiting_for_job'
@@ -861,7 +908,7 @@ export type Id31 = string;
 export type ProjectId20 = string;
 export type CreatedAt21 = string;
 export type Contract4 = 'research_question';
-export type RunId6 = string;
+export type RunId7 = string;
 export type Revision5 = number;
 export type RunRevision = number;
 export type Id32 = string;
@@ -892,8 +939,8 @@ export type ExpiresAt = string | null;
 export type AnswerMessageId = string | null;
 export type Questions = ResearchQuestion[];
 export type ControlEffect = string;
-export type RunId7 = string;
-export type State9 =
+export type RunId8 = string;
+export type State10 =
   | 'queued'
   | 'running'
   | 'waiting_for_job'
@@ -907,7 +954,7 @@ export type ArtifactIds3 = string[];
 export type StopReason1 = string | null;
 export type Contract6 = 'run_event';
 export type SchemaVersion23 = '1.0';
-export type RunId8 = string;
+export type RunId9 = string;
 export type Sequence = number;
 export type CreatedAt22 = string;
 export type EventType =
@@ -919,7 +966,7 @@ export type EventType =
   | 'usage_changed'
   | 'result_published';
 export type RunRevision1 = number;
-export type State10 =
+export type State11 =
   | 'queued'
   | 'running'
   | 'waiting_for_job'
@@ -929,7 +976,7 @@ export type State10 =
   | 'partially_completed'
   | 'failed'
   | 'cancelled';
-export type ActionId3 = string | null;
+export type ActionId4 = string | null;
 export type QuestionId = string | null;
 export type ArtifactIds4 = string[];
 export type Summary1 = string | null;
@@ -1861,6 +1908,8 @@ export interface JobDetail {
   retry_of_job_id: RetryOfJobId;
   deadline_at: DeadlineAt;
   external_receipt: ExternalReceiptProjection | null;
+  run_links: RunLinks;
+  recovery: JobRecoveryProjection | null;
 }
 export interface ExternalReceiptProjection {
   external_id: ExternalId1;
@@ -1874,6 +1923,26 @@ export interface ExternalReceiptProjection {
   external_record_id: ExternalRecordId2;
   artifact_id: ArtifactId2;
   reconciliation_required: ReconciliationRequired;
+}
+/**
+ * An agent run's recorded use of a job; absence is not proof of a manual origin.
+ */
+export interface JobRunLink {
+  run_id: RunId6;
+  action_id: ActionId3;
+  ownership: Ownership;
+}
+/**
+ * D04 decision for a failed job; the original attempt is never rewritten.
+ */
+export interface JobRecoveryProjection {
+  state: State8;
+  eligible: Eligible;
+  attempts: Attempts1;
+  max_attempts: MaxAttempts;
+  retry_job_id: RetryJobId;
+  next_attempt_at: NextAttemptAt;
+  last_error_code: LastErrorCode;
 }
 export interface JobPage {
   items: Items;
@@ -1900,7 +1969,7 @@ export interface ResearchRun {
   inputs: InputScope;
   policy: PolicyReference;
   mode: Mode;
-  state: State8;
+  state: State9;
   control_revision: ControlRevision;
   plan_revision: PlanRevision1;
   limits: ResourceLimits;
@@ -1923,7 +1992,7 @@ export interface ResearchQuestion {
   project_id: ProjectId20;
   created_at: CreatedAt21;
   contract: Contract4;
-  run_id: RunId6;
+  run_id: RunId7;
   revision: Revision5;
   run_revision: RunRevision;
   questions: Questions1;
@@ -1953,21 +2022,21 @@ export interface UnavailableEvidenceReference {
   reason: Reason4;
 }
 export interface RunResult {
-  run_id: RunId7;
-  state: State9;
+  run_id: RunId8;
+  state: State10;
   artifact_ids: ArtifactIds3;
   stop_reason: StopReason1;
 }
 export interface RunEvent {
   contract: Contract6;
   schema_version: SchemaVersion23;
-  run_id: RunId8;
+  run_id: RunId9;
   sequence: Sequence;
   created_at: CreatedAt22;
   event_type: EventType;
   run_revision: RunRevision1;
-  state: State10;
-  action_id: ActionId3;
+  state: State11;
+  action_id: ActionId4;
   question_id: QuestionId;
   artifact_ids: ArtifactIds4;
   summary: Summary1;

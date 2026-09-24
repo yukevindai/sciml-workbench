@@ -1200,6 +1200,53 @@ export type ErrorCode6 =
   | null;
 export type RetryOfJobId1 = string | null;
 export type DeadlineAt2 = string | null;
+export type RunId11 = string;
+export type ActionId6 = string;
+export type Ownership = 'owned' | 'shared' | 'detached';
+/**
+ * @maxItems 100
+ */
+export type RunLinks = JobRunLink[];
+export type State12 = 'pending' | 'running' | 'completed' | 'exhausted';
+export type Eligible = boolean;
+export type Attempts1 = number;
+export type MaxAttempts = number;
+export type RetryJobId = string | null;
+export type NextAttemptAt = string | null;
+export type LastErrorCode =
+  | (
+      | 'UNAUTHORIZED'
+      | 'ORIGIN_REJECTED'
+      | 'PROJECT_NOT_FOUND'
+      | 'ARTIFACT_NOT_FOUND'
+      | 'JOB_NOT_FOUND'
+      | 'IDEMPOTENCY_CONFLICT'
+      | 'PROJECT_BUSY'
+      | 'VALIDATION_FAILED'
+      | 'LINEAGE_MISMATCH'
+      | 'UPLOAD_TOO_LARGE'
+      | 'STORAGE_UNAVAILABLE'
+      | 'DEPENDENCY_UNAVAILABLE'
+      | 'INTERNAL_ERROR'
+      | 'ADMISSION_REJECTED'
+      | 'JOB_TIMED_OUT'
+      | 'WORKER_INTERRUPTED'
+      | 'INTEGRITY_FAILED'
+      | 'EXTERNAL_OUTCOME_UNKNOWN'
+      | 'AGENT_UNAVAILABLE'
+      | 'POLICY_DENIED'
+      | 'DATA_EXPOSURE_DENIED'
+      | 'RUN_REVISION_CHANGED'
+      | 'QUESTION_STALE'
+      | 'BUDGET_EXHAUSTED'
+      | 'PROVIDER_UNAVAILABLE'
+      | 'TOOL_SCHEMA_INVALID'
+      | 'UNSUPPORTED_CAPABILITY'
+      | 'REFERENCE_INVALID'
+      | 'TEST_PROTOCOL_SEALED'
+      | 'RUN_CANCELLED'
+    )
+  | null;
 /**
  * @maxItems 100
  */
@@ -1232,7 +1279,7 @@ export type ProjectsResponse = ProjectResponse[];
 export type Id35 = string;
 export type ProjectId22 = string;
 export type Kind27 = 'audit' | 'split' | 'benchmark' | 'evidence' | 'failure' | 'report';
-export type State12 = 'queued' | 'running' | 'succeeded' | 'failed';
+export type State13 = 'queued' | 'running' | 'succeeded' | 'failed';
 export type ResultId3 = string | null;
 export type Error6 = string | null;
 export type CreatedAt24 = string;
@@ -2471,6 +2518,28 @@ export interface JobDetail {
   retry_of_job_id?: RetryOfJobId1;
   deadline_at?: DeadlineAt2;
   external_receipt?: ExternalReceiptProjection | null;
+  run_links?: RunLinks;
+  recovery?: JobRecoveryProjection | null;
+}
+/**
+ * An agent run's recorded use of a job; absence is not proof of a manual origin.
+ */
+export interface JobRunLink {
+  run_id: RunId11;
+  action_id: ActionId6;
+  ownership: Ownership;
+}
+/**
+ * D04 decision for a failed job; the original attempt is never rewritten.
+ */
+export interface JobRecoveryProjection {
+  state: State12;
+  eligible: Eligible;
+  attempts: Attempts1;
+  max_attempts: MaxAttempts;
+  retry_job_id: RetryJobId;
+  next_attempt_at: NextAttemptAt;
+  last_error_code: LastErrorCode;
 }
 export interface JobPage {
   items: Items;
@@ -2491,7 +2560,7 @@ export interface LegacyJobResponse {
   id: Id35;
   project_id: ProjectId22;
   kind: Kind27;
-  state: State12;
+  state: State13;
   result_id: ResultId3;
   error: Error6;
   created_at: CreatedAt24;

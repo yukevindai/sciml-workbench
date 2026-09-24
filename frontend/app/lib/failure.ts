@@ -89,8 +89,3 @@ export function receiptStatus(job: JobDetail): ReceiptStatus {
   }
   return { label: 'Prepared, not sent', tone: 'badge--info', description: 'The exact request is saved but has not been submitted to Failure Memory.' };
 }
-
-/** A stable request key per draft: retries and double clicks reuse it; any edit starts a new request. */
-export function draftFingerprint(benchmarkId: string, reason: string, uncertainty: string) {
-  return JSON.stringify([benchmarkId, reason, uncertainty]);
-}

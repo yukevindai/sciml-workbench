@@ -1,4 +1,5 @@
 import { expect, test, type Page, type Route } from '@playwright/test';
+import { jobPage } from './job-page';
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
@@ -41,7 +42,7 @@ async function workspace(page: Page, artifacts: Artifact[] = [dataset, audit, se
     if (route.request().method() !== 'GET') throw new Error(`Unexpected mutation: ${pathname}`);
     await route.fulfill({ json: pathname === '/api/projects' ? [project, other]
       : pathname === `/api/projects/${project.id}/artifact-previews` ? artifacts
-        : pathname === `/api/projects/${project.id}/jobs` ? [job]
+        : pathname === `/api/projects/${project.id}/job-index` ? jobPage([job])
           : pathname === `/api/projects/${project.id}/agent-runs` ? [run] : [] });
   });
 }
@@ -151,8 +152,8 @@ test('manual audit submits the selected dataset and displays its completed findi
     if (pathname.endsWith('/artifact-previews')) {
       await route.fulfill({ json: submitted ? [dataset, audit] : [dataset] }); return true;
     }
-    if (pathname.endsWith('/jobs')) {
-      await route.fulfill({ json: submitted ? [job] : [] }); return true;
+    if (pathname.endsWith('/job-index')) {
+      await route.fulfill({ json: jobPage(submitted ? [job] : []) }); return true;
     }
     return false;
   });

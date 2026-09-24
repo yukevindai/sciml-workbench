@@ -1,0 +1,172 @@
+{
+  "note": "Captured through the real API: D04 recovery of an interrupted manual audit, a deterministic rejection, and an E03 agent-dispatched audit.",
+  "ids": {
+    "interrupted": "d2144758-ab2a-47f9-9021-aa6c5eebe5e6",
+    "rejected": "739d72dd-9fed-4741-9f42-bec3618bf130",
+    "agent_job": "074dac02-2f36-4198-8824-55cf0f1cdc93",
+    "agent_action": "f8e2c158-6c7f-4556-b521-cdc6105a15ec",
+    "run": "96b2705b-9b1b-4e16-9dcb-c6e723539ef5",
+    "dataset": "8ed56120-3e8e-4277-ae84-e59d67cb2ed8"
+  },
+  "project": {
+    "id": "p",
+    "name": "One",
+    "description": ""
+  },
+  "previews": [
+    {
+      "schema_version": "1.0",
+      "id": "8ed56120-3e8e-4277-ae84-e59d67cb2ed8",
+      "project_id": "p",
+      "created_at": "2026-09-24T22:58:34.197616Z",
+      "parents": [],
+      "software": {
+        "chemdata-auditor": "0.3.0@eff3ed3c43ec71e9ceecabc1f04d1dfb5c91c116",
+        "cheme-ml-benchmarks": "0.1.0@db02d8963725a1d406b9b07eb6f4cc3436fbb082",
+        "scientific-evidence-engine": "0.1.0@09f5ec810e8f04bf8d233ec12eb9448342ee5121",
+        "experiment-failure-memory": "0.1.0@63492787cbbea6d03662db63f2d958a6eec8d804",
+        "workbench": "0.1.0"
+      },
+      "kind": "dataset",
+      "filename": "input.csv",
+      "blob_key": "d1a204d054632471fea3ed96e764a9e70402f69ff2818394a182a8d73bf64a4e",
+      "sha256": "d1a204d054632471fea3ed96e764a9e70402f69ff2818394a182a8d73bf64a4e",
+      "rows": 3,
+      "columns": [
+        "x",
+        "y"
+      ],
+      "source": {
+        "citation": "Synthetic",
+        "url": "Not supplied",
+        "license": "CC0",
+        "data_kind": "synthetic",
+        "transformations": "Generated"
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "id": "a49a497f-a117-4360-a465-89f395192e0e",
+      "project_id": "p",
+      "created_at": "2026-09-24T22:58:34.209001Z",
+      "parents": [],
+      "software": {
+        "chemdata-auditor": "0.3.0@eff3ed3c43ec71e9ceecabc1f04d1dfb5c91c116",
+        "cheme-ml-benchmarks": "0.1.0@db02d8963725a1d406b9b07eb6f4cc3436fbb082",
+        "scientific-evidence-engine": "0.1.0@09f5ec810e8f04bf8d233ec12eb9448342ee5121",
+        "experiment-failure-memory": "0.1.0@63492787cbbea6d03662db63f2d958a6eec8d804",
+        "workbench": "0.1.0"
+      },
+      "kind": "provenance",
+      "activity": "upload",
+      "inputs": [],
+      "outputs": [
+        "8ed56120-3e8e-4277-ae84-e59d67cb2ed8"
+      ],
+      "parameters": {
+        "source": {
+          "citation": "Synthetic",
+          "url": "Not supplied",
+          "license": "CC0",
+          "data_kind": "synthetic",
+          "transformations": "Generated"
+        }
+      }
+    }
+  ],
+  "job_index": {
+    "items": [
+      {
+        "id": "074dac02-2f36-4198-8824-55cf0f1cdc93",
+        "project_id": "p",
+        "kind": "audit",
+        "state": "queued",
+        "result_id": null,
+        "error": null,
+        "created_at": "2026-09-24T22:58:35.492120Z",
+        "started_at": null,
+        "finished_at": null,
+        "error_code": null,
+        "retry_of_job_id": null,
+        "deadline_at": null,
+        "external_receipt": null,
+        "run_links": [
+          {
+            "run_id": "96b2705b-9b1b-4e16-9dcb-c6e723539ef5",
+            "action_id": "f8e2c158-6c7f-4556-b521-cdc6105a15ec",
+            "ownership": "owned"
+          }
+        ],
+        "recovery": null
+      },
+      {
+        "id": "65906dff-d03f-44ed-a425-8421ad0a2002",
+        "project_id": "p",
+        "kind": "audit",
+        "state": "queued",
+        "result_id": null,
+        "error": null,
+        "created_at": "2026-09-24T22:58:34.445483Z",
+        "started_at": null,
+        "finished_at": null,
+        "error_code": null,
+        "retry_of_job_id": "d2144758-ab2a-47f9-9021-aa6c5eebe5e6",
+        "deadline_at": null,
+        "external_receipt": null,
+        "run_links": [],
+        "recovery": null
+      },
+      {
+        "id": "739d72dd-9fed-4741-9f42-bec3618bf130",
+        "project_id": "p",
+        "kind": "audit",
+        "state": "failed",
+        "result_id": null,
+        "error": "Operation did not complete; inspect its safe error code.",
+        "created_at": "2026-09-24T22:58:34.334596Z",
+        "started_at": "2026-09-24T22:58:34.351000Z",
+        "finished_at": "2026-09-24T22:58:34.357000Z",
+        "error_code": "ADMISSION_REJECTED",
+        "retry_of_job_id": null,
+        "deadline_at": "2026-09-24T22:59:04.351000Z",
+        "external_receipt": null,
+        "run_links": [],
+        "recovery": {
+          "state": "exhausted",
+          "eligible": false,
+          "attempts": 0,
+          "max_attempts": 3,
+          "retry_job_id": null,
+          "next_attempt_at": null,
+          "last_error_code": null
+        }
+      },
+      {
+        "id": "d2144758-ab2a-47f9-9021-aa6c5eebe5e6",
+        "project_id": "p",
+        "kind": "audit",
+        "state": "failed",
+        "result_id": null,
+        "error": "Operation did not complete; inspect its safe error code.",
+        "created_at": "2026-09-24T22:58:34.300715Z",
+        "started_at": "2026-09-24T22:58:34.316000Z",
+        "finished_at": "2026-09-24T22:58:34.326000Z",
+        "error_code": "WORKER_INTERRUPTED",
+        "retry_of_job_id": null,
+        "deadline_at": "2026-09-24T22:59:04.316000Z",
+        "external_receipt": null,
+        "run_links": [],
+        "recovery": {
+          "state": "completed",
+          "eligible": true,
+          "attempts": 1,
+          "max_attempts": 3,
+          "retry_job_id": "65906dff-d03f-44ed-a425-8421ad0a2002",
+          "next_attempt_at": null,
+          "last_error_code": null
+        }
+      }
+    ],
+    "next_cursor": null
+  }
+}

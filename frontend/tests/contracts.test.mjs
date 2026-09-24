@@ -32,9 +32,17 @@ test('B09 pages are bounded and reject private worker fields', () => {
       external_id: 'j', connector: 'sciml-workbench', state: 'unknown', request_sha256: 'a'.repeat(64),
       body_sha256: 'b'.repeat(64), attempts: 1, submitted_at: '2026-09-19T12:00:00Z',
       external_project_id: 'remote', external_record_id: null, artifact_id: null, reconciliation_required: true,
-    } };
+    }, run_links: [], recovery: null };
   assert.equal(validateJobDetail(job), true);
   assert.equal(validateJobDetail({ ...job, claim_token: 9 }), false);
+  // A09: run links and recovery decisions are closed shapes with no lease or policy internals.
+  const recovery = { state: 'pending', eligible: true, attempts: 1, max_attempts: 3, retry_job_id: null,
+    next_attempt_at: '2026-09-19T12:01:00Z', last_error_code: 'WORKER_INTERRUPTED' };
+  const linked = { ...job, run_links: [{ run_id: 'r', action_id: 'a', ownership: 'owned' }], recovery };
+  assert.equal(validateJobDetail(linked), true);
+  assert.equal(validateJobDetail({ ...linked, recovery: { ...recovery, lease_token: 'x' } }), false);
+  assert.equal(validateJobDetail({ ...linked, run_links: [{ run_id: 'r', action_id: 'a', ownership: 'borrowed' }] }), false);
+  assert.equal(validateJobDetail({ ...linked, recovery: { ...recovery, state: 'retrying' } }), false);
   assert.equal(validateJobPage({ items: [job], next_cursor: null }), true);
   assert.equal(validateJobPage({ items: Array(101).fill(job), next_cursor: null }), false);
   const summary = { id: 'a', project_id: 'p', kind: 'audit', schema_version: '1.0', created_at: job.created_at };

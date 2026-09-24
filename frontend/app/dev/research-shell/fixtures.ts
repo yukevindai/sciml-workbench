@@ -1,6 +1,6 @@
 import type { DatasetArtifact } from '../../lib/types';
 import type { ShellFixture } from '../../lib/shell-fixture';
-import { parseArtifacts, parseJobs, parseProjects } from '../../lib/decode';
+import { parseArtifacts, parseJobPage, parseProjects } from '../../lib/decode';
 
 const unknown = { origin: 'unknown', value: null, supporting_references: [], uncertainty: null } as const;
 const dataset = {
@@ -23,5 +23,5 @@ const sample = {
 
 export function shellFixture(empty: boolean): ShellFixture {
   const value = empty ? { projects: [], artifacts: [], jobs: [] } : sample;
-  return { projects: parseProjects(value.projects), artifacts: parseArtifacts(value.artifacts), jobs: parseJobs(value.jobs) };
+  return { projects: parseProjects(value.projects), artifacts: parseArtifacts(value.artifacts), jobs: parseJobPage({ items: value.jobs, next_cursor: null }).items };
 }

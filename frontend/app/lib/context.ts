@@ -1,5 +1,6 @@
 import type { Dispatch, SetStateAction } from 'react';
 import type { Workflow } from './pipeline';
+import type { OperationKind } from './submissions';
 import type {
   Artifact, AuditArtifact, BenchmarkPreview, DatasetArtifact, Job, Project, SplitArtifact,
 } from './types';
@@ -14,7 +15,12 @@ export type Workbench = {
   activeProject: Project | undefined;
 
   artifacts: Artifact[];
+  /** Newest first. */
   jobs: Job[];
+  /** True when older jobs exist beyond the loaded pages. */
+  jobsTruncated: boolean;
+  /** When project data was last read successfully (ISO time), or '' before the first read. */
+  lastUpdated: string;
   busy: boolean;
   /** True while any job is queued or running. */
   jobsActive: boolean;
@@ -22,8 +28,8 @@ export type Workbench = {
 
   /** Runs an action with busy/error/notice handling, then refreshes. */
   act: (fn: () => Promise<void>) => Promise<void>;
-  /** Queues a backend job for the active project. */
-  submit: (kind: string, payload?: object) => Promise<void>;
+  /** Queues a backend job for the active project, retaining its request key until the outcome is known. */
+  submit: (kind: OperationKind, payload?: object) => Promise<void>;
   setNotice: (message: string) => void;
 
   datasets: DatasetArtifact[];

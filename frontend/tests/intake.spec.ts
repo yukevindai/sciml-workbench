@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { jobPage } from './job-page';
 import path from 'node:path';
 
 test('ordinary uploads keep declarations unknown and retain the request key after a failed response', async ({ page }) => {
@@ -13,7 +14,7 @@ test('ordinary uploads keep declarations unknown and retain the request key afte
           media_type: 'text/csv', sha256: 'a'.repeat(64), dataset_id: 'dataset' } });
     }
     return route.fulfill({ json: request.url().endsWith('/projects')
-      ? [{ id: 'project', name: 'Upload test', description: '' }] : [] });
+      ? [{ id: 'project', name: 'Upload test', description: '' }] : request.url().includes('/job-index') ? jobPage() : [] });
   });
   await page.goto('/dataset-audit');
   const file = page.getByLabel('CSV file');

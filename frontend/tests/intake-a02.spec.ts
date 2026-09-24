@@ -1,4 +1,5 @@
 import { expect, test, type Page, type Route } from '@playwright/test';
+import { jobPage } from './job-page';
 import path from 'node:path';
 import { readFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
@@ -19,7 +20,7 @@ async function workspace(page: Page, override: (route: Route, pathname: string) 
     if (await override(route, pathname)) return;
     if (route.request().method() !== 'GET') throw new Error(`Unexpected mutation ${pathname}`);
     await route.fulfill({ json: pathname === '/api/projects' ? [project, other]
-      : pathname === '/api/projects/project/artifact-previews' ? artifacts : [] });
+      : pathname === '/api/projects/project/artifact-previews' ? artifacts : pathname.endsWith('/job-index') ? jobPage() : [] });
   });
 }
 

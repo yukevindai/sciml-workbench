@@ -1,4 +1,5 @@
 import { expect, test, type Page, type Route } from '@playwright/test';
+import { jobPage } from './job-page';
 import fixtures from './fixtures/evidence-reports.json';
 import { parseArtifactPreviews, parseEvidenceAnchors, parseEvidencePage, parseEvidenceSpan, parseJobs } from '../app/lib/decode';
 import { codePointSlice, evidenceHref, evidenceRecord, locateSpan } from '../app/lib/evidence';
@@ -41,7 +42,7 @@ async function workspace(page: Page, artifacts: Artifact[] = previews, override?
     }
     if (pathname === `${base}/evidence-spans/${ids.anchor}`) { await route.fulfill({ json: anchorSpan }); return; }
     await route.fulfill({ json: pathname === '/api/projects' ? [project]
-      : pathname.endsWith('/artifact-previews') ? artifacts : pathname.endsWith('/jobs') ? jobs
+      : pathname.endsWith('/artifact-previews') ? artifacts : pathname.endsWith('/job-index') ? jobPage(jobs)
         : pathname.endsWith('/research-materials') ? fixtures.materials : pathname.endsWith('/evidence-spans') ? anchors : [] });
   });
   return seen;

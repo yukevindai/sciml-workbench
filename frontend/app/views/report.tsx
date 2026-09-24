@@ -1,11 +1,9 @@
 'use client';
 
-import { useRef } from 'react';
 import Link from 'next/link';
 import { Check, Download, FileCheck } from 'lucide-react';
 import type { Workbench } from '../lib/context';
-import { api } from '../lib/api';
-import { parseJob } from '../lib/decode';
+import { submitOperation } from '../lib/submissions';
 import { reportHref } from '../lib/lineage';
 import { formatDate, shortId } from '../lib/format';
 import { kinds } from '../lib/types';
@@ -27,7 +25,6 @@ export function ReportView({ wb, requestedReportId }: { wb: Workbench; requested
   const exports = wb.jobs.filter(job => job.kind === 'report');
   const active = wb.jobs.filter(job => job.kind !== 'report' && (job.state === 'queued' || job.state === 'running'));
   const exporting = exports.some(job => job.state === 'queued' || job.state === 'running');
-  const key = useRef<string | null>(null);
 
   return <>
     <div className="split split--wide-first">
@@ -42,10 +39,8 @@ export function ReportView({ wb, requestedReportId }: { wb: Workbench; requested
             : exporting ? 'An export is in progress.' : `${wb.artifacts.filter(a => a.kind !== 'report').length} artifacts would be captured.`}</span>
           <button type="button" className="button" disabled={wb.busy || !wb.projectId || active.length > 0 || exporting || !wb.artifacts.length}
             onClick={() => void wb.act(async () => {
-              key.current ??= crypto.randomUUID();
-              const job = await api(`projects/${wb.projectId}/report`, parseJob, { method: 'POST', headers: { 'Idempotency-Key': key.current } });
-              if (job.project_id !== wb.projectId || job.kind !== 'report') throw new Error('The server returned a different job.');
-              key.current = null;
+              // One retained key until the server answers, so a retry after a lost response is the same export.
+              await submitOperation(wb.projectId, 'report');
               wb.setNotice('Export accepted. The archive appears below once assembled and structurally verified.');
             })}>
             <FileCheck size={15} aria-hidden="true" />Export project
