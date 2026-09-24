@@ -26,6 +26,7 @@ Migration **0005** creates `evaluations`, `evaluation_jobs`, `test_exposures` an
 | Agent raw artifact JSON, predictions, bundles, raw datasets, reports | Denied; use typed evaluation/evidence services |
 | Agent indexes / job detail | Scoped metadata and fixed safe operational fields; no opaque scientific output or error strings |
 | Evidence references | Scoped exact excerpts through C11; no unrestricted artifact/bundle retrieval |
+| Manual artifact previews (A05 workspace listing) | Benchmarks as `BenchmarkPreview`: allowlisted validation scalars/method, no test output, no exposure recorded; failure and claim records still expose their dependencies |
 | Manual artifact lists/details | Complete compatible artifacts, with exposure recorded for benchmark dependencies |
 | Manual original/bundle/report/material downloads | Exposure recorded, including raw-data wildcard exposure |
 | Legacy/human Failure Memory imports | Conservative exposure before upstream IO; the independent upstream app is outside the workbench read boundary |
@@ -33,10 +34,20 @@ Migration **0005** creates `evaluations`, `evaluation_jobs`, `test_exposures` an
 
 Manual HTTP reads commit exposure **before returning content**. Commit failure returns an error without result bytes. Trusted service callers must likewise commit their transaction before using the returned projection outside the backend. Internal scientific adapters and `LocalStore` are privileged IO/computation facilities, not model-facing retrieval tools. E03/E09/E14 must consume these scoped services for tool results, memory, reviewer context and traces; no provider runtime is enabled by this ticket.
 
-The scalar projection includes MAE, RMSE, RÂ², group MAE/RMSE and row/group counts when actually present. Arbitrary diagnostics, text, predictions, raw configuration and interval arrays are excluded. Complete upstream uncertainty outputs remain in the original artifact and bundle behind manual exposure tracking. This is a narrower view with its own identity, not a rewritten scientific artifact.
+The scalar projection includes MAE, RMSE, R², group MAE/RMSE and row/group counts when actually present. Arbitrary diagnostics, text, predictions, raw configuration and interval arrays are excluded. Complete upstream uncertainty outputs remain in the original artifact and bundle behind manual exposure tracking. This is a narrower view with its own identity, not a rewritten scientific artifact.
 
 `GET /api/v1/projects/{pid}/evaluations/{protocol_id}` returns current release/exposure status. The original protocol artifact records the **seal-time snapshot**, not mutable current eligibility. Exposure after a valid completed comparison does not change its metrics, but prevents claims of a fresh untouched holdout for subsequent tuning. Agent status views do not reveal out-of-scope exposure event IDs.
 
 Reports capture evaluation status and exposure history at their frozen capture time and include named evidence anchors. Later reads can add exposure; an old report's unexposed snapshot is not current authorization. Claim, outcome, raw report and live-memory access cannot bypass the selection boundary.
 
-Capabilities now use schema version **1.1**, advertise tracked quarantine, and retain `validation_only_execution: false`. Strict clients must use regenerated contracts. B11 run persistence, E03 tool wrappers, E09 memory policy, E14 provider egress and A05 reveal controls remain their respective integration work; current manual pages already return full results and therefore record exposure on normal reads.
+Capabilities now use schema version **1.1**, advertise tracked quarantine, and retain `validation_only_execution: false`. Strict clients must use regenerated contracts. B11 run persistence, E03 tool wrappers, E09 memory policy and E14 provider egress remain their respective integration work. A05 moved the manual workspace listing to withheld previews; see below.
+
+## Manual previews and explicit reveal (A05)
+
+`GET /api/v1/projects/{pid}/artifact-previews` is the workspace listing used by the browser. It returns the same artifacts as `/artifacts`, except every benchmark becomes a `BenchmarkPreview`: identity, lineage, status, safe error, submitted task card, bound sealed-comparison IDs, allowlisted finite validation scalars, validation-time method facts (name, seed, selected parameters, validation grid, training description), verification scope, current holdout exposure status and bundle availability. Test metrics, intervals, predictions, the bundle key and upstream run/prediction digests (which are computed over test output) are omitted. Building a preview records no exposure, so polling the workspace no longer marks every holdout as exposed.
+
+Failure and claim-set records can carry holdout values, so the preview listing still exposes their dependencies (`via = artifact_preview_list`) and commits before returning. Other kinds carry no benchmark result values and record nothing. Agent scopes are denied; they keep using the typed evaluation projection.
+
+Test output is available only through the existing complete artifact detail (`artifact_detail`) or download, both of which commit exposure before returning content. The Benchmarks view requires a per-run confirmation before that read and states whether it is the first exposure. Bundle downloads additionally record raw-data exposure because the bundle contains the dataset and predictions. `/artifacts` is unchanged for compatibility and still records exposure for every listed benchmark.
+
+A browser listing that contains a complete benchmark fails generated validation instead of being rendered. The preview is a projection with its own contract (`records/v1/benchmark_preview.json`), not a rewritten scientific artifact.

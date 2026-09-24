@@ -1,5 +1,5 @@
 import {
-  validateArtifactsResponse, validateIntakeArtifact, validateMaterialResponse, validateLegacyJobResponse,
+  validateArtifactPreviews, validateArtifactsResponse, validateEvaluationStatusView, validateIntakeArtifact, validateMaterialResponse, validateLegacyJobResponse,
   validateJobsResponse, validateProjectResponse, validateProjectsResponse, validateResearchRuns,
 } from './generated/validators.cjs';
 
@@ -21,6 +21,8 @@ export const parseProjects = decoder(validateProjectsResponse);
 export const parseProject = decoder(validateProjectResponse);
 export const parseArtifacts = decoder(validateArtifactsResponse);
 export const parseArtifact = decoder(validateIntakeArtifact);
+export const parseArtifactPreviews = decoder(validateArtifactPreviews);
+export const parseEvaluationStatus = decoder(validateEvaluationStatusView);
 export const parseJobs = decoder(validateJobsResponse);
 export const parseJob = decoder(validateLegacyJobResponse);
 export const parseResearchRuns = decoder(validateResearchRuns);

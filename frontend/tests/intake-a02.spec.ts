@@ -19,7 +19,7 @@ async function workspace(page: Page, override: (route: Route, pathname: string) 
     if (await override(route, pathname)) return;
     if (route.request().method() !== 'GET') throw new Error(`Unexpected mutation ${pathname}`);
     await route.fulfill({ json: pathname === '/api/projects' ? [project, other]
-      : pathname === '/api/projects/project/artifacts' ? artifacts : [] });
+      : pathname === '/api/projects/project/artifact-previews' ? artifacts : [] });
   });
 }
 

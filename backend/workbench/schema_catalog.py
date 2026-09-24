@@ -10,7 +10,7 @@ from .contract_registry import LEGACY_MODELS, NEW_ARTIFACT_MODELS, VersionedArti
 from .http_contracts import JobResponse, LegacyJobResponse, ProjectResponse, IntakeArtifact, MaterialResponse
 
 from .read_contracts import Capabilities, ExternalReceiptProjection, JobDetail, JobPage, ArtifactPage, ArtifactSummary
-from .read_contracts import EvaluationStatusView, EvaluationView
+from .read_contracts import ArtifactPreview, BenchmarkPreview, EvaluationStatusView, EvaluationView
 from .agent_http_contracts import RunDetail, RunResult
 
 BASE_URI = "https://sciml-workbench.local/contracts"
@@ -19,6 +19,7 @@ RECORD_TYPES = {
     "run_result": RunResult,
     "evaluation_status_view": EvaluationStatusView,
     "evaluation_view": EvaluationView,
+    "benchmark_preview": BenchmarkPreview,
     "evidence_reference": s.EvidenceReference,
     "metric_reference": s.MetricReference,
     "failure_receipt": s.FailureReceipt,
@@ -74,6 +75,7 @@ HTTP_RESPONSE_TYPES = {
     "LegacyArtifact": legacy.Artifact,
     "ArtifactsResponse": list[IntakeArtifact],
     "IntakeArtifact": IntakeArtifact,
+    "ArtifactPreviews": list[ArtifactPreview],
     "MaterialResponse": MaterialResponse,
     "Capabilities": Capabilities,
     "JobDetail": JobDetail,

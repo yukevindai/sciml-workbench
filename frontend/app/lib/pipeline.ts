@@ -111,7 +111,7 @@ export function deriveWorkflow(artifacts: Artifact[], hasProject: boolean): Work
   const datasets = kinds(artifacts, 'dataset');
   const audits = kinds(artifacts, 'audit');
   const splits = kinds(artifacts, 'split');
-  const runs = kinds(artifacts, 'benchmark');
+  const runs = kinds(artifacts, 'benchmark_preview');
   const failures = kinds(artifacts, 'failure');
   const reports = kinds(artifacts, 'report');
   const evidence = kinds(artifacts, 'evidence');

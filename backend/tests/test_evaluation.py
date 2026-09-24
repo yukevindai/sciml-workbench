@@ -226,7 +226,7 @@ def test_http_exposure_commit_failure_returns_no_result(comparison):
     try:
         with TestClient(app, raise_server_exceptions=False) as client:
             client.headers["Authorization"] = "Bearer " + service.settings.api_token.get_secret_value()
-            for path in (f"artifacts/{bench.id}", "artifacts", f"artifacts/{bench.id}/download"):
+            for path in (f"artifacts/{bench.id}", "artifacts", "artifact-previews", f"artifacts/{bench.id}/download"):
                 response = client.get(f"/api/v1/projects/p/{path}")
                 assert response.status_code == 500
                 assert "987654321" not in response.text and "quarantined-test-predictions" not in response.text
@@ -301,9 +301,81 @@ def test_real_upstream_full_result_is_quarantined_until_release(env):
     with db.session.begin() as session:
         final = ReadService("secret").artifact(session, replace(agent, purpose="final"), bench.id)
         assert final["metrics"]["test"] == {k: v for k, v in bench.result["metrics"]["test"].items() if k in SCALAR_METRICS}
+    preview = next(v for v in client.get(f"/api/v1/projects/{pid}/artifact-previews").json() if v["id"] == bench.id)
+    assert preview["kind"] == "benchmark_preview" and preview["test_results"] == "withheld"
+    assert preview["validation_metrics"] == view["metrics"]["validation"] and preview["protocol_ids"] == [protocol.id]
+    assert preview["method"]["validation_search"] and preview["method"]["name"] == "ridge"
+    assert "run_id" not in preview and "prediction_sha256" not in json.dumps(preview)
     # Every legacy manual path retains compatibility and persists disclosure.
     for path in (f"artifacts/{bench.id}", "artifacts", f"artifacts/{bench.id}/download", f"evaluations/{protocol.id}"):
         response = client.get(f"/api/v1/projects/{pid}/{path}")
         assert response.status_code == 200, response.text
     with db.session() as session:
         assert {e.via for e in session.scalars(select(ExposureRow))} >= {"agent_final", "artifact_detail", "artifact_list", "artifact_download"}
+
+
+def manual_client(service):
+    from fastapi.testclient import TestClient
+    from workbench.api import create_app
+    client = TestClient(create_app(service.settings))
+    client.headers["Authorization"] = "Bearer " + service.settings.api_token.get_secret_value()
+    return client
+
+
+def exposures(service):
+    with service.db.session() as session:
+        return [row.via for row in session.scalars(select(ExposureRow))]
+
+
+def test_manual_previews_withhold_test_output_until_explicit_reveal(comparison):
+    service, scope, protocol = comparison
+    _, bench = finish_candidate(service, scope, protocol)
+    with manual_client(service) as client:
+        response = client.get("/api/v1/projects/p/artifact-previews")
+        assert response.status_code == 200, response.text
+        assert "987654321" not in response.text and "canary" not in response.text and "bundle_key" not in response.text
+        preview = next(v for v in response.json() if v["id"] == bench.id)
+        assert preview["kind"] == "benchmark_preview" and preview["test_results"] == "withheld"
+        assert preview["validation_metrics"] == {"rmse": 1.25} and preview["method"] is None
+        assert preview["protocol_ids"] == [protocol.id] and preview["holdout_exposure"] == "unexposed"
+        assert preview["bundle_available"] and preview["config"]["model"] == "mean"
+        assert exposures(service) == []
+        with service.db.session() as session:
+            assert evaluation_status(session, scope, protocol.id)["clean_holdout_eligible"]
+        # The complete detail is the explicit reveal and records exposure before returning.
+        revealed = client.get(f"/api/v1/projects/p/artifacts/{bench.id}")
+        assert revealed.status_code == 200 and "987654321" in revealed.text
+        assert exposures(service) == ["artifact_detail"]
+        again = next(v for v in client.get("/api/v1/projects/p/artifact-previews").json() if v["id"] == bench.id)
+        assert again["holdout_exposure"] == "exposed" and again["test_results"] == "withheld"
+        assert exposures(service) == ["artifact_detail"]
+
+
+def test_previews_keep_failed_runs_honest_and_expose_outcome_records(comparison):
+    from workbench.contracts import Failure
+    service, scope, protocol = comparison
+    _, bench = finish_candidate(service, scope, protocol)
+    with service.db.session.begin() as session:
+        failed = save(session, Benchmark(project_id="p", parents=bench.parents, dataset_id=bench.dataset_id,
+            split_id=bench.split_id, model="ridge", seed=0, config=bench.config, status="failed",
+            error="Admission rejected: undeclared unit"))
+    with manual_client(service) as client:
+        values = {v["id"]: v for v in client.get("/api/v1/projects/p/artifact-previews").json()}
+        assert values[failed.id]["test_results"] == "not_produced" and values[failed.id]["validation_metrics"] is None
+        assert values[failed.id]["error"] == "Admission rejected: undeclared unit" and values[failed.id]["protocol_ids"] == []
+        assert exposures(service) == []
+        with service.db.session.begin() as session:
+            save(session, Failure(project_id="p", parents=[bench.id], benchmark_id=bench.id, external_project_id="x",
+                external_record_id="y", reason="Missed objective", record={"test_rmse": 987654321}))
+        response = client.get("/api/v1/projects/p/artifact-previews")
+        assert response.status_code == 200 and "987654321" in response.text
+        assert exposures(service) == ["artifact_preview_list"]
+
+
+def test_agent_scope_cannot_use_manual_previews(comparison):
+    service, scope, protocol = comparison
+    finish_candidate(service, scope, protocol)
+    with service.db.session() as session:
+        with pytest.raises(DomainError) as error:
+            ReadService("secret").artifact_previews(session, read_scope(service, scope, protocol))
+        assert error.value.status == 403

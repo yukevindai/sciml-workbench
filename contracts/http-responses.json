@@ -426,6 +426,273 @@
       "title": "Benchmark",
       "type": "object"
     },
+    "BenchmarkMethodPreview": {
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Name"
+        },
+        "seed": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Seed"
+        },
+        "parameters": {
+          "anyOf": [
+            {
+              "additionalProperties": {
+                "$ref": "#/$defs/JsonValue"
+              },
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Parameters"
+        },
+        "validation_search": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/$defs/ValidationSearchPreview"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Validation Search"
+        },
+        "training_description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Training Description"
+        }
+      },
+      "required": [
+        "name",
+        "seed",
+        "parameters",
+        "validation_search",
+        "training_description"
+      ],
+      "title": "BenchmarkMethodPreview",
+      "type": "object"
+    },
+    "BenchmarkPreview": {
+      "additionalProperties": false,
+      "description": "Manual list projection of a benchmark. Test-partition output is withheld and\nthe projection itself records no holdout exposure; the complete artifact detail\nremains the explicit, exposure-recording reveal path.",
+      "properties": {
+        "kind": {
+          "const": "benchmark_preview",
+          "default": "benchmark_preview",
+          "title": "Kind",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "1.0",
+          "default": "1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "project_id": {
+          "title": "Project Id",
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        },
+        "parents": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Parents",
+          "type": "array"
+        },
+        "software": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "title": "Software",
+          "type": "object"
+        },
+        "dataset_id": {
+          "title": "Dataset Id",
+          "type": "string"
+        },
+        "split_id": {
+          "title": "Split Id",
+          "type": "string"
+        },
+        "model": {
+          "enum": [
+            "mean",
+            "ridge"
+          ],
+          "title": "Model",
+          "type": "string"
+        },
+        "seed": {
+          "title": "Seed",
+          "type": "integer"
+        },
+        "status": {
+          "enum": [
+            "succeeded",
+            "failed"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "error": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Error"
+        },
+        "config": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Config",
+          "type": "object"
+        },
+        "protocol_ids": {
+          "items": {
+            "maxLength": 160,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Protocol Ids",
+          "type": "array"
+        },
+        "validation_metrics": {
+          "anyOf": [
+            {
+              "additionalProperties": {
+                "type": "number"
+              },
+              "propertyNames": {
+                "enum": [
+                  "mae",
+                  "rmse",
+                  "r2",
+                  "group_mae",
+                  "group_rmse",
+                  "rows",
+                  "groups"
+                ]
+              },
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Validation Metrics"
+        },
+        "method": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/BenchmarkMethodPreview"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "verification_scope": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Verification Scope"
+        },
+        "test_results": {
+          "enum": [
+            "withheld",
+            "not_produced"
+          ],
+          "title": "Test Results",
+          "type": "string"
+        },
+        "holdout_exposure": {
+          "enum": [
+            "unexposed",
+            "exposed",
+            "unknown"
+          ],
+          "title": "Holdout Exposure",
+          "type": "string"
+        },
+        "bundle_available": {
+          "title": "Bundle Available",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "kind",
+        "schema_version",
+        "id",
+        "project_id",
+        "created_at",
+        "parents",
+        "software",
+        "dataset_id",
+        "split_id",
+        "model",
+        "seed",
+        "status",
+        "error",
+        "config",
+        "protocol_ids",
+        "validation_metrics",
+        "method",
+        "verification_scope",
+        "test_results",
+        "holdout_exposure",
+        "bundle_available"
+      ],
+      "title": "BenchmarkPreview",
+      "type": "object"
+    },
     "Capabilities": {
       "additionalProperties": false,
       "properties": {
@@ -5387,6 +5654,28 @@
       "title": "UserDeclaration[list[Annotated[str, StringConstraints]]]",
       "type": "object"
     },
+    "ValidationSearchPreview": {
+      "additionalProperties": false,
+      "properties": {
+        "parameters": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Parameters",
+          "type": "object"
+        },
+        "validation_primary": {
+          "title": "Validation Primary",
+          "type": "number"
+        }
+      },
+      "required": [
+        "parameters",
+        "validation_primary"
+      ],
+      "title": "ValidationSearchPreview",
+      "type": "object"
+    },
     "ProjectsResponse": {
       "type": "array",
       "items": {
@@ -5661,6 +5950,118 @@
         }
       }
     },
+    "ArtifactPreviews": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "oneOf": [
+              {
+                "$ref": "#/$defs/Dataset"
+              },
+              {
+                "$ref": "#/$defs/DatasetV2"
+              }
+            ],
+            "discriminator": {
+              "propertyName": "schema_version",
+              "mapping": {
+                "1.0": "#/$defs/Dataset",
+                "2.0": "#/$defs/DatasetV2"
+              }
+            }
+          },
+          {
+            "$ref": "#/$defs/Audit"
+          },
+          {
+            "$ref": "#/$defs/Split"
+          },
+          {
+            "$ref": "#/$defs/BenchmarkPreview"
+          },
+          {
+            "$ref": "#/$defs/Evidence"
+          },
+          {
+            "oneOf": [
+              {
+                "$ref": "#/$defs/Failure"
+              },
+              {
+                "$ref": "#/$defs/FailureV2"
+              }
+            ],
+            "discriminator": {
+              "propertyName": "schema_version",
+              "mapping": {
+                "1.0": "#/$defs/Failure",
+                "2.0": "#/$defs/FailureV2"
+              }
+            }
+          },
+          {
+            "$ref": "#/$defs/Provenance"
+          },
+          {
+            "$ref": "#/$defs/Report"
+          },
+          {
+            "$ref": "#/$defs/EvaluationProtocol"
+          },
+          {
+            "$ref": "#/$defs/ClaimSet"
+          }
+        ],
+        "discriminator": {
+          "propertyName": "kind",
+          "mapping": {
+            "dataset": {
+              "oneOf": [
+                {
+                  "$ref": "#/$defs/Dataset"
+                },
+                {
+                  "$ref": "#/$defs/DatasetV2"
+                }
+              ],
+              "discriminator": {
+                "propertyName": "schema_version",
+                "mapping": {
+                  "1.0": "#/$defs/Dataset",
+                  "2.0": "#/$defs/DatasetV2"
+                }
+              }
+            },
+            "audit": "#/$defs/Audit",
+            "split": "#/$defs/Split",
+            "benchmark_preview": "#/$defs/BenchmarkPreview",
+            "evidence": "#/$defs/Evidence",
+            "failure": {
+              "oneOf": [
+                {
+                  "$ref": "#/$defs/Failure"
+                },
+                {
+                  "$ref": "#/$defs/FailureV2"
+                }
+              ],
+              "discriminator": {
+                "propertyName": "schema_version",
+                "mapping": {
+                  "1.0": "#/$defs/Failure",
+                  "2.0": "#/$defs/FailureV2"
+                }
+              }
+            },
+            "provenance": "#/$defs/Provenance",
+            "report": "#/$defs/Report",
+            "evaluation_protocol": "#/$defs/EvaluationProtocol",
+            "claim_set": "#/$defs/ClaimSet"
+          }
+        }
+      }
+    },
     "ResearchRuns": {
       "type": "array",
       "items": {
@@ -5704,6 +6105,9 @@
     },
     {
       "$ref": "#/$defs/IntakeArtifact"
+    },
+    {
+      "$ref": "#/$defs/ArtifactPreviews"
     },
     {
       "$ref": "#/$defs/MaterialResponse"

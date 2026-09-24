@@ -31,7 +31,7 @@ from .artifacts import ArtifactResolver
 from .capabilities import capabilities
 from .projections import ReadScope, ReadService, safe_job_fields
 from .read_contracts import Capabilities, JobDetail, JobPage, ArtifactPage
-from .read_contracts import EvaluationStatusView
+from .read_contracts import ArtifactPreview, EvaluationStatusView
 
 
 def job_json(j):
@@ -209,6 +209,12 @@ def create_app(settings=None):
         for value in values:
             expose_artifact(s, pid, value, via="artifact_list")
         s.commit()  # Exposure must be durable before any result leaves the server.
+        return values
+
+    @app.get("/api/v1/projects/{pid}/artifact-previews", dependencies=protected, response_model=list[ArtifactPreview])
+    def artifact_previews(pid: str, s=Depends(session)):
+        values = reads.artifact_previews(s, ReadScope(pid))
+        s.commit()  # Any recorded exposure must be durable before content leaves the server.
         return values
 
     @app.get("/api/v1/projects/{pid}/artifacts/{aid}", dependencies=protected, response_model=IntakeArtifact)

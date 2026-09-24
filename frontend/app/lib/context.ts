@@ -1,7 +1,7 @@
 import type { Dispatch, SetStateAction } from 'react';
 import type { Workflow } from './pipeline';
 import type {
-  Artifact, AuditArtifact, BenchmarkArtifact, DatasetArtifact, Job, Project, SplitArtifact,
+  Artifact, AuditArtifact, BenchmarkPreview, DatasetArtifact, Job, Project, SplitArtifact,
 } from './types';
 
 /** Everything a view needs. Assembled once in the Workbench shell so each view
@@ -36,7 +36,8 @@ export type Workbench = {
   selectedSplit: SplitArtifact | undefined;
   setSplitId: (id: string) => void;
 
-  runs: BenchmarkArtifact[];
-  selectedRun: BenchmarkArtifact | undefined;
+  /** Project-wide benchmark previews; test output is never part of a preview. */
+  runs: BenchmarkPreview[];
+  selectedRun: BenchmarkPreview | undefined;
   setRunId: (id: string) => void;
 };

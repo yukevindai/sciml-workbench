@@ -33,9 +33,3 @@ export function auditFindings(result: Record<string, unknown>): AuditFinding[] |
   }
   return findings;
 }
-
-export function metricPartition(result: Record<string, unknown>, partition: string): Record<string, unknown> | null {
-  if (!record(result.metrics)) return null;
-  const values = result.metrics[partition];
-  return record(values) ? values : null;
-}

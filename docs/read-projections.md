@@ -7,6 +7,7 @@ The manual read surface is implemented. B09's C12 prerequisite is not present: e
 | Route | Response |
 |---|---|
 | `GET /api/v1/capabilities` | Integrated model/strategy options, runtime-readable/writable artifact versions, pinned dependencies, nonsecret configured limits and explicit gaps. |
+| `GET /api/v1/projects/{p}/artifact-previews` | Workspace listing with benchmarks as test-withheld `BenchmarkPreview` projections (A05); see [evaluation exposure](evaluation-exposure.md). |
 | `GET /api/v1/projects/{p}/artifact-index` | `ArtifactPage`: lightweight identity, kind, schema version and creation time. |
 | `GET /api/v1/projects/{p}/job-index` | `JobPage`: safe job details and optional external-receipt projections. |
 | `GET /api/v1/projects/{p}/jobs/{j}` | One project-scoped `JobDetail`, including a receipt when journaled. |

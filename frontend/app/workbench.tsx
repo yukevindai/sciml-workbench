@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { api, json } from './lib/api';
-import { parseArtifacts, parseJobs, parseProjects, parseJob } from './lib/decode';
+import { parseArtifactPreviews, parseJobs, parseProjects, parseJob } from './lib/decode';
 import { deriveWorkflow, navItem, type View } from './lib/pipeline';
 import type { Workbench as WorkbenchModel } from './lib/context';
 import { kinds, type Artifact, type Job, type Project } from './lib/types';
@@ -25,7 +25,7 @@ import { ReportView } from './views/report';
 const PROJECT_STORAGE_KEY = 'sciml-project';
 const POLL_INTERVAL = 2500;
 
-export default function Workbench({ view, fixture, children, requestedProjectId, requestedAuditId, requestedSplitId }: { view: View; fixture?: ShellFixture; children?: ReactNode; requestedProjectId?: string; requestedAuditId?: string; requestedSplitId?: string }) {
+export default function Workbench({ view, fixture, children, requestedProjectId, requestedAuditId, requestedSplitId, requestedBenchmarkId }: { view: View; fixture?: ShellFixture; children?: ReactNode; requestedProjectId?: string; requestedAuditId?: string; requestedSplitId?: string; requestedBenchmarkId?: string }) {
   const [projects, setProjects] = useState<Project[]>(fixture?.projects ?? []);
   const [projectId, updateProjectId] = useState(fixture?.projects[0]?.id ?? '');
   const [artifacts, setArtifacts] = useState<Artifact[]>(fixture?.artifacts ?? []);
@@ -47,6 +47,7 @@ export default function Workbench({ view, fixture, children, requestedProjectId,
   const actionInFlight = useRef(false);
   const auditLinkApplied = useRef(false);
   const splitLinkApplied = useRef(false);
+  const benchmarkLinkApplied = useRef(false);
 
   const setProjectId = useCallback((id: string) => {
     if (fixture || activeProject.current === id) return;
@@ -71,7 +72,7 @@ export default function Workbench({ view, fixture, children, requestedProjectId,
     const current = () => activeProject.current === projectId && requestSequence.current === sequence;
     try {
       const [nextArtifacts, nextJobs] = await Promise.all([
-        api(`projects/${projectId}/artifacts`, parseArtifacts),
+        api(`projects/${projectId}/artifact-previews`, parseArtifactPreviews),
         api(`projects/${projectId}/jobs`, parseJobs),
       ]);
       if (!current()) return;
@@ -85,6 +86,13 @@ export default function Workbench({ view, fixture, children, requestedProjectId,
         if (split) {
           setDatasetId(split.dataset_id); setSplitId(split.id);
           splitLinkApplied.current = true;
+        }
+      }
+      if (requestedBenchmarkId && projectId === requestedProjectId && !benchmarkLinkApplied.current) {
+        const run = kinds(nextArtifacts, 'benchmark_preview').find(value => value.id === requestedBenchmarkId);
+        if (run) {
+          setDatasetId(run.dataset_id); setSplitId(run.split_id); setRunId(run.id);
+          benchmarkLinkApplied.current = true;
         }
       }
       if (requestedAuditId && projectId === requestedProjectId && !auditLinkApplied.current) {
@@ -101,7 +109,7 @@ export default function Workbench({ view, fixture, children, requestedProjectId,
     } finally {
       if (current()) setProjectLoading(false);
     }
-  }, [projectId, fixture, requestedAuditId, requestedSplitId, requestedProjectId, setDatasetId]);
+  }, [projectId, fixture, requestedAuditId, requestedSplitId, requestedBenchmarkId, requestedProjectId, setDatasetId]);
 
   useEffect(() => {
     if (fixture) return;
@@ -164,7 +172,7 @@ export default function Workbench({ view, fixture, children, requestedProjectId,
     const selectedDataset = datasets.find(d => d.id === datasetId) ?? datasets.at(-1);
     const partitions = kinds(artifacts, 'split').filter(s => s.dataset_id === selectedDataset?.id);
     const selectedSplit = partitions.find(s => s.id === splitId) ?? partitions.at(-1);
-    const runs = kinds(artifacts, 'benchmark');
+    const runs = kinds(artifacts, 'benchmark_preview');
     const selectedRun = runs.find(r => r.id === runId) ?? runs.at(-1);
 
     return {
@@ -245,7 +253,7 @@ export default function Workbench({ view, fixture, children, requestedProjectId,
               {view === 'projects' && <ProjectsView wb={model} />}
               {view === 'dataset-audit' && <AuditView key={projectId} wb={model} requestedAuditId={projectId === requestedProjectId ? requestedAuditId : undefined} />}
               {view === 'split-designer' && <SplitView wb={model} requestedSplitId={projectId === requestedProjectId ? requestedSplitId : undefined} />}
-              {view === 'benchmark' && <BenchmarkView wb={model} />}
+              {view === 'benchmark' && <BenchmarkView key={projectId} wb={model} requestedBenchmarkId={projectId === requestedProjectId ? requestedBenchmarkId : undefined} />}
               {view === 'failure-memory' && <FailureMemoryView wb={model} />}
               {view === 'evidence' && <EvidenceView wb={model} />}
               {view === 'provenance' && <ProvenanceView wb={model} />}

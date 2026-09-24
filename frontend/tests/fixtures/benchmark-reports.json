@@ -1,0 +1,1430 @@
+{
+  "previews": [
+    {
+      "schema_version": "1.0",
+      "id": "1b9594d7-ea8e-4f17-8756-b7a978674dbe",
+      "project_id": "291706d2-695b-4902-99f2-ab8e891b6322",
+      "created_at": "2026-09-24T04:25:13.634717Z",
+      "parents": [],
+      "software": {
+        "chemdata-auditor": "0.3.0@eff3ed3c43ec71e9ceecabc1f04d1dfb5c91c116",
+        "cheme-ml-benchmarks": "0.1.0@db02d8963725a1d406b9b07eb6f4cc3436fbb082",
+        "scientific-evidence-engine": "0.1.0@09f5ec810e8f04bf8d233ec12eb9448342ee5121",
+        "experiment-failure-memory": "0.1.0@63492787cbbea6d03662db63f2d958a6eec8d804",
+        "workbench": "0.1.0"
+      },
+      "kind": "dataset",
+      "filename": "demo.csv",
+      "blob_key": "aa0e1db7ba154779d11787120c4ea7dd87aab22d8a8fbd1e4a5b1446507afe3c",
+      "sha256": "aa0e1db7ba154779d11787120c4ea7dd87aab22d8a8fbd1e4a5b1446507afe3c",
+      "rows": 60,
+      "columns": [
+        "row_id",
+        "group_id",
+        "source_id",
+        "temperature",
+        "response"
+      ],
+      "source": {
+        "citation": "Workbench synthetic demonstration",
+        "url": "Not applicable: generated fixture",
+        "license": "CC0-1.0",
+        "data_kind": "synthetic",
+        "transformations": "Deterministic toy fixture; no empirical claims."
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "id": "88e2158e-1325-49ed-a2e8-7864f8ad62c5",
+      "project_id": "291706d2-695b-4902-99f2-ab8e891b6322",
+      "created_at": "2026-09-24T04:25:13.648764Z",
+      "parents": [],
+      "software": {
+        "chemdata-auditor": "0.3.0@eff3ed3c43ec71e9ceecabc1f04d1dfb5c91c116",
+        "cheme-ml-benchmarks": "0.1.0@db02d8963725a1d406b9b07eb6f4cc3436fbb082",
+        "scientific-evidence-engine": "0.1.0@09f5ec810e8f04bf8d233ec12eb9448342ee5121",
+        "experiment-failure-memory": "0.1.0@63492787cbbea6d03662db63f2d958a6eec8d804",
+        "workbench": "0.1.0"
+      },
+      "kind": "provenance",
+      "activity": "upload",
+      "inputs": [],
+      "outputs": [
+        "1b9594d7-ea8e-4f17-8756-b7a978674dbe"
+      ],
+      "parameters": {
+        "source": {
+          "citation": "Workbench synthetic demonstration",
+          "url": "Not applicable: generated fixture",
+          "license": "CC0-1.0",
+          "data_kind": "synthetic",
+          "transformations": "Deterministic toy fixture; no empirical claims."
+        }
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "id": "a3d867f3-93c5-48e1-b745-ec5a78937c0a",
+      "project_id": "291706d2-695b-4902-99f2-ab8e891b6322",
+      "created_at": "2026-09-24T04:25:16.941978Z",
+      "parents": [
+        "1b9594d7-ea8e-4f17-8756-b7a978674dbe"
+      ],
+      "software": {
+        "chemdata-auditor": "0.3.0@eff3ed3c43ec71e9ceecabc1f04d1dfb5c91c116",
+        "cheme-ml-benchmarks": "0.1.0@db02d8963725a1d406b9b07eb6f4cc3436fbb082",
+        "scientific-evidence-engine": "0.1.0@09f5ec810e8f04bf8d233ec12eb9448342ee5121",
+        "experiment-failure-memory": "0.1.0@63492787cbbea6d03662db63f2d958a6eec8d804",
+        "workbench": "0.1.0"
+      },
+      "kind": "audit",
+      "dataset_id": "1b9594d7-ea8e-4f17-8756-b7a978674dbe",
+      "config": {
+        "numeric_columns": [
+          "temperature",
+          "response"
+        ],
+        "feature_columns": [
+          "temperature"
+        ],
+        "target_column": "response",
+        "provenance_columns": [
+          "source_id",
+          "group_id"
+        ]
+      },
+      "result": {
+        "n_rows": 60,
+        "findings": [
+          {
+            "code": "constant_column",
+            "severity": "info",
+            "columns": [
+              "source_id"
+            ],
+            "rows": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8,
+              9,
+              10,
+              11,
+              12,
+              13,
+              14,
+              15,
+              16,
+              17,
+              18,
+              19,
+              20,
+              21,
+              22,
+              23,
+              24,
+              25,
+              26,
+              27,
+              28,
+              29,
+              30,
+              31,
+              32,
+              33,
+              34,
+              35,
+              36,
+              37,
+              38,
+              39,
+              40,
+              41,
+              42,
+              43,
+              44,
+              45,
+              46,
+              47,
+              48,
+              49,
+              50,
+              51,
+              52,
+              53,
+              54,
+              55,
+              56,
+              57,
+              58,
+              59
+            ],
+            "message": "Column has one observed value.",
+            "suggestion": "Keep useful metadata; avoid treating a constant feature as predictive evidence.",
+            "details": {
+              "affected_count": 60,
+              "raw_examples": [
+                {
+                  "source_id": "synthetic-fixture"
+                },
+                {
+                  "source_id": "synthetic-fixture"
+                },
+                {
+                  "source_id": "synthetic-fixture"
+                },
+                {
+                  "source_id": "synthetic-fixture"
+                },
+                {
+                  "source_id": "synthetic-fixture"
+                },
+                {
+                  "source_id": "synthetic-fixture"
+                },
+                {
+                  "source_id": "synthetic-fixture"
+                },
+                {
+                  "source_id": "synthetic-fixture"
+                },
+                {
+                  "source_id": "synthetic-fixture"
+                },
+                {
+                  "source_id": "synthetic-fixture"
+                },
+                {
+                  "source_id": "synthetic-fixture"
+                },
+                {
+                  "source_id": "synthetic-fixture"
+                },
+                {
+                  "source_id": "synthetic-fixture"
+                },
+                {
+                  "source_id": "synthetic-fixture"
+                },
+                {
+                  "source_id": "synthetic-fixture"
+                },
+                {
+                  "source_id": "synthetic-fixture"
+                },
+                {
+                  "source_id": "synthetic-fixture"
+                },
+                {
+                  "source_id": "synthetic-fixture"
+                },
+                {
+                  "source_id": "synthetic-fixture"
+                },
+                {
+                  "source_id": "synthetic-fixture"
+                }
+              ],
+              "row_examples": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                10,
+                11,
+                12,
+                13,
+                14,
+                15,
+                16,
+                17,
+                18,
+                19
+              ],
+              "examples_truncated": true
+            }
+          }
+        ],
+        "checks_run": [
+          "duplicates",
+          "feature_leakage",
+          "numeric_validity",
+          "provenance",
+          "missing_values",
+          "schema_quality"
+        ],
+        "checks_skipped": {
+          "split_leakage": "No split_column configured.",
+          "bounds": "No physical bounds configured.",
+          "units": "No unit rules configured.",
+          "sparse_regions": "No sparse_bins configured.",
+          "conflicting_samples": "Configure identity_columns and conflict_columns.",
+          "near_duplicates": "No per-column absolute tolerances configured.",
+          "molecular_identity": "No smiles_column configured.",
+          "multivariate_density": "No density_columns and density_scales configured.",
+          "domain_constraints": "No compositions or rules configured."
+        },
+        "metadata": {
+          "tool_version": "0.3.0",
+          "row_reference": "zero-based row position; use df.iloc, not df.loc",
+          "dataset_sha256": "0eb2ca1f5e808f352e36b767fdf74f5494253bed6b024ff6e7631ad657ef45bc",
+          "fingerprint_format": "pandas split JSON, index excluded, 15-digit float precision",
+          "config": {
+            "duplicate_columns": null,
+            "group_columns": [],
+            "split_column": null,
+            "bounds": {},
+            "units": {},
+            "provenance_columns": [
+              "source_id",
+              "group_id"
+            ],
+            "sparse_bins": {},
+            "min_bin_count": 3,
+            "feature_columns": [
+              "temperature"
+            ],
+            "unavailable_features": [],
+            "target_column": "response",
+            "check_missing": true,
+            "numeric_columns": [
+              "temperature",
+              "response"
+            ],
+            "identity_columns": [],
+            "conflict_columns": [],
+            "conflict_tolerance": 0.0,
+            "identifier_columns": [],
+            "correlation_threshold": 0.995,
+            "unit_aliases": {},
+            "compositions": [],
+            "rules": [],
+            "near_duplicates": {},
+            "smiles_column": null,
+            "molecular_similarity": null,
+            "density_columns": [],
+            "density_scales": {},
+            "density_radius": 1.0,
+            "min_neighbors": 3,
+            "max_pair_comparisons": 2000000,
+            "provenance_patterns": {}
+          },
+          "dependencies": {
+            "numpy": "2.5.3",
+            "pandas": "3.0.5",
+            "pint": "0.26.1",
+            "scikit-learn": "1.9.1"
+          },
+          "canonical_units": {},
+          "limitations": [
+            "Configured checks cannot certify scientific validity or causal leakage.",
+            "Evidence examples are capped at 20 rows; affected row positions are complete.",
+            "Near-duplicate pair examples are capped at 100; counts are complete.",
+            "Provenance syntax is checked locally; source authenticity is not verified."
+          ]
+        }
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "id": "db76f23c-5a5c-458e-8185-fa9e30874088",
+      "project_id": "291706d2-695b-4902-99f2-ab8e891b6322",
+      "created_at": "2026-09-24T04:25:17.475086Z",
+      "parents": [
+        "1b9594d7-ea8e-4f17-8756-b7a978674dbe"
+      ],
+      "software": {
+        "chemdata-auditor": "0.3.0@eff3ed3c43ec71e9ceecabc1f04d1dfb5c91c116",
+        "cheme-ml-benchmarks": "0.1.0@db02d8963725a1d406b9b07eb6f4cc3436fbb082",
+        "scientific-evidence-engine": "0.1.0@09f5ec810e8f04bf8d233ec12eb9448342ee5121",
+        "experiment-failure-memory": "0.1.0@63492787cbbea6d03662db63f2d958a6eec8d804",
+        "workbench": "0.1.0"
+      },
+      "kind": "provenance",
+      "activity": "audit",
+      "inputs": [
+        "1b9594d7-ea8e-4f17-8756-b7a978674dbe"
+      ],
+      "outputs": [
+        "a3d867f3-93c5-48e1-b745-ec5a78937c0a"
+      ],
+      "parameters": {
+        "dataset_id": "1b9594d7-ea8e-4f17-8756-b7a978674dbe",
+        "config": {
+          "numeric_columns": [
+            "temperature",
+            "response"
+          ],
+          "feature_columns": [
+            "temperature"
+          ],
+          "target_column": "response",
+          "provenance_columns": [
+            "source_id",
+            "group_id"
+          ]
+        }
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "id": "5dca2607-9cf6-4838-b77e-b8a89f55d116",
+      "project_id": "291706d2-695b-4902-99f2-ab8e891b6322",
+      "created_at": "2026-09-24T04:25:20.683728Z",
+      "parents": [
+        "1b9594d7-ea8e-4f17-8756-b7a978674dbe",
+        "a3d867f3-93c5-48e1-b745-ec5a78937c0a"
+      ],
+      "software": {
+        "chemdata-auditor": "0.3.0@eff3ed3c43ec71e9ceecabc1f04d1dfb5c91c116",
+        "cheme-ml-benchmarks": "0.1.0@db02d8963725a1d406b9b07eb6f4cc3436fbb082",
+        "scientific-evidence-engine": "0.1.0@09f5ec810e8f04bf8d233ec12eb9448342ee5121",
+        "experiment-failure-memory": "0.1.0@63492787cbbea6d03662db63f2d958a6eec8d804",
+        "workbench": "0.1.0"
+      },
+      "kind": "split",
+      "dataset_id": "1b9594d7-ea8e-4f17-8756-b7a978674dbe",
+      "audit_id": "a3d867f3-93c5-48e1-b745-ec5a78937c0a",
+      "config": {
+        "strategy": "composition",
+        "columns": [
+          "group_id"
+        ],
+        "group_columns": [
+          "group_id"
+        ],
+        "target_column": "response",
+        "validation_size": 0.2,
+        "test_size": 0.2,
+        "seed": 42
+      },
+      "assignments": [
+        "train",
+        "train",
+        "train",
+        "train",
+        "train",
+        "train",
+        "train",
+        "train",
+        "train",
+        "train",
+        "train",
+        "train",
+        "test",
+        "test",
+        "test",
+        "test",
+        "test",
+        "test",
+        "train",
+        "train",
+        "train",
+        "train",
+        "train",
+        "train",
+        "train",
+        "train",
+        "train",
+        "validation",
+        "validation",
+        "validation",
+        "train",
+        "train",
+        "train",
+        "train",
+        "train",
+        "train",
+        "train",
+        "train",
+        "train",
+        "validation",
+        "validation",
+        "validation",
+        "test",
+        "test",
+        "test",
+        "validation",
+        "validation",
+        "validation",
+        "train",
+        "train",
+        "train",
+        "train",
+        "train",
+        "train",
+        "validation",
+        "validation",
+        "validation",
+        "test",
+        "test",
+        "test"
+      ],
+      "result": {
+        "train": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23,
+          24,
+          25,
+          26,
+          30,
+          31,
+          32,
+          33,
+          34,
+          35,
+          36,
+          37,
+          38,
+          48,
+          49,
+          50,
+          51,
+          52,
+          53
+        ],
+        "test": [
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          42,
+          43,
+          44,
+          57,
+          58,
+          59
+        ],
+        "excluded": [],
+        "diagnostics": {
+          "strategy": "composition",
+          "warnings": [
+            "Numeric composition representations are normalized by decimal value; rounding is explicit. Units and chemical equivalence are not inferred."
+          ],
+          "selection": "seeded connected-group holdout",
+          "requested_test_group_fraction": 0.2,
+          "requested_validation_group_fraction": 0.2,
+          "heldout_components": 4,
+          "validation_components": 4,
+          "scientific_groups": 20,
+          "independent_components": 20,
+          "group_overlap_counts": {
+            "group_id": 0
+          },
+          "scientific_group_overlap": 0,
+          "n_train": 36,
+          "n_validation": 12,
+          "n_test": 12,
+          "n_excluded": 0,
+          "actual_test_row_fraction": 0.2,
+          "actual_validation_row_fraction": 0.2,
+          "generalization": {
+            "supports": "Transfer to compositions absent from training under declared representation and rounding.",
+            "does_not_establish": "Composition holdout alone does not establish extrapolation, novel scaffold transfer, or new-laboratory performance.",
+            "conditional_on": "Sample independence, provenance, measurement validity, and absence of target leakage must be checked separately."
+          },
+          "evaluation": {
+            "partition_sizes": {
+              "train": 36,
+              "validation": 12,
+              "test": 12
+            },
+            "excluded_count": 0,
+            "pairwise_overlap": {
+              "train:validation": {
+                "groups": {
+                  "group_id": 0
+                },
+                "exact_duplicate_pairs": 0
+              },
+              "train:test": {
+                "groups": {
+                  "group_id": 0
+                },
+                "exact_duplicate_pairs": 0
+              },
+              "validation:test": {
+                "groups": {
+                  "group_id": 0
+                },
+                "exact_duplicate_pairs": 0
+              }
+            },
+            "distribution_shift": {
+              "validation": {
+                "numeric": {},
+                "categorical": {}
+              },
+              "test": {
+                "numeric": {},
+                "categorical": {}
+              }
+            },
+            "training_domain": {
+              "status": "not_configured"
+            },
+            "checks_not_configured": [
+              "numeric_similarity",
+              "molecular_similarity",
+              "numeric_shift",
+              "categorical_shift",
+              "training_domain"
+            ]
+          }
+        },
+        "metadata": {
+          "tool_version": "0.3.0",
+          "row_reference": "zero-based row position; use df.iloc, not df.loc",
+          "dataset_sha256": "0eb2ca1f5e808f352e36b767fdf74f5494253bed6b024ff6e7631ad657ef45bc",
+          "fingerprint_format": "pandas split JSON, index excluded, 15-digit float precision",
+          "config": {
+            "strategy": "composition",
+            "columns": [
+              "group_id"
+            ],
+            "group_columns": [
+              "group_id"
+            ],
+            "test_size": 0.2,
+            "validation_size": 0.2,
+            "seed": 42,
+            "holdout_values": null,
+            "validation_values": null,
+            "cutoff": null,
+            "validation_cutoff": null,
+            "threshold": null,
+            "validation_threshold": null,
+            "direction": "high",
+            "extrapolation_bounds": {},
+            "validation_bounds": {},
+            "crossing_policy": "error",
+            "composition_decimals": null,
+            "n_clusters": 5,
+            "cluster_scales": {},
+            "group_near_duplicates": {},
+            "group_smiles_column": null,
+            "group_molecular_similarity": null,
+            "target_column": "response",
+            "allow_target_in_split": false,
+            "max_pair_comparisons": 2000000,
+            "diagnostics": {}
+          },
+          "dependencies": {
+            "numpy": "2.5.3",
+            "pandas": "3.0.5",
+            "pint": "0.26.1",
+            "scikit-learn": "1.9.1"
+          },
+          "effective_diagnostics_config": {
+            "group_columns": [
+              "group_id"
+            ],
+            "duplicate_columns": null,
+            "near_duplicates": {},
+            "smiles_column": null,
+            "molecular_similarity": null,
+            "numeric_columns": [],
+            "categorical_columns": [],
+            "shift_threshold": 0.2,
+            "domain_columns": [],
+            "domain_scales": {},
+            "domain_quantile": 0.95,
+            "domain_distance_threshold": null,
+            "max_pair_comparisons": 2000000
+          }
+        },
+        "validation": [
+          27,
+          28,
+          29,
+          39,
+          40,
+          41,
+          45,
+          46,
+          47,
+          54,
+          55,
+          56
+        ],
+        "findings": [
+          {
+            "code": "generalization_scope",
+            "severity": "info",
+            "columns": [
+              "group_id"
+            ],
+            "rows": [
+              27,
+              28,
+              29,
+              39,
+              40,
+              41,
+              45,
+              46,
+              47,
+              54,
+              55,
+              56,
+              12,
+              13,
+              14,
+              15,
+              16,
+              17,
+              42,
+              43,
+              44,
+              57,
+              58,
+              59
+            ],
+            "message": "Transfer to compositions absent from training under declared representation and rounding.",
+            "suggestion": "Report this evaluation scope and its limitations alongside model metrics.",
+            "details": {
+              "supports": "Transfer to compositions absent from training under declared representation and rounding.",
+              "does_not_establish": "Composition holdout alone does not establish extrapolation, novel scaffold transfer, or new-laboratory performance.",
+              "conditional_on": "Sample independence, provenance, measurement validity, and absence of target leakage must be checked separately."
+            }
+          }
+        ]
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "id": "d33ffd8b-2ea7-4ef5-8377-d7bad8a00984",
+      "project_id": "291706d2-695b-4902-99f2-ab8e891b6322",
+      "created_at": "2026-09-24T04:25:21.182532Z",
+      "parents": [
+        "1b9594d7-ea8e-4f17-8756-b7a978674dbe",
+        "a3d867f3-93c5-48e1-b745-ec5a78937c0a"
+      ],
+      "software": {
+        "chemdata-auditor": "0.3.0@eff3ed3c43ec71e9ceecabc1f04d1dfb5c91c116",
+        "cheme-ml-benchmarks": "0.1.0@db02d8963725a1d406b9b07eb6f4cc3436fbb082",
+        "scientific-evidence-engine": "0.1.0@09f5ec810e8f04bf8d233ec12eb9448342ee5121",
+        "experiment-failure-memory": "0.1.0@63492787cbbea6d03662db63f2d958a6eec8d804",
+        "workbench": "0.1.0"
+      },
+      "kind": "provenance",
+      "activity": "split",
+      "inputs": [
+        "1b9594d7-ea8e-4f17-8756-b7a978674dbe",
+        "a3d867f3-93c5-48e1-b745-ec5a78937c0a"
+      ],
+      "outputs": [
+        "5dca2607-9cf6-4838-b77e-b8a89f55d116"
+      ],
+      "parameters": {
+        "dataset_id": "1b9594d7-ea8e-4f17-8756-b7a978674dbe",
+        "audit_id": "a3d867f3-93c5-48e1-b745-ec5a78937c0a",
+        "config": {
+          "strategy": "composition",
+          "columns": [
+            "group_id"
+          ],
+          "group_columns": [
+            "group_id"
+          ],
+          "target_column": "response",
+          "validation_size": 0.2,
+          "test_size": 0.2,
+          "seed": 42
+        }
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "id": "e181e81e-0440-4a84-8659-c52e4e1f857f",
+      "project_id": "291706d2-695b-4902-99f2-ab8e891b6322",
+      "created_at": "2026-09-24T04:25:21.217396Z",
+      "parents": [
+        "1b9594d7-ea8e-4f17-8756-b7a978674dbe",
+        "5dca2607-9cf6-4838-b77e-b8a89f55d116"
+      ],
+      "software": {},
+      "kind": "evaluation_protocol",
+      "revision": 1,
+      "dataset_id": "1b9594d7-ea8e-4f17-8756-b7a978674dbe",
+      "dataset_sha256": "aa0e1db7ba154779d11787120c4ea7dd87aab22d8a8fbd1e4a5b1446507afe3c",
+      "split_id": "5dca2607-9cf6-4838-b77e-b8a89f55d116",
+      "split_sha256": "4369b04fae6b6b4ff049f7b5ac88f7a7ec2e1e92bc88900f2ba41eb0de420386",
+      "configuration_sha256": "6cb3bf65f6c6bdbc213179546551c4bdec9f55f903c97dcfa24b628481e14ded",
+      "target": "response",
+      "features": [
+        "temperature"
+      ],
+      "preprocessing": "Pinned benchmark task-card preprocessing",
+      "independent_unit": {
+        "name": "Generated family",
+        "group_columns": [
+          "group_id"
+        ],
+        "rationale": "Each family is held entirely within a partition."
+      },
+      "candidates": [
+        {
+          "id": "mean",
+          "model": "mean",
+          "seed": 0,
+          "configuration_sha256": "6e913a4a0c61fa4abb8c2edee4459aa4708aa69eb7dd3b38c906de5b72af1de6"
+        },
+        {
+          "id": "ridge",
+          "model": "ridge",
+          "seed": 0,
+          "configuration_sha256": "137d28791a188957701ffd011dc1154b8b8b6c8bd67de563cbb5722d6cc0ad7f"
+        }
+      ],
+      "primary_metric": "group_mae",
+      "selection_rule": "predeclared_comparison",
+      "success_criterion": null,
+      "state": "sealed",
+      "sealed_at": "2026-09-24T04:25:21.217396Z",
+      "released_at": null,
+      "selected_candidate_id": null,
+      "exposure_status": "unexposed",
+      "exposure_event_ids": []
+    },
+    {
+      "schema_version": "1.0",
+      "id": "5e1906a4-c578-47ce-9b5b-de9dc5984c99",
+      "project_id": "291706d2-695b-4902-99f2-ab8e891b6322",
+      "created_at": "2026-09-24T04:25:26.406754Z",
+      "parents": [
+        "1b9594d7-ea8e-4f17-8756-b7a978674dbe",
+        "5dca2607-9cf6-4838-b77e-b8a89f55d116"
+      ],
+      "software": {
+        "chemdata-auditor": "0.3.0@eff3ed3c43ec71e9ceecabc1f04d1dfb5c91c116",
+        "cheme-ml-benchmarks": "0.1.0@db02d8963725a1d406b9b07eb6f4cc3436fbb082",
+        "scientific-evidence-engine": "0.1.0@09f5ec810e8f04bf8d233ec12eb9448342ee5121",
+        "experiment-failure-memory": "0.1.0@63492787cbbea6d03662db63f2d958a6eec8d804",
+        "workbench": "0.1.0"
+      },
+      "kind": "provenance",
+      "activity": "benchmark",
+      "inputs": [
+        "1b9594d7-ea8e-4f17-8756-b7a978674dbe",
+        "5dca2607-9cf6-4838-b77e-b8a89f55d116"
+      ],
+      "outputs": [
+        "9fad11f6-09a3-4ccc-8a4d-726a21157529"
+      ],
+      "parameters": {
+        "dataset_id": "1b9594d7-ea8e-4f17-8756-b7a978674dbe",
+        "split_id": "5dca2607-9cf6-4838-b77e-b8a89f55d116",
+        "target": "response",
+        "numeric_features": [
+          "temperature"
+        ],
+        "categorical_features": [],
+        "row_id": "row_id",
+        "group_columns": [
+          "group_id"
+        ],
+        "units": {
+          "temperature": "kelvin",
+          "response": "dimensionless"
+        },
+        "independence_unit": "Generated family",
+        "independence_status": "synthetic",
+        "independence_rationale": "Each family is held entirely within a partition.",
+        "generalization": "Held-out generated families only.",
+        "limitations": [
+          "Synthetic software fixture; not experimental evidence."
+        ],
+        "domain": "materials",
+        "accepted_warnings": {},
+        "model": "mean",
+        "seed": 0
+      }
+    },
+    {
+      "kind": "benchmark_preview",
+      "schema_version": "1.0",
+      "id": "9fad11f6-09a3-4ccc-8a4d-726a21157529",
+      "project_id": "291706d2-695b-4902-99f2-ab8e891b6322",
+      "created_at": "2026-09-24T04:25:24.002278Z",
+      "parents": [
+        "1b9594d7-ea8e-4f17-8756-b7a978674dbe",
+        "5dca2607-9cf6-4838-b77e-b8a89f55d116"
+      ],
+      "software": {
+        "chemdata-auditor": "0.3.0@eff3ed3c43ec71e9ceecabc1f04d1dfb5c91c116",
+        "cheme-ml-benchmarks": "0.1.0@db02d8963725a1d406b9b07eb6f4cc3436fbb082",
+        "scientific-evidence-engine": "0.1.0@09f5ec810e8f04bf8d233ec12eb9448342ee5121",
+        "experiment-failure-memory": "0.1.0@63492787cbbea6d03662db63f2d958a6eec8d804",
+        "workbench": "0.1.0"
+      },
+      "dataset_id": "1b9594d7-ea8e-4f17-8756-b7a978674dbe",
+      "split_id": "5dca2607-9cf6-4838-b77e-b8a89f55d116",
+      "model": "mean",
+      "seed": 0,
+      "status": "succeeded",
+      "error": null,
+      "config": {
+        "dataset_id": "1b9594d7-ea8e-4f17-8756-b7a978674dbe",
+        "split_id": "5dca2607-9cf6-4838-b77e-b8a89f55d116",
+        "target": "response",
+        "numeric_features": [
+          "temperature"
+        ],
+        "categorical_features": [],
+        "row_id": "row_id",
+        "group_columns": [
+          "group_id"
+        ],
+        "units": {
+          "temperature": "kelvin",
+          "response": "dimensionless"
+        },
+        "independence_unit": "Generated family",
+        "independence_status": "synthetic",
+        "independence_rationale": "Each family is held entirely within a partition.",
+        "generalization": "Held-out generated families only.",
+        "limitations": [
+          "Synthetic software fixture; not experimental evidence."
+        ],
+        "domain": "materials",
+        "accepted_warnings": {},
+        "model": "mean",
+        "seed": 0
+      },
+      "protocol_ids": [
+        "e181e81e-0440-4a84-8659-c52e4e1f857f"
+      ],
+      "validation_metrics": {
+        "mae": 0.554,
+        "rmse": 0.6295510304971315,
+        "r2": -2.8236480196037768,
+        "group_mae": 0.554,
+        "group_rmse": 0.6295510304971315,
+        "rows": 12.0,
+        "groups": 4.0
+      },
+      "method": {
+        "name": "mean",
+        "seed": 0,
+        "parameters": {
+          "strategy": "mean"
+        },
+        "validation_search": [
+          {
+            "parameters": {
+              "strategy": "mean"
+            },
+            "validation_primary": 0.554
+          }
+        ],
+        "training_description": "Protocol preprocessing fit on train only; fixed grid selected on validation primary metric; no train+validation refit; one selected model evaluated on test."
+      },
+      "verification_scope": "Predictions and scores verified against official data/partitions. Training provenance is a declaration; public test labels cannot be secured by local software.",
+      "test_results": "withheld",
+      "holdout_exposure": "unexposed",
+      "bundle_available": true
+    },
+    {
+      "kind": "benchmark_preview",
+      "schema_version": "1.0",
+      "id": "d22b8ac5-157e-49f6-8fa6-00ea3adf1c04",
+      "project_id": "291706d2-695b-4902-99f2-ab8e891b6322",
+      "created_at": "2026-09-24T04:25:29.257189Z",
+      "parents": [
+        "1b9594d7-ea8e-4f17-8756-b7a978674dbe",
+        "5dca2607-9cf6-4838-b77e-b8a89f55d116"
+      ],
+      "software": {
+        "chemdata-auditor": "0.3.0@eff3ed3c43ec71e9ceecabc1f04d1dfb5c91c116",
+        "cheme-ml-benchmarks": "0.1.0@db02d8963725a1d406b9b07eb6f4cc3436fbb082",
+        "scientific-evidence-engine": "0.1.0@09f5ec810e8f04bf8d233ec12eb9448342ee5121",
+        "experiment-failure-memory": "0.1.0@63492787cbbea6d03662db63f2d958a6eec8d804",
+        "workbench": "0.1.0"
+      },
+      "dataset_id": "1b9594d7-ea8e-4f17-8756-b7a978674dbe",
+      "split_id": "5dca2607-9cf6-4838-b77e-b8a89f55d116",
+      "model": "ridge",
+      "seed": 0,
+      "status": "succeeded",
+      "error": null,
+      "config": {
+        "dataset_id": "1b9594d7-ea8e-4f17-8756-b7a978674dbe",
+        "split_id": "5dca2607-9cf6-4838-b77e-b8a89f55d116",
+        "target": "response",
+        "numeric_features": [
+          "temperature"
+        ],
+        "categorical_features": [],
+        "row_id": "row_id",
+        "group_columns": [
+          "group_id"
+        ],
+        "units": {
+          "temperature": "kelvin",
+          "response": "dimensionless"
+        },
+        "independence_unit": "Generated family",
+        "independence_status": "synthetic",
+        "independence_rationale": "Each family is held entirely within a partition.",
+        "generalization": "Held-out generated families only.",
+        "limitations": [
+          "Synthetic software fixture; not experimental evidence."
+        ],
+        "domain": "materials",
+        "accepted_warnings": {},
+        "model": "ridge",
+        "seed": 0
+      },
+      "protocol_ids": [
+        "e181e81e-0440-4a84-8659-c52e4e1f857f"
+      ],
+      "validation_metrics": {
+        "mae": 0.16984272938345749,
+        "rmse": 0.19447236139612203,
+        "r2": 0.6351353369931175,
+        "group_mae": 0.1698427293834575,
+        "group_rmse": 0.19447236139612206,
+        "rows": 12.0,
+        "groups": 4.0
+      },
+      "method": {
+        "name": "ridge",
+        "seed": 0,
+        "parameters": {
+          "alpha": 0.1
+        },
+        "validation_search": [
+          {
+            "parameters": {
+              "alpha": 0.1
+            },
+            "validation_primary": 0.1698427293834575
+          },
+          {
+            "parameters": {
+              "alpha": 1.0
+            },
+            "validation_primary": 0.17463033866872474
+          },
+          {
+            "parameters": {
+              "alpha": 10.0
+            },
+            "validation_primary": 0.2269964192763999
+          }
+        ],
+        "training_description": "Protocol preprocessing fit on train only; fixed grid selected on validation primary metric; no train+validation refit; one selected model evaluated on test."
+      },
+      "verification_scope": "Predictions and scores verified against official data/partitions. Training provenance is a declaration; public test labels cannot be secured by local software.",
+      "test_results": "withheld",
+      "holdout_exposure": "unexposed",
+      "bundle_available": true
+    },
+    {
+      "schema_version": "1.0",
+      "id": "3fbc6082-43b0-4518-b126-40a870903720",
+      "project_id": "291706d2-695b-4902-99f2-ab8e891b6322",
+      "created_at": "2026-09-24T04:25:32.052802Z",
+      "parents": [
+        "1b9594d7-ea8e-4f17-8756-b7a978674dbe",
+        "5dca2607-9cf6-4838-b77e-b8a89f55d116"
+      ],
+      "software": {
+        "chemdata-auditor": "0.3.0@eff3ed3c43ec71e9ceecabc1f04d1dfb5c91c116",
+        "cheme-ml-benchmarks": "0.1.0@db02d8963725a1d406b9b07eb6f4cc3436fbb082",
+        "scientific-evidence-engine": "0.1.0@09f5ec810e8f04bf8d233ec12eb9448342ee5121",
+        "experiment-failure-memory": "0.1.0@63492787cbbea6d03662db63f2d958a6eec8d804",
+        "workbench": "0.1.0"
+      },
+      "kind": "provenance",
+      "activity": "benchmark",
+      "inputs": [
+        "1b9594d7-ea8e-4f17-8756-b7a978674dbe",
+        "5dca2607-9cf6-4838-b77e-b8a89f55d116"
+      ],
+      "outputs": [
+        "d22b8ac5-157e-49f6-8fa6-00ea3adf1c04"
+      ],
+      "parameters": {
+        "dataset_id": "1b9594d7-ea8e-4f17-8756-b7a978674dbe",
+        "split_id": "5dca2607-9cf6-4838-b77e-b8a89f55d116",
+        "target": "response",
+        "numeric_features": [
+          "temperature"
+        ],
+        "categorical_features": [],
+        "row_id": "row_id",
+        "group_columns": [
+          "group_id"
+        ],
+        "units": {
+          "temperature": "kelvin",
+          "response": "dimensionless"
+        },
+        "independence_unit": "Generated family",
+        "independence_status": "synthetic",
+        "independence_rationale": "Each family is held entirely within a partition.",
+        "generalization": "Held-out generated families only.",
+        "limitations": [
+          "Synthetic software fixture; not experimental evidence."
+        ],
+        "domain": "materials",
+        "accepted_warnings": {},
+        "model": "ridge",
+        "seed": 0
+      }
+    },
+    {
+      "kind": "benchmark_preview",
+      "schema_version": "1.0",
+      "id": "ea2418ca-7ec7-46ce-994e-5e5fc806ed82",
+      "project_id": "291706d2-695b-4902-99f2-ab8e891b6322",
+      "created_at": "2026-09-24T04:25:35.318125Z",
+      "parents": [
+        "1b9594d7-ea8e-4f17-8756-b7a978674dbe",
+        "5dca2607-9cf6-4838-b77e-b8a89f55d116"
+      ],
+      "software": {
+        "chemdata-auditor": "0.3.0@eff3ed3c43ec71e9ceecabc1f04d1dfb5c91c116",
+        "cheme-ml-benchmarks": "0.1.0@db02d8963725a1d406b9b07eb6f4cc3436fbb082",
+        "scientific-evidence-engine": "0.1.0@09f5ec810e8f04bf8d233ec12eb9448342ee5121",
+        "experiment-failure-memory": "0.1.0@63492787cbbea6d03662db63f2d958a6eec8d804",
+        "workbench": "0.1.0"
+      },
+      "dataset_id": "1b9594d7-ea8e-4f17-8756-b7a978674dbe",
+      "split_id": "5dca2607-9cf6-4838-b77e-b8a89f55d116",
+      "model": "ridge",
+      "seed": 0,
+      "status": "failed",
+      "error": "Task could not complete. Inspect the job error code and retained inputs.",
+      "config": {
+        "dataset_id": "1b9594d7-ea8e-4f17-8756-b7a978674dbe",
+        "split_id": "5dca2607-9cf6-4838-b77e-b8a89f55d116",
+        "target": "response",
+        "numeric_features": [
+          "temperature"
+        ],
+        "categorical_features": [],
+        "row_id": "row_id",
+        "group_columns": [
+          "group_id"
+        ],
+        "units": {
+          "temperature": "kelvin"
+        },
+        "independence_unit": "Generated family",
+        "independence_status": "synthetic",
+        "independence_rationale": "Each family is held entirely within a partition.",
+        "generalization": "Held-out generated families only.",
+        "limitations": [
+          "Synthetic software fixture; not experimental evidence."
+        ],
+        "domain": "materials",
+        "accepted_warnings": {},
+        "model": "ridge",
+        "seed": 0
+      },
+      "protocol_ids": [],
+      "validation_metrics": null,
+      "method": null,
+      "verification_scope": null,
+      "test_results": "not_produced",
+      "holdout_exposure": "unexposed",
+      "bundle_available": false
+    },
+    {
+      "schema_version": "1.0",
+      "id": "35aa6052-ffe7-42bd-984c-da2dc239547b",
+      "project_id": "291706d2-695b-4902-99f2-ab8e891b6322",
+      "created_at": "2026-09-24T04:25:36.068714Z",
+      "parents": [
+        "1b9594d7-ea8e-4f17-8756-b7a978674dbe",
+        "5dca2607-9cf6-4838-b77e-b8a89f55d116"
+      ],
+      "software": {
+        "chemdata-auditor": "0.3.0@eff3ed3c43ec71e9ceecabc1f04d1dfb5c91c116",
+        "cheme-ml-benchmarks": "0.1.0@db02d8963725a1d406b9b07eb6f4cc3436fbb082",
+        "scientific-evidence-engine": "0.1.0@09f5ec810e8f04bf8d233ec12eb9448342ee5121",
+        "experiment-failure-memory": "0.1.0@63492787cbbea6d03662db63f2d958a6eec8d804",
+        "workbench": "0.1.0"
+      },
+      "kind": "provenance",
+      "activity": "benchmark",
+      "inputs": [
+        "1b9594d7-ea8e-4f17-8756-b7a978674dbe",
+        "5dca2607-9cf6-4838-b77e-b8a89f55d116"
+      ],
+      "outputs": [
+        "ea2418ca-7ec7-46ce-994e-5e5fc806ed82"
+      ],
+      "parameters": {
+        "dataset_id": "1b9594d7-ea8e-4f17-8756-b7a978674dbe",
+        "split_id": "5dca2607-9cf6-4838-b77e-b8a89f55d116",
+        "target": "response",
+        "numeric_features": [
+          "temperature"
+        ],
+        "categorical_features": [],
+        "row_id": "row_id",
+        "group_columns": [
+          "group_id"
+        ],
+        "units": {
+          "temperature": "kelvin"
+        },
+        "independence_unit": "Generated family",
+        "independence_status": "synthetic",
+        "independence_rationale": "Each family is held entirely within a partition.",
+        "generalization": "Held-out generated families only.",
+        "limitations": [
+          "Synthetic software fixture; not experimental evidence."
+        ],
+        "domain": "materials",
+        "accepted_warnings": {},
+        "model": "ridge",
+        "seed": 0
+      }
+    }
+  ],
+  "revealed": {
+    "schema_version": "1.0",
+    "id": "d22b8ac5-157e-49f6-8fa6-00ea3adf1c04",
+    "project_id": "291706d2-695b-4902-99f2-ab8e891b6322",
+    "created_at": "2026-09-24T04:25:29.257189Z",
+    "parents": [
+      "1b9594d7-ea8e-4f17-8756-b7a978674dbe",
+      "5dca2607-9cf6-4838-b77e-b8a89f55d116"
+    ],
+    "software": {
+      "chemdata-auditor": "0.3.0@eff3ed3c43ec71e9ceecabc1f04d1dfb5c91c116",
+      "cheme-ml-benchmarks": "0.1.0@db02d8963725a1d406b9b07eb6f4cc3436fbb082",
+      "scientific-evidence-engine": "0.1.0@09f5ec810e8f04bf8d233ec12eb9448342ee5121",
+      "experiment-failure-memory": "0.1.0@63492787cbbea6d03662db63f2d958a6eec8d804",
+      "workbench": "0.1.0"
+    },
+    "kind": "benchmark",
+    "dataset_id": "1b9594d7-ea8e-4f17-8756-b7a978674dbe",
+    "split_id": "5dca2607-9cf6-4838-b77e-b8a89f55d116",
+    "model": "ridge",
+    "seed": 0,
+    "status": "succeeded",
+    "result": {
+      "schema_version": "1.0",
+      "benchmark_id": "benchmark_89748066e62c64e90979166fc5fe2913ee20b7665a93281adc61024f7e3f309e",
+      "method": {
+        "name": "ridge",
+        "seed": 0,
+        "origin": "builtin",
+        "code_reference": "cheme-ml-benchmarks:0.1.0:sha256:97aaff500e3e8bbe319746de2948581bb0c053e60c30288438b6059b21e5cb9c",
+        "parameters": {
+          "alpha": 0.1
+        },
+        "validation_search": [
+          {
+            "parameters": {
+              "alpha": 0.1
+            },
+            "validation_primary": 0.1698427293834575
+          },
+          {
+            "parameters": {
+              "alpha": 1.0
+            },
+            "validation_primary": 0.17463033866872474
+          },
+          {
+            "parameters": {
+              "alpha": 10.0
+            },
+            "validation_primary": 0.2269964192763999
+          }
+        ],
+        "training_description": "Protocol preprocessing fit on train only; fixed grid selected on validation primary metric; no train+validation refit; one selected model evaluated on test."
+      },
+      "metrics": {
+        "validation": {
+          "mae": 0.16984272938345749,
+          "rmse": 0.19447236139612203,
+          "r2": 0.6351353369931175,
+          "group_mae": 0.1698427293834575,
+          "group_rmse": 0.19447236139612206,
+          "group_mae_interval95": [
+            0.11643473873705477,
+            0.20618190303162104
+          ],
+          "rows": 12,
+          "groups": 4,
+          "interval_scope": "Percentile bootstrap of declared groups, conditional on this fixed test set/model; proxy groups do not prove experimental independence."
+        },
+        "test": {
+          "mae": 0.13337193095760871,
+          "rmse": 0.15049367657183668,
+          "r2": 0.8781666097194835,
+          "group_mae": 0.13337193095760874,
+          "group_rmse": 0.15049367657183665,
+          "group_mae_interval95": [
+            0.09369569933685468,
+            0.18224140843171785
+          ],
+          "rows": 12,
+          "groups": 4,
+          "interval_scope": "Percentile bootstrap of declared groups, conditional on this fixed test set/model; proxy groups do not prove experimental independence."
+        }
+      },
+      "prediction_sha256": "1016e42e7fa8f1b7162f4448f56aef58992eab66048e5cfdb36a5047eb478c5e",
+      "software": {
+        "cheme-ml-benchmarks": "0.1.0",
+        "chemdata-auditor": "0.3.0",
+        "numpy": "2.5.3",
+        "pandas": "3.0.5",
+        "scikit-learn": "1.9.1",
+        "pint": "0.26.1"
+      },
+      "verification_scope": "Predictions and scores verified against official data/partitions. Training provenance is a declaration; public test labels cannot be secured by local software.",
+      "run_id": "run_39235afeb5d3656d620975f087cf8af71fc7f18303f235507dacc146a739840c"
+    },
+    "error": null,
+    "bundle_key": "bf04cef96be6f4a7d95763f578a0931321647a2622080af4f33bc83b44052e64",
+    "config": {
+      "dataset_id": "1b9594d7-ea8e-4f17-8756-b7a978674dbe",
+      "split_id": "5dca2607-9cf6-4838-b77e-b8a89f55d116",
+      "target": "response",
+      "numeric_features": [
+        "temperature"
+      ],
+      "categorical_features": [],
+      "row_id": "row_id",
+      "group_columns": [
+        "group_id"
+      ],
+      "units": {
+        "temperature": "kelvin",
+        "response": "dimensionless"
+      },
+      "independence_unit": "Generated family",
+      "independence_status": "synthetic",
+      "independence_rationale": "Each family is held entirely within a partition.",
+      "generalization": "Held-out generated families only.",
+      "limitations": [
+        "Synthetic software fixture; not experimental evidence."
+      ],
+      "domain": "materials",
+      "accepted_warnings": {},
+      "model": "ridge",
+      "seed": 0
+    }
+  },
+  "status_before": {
+    "protocol_id": "e181e81e-0440-4a84-8659-c52e4e1f857f",
+    "state": "sealed",
+    "exploratory": false,
+    "clean_holdout_eligible": true,
+    "exposure_status": "unexposed",
+    "exposure_event_ids": [],
+    "limitation": "Pinned upstream returns validation and test together; only sealed predeclared comparisons are supported, not validation-only selection or separate final-test execution."
+  },
+  "status_after": {
+    "protocol_id": "e181e81e-0440-4a84-8659-c52e4e1f857f",
+    "state": "sealed",
+    "exploratory": false,
+    "clean_holdout_eligible": false,
+    "exposure_status": "exposed",
+    "exposure_event_ids": [
+      "7ad42d9a-a0bd-4b75-937d-29d5b860aef7"
+    ],
+    "limitation": "Pinned upstream returns validation and test together; only sealed predeclared comparisons are supported, not validation-only selection or separate final-test execution."
+  },
+  "jobs": [
+    {
+      "id": "6094efdc-fbec-48d5-b9c7-c5da5d9a340d",
+      "project_id": "291706d2-695b-4902-99f2-ab8e891b6322",
+      "kind": "benchmark",
+      "state": "failed",
+      "result_id": "ea2418ca-7ec7-46ce-994e-5e5fc806ed82",
+      "error": "Operation did not complete; inspect its safe error code.",
+      "created_at": "2026-09-24T04:25:32.080733Z",
+      "started_at": "2026-09-24T04:25:32.086000Z",
+      "finished_at": "2026-09-24T04:25:36.100000Z"
+    },
+    {
+      "id": "93a2b0db-93bc-4acc-ae06-14c79b30d2ff",
+      "project_id": "291706d2-695b-4902-99f2-ab8e891b6322",
+      "kind": "benchmark",
+      "state": "succeeded",
+      "result_id": "d22b8ac5-157e-49f6-8fa6-00ea3adf1c04",
+      "error": null,
+      "created_at": "2026-09-24T04:25:21.262754Z",
+      "started_at": "2026-09-24T04:25:26.415000Z",
+      "finished_at": "2026-09-24T04:25:32.058000Z"
+    },
+    {
+      "id": "58e8b112-c720-4564-b1b3-1e45323f4f4b",
+      "project_id": "291706d2-695b-4902-99f2-ab8e891b6322",
+      "kind": "benchmark",
+      "state": "succeeded",
+      "result_id": "9fad11f6-09a3-4ccc-8a4d-726a21157529",
+      "error": null,
+      "created_at": "2026-09-24T04:25:21.240701Z",
+      "started_at": "2026-09-24T04:25:21.276000Z",
+      "finished_at": "2026-09-24T04:25:26.415000Z"
+    },
+    {
+      "id": "2f2c4748-33fb-4d58-b6a8-3fcc316b2557",
+      "project_id": "291706d2-695b-4902-99f2-ab8e891b6322",
+      "kind": "split",
+      "state": "succeeded",
+      "result_id": "5dca2607-9cf6-4838-b77e-b8a89f55d116",
+      "error": null,
+      "created_at": "2026-09-24T04:25:17.532228Z",
+      "started_at": "2026-09-24T04:25:17.547000Z",
+      "finished_at": "2026-09-24T04:25:21.190000Z"
+    },
+    {
+      "id": "eeadb4f9-db2a-416a-b9e8-fb53b2441c84",
+      "project_id": "291706d2-695b-4902-99f2-ab8e891b6322",
+      "kind": "audit",
+      "state": "succeeded",
+      "result_id": "a3d867f3-93c5-48e1-b745-ec5a78937c0a",
+      "error": null,
+      "created_at": "2026-09-24T04:25:13.679000Z",
+      "started_at": "2026-09-24T04:25:13.691000Z",
+      "finished_at": "2026-09-24T04:25:17.482000Z"
+    }
+  ],
+  "rejected_id": "ea2418ca-7ec7-46ce-994e-5e5fc806ed82",
+  "candidate_ids": [
+    "9fad11f6-09a3-4ccc-8a4d-726a21157529",
+    "d22b8ac5-157e-49f6-8fa6-00ea3adf1c04"
+  ],
+  "protocol_id": "e181e81e-0440-4a84-8659-c52e4e1f857f"
+}

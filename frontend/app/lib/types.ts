@@ -9,12 +9,15 @@ export type JobState = Job['state'];
 export type Partition = 'train' | 'validation' | 'test' | 'excluded';
 export const PARTITIONS: Partition[] = ['train', 'validation', 'test', 'excluded'];
 
-export type Artifact = Wire.IntakeArtifact;
+/** Workspace listings withhold benchmark test output; complete artifacts are explicit reads. */
+export type Artifact = Wire.IntakeArtifact | Wire.BenchmarkPreview;
 export type ArtifactKind = Artifact['kind'];
 export type DatasetArtifact = Wire.Dataset | Wire.DatasetV2;
 export type AuditArtifact = Wire.Audit;
 export type SplitArtifact = Wire.Split;
 export type BenchmarkArtifact = Wire.Benchmark;
+export type BenchmarkPreview = Wire.BenchmarkPreview;
+export type EvaluationProtocolArtifact = Wire.EvaluationProtocol;
 export type EvidenceArtifact = Wire.Evidence;
 export type FailureArtifact = Wire.Failure | Wire.FailureV2;
 export type ProvenanceArtifact = Wire.Provenance;
@@ -35,7 +38,7 @@ export type AuditFinding = {
 /** Narrowing helper: `kinds(artifacts, 'dataset')` returns DatasetArtifact[]. */
 type ByKind = {
   dataset: DatasetArtifact; audit: AuditArtifact; split: SplitArtifact;
-  benchmark: BenchmarkArtifact; evidence: EvidenceArtifact; failure: FailureArtifact;
+  benchmark: BenchmarkArtifact; benchmark_preview: BenchmarkPreview; evidence: EvidenceArtifact; failure: FailureArtifact;
   provenance: ProvenanceArtifact; report: ReportArtifact;
   evaluation_protocol: Wire.EvaluationProtocol;
   claim_set: Wire.ClaimSet;

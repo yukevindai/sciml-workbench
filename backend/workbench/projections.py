@@ -165,6 +165,31 @@ class ReadService:
         expose_artifact(session, scope.project_id, value, via="artifact_detail")
         return value
 
+    def artifact_previews(self, session, scope):
+        """Manual workspace listing without test-partition disclosure.
+
+        Benchmarks become withheld previews. Failure and claim records can carry
+        holdout values, so their dependencies are exposed exactly as the complete
+        list does. Other kinds carry no scientific result values from benchmarks.
+        """
+        authorize(session, scope)
+        if scope.audience == "agent":
+            raise DomainError("Agents must use typed evaluation projections", 403, "DATA_EXPOSURE_DENIED")
+        from .evaluation import benchmark_preview, expose_artifact, protocol_bindings
+        resolver = ArtifactResolver(session, scope.project_id)
+        bindings = protocol_bindings(session, scope.project_id)
+        values = []
+        for row_id in session.scalars(select(ArtifactRow.id).where(ArtifactRow.project_id == scope.project_id)
+                                      .order_by(ArtifactRow.created_at, ArtifactRow.id)):
+            value = resolver.resolve(row_id)
+            if value.kind == "benchmark":
+                values.append(benchmark_preview(session, scope.project_id, value, resolver=resolver, bindings=bindings))
+                continue
+            if value.kind in {"failure", "claim_set"}:
+                expose_artifact(session, scope.project_id, value, via="artifact_preview_list")
+            values.append(value)
+        return values
+
     def download(self, session, scope, identifier, *, material=False, representation="default"):
         authorize(session, scope)
         if scope.audience == "agent":

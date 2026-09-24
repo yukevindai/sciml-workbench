@@ -1366,6 +1366,235 @@
         }
       }
     },
+    "/api/v1/projects/{pid}/artifact-previews": {
+      "get": {
+        "summary": "Artifact Previews",
+        "operationId": "artifact_previews_api_v1_projects__pid__artifact_previews_get",
+        "parameters": [
+          {
+            "name": "pid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Pid"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "oneOf": [
+                      {
+                        "oneOf": [
+                          {
+                            "$ref": "#/components/schemas/Dataset"
+                          },
+                          {
+                            "$ref": "#/components/schemas/DatasetV2"
+                          }
+                        ],
+                        "discriminator": {
+                          "propertyName": "schema_version",
+                          "mapping": {
+                            "1.0": "#/components/schemas/Dataset",
+                            "2.0": "#/components/schemas/DatasetV2"
+                          }
+                        }
+                      },
+                      {
+                        "$ref": "#/components/schemas/Audit"
+                      },
+                      {
+                        "$ref": "#/components/schemas/Split"
+                      },
+                      {
+                        "$ref": "#/components/schemas/BenchmarkPreview"
+                      },
+                      {
+                        "$ref": "#/components/schemas/Evidence"
+                      },
+                      {
+                        "oneOf": [
+                          {
+                            "$ref": "#/components/schemas/Failure"
+                          },
+                          {
+                            "$ref": "#/components/schemas/FailureV2"
+                          }
+                        ],
+                        "discriminator": {
+                          "propertyName": "schema_version",
+                          "mapping": {
+                            "1.0": "#/components/schemas/Failure",
+                            "2.0": "#/components/schemas/FailureV2"
+                          }
+                        }
+                      },
+                      {
+                        "$ref": "#/components/schemas/Provenance"
+                      },
+                      {
+                        "$ref": "#/components/schemas/Report"
+                      },
+                      {
+                        "$ref": "#/components/schemas/EvaluationProtocol"
+                      },
+                      {
+                        "$ref": "#/components/schemas/ClaimSet"
+                      }
+                    ],
+                    "discriminator": {
+                      "propertyName": "kind",
+                      "mapping": {
+                        "dataset": {
+                          "oneOf": [
+                            {
+                              "$ref": "#/components/schemas/Dataset"
+                            },
+                            {
+                              "$ref": "#/components/schemas/DatasetV2"
+                            }
+                          ],
+                          "discriminator": {
+                            "propertyName": "schema_version",
+                            "mapping": {
+                              "1.0": "#/components/schemas/Dataset",
+                              "2.0": "#/components/schemas/DatasetV2"
+                            }
+                          }
+                        },
+                        "audit": "#/components/schemas/Audit",
+                        "split": "#/components/schemas/Split",
+                        "benchmark_preview": "#/components/schemas/BenchmarkPreview",
+                        "evidence": "#/components/schemas/Evidence",
+                        "failure": {
+                          "oneOf": [
+                            {
+                              "$ref": "#/components/schemas/Failure"
+                            },
+                            {
+                              "$ref": "#/components/schemas/FailureV2"
+                            }
+                          ],
+                          "discriminator": {
+                            "propertyName": "schema_version",
+                            "mapping": {
+                              "1.0": "#/components/schemas/Failure",
+                              "2.0": "#/components/schemas/FailureV2"
+                            }
+                          }
+                        },
+                        "provenance": "#/components/schemas/Provenance",
+                        "report": "#/components/schemas/Report",
+                        "evaluation_protocol": "#/components/schemas/EvaluationProtocol",
+                        "claim_set": "#/components/schemas/ClaimSet"
+                      }
+                    }
+                  },
+                  "title": "Response Artifact Previews Api V1 Projects  Pid  Artifact Previews Get"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Content Too Large"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Content"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        }
+      }
+    },
     "/api/v1/projects/{pid}/artifacts/{aid}": {
       "get": {
         "summary": "Get Artifact",
@@ -5829,6 +6058,271 @@
           "limitations"
         ],
         "title": "BenchmarkInput"
+      },
+      "BenchmarkMethodPreview": {
+        "properties": {
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "seed": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Seed"
+          },
+          "parameters": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "$ref": "#/components/schemas/JsonValue"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Parameters"
+          },
+          "validation_search": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/ValidationSearchPreview"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Validation Search"
+          },
+          "training_description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Training Description"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "name",
+          "seed",
+          "parameters",
+          "validation_search",
+          "training_description"
+        ],
+        "title": "BenchmarkMethodPreview"
+      },
+      "BenchmarkPreview": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "const": "benchmark_preview",
+            "title": "Kind",
+            "default": "benchmark_preview"
+          },
+          "schema_version": {
+            "type": "string",
+            "const": "1.0",
+            "title": "Schema Version",
+            "default": "1.0"
+          },
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "project_id": {
+            "type": "string",
+            "title": "Project Id"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "parents": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Parents"
+          },
+          "software": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object",
+            "title": "Software"
+          },
+          "dataset_id": {
+            "type": "string",
+            "title": "Dataset Id"
+          },
+          "split_id": {
+            "type": "string",
+            "title": "Split Id"
+          },
+          "model": {
+            "type": "string",
+            "enum": [
+              "mean",
+              "ridge"
+            ],
+            "title": "Model"
+          },
+          "seed": {
+            "type": "integer",
+            "title": "Seed"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "succeeded",
+              "failed"
+            ],
+            "title": "Status"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          },
+          "config": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/JsonValue"
+            },
+            "type": "object",
+            "title": "Config"
+          },
+          "protocol_ids": {
+            "items": {
+              "type": "string",
+              "maxLength": 160,
+              "minLength": 1
+            },
+            "type": "array",
+            "title": "Protocol Ids"
+          },
+          "validation_metrics": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "type": "number"
+                },
+                "propertyNames": {
+                  "enum": [
+                    "mae",
+                    "rmse",
+                    "r2",
+                    "group_mae",
+                    "group_rmse",
+                    "rows",
+                    "groups"
+                  ]
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Validation Metrics"
+          },
+          "method": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/BenchmarkMethodPreview"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "verification_scope": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Verification Scope"
+          },
+          "test_results": {
+            "type": "string",
+            "enum": [
+              "withheld",
+              "not_produced"
+            ],
+            "title": "Test Results"
+          },
+          "holdout_exposure": {
+            "type": "string",
+            "enum": [
+              "unexposed",
+              "exposed",
+              "unknown"
+            ],
+            "title": "Holdout Exposure"
+          },
+          "bundle_available": {
+            "type": "boolean",
+            "title": "Bundle Available"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "project_id",
+          "created_at",
+          "parents",
+          "software",
+          "dataset_id",
+          "split_id",
+          "model",
+          "seed",
+          "status",
+          "error",
+          "config",
+          "protocol_ids",
+          "validation_metrics",
+          "method",
+          "verification_scope",
+          "test_results",
+          "holdout_exposure",
+          "bundle_available"
+        ],
+        "title": "BenchmarkPreview",
+        "description": "Manual list projection of a benchmark. Test-partition output is withheld and\nthe projection itself records no holdout exposure; the complete artifact detail\nremains the explicit, exposure-recording reveal path."
       },
       "Capabilities": {
         "properties": {
@@ -10864,6 +11358,28 @@
           "msg"
         ],
         "title": "ValidationIssue"
+      },
+      "ValidationSearchPreview": {
+        "properties": {
+          "parameters": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/JsonValue"
+            },
+            "type": "object",
+            "title": "Parameters"
+          },
+          "validation_primary": {
+            "type": "number",
+            "title": "Validation Primary"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "parameters",
+          "validation_primary"
+        ],
+        "title": "ValidationSearchPreview"
       },
       "ActionSummary": {
         "additionalProperties": false,

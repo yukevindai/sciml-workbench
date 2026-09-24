@@ -1,8 +1,11 @@
 """Bounded B09 projections, separate from immutable scientific artifacts."""
+from datetime import datetime
 from typing import Annotated, Literal
-from pydantic import AwareDatetime, Field, model_validator
+from pydantic import AwareDatetime, Field, JsonValue, model_validator
 from .contract_core import ContractModel, Digest, Identifier
-from .http_contracts import JobResponse
+from .contracts import Audit, Evidence, Provenance, Report, Split
+from .http_contracts import IntakeDataset, IntakeFailure, JobResponse
+from .scientific_contracts import ClaimSet, EvaluationProtocol
 
 
 class ExternalReceiptProjection(ContractModel):
@@ -87,6 +90,57 @@ class EvaluationStatusView(ContractModel):
     limitation: str
 
 
+ScalarMetric = Literal["mae", "rmse", "r2", "group_mae", "group_rmse", "rows", "groups"]
+
+
+class ValidationSearchPreview(ContractModel):
+    parameters: dict[str, JsonValue]
+    validation_primary: float
+
+
+class BenchmarkMethodPreview(ContractModel):
+    name: str | None
+    seed: int | None
+    parameters: dict[str, JsonValue] | None
+    validation_search: list[ValidationSearchPreview] | None
+    training_description: str | None
+
+
+class BenchmarkPreview(ContractModel):
+    """Manual list projection of a benchmark. Test-partition output is withheld and
+    the projection itself records no holdout exposure; the complete artifact detail
+    remains the explicit, exposure-recording reveal path."""
+    kind: Literal["benchmark_preview"] = "benchmark_preview"
+    schema_version: Literal["1.0"] = "1.0"
+    id: str
+    project_id: str
+    created_at: datetime
+    parents: list[str]
+    software: dict[str, str]
+    dataset_id: str
+    split_id: str
+    model: Literal["mean", "ridge"]
+    seed: int
+    status: Literal["succeeded", "failed"]
+    error: str | None
+    config: dict[str, JsonValue]
+    protocol_ids: list[Identifier]
+    validation_metrics: dict[ScalarMetric, float] | None
+    method: BenchmarkMethodPreview | None
+    verification_scope: str | None
+    test_results: Literal["withheld", "not_produced"]
+    holdout_exposure: Literal["unexposed", "exposed", "unknown"]
+    bundle_available: bool
+
+    @model_validator(mode="after")
+    def withheld_only_when_computed(self):
+        if (self.test_results == "withheld") != (self.status == "succeeded"):
+            raise ValueError("Only succeeded benchmarks have withheld test output")
+        if self.status == "failed" and (self.validation_metrics is not None or self.method is not None):
+            raise ValueError("Failed benchmarks have no scientific result projection")
+        return self
+
+
 class EvaluationView(ContractModel):
     artifact_id: Identifier
     protocol_id: Identifier
@@ -104,3 +158,7 @@ class EvaluationView(ContractModel):
         if self.test_visible and self.evaluation.state != "released":
             raise ValueError("Test projection requires a released comparison")
         return self
+
+
+ArtifactPreview = Annotated[IntakeDataset | Audit | Split | BenchmarkPreview | Evidence | IntakeFailure | Provenance
+                            | Report | EvaluationProtocol | ClaimSet, Field(discriminator="kind")]

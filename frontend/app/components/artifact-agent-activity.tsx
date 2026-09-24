@@ -8,10 +8,11 @@ import { api } from '../lib/api';
 import { parseResearchRuns } from '../lib/decode';
 import { auditHref } from '../lib/audit';
 import { splitHref } from '../lib/split';
+import { benchmarkHref } from '../lib/benchmark';
 import { kinds } from '../lib/types';
 import { Alert, Badge, Panel } from './ui';
 
-export function ArtifactAgentActivity({ wb, kind }: { wb: Workbench; kind: 'audit' | 'split' }) {
+export function ArtifactAgentActivity({ wb, kind }: { wb: Workbench; kind: 'audit' | 'split' | 'benchmark' }) {
   const [runs, setRuns] = useState<ResearchRun[]>([]);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
@@ -30,7 +31,8 @@ export function ArtifactAgentActivity({ wb, kind }: { wb: Workbench; kind: 'audi
       .finally(() => { if (!controller.signal.aborted) setLoading(false); });
     return () => controller.abort();
   }, [wb.projectId, revision]);
-  const artifacts = kind === 'audit' ? kinds(wb.artifacts, 'audit') : kinds(wb.artifacts, 'split');
+  const artifacts = kind === 'audit' ? kinds(wb.artifacts, 'audit') : kind === 'split' ? kinds(wb.artifacts, 'split') : kinds(wb.artifacts, 'benchmark_preview');
+  const href = kind === 'audit' ? auditHref : kind === 'split' ? splitHref : benchmarkHref;
   const relevant = runs.filter(run => run.inputs.artifact_ids.includes(wb.selectedDataset?.id ?? '')
     || run.result_artifact_ids.some(id => artifacts.some(artifact => artifact.id === id && artifact.dataset_id === wb.selectedDataset?.id)));
   return <Panel title="Agent activity for this dataset" description="Read-only snapshot of the first 50 project runs. Refresh to update; this is not a complete activity history or a live stream.">
@@ -43,7 +45,7 @@ export function ArtifactAgentActivity({ wb, kind }: { wb: Workbench; kind: 'audi
         <p className="field-hint">Run {run.id}. Run status does not establish scientific validity.</p>
         <ul>{run.result_artifact_ids.map(id => {
           const artifact = artifacts.find(value => value.id === id);
-          return artifact ? <li key={id}><Link className="text-link" href={kind === 'audit' ? auditHref(wb.projectId, id) : splitHref(wb.projectId, id)}>Open {kind} {id}</Link></li> : null;
+          return artifact ? <li key={id}><Link className="text-link" href={href(wb.projectId, id)}>Open {kind} {id}</Link></li> : null;
         })}</ul>
       </div>)}
       <div><button className="button button--secondary" disabled={loading || !wb.projectId} onClick={() => setRevision(value => value + 1)}>Refresh agent activity</button></div>

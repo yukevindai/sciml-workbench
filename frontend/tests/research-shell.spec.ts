@@ -13,7 +13,7 @@ async function mockWorkspace(page: Page, override?: (route: Route, path: string)
     if (override && await override(route, path)) return;
     if (route.request().method() !== 'GET') throw new Error('Shell must not submit work');
     const body = path === '/api/projects' ? [project, second]
-      : path === `/api/projects/${project.id}/artifacts` ? [dataset]
+      : path === `/api/projects/${project.id}/artifact-previews` ? [dataset]
       : [];
     await route.fulfill({ json: body });
   });
@@ -65,7 +65,7 @@ test('loading does not masquerade as an empty workspace; errors can be retried',
 test('project loading and retry reject malformed data before rendering it', async ({ page }) => {
   let good = false;
   await mockWorkspace(page, async (route, path) => {
-    if (!path.endsWith('/artifacts')) return false;
+    if (!path.endsWith('/artifact-previews')) return false;
     await route.fulfill({ json: good ? [] : [{ ...dataset, schema_version: '999.0' }] });
     return true;
   });
@@ -82,7 +82,7 @@ test('late project responses cannot replace a newly selected project', async ({ 
   const gate = new Promise<void>(resolve => { release = resolve; });
   let started = false;
   await mockWorkspace(page, async (route, path) => {
-    if (path !== `/api/projects/${project.id}/artifacts`) return false;
+    if (path !== `/api/projects/${project.id}/artifact-previews`) return false;
     started = true;
     await gate;
     await route.fulfill({ json: [dataset] });
@@ -93,7 +93,7 @@ test('late project responses cannot replace a newly selected project', async ({ 
   await expect(page.getByRole('status')).toHaveText('Loading project data…');
   await page.getByLabel('Active project', { exact: true }).selectOption(second.id);
   await expect(page.getByRole('heading', { name: second.name })).toBeVisible();
-  const lateResponse = page.waitForResponse(response => response.url().endsWith(`/projects/${project.id}/artifacts`));
+  const lateResponse = page.waitForResponse(response => response.url().endsWith(`/projects/${project.id}/artifact-previews`));
   release();
   await lateResponse;
   await expect(page.getByLabel('Active dataset', { exact: true })).toBeDisabled();
@@ -106,7 +106,7 @@ test('late project responses cannot replace a newly selected project', async ({ 
 test('dataset selection survives navigation and refresh and is scoped by project', async ({ page }) => {
   const another = { ...dataset, id: 'another-dataset', filename: 'another.csv' };
   await mockWorkspace(page, async (route, path) => {
-    if (path !== `/api/projects/${project.id}/artifacts`) return false;
+    if (path !== `/api/projects/${project.id}/artifact-previews`) return false;
     await route.fulfill({ json: [dataset, another] });
     return true;
   });
@@ -123,7 +123,7 @@ test('dataset selection survives navigation and refresh and is scoped by project
 test('a polling outage retains the last validated project data and clears on retry', async ({ page }) => {
   let outage = false;
   await mockWorkspace(page, async (route, path) => {
-    if (!outage || !path.endsWith('/artifacts')) return false;
+    if (!outage || !path.endsWith('/artifact-previews')) return false;
     await route.fulfill({ status: 503, json: { detail: 'Connection lost' } });
     return true;
   });
@@ -140,7 +140,7 @@ test('a polling outage retains the last validated project data and clears on ret
 test('foreign project payloads are rejected and queued jobs are not called running', async ({ page }) => {
   let foreign = true;
   await mockWorkspace(page, async (route, path) => {
-    if (path.endsWith('/artifacts')) {
+    if (path.endsWith('/artifact-previews')) {
       await route.fulfill({ json: [{ ...dataset, project_id: foreign ? second.id : project.id }] });
       return true;
     }

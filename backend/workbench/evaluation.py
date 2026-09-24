@@ -208,7 +208,7 @@ def evaluation_status(session, scope, protocol_id):
     history = exposure_history(session, scope.project_id, row.dataset_sha256, row.split_sha256)
     return EvaluationStatusView(**{"protocol_id": protocol_id, "state": "released" if row.released_at else "sealed",
         "exploratory": row.exploratory, "clean_holdout_eligible": not row.exploratory and not history,
-        "exposure_status": "exposed" if any(h.via != "legacy_unknown" for h in history) else "unknown" if history else "unexposed",
+        "exposure_status": holdout_status(history),
         "exposure_event_ids": [h.id for h in history if getattr(scope, "audience", "manual") != "agent"
                                or h.artifact_id in scope.artifact_ids], "limitation": LIMITATION}).model_dump(mode="json")
 
@@ -256,6 +256,71 @@ def evaluation_view(session, scope, benchmark):
     return EvaluationView(**{"artifact_id": benchmark.id, "protocol_id": row.protocol_id, "status": benchmark.status,
             "model": benchmark.model, "seed": benchmark.seed, "metrics": safe,
             "test_visible": "test" in partitions, "evaluation": evaluation_status(session, scope, row.protocol_id)}).model_dump(mode="json")
+
+
+def holdout_status(history):
+    return "exposed" if any(h.via != "legacy_unknown" for h in history) else "unknown" if history else "unexposed"
+
+
+def _finite(value):
+    return type(value) in (int, float) and math.isfinite(value)
+
+
+def _method_preview(method):
+    """Allowlist validation-time method facts; anything unexpected stays in the artifact."""
+    if not isinstance(method, dict):
+        return None
+    search = method.get("validation_search")
+    if not (isinstance(search, list) and all(isinstance(item, dict) and set(item) == {"parameters", "validation_primary"}
+                                             and isinstance(item["parameters"], dict) and _finite(item["validation_primary"])
+                                             for item in search)):
+        search = None
+    text = lambda key: method.get(key) if isinstance(method.get(key), str) else None  # noqa: E731
+    return {"name": text("name"), "seed": method.get("seed") if type(method.get("seed")) is int else None,
+            "parameters": method.get("parameters") if isinstance(method.get("parameters"), dict) else None,
+            "validation_search": search, "training_description": text("training_description")}
+
+
+def benchmark_preview(session, pid, benchmark, *, resolver=None, bindings=None):
+    """Manual list projection that neither contains nor exposes test-partition output.
+
+    Hashes and run identifiers computed over test predictions are withheld as
+    well; the complete artifact stays behind the exposure-recording detail read.
+    """
+    from .read_contracts import BenchmarkPreview
+    resolver = resolver or ArtifactResolver(session, pid)
+    data = resolver.resolve(benchmark.dataset_id, "dataset")
+    split = resolver.resolve(benchmark.split_id, "split")
+    history = exposure_history(session, pid, data.sha256, split_fingerprint(split))
+    if bindings is None:
+        bindings = protocol_bindings(session, pid)
+    succeeded = benchmark.status == "succeeded"
+    result = benchmark.result if succeeded else {}
+    metrics = result.get("metrics")
+    validation = metrics.get("validation") if isinstance(metrics, dict) else None
+    return BenchmarkPreview(**{
+        "id": benchmark.id, "project_id": benchmark.project_id, "created_at": benchmark.created_at,
+        "parents": benchmark.parents, "software": benchmark.software, "dataset_id": benchmark.dataset_id,
+        "split_id": benchmark.split_id, "model": benchmark.model, "seed": benchmark.seed, "status": benchmark.status,
+        "error": benchmark.error, "config": benchmark.config, "protocol_ids": bindings.get(benchmark.id, []),
+        "validation_metrics": {key: value for key, value in validation.items() if key in SCALAR_METRICS and _finite(value)}
+        if succeeded and isinstance(validation, dict) else None,
+        "method": _method_preview(result.get("method")) if succeeded else None,
+        "verification_scope": result.get("verification_scope") if isinstance(result.get("verification_scope"), str) else None,
+        "test_results": "withheld" if succeeded else "not_produced",
+        "holdout_exposure": holdout_status(history), "bundle_available": benchmark.bundle_key is not None,
+    }).model_dump(mode="json")
+
+
+def protocol_bindings(session, pid):
+    """Sealed comparisons whose accepted candidate job published each benchmark."""
+    bound = {}
+    for protocol_id, result_id in session.execute(select(EvaluationJobRow.protocol_id, JobRow.result_id)
+            .join(JobRow, (JobRow.id == EvaluationJobRow.job_id) & (JobRow.project_id == EvaluationJobRow.project_id))
+            .where(EvaluationJobRow.project_id == pid, JobRow.result_id.is_not(None))
+            .order_by(EvaluationJobRow.protocol_id)):
+        bound.setdefault(result_id, []).append(protocol_id)
+    return bound
 
 
 def search_failure_memory(db, settings, scope, query="", **filters):

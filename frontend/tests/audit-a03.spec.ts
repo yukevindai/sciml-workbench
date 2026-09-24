@@ -40,7 +40,7 @@ async function workspace(page: Page, artifacts: Artifact[] = [dataset, audit, se
     if (override && await override(route, pathname)) return;
     if (route.request().method() !== 'GET') throw new Error(`Unexpected mutation: ${pathname}`);
     await route.fulfill({ json: pathname === '/api/projects' ? [project, other]
-      : pathname === `/api/projects/${project.id}/artifacts` ? artifacts
+      : pathname === `/api/projects/${project.id}/artifact-previews` ? artifacts
         : pathname === `/api/projects/${project.id}/jobs` ? [job]
           : pathname === `/api/projects/${project.id}/agent-runs` ? [run] : [] });
   });
@@ -148,7 +148,7 @@ test('manual audit submits the selected dataset and displays its completed findi
       await route.fulfill({ json: { ...job, state: 'queued', result_id: null, started_at: null, finished_at: null } });
       return true;
     }
-    if (pathname.endsWith('/artifacts')) {
+    if (pathname.endsWith('/artifact-previews')) {
       await route.fulfill({ json: submitted ? [dataset, audit] : [dataset] }); return true;
     }
     if (pathname.endsWith('/jobs')) {

@@ -44,10 +44,15 @@ and upstream diagnostics, and provides every row assignment through a paginated
 table and JSON download. The manual form resets on dataset changes and only
 offers audits of that dataset. See the [A04 handoff](docs/tickets/A04.md).
 
+Benchmarks show each run's frozen task card, accepted-warning rationale, sealed
+comparison context, validation results and outcome history. Test scores are
+withheld until you confirm a reveal, which records holdout exposure. See the
+[A05 handoff](docs/tickets/A05.md).
+
 1. **Projects:** create a project and describe its research question.
 2. **Dataset audit:** upload `examples/demo.csv`, then explicitly choose **Use bundled synthetic demo declarations** for this fixture. Ordinary uploads start with unknown source metadata and can be audited without a license declaration. Click **Run audit** using the prefilled configuration.
 3. **Split designer:** click **Generate partition**. SciSplit produces a 60/20/20 requested train/validation/test split by generated family; actual group-constrained counts are visualized.
-4. **Benchmarks:** run the prefilled ridge baseline. All 60 CSV rows are used by the upstream admission and evaluation protocol; the frontend shows test metrics. The complete record includes validation results and model configuration.
+4. **Benchmarks:** run the prefilled ridge baseline. All 60 CSV rows are used by the upstream admission and evaluation protocol. The run shows validation metrics and the validation grid; choose **Reveal test results…** and confirm to read the held-out scores, which records exposure of that holdout.
 5. **Failure memory:** select the run, explain why it was unsuccessful for your research objective, and record uncertainty. For this fixture, a valid example is “The synthetic demonstration cannot establish empirical predictive performance.” This assessment does not change execution status or claim an experimental failure.
 6. To exercise an **execution failure**, run another benchmark with `units: {}` in the task card. Upstream admission rejects missing units. Select that failed run and save the reason to Failure Memory.
 7. **Evidence:** attach a PDF to preserve its original bytes, then optionally choose **Extract text**. The filename becomes the extraction title. Originals remain downloadable even if extraction fails. Ingestion is not OCR, figure digitization or automatic claim verification.

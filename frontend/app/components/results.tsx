@@ -2,7 +2,7 @@
 
 import { AlertTriangle, CircleAlert, Info } from 'lucide-react';
 import type { AuditFinding } from '../lib/types';
-import { formatMetric, humanise } from '../lib/format';
+
 import { Badge, JsonBox } from './ui';
 
 const SEVERITY_ICON = { error: CircleAlert, warning: AlertTriangle, info: Info };
@@ -57,25 +57,5 @@ export function FindingSummary({ findings }: { findings: AuditFinding[] }) {
       {counts.info > 0 && <Badge state={`${counts.info} note${counts.info === 1 ? '' : 's'}`} tone="badge--info" />}
       {counts.unknown > 0 && <Badge state={`${counts.unknown} unknown severity`} />}
     </div>
-  );
-}
-
-/** Held-out test scores. Validation numbers stay in the full artifact and the
- *  exported report; only the test split is promoted here. */
-export function MetricGrid({ metrics }: { metrics: Record<string, unknown> }) {
-  const numeric = Object.entries(metrics).filter(
-    (entry): entry is [string, number] => typeof entry[1] === 'number'
-  );
-  if (!numeric.length) return null;
-
-  return (
-    <dl className="metrics">
-      {numeric.map(([name, value]) => (
-        <div className="metric" key={name}>
-          <dt className="metric-name">{humanise(name)}</dt>
-          <dd className="metric-value">{formatMetric(value)}</dd>
-        </div>
-      ))}
-    </dl>
   );
 }
