@@ -1,0 +1,619 @@
+{
+ "project": {
+  "id": "9c1a2d74-3a10-41bd-9e8e-4edbdae38b2b",
+  "name": "Evidence study",
+  "description": ""
+ },
+ "previews": [
+  {
+   "schema_version": "1.0",
+   "id": "d8990726-e8fe-4dba-a725-ceb967db4fb0",
+   "project_id": "9c1a2d74-3a10-41bd-9e8e-4edbdae38b2b",
+   "created_at": "2026-09-24T21:58:23.143679Z",
+   "parents": [],
+   "software": {
+    "chemdata-auditor": "0.3.0@eff3ed3c43ec71e9ceecabc1f04d1dfb5c91c116",
+    "cheme-ml-benchmarks": "0.1.0@db02d8963725a1d406b9b07eb6f4cc3436fbb082",
+    "scientific-evidence-engine": "0.1.0@09f5ec810e8f04bf8d233ec12eb9448342ee5121",
+    "experiment-failure-memory": "0.1.0@63492787cbbea6d03662db63f2d958a6eec8d804",
+    "workbench": "0.1.0"
+   },
+   "kind": "evidence",
+   "title": "text-source.pdf",
+   "pdf_key": "0a094a81c8898a824c2218009d20a345e5e6fcc5f35bb6df636766de62918121",
+   "sha256": "0a094a81c8898a824c2218009d20a345e5e6fcc5f35bb6df636766de62918121",
+   "result": {
+    "schema_version": "1.0",
+    "paper_id": "paper_0a094a81c8898a824c2218009d20a345e5e6fcc5f35bb6df636766de62918121",
+    "sha256": "0a094a81c8898a824c2218009d20a345e5e6fcc5f35bb6df636766de62918121",
+    "metadata": {
+     "title": "text-source.pdf"
+    },
+    "metadata_status": "user_supplied_unverified",
+    "page_count": 2,
+    "original": "original.pdf",
+    "pages": [
+     {
+      "page": 1,
+      "text_path": "pages/0001.txt",
+      "text_sha256": "a5a0b1de7ee09bc66f77e3a929687972becb2f74d99eb59865113ec2e09dd759",
+      "size_points": [
+       595.2755737304688,
+       841.8897705078125
+      ],
+      "extraction": "pdfium_text_layer",
+      "has_text": true
+     },
+     {
+      "page": 2,
+      "text_path": "pages/0002.txt",
+      "text_sha256": "e31387dfbb6dc578f2588dcf0473c9a756e1fe173086c235915b190e4debb600",
+      "size_points": [
+       595.2755737304688,
+       841.8897705078125
+      ],
+      "extraction": "pdfium_text_layer",
+      "has_text": true
+     }
+    ],
+    "software": {
+     "scientific-evidence-engine": "0.1.0",
+     "numpy": "2.5.3",
+     "Pillow": "12.3.0",
+     "pypdfium2": "5.13.0",
+     "pint": "0.26.1"
+    }
+   },
+   "bundle_key": "29e0b9540fbaeb6ee3add2a1d059ac5c8234b8fbd8b6a174d61822b000b18ab6"
+  },
+  {
+   "schema_version": "1.0",
+   "id": "ec39a286-4da0-4b87-9e09-6b3c48a06cac",
+   "project_id": "9c1a2d74-3a10-41bd-9e8e-4edbdae38b2b",
+   "created_at": "2026-09-24T21:58:23.547121Z",
+   "parents": [],
+   "software": {
+    "chemdata-auditor": "0.3.0@eff3ed3c43ec71e9ceecabc1f04d1dfb5c91c116",
+    "cheme-ml-benchmarks": "0.1.0@db02d8963725a1d406b9b07eb6f4cc3436fbb082",
+    "scientific-evidence-engine": "0.1.0@09f5ec810e8f04bf8d233ec12eb9448342ee5121",
+    "experiment-failure-memory": "0.1.0@63492787cbbea6d03662db63f2d958a6eec8d804",
+    "workbench": "0.1.0"
+   },
+   "kind": "provenance",
+   "activity": "evidence",
+   "inputs": [],
+   "outputs": [
+    "d8990726-e8fe-4dba-a725-ceb967db4fb0"
+   ],
+   "parameters": {
+    "pdf_key": "0a094a81c8898a824c2218009d20a345e5e6fcc5f35bb6df636766de62918121",
+    "title": "text-source.pdf",
+    "material_id": "aabd059b-603a-4536-b577-ac540e1b5dcb"
+   }
+  },
+  {
+   "schema_version": "1.0",
+   "id": "c00cb505-336a-48b2-a8b9-80a6002e8b99",
+   "project_id": "9c1a2d74-3a10-41bd-9e8e-4edbdae38b2b",
+   "created_at": "2026-09-24T21:58:26.550917Z",
+   "parents": [],
+   "software": {
+    "chemdata-auditor": "0.3.0@eff3ed3c43ec71e9ceecabc1f04d1dfb5c91c116",
+    "cheme-ml-benchmarks": "0.1.0@db02d8963725a1d406b9b07eb6f4cc3436fbb082",
+    "scientific-evidence-engine": "0.1.0@09f5ec810e8f04bf8d233ec12eb9448342ee5121",
+    "experiment-failure-memory": "0.1.0@63492787cbbea6d03662db63f2d958a6eec8d804",
+    "workbench": "0.1.0"
+   },
+   "kind": "evidence",
+   "title": "mixed-source.pdf",
+   "pdf_key": "b158c4a1c6efae136e28f0a752f0f6cda4efe69f9a80d8daa83beaabc2940191",
+   "sha256": "b158c4a1c6efae136e28f0a752f0f6cda4efe69f9a80d8daa83beaabc2940191",
+   "result": {
+    "schema_version": "1.0",
+    "paper_id": "paper_b158c4a1c6efae136e28f0a752f0f6cda4efe69f9a80d8daa83beaabc2940191",
+    "sha256": "b158c4a1c6efae136e28f0a752f0f6cda4efe69f9a80d8daa83beaabc2940191",
+    "metadata": {
+     "title": "mixed-source.pdf"
+    },
+    "metadata_status": "user_supplied_unverified",
+    "page_count": 2,
+    "original": "original.pdf",
+    "pages": [
+     {
+      "page": 1,
+      "text_path": "pages/0001.txt",
+      "text_sha256": "2473884532fd5e1f18c099a6f2b17bb688644de84af78d757478f7cc3d212f5d",
+      "size_points": [
+       595.2755737304688,
+       841.8897705078125
+      ],
+      "extraction": "pdfium_text_layer",
+      "has_text": true
+     },
+     {
+      "page": 2,
+      "text_path": "pages/0002.txt",
+      "text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_points": [
+       595.2755737304688,
+       841.8897705078125
+      ],
+      "extraction": "pdfium_text_layer",
+      "has_text": false
+     }
+    ],
+    "software": {
+     "scientific-evidence-engine": "0.1.0",
+     "numpy": "2.5.3",
+     "Pillow": "12.3.0",
+     "pypdfium2": "5.13.0",
+     "pint": "0.26.1"
+    }
+   },
+   "bundle_key": "c4aa3833d09dbbe5b0e2d4a8aa4e2da0c0354476d0604810cea62bc4a8b46cb5"
+  },
+  {
+   "schema_version": "1.0",
+   "id": "52d3b0af-6be6-483e-912f-725b3c9235ca",
+   "project_id": "9c1a2d74-3a10-41bd-9e8e-4edbdae38b2b",
+   "created_at": "2026-09-24T21:58:26.945315Z",
+   "parents": [],
+   "software": {
+    "chemdata-auditor": "0.3.0@eff3ed3c43ec71e9ceecabc1f04d1dfb5c91c116",
+    "cheme-ml-benchmarks": "0.1.0@db02d8963725a1d406b9b07eb6f4cc3436fbb082",
+    "scientific-evidence-engine": "0.1.0@09f5ec810e8f04bf8d233ec12eb9448342ee5121",
+    "experiment-failure-memory": "0.1.0@63492787cbbea6d03662db63f2d958a6eec8d804",
+    "workbench": "0.1.0"
+   },
+   "kind": "provenance",
+   "activity": "evidence",
+   "inputs": [],
+   "outputs": [
+    "c00cb505-336a-48b2-a8b9-80a6002e8b99"
+   ],
+   "parameters": {
+    "pdf_key": "b158c4a1c6efae136e28f0a752f0f6cda4efe69f9a80d8daa83beaabc2940191",
+    "title": "mixed-source.pdf",
+    "material_id": "b4a7a794-761b-468f-be87-8d9229e8ee57"
+   }
+  },
+  {
+   "schema_version": "1.0",
+   "id": "b832025a-5904-4623-acbd-a483e7e48f57",
+   "project_id": "9c1a2d74-3a10-41bd-9e8e-4edbdae38b2b",
+   "created_at": "2026-09-24T21:58:29.962043Z",
+   "parents": [],
+   "software": {
+    "chemdata-auditor": "0.3.0@eff3ed3c43ec71e9ceecabc1f04d1dfb5c91c116",
+    "cheme-ml-benchmarks": "0.1.0@db02d8963725a1d406b9b07eb6f4cc3436fbb082",
+    "scientific-evidence-engine": "0.1.0@09f5ec810e8f04bf8d233ec12eb9448342ee5121",
+    "experiment-failure-memory": "0.1.0@63492787cbbea6d03662db63f2d958a6eec8d804",
+    "workbench": "0.1.0"
+   },
+   "kind": "evidence",
+   "title": "scanned-source.pdf",
+   "pdf_key": "bd93616da2fcc8d34d15271b2bb4481ba99d0048ef45f36bd1505deb834cae5d",
+   "sha256": "bd93616da2fcc8d34d15271b2bb4481ba99d0048ef45f36bd1505deb834cae5d",
+   "result": {
+    "schema_version": "1.0",
+    "paper_id": "paper_bd93616da2fcc8d34d15271b2bb4481ba99d0048ef45f36bd1505deb834cae5d",
+    "sha256": "bd93616da2fcc8d34d15271b2bb4481ba99d0048ef45f36bd1505deb834cae5d",
+    "metadata": {
+     "title": "scanned-source.pdf"
+    },
+    "metadata_status": "user_supplied_unverified",
+    "page_count": 1,
+    "original": "original.pdf",
+    "pages": [
+     {
+      "page": 1,
+      "text_path": "pages/0001.txt",
+      "text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_points": [
+       595.2755737304688,
+       841.8897705078125
+      ],
+      "extraction": "pdfium_text_layer",
+      "has_text": false
+     }
+    ],
+    "software": {
+     "scientific-evidence-engine": "0.1.0",
+     "numpy": "2.5.3",
+     "Pillow": "12.3.0",
+     "pypdfium2": "5.13.0",
+     "pint": "0.26.1"
+    }
+   },
+   "bundle_key": "d91c3fef9162d3897ec11dc158d50cb8c715d87a912cfb5f1bad539d0c5f58fd"
+  },
+  {
+   "schema_version": "1.0",
+   "id": "57c40438-ef80-4924-b218-fe7b396eb723",
+   "project_id": "9c1a2d74-3a10-41bd-9e8e-4edbdae38b2b",
+   "created_at": "2026-09-24T21:58:30.371315Z",
+   "parents": [],
+   "software": {
+    "chemdata-auditor": "0.3.0@eff3ed3c43ec71e9ceecabc1f04d1dfb5c91c116",
+    "cheme-ml-benchmarks": "0.1.0@db02d8963725a1d406b9b07eb6f4cc3436fbb082",
+    "scientific-evidence-engine": "0.1.0@09f5ec810e8f04bf8d233ec12eb9448342ee5121",
+    "experiment-failure-memory": "0.1.0@63492787cbbea6d03662db63f2d958a6eec8d804",
+    "workbench": "0.1.0"
+   },
+   "kind": "provenance",
+   "activity": "evidence",
+   "inputs": [],
+   "outputs": [
+    "b832025a-5904-4623-acbd-a483e7e48f57"
+   ],
+   "parameters": {
+    "pdf_key": "bd93616da2fcc8d34d15271b2bb4481ba99d0048ef45f36bd1505deb834cae5d",
+    "title": "scanned-source.pdf",
+    "material_id": "04b64e24-3641-414e-a710-db066ab400ef"
+   }
+  },
+  {
+   "schema_version": "1.0",
+   "id": "1c439b76-4855-4671-b810-7801c23645fc",
+   "project_id": "9c1a2d74-3a10-41bd-9e8e-4edbdae38b2b",
+   "created_at": "2026-09-24T21:58:33.797647Z",
+   "parents": [
+    "d8990726-e8fe-4dba-a725-ceb967db4fb0"
+   ],
+   "software": {},
+   "kind": "claim_set",
+   "run_id": "evidence-run",
+   "revision": 1,
+   "claims": [
+    {
+     "id": "source-claim",
+     "statement": "The source reports that conductivity rose with temperature.",
+     "classification": "source_supported",
+     "source_references": [
+      {
+       "contract": "evidence_reference",
+       "schema_version": "1.0",
+       "availability": "available",
+       "source_artifact_id": "d8990726-e8fe-4dba-a725-ceb967db4fb0",
+       "source_sha256": "0a094a81c8898a824c2218009d20a345e5e6fcc5f35bb6df636766de62918121",
+       "representation_sha256": "a5a0b1de7ee09bc66f77e3a929687972becb2f74d99eb59865113ec2e09dd759",
+       "extraction_version": "pdfium_text_layer:2946016bcb32c76a5546a18eecb780056c364f34354a7f0d720ccfdfd0f219bf",
+       "locator": {
+        "kind": "text_span",
+        "unit": "unicode_codepoint",
+        "start": 5,
+        "end": 16
+       },
+       "excerpt_sha256": "6c5a6990038d66c5ecddf6c983345ed18acc416e188ff1476e3cd7201699aaed",
+       "page": 1
+      },
+      {
+       "contract": "evidence_reference",
+       "schema_version": "1.0",
+       "availability": "available",
+       "source_artifact_id": "d8990726-e8fe-4dba-a725-ceb967db4fb0",
+       "source_sha256": "0a094a81c8898a824c2218009d20a345e5e6fcc5f35bb6df636766de62918121",
+       "representation_sha256": "7a0a161215eb027ba6779270e3e6bdcec2f8d205ffe8219257543b9468430f57",
+       "extraction_version": "pdfium_text_layer:2946016bcb32c76a5546a18eecb780056c364f34354a7f0d720ccfdfd0f219bf:concatenated-pages-v1",
+       "locator": {
+        "kind": "text_span",
+        "unit": "unicode_codepoint",
+        "start": 0,
+        "end": 4
+       },
+       "excerpt_sha256": "73473dcc12b763085904a5279d048c4d5b3b008c46f1f32443b99de04aa83a14",
+       "page": null
+      }
+     ],
+     "metric_references": [],
+     "population": "Electrolyte samples described in the attached source",
+     "split_id": null,
+     "limitations": [
+      "Single laboratory",
+      "Anchor validity is not semantic support"
+     ],
+     "uncertainty": "Not independently replicated",
+     "reference_check": {
+      "status": "valid",
+      "checked_at": "2026-09-24T21:58:33.796643Z",
+      "issues": []
+     },
+     "semantic_review": {
+      "status": "not_reviewed",
+      "reviewed_snapshot_sha256": null,
+      "reviewer_assignment_id": null,
+      "explanation": null
+     }
+    },
+    {
+     "id": "interpretation",
+     "statement": "Temperature dependence may be relevant for this dataset.",
+     "classification": "interpretation",
+     "source_references": [],
+     "metric_references": [],
+     "population": "Project dataset",
+     "split_id": null,
+     "limitations": [],
+     "uncertainty": "Transfer to the project data is unverified",
+     "reference_check": {
+      "status": "valid",
+      "checked_at": "2026-09-24T21:58:33.796643Z",
+      "issues": []
+     },
+     "semantic_review": {
+      "status": "not_reviewed",
+      "reviewed_snapshot_sha256": null,
+      "reviewer_assignment_id": null,
+      "explanation": null
+     }
+    },
+    {
+     "id": "hypothesis",
+     "statement": "A temperature feature would reduce validation error.",
+     "classification": "hypothesis",
+     "source_references": [],
+     "metric_references": [],
+     "population": "Project dataset",
+     "split_id": null,
+     "limitations": [
+      "Not yet tested"
+     ],
+     "uncertainty": "Untested",
+     "reference_check": {
+      "status": "valid",
+      "checked_at": "2026-09-24T21:58:33.796643Z",
+      "issues": []
+     },
+     "semantic_review": {
+      "status": "not_reviewed",
+      "reviewed_snapshot_sha256": null,
+      "reviewer_assignment_id": null,
+      "explanation": null
+     }
+    }
+   ]
+  }
+ ],
+ "jobs": [
+  {
+   "id": "45d22e81-b773-4a9b-9761-019259e41ad4",
+   "project_id": "9c1a2d74-3a10-41bd-9e8e-4edbdae38b2b",
+   "kind": "evidence",
+   "state": "failed",
+   "result_id": null,
+   "error": "Operation did not complete; inspect its safe error code.",
+   "created_at": "2026-09-24T21:58:30.467871Z",
+   "started_at": "2026-09-24T21:58:30.479000Z",
+   "finished_at": "2026-09-24T21:58:33.736000Z"
+  },
+  {
+   "id": "e90c115a-9ddd-477c-82c3-f09a2c800232",
+   "project_id": "9c1a2d74-3a10-41bd-9e8e-4edbdae38b2b",
+   "kind": "evidence",
+   "state": "succeeded",
+   "result_id": "b832025a-5904-4623-acbd-a483e7e48f57",
+   "error": null,
+   "created_at": "2026-09-24T21:58:27.082032Z",
+   "started_at": "2026-09-24T21:58:27.099000Z",
+   "finished_at": "2026-09-24T21:58:30.411000Z"
+  },
+  {
+   "id": "b152c64a-dd03-434b-95ba-1c0ffc741bbc",
+   "project_id": "9c1a2d74-3a10-41bd-9e8e-4edbdae38b2b",
+   "kind": "evidence",
+   "state": "succeeded",
+   "result_id": "c00cb505-336a-48b2-a8b9-80a6002e8b99",
+   "error": null,
+   "created_at": "2026-09-24T21:58:23.581876Z",
+   "started_at": "2026-09-24T21:58:23.586000Z",
+   "finished_at": "2026-09-24T21:58:26.966000Z"
+  },
+  {
+   "id": "df02bf62-dda0-484e-add0-97bb1de62891",
+   "project_id": "9c1a2d74-3a10-41bd-9e8e-4edbdae38b2b",
+   "kind": "evidence",
+   "state": "succeeded",
+   "result_id": "d8990726-e8fe-4dba-a725-ceb967db4fb0",
+   "error": null,
+   "created_at": "2026-09-24T21:58:20.117697Z",
+   "started_at": "2026-09-24T21:58:20.129000Z",
+   "finished_at": "2026-09-24T21:58:23.554000Z"
+  }
+ ],
+ "materials": [
+  {
+   "id": "aabd059b-603a-4536-b577-ac540e1b5dcb",
+   "project_id": "9c1a2d74-3a10-41bd-9e8e-4edbdae38b2b",
+   "filename": "text-source.pdf",
+   "media_type": "application/pdf",
+   "sha256": "0a094a81c8898a824c2218009d20a345e5e6fcc5f35bb6df636766de62918121",
+   "dataset_id": null
+  },
+  {
+   "id": "b4a7a794-761b-468f-be87-8d9229e8ee57",
+   "project_id": "9c1a2d74-3a10-41bd-9e8e-4edbdae38b2b",
+   "filename": "mixed-source.pdf",
+   "media_type": "application/pdf",
+   "sha256": "b158c4a1c6efae136e28f0a752f0f6cda4efe69f9a80d8daa83beaabc2940191",
+   "dataset_id": null
+  },
+  {
+   "id": "04b64e24-3641-414e-a710-db066ab400ef",
+   "project_id": "9c1a2d74-3a10-41bd-9e8e-4edbdae38b2b",
+   "filename": "scanned-source.pdf",
+   "media_type": "application/pdf",
+   "sha256": "bd93616da2fcc8d34d15271b2bb4481ba99d0048ef45f36bd1505deb834cae5d",
+   "dataset_id": null
+  },
+  {
+   "id": "153555a7-e6a4-45c5-9b75-65f7e6bc3567",
+   "project_id": "9c1a2d74-3a10-41bd-9e8e-4edbdae38b2b",
+   "filename": "invalid-source.pdf",
+   "media_type": "application/pdf",
+   "sha256": "108dd538d05422301b6e8a2e546c1d4616a76ccc993263476f449a5fb4001bc0",
+   "dataset_id": null
+  }
+ ],
+ "anchors": [
+  {
+   "id": "1f31db36-9151-4ba7-a991-7183b575d254",
+   "source_artifact_id": "d8990726-e8fe-4dba-a725-ceb967db4fb0",
+   "reference": {
+    "contract": "evidence_reference",
+    "schema_version": "1.0",
+    "availability": "available",
+    "source_artifact_id": "d8990726-e8fe-4dba-a725-ceb967db4fb0",
+    "source_sha256": "0a094a81c8898a824c2218009d20a345e5e6fcc5f35bb6df636766de62918121",
+    "representation_sha256": "e31387dfbb6dc578f2588dcf0473c9a756e1fe173086c235915b190e4debb600",
+    "extraction_version": "pdfium_text_layer:2946016bcb32c76a5546a18eecb780056c364f34354a7f0d720ccfdfd0f219bf",
+    "locator": {
+     "kind": "text_span",
+     "unit": "unicode_codepoint",
+     "start": 0,
+     "end": 11
+    },
+    "excerpt_sha256": "eefc49551d6965c57a5ea784c02c14b40cb10818da3bfe1730fad7972c553225",
+    "page": 2
+   },
+   "created_at": "2026-09-24T21:58:33.789235Z"
+  }
+ ],
+ "pages": {
+  "d8990726-e8fe-4dba-a725-ceb967db4fb0/1": {
+   "source_artifact_id": "d8990726-e8fe-4dba-a725-ceb967db4fb0",
+   "source_sha256": "0a094a81c8898a824c2218009d20a345e5e6fcc5f35bb6df636766de62918121",
+   "page": 1,
+   "page_count": 2,
+   "has_text": true,
+   "text": "Café measurement: conductivity rose with temperature in this source.\r\nThe authors report a single laboratory; no replication is described.",
+   "text_sha256": "a5a0b1de7ee09bc66f77e3a929687972becb2f74d99eb59865113ec2e09dd759",
+   "representation_sha256": "a5a0b1de7ee09bc66f77e3a929687972becb2f74d99eb59865113ec2e09dd759",
+   "extraction_version": "pdfium_text_layer:2946016bcb32c76a5546a18eecb780056c364f34354a7f0d720ccfdfd0f219bf"
+  },
+  "d8990726-e8fe-4dba-a725-ceb967db4fb0/2": {
+   "source_artifact_id": "d8990726-e8fe-4dba-a725-ceb967db4fb0",
+   "source_sha256": "0a094a81c8898a824c2218009d20a345e5e6fcc5f35bb6df636766de62918121",
+   "page": 2,
+   "page_count": 2,
+   "has_text": true,
+   "text": "Second page: methods used a fixed electrolyte batch.",
+   "text_sha256": "e31387dfbb6dc578f2588dcf0473c9a756e1fe173086c235915b190e4debb600",
+   "representation_sha256": "e31387dfbb6dc578f2588dcf0473c9a756e1fe173086c235915b190e4debb600",
+   "extraction_version": "pdfium_text_layer:2946016bcb32c76a5546a18eecb780056c364f34354a7f0d720ccfdfd0f219bf"
+  },
+  "c00cb505-336a-48b2-a8b9-80a6002e8b99/1": {
+   "source_artifact_id": "c00cb505-336a-48b2-a8b9-80a6002e8b99",
+   "source_sha256": "b158c4a1c6efae136e28f0a752f0f6cda4efe69f9a80d8daa83beaabc2940191",
+   "page": 1,
+   "page_count": 2,
+   "has_text": true,
+   "text": "C05 first page: measured evidence is not inferred.",
+   "text_sha256": "2473884532fd5e1f18c099a6f2b17bb688644de84af78d757478f7cc3d212f5d",
+   "representation_sha256": "2473884532fd5e1f18c099a6f2b17bb688644de84af78d757478f7cc3d212f5d",
+   "extraction_version": "pdfium_text_layer:2946016bcb32c76a5546a18eecb780056c364f34354a7f0d720ccfdfd0f219bf"
+  },
+  "c00cb505-336a-48b2-a8b9-80a6002e8b99/2": {
+   "source_artifact_id": "c00cb505-336a-48b2-a8b9-80a6002e8b99",
+   "source_sha256": "b158c4a1c6efae136e28f0a752f0f6cda4efe69f9a80d8daa83beaabc2940191",
+   "page": 2,
+   "page_count": 2,
+   "has_text": false,
+   "text": "",
+   "text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "representation_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "extraction_version": "pdfium_text_layer:2946016bcb32c76a5546a18eecb780056c364f34354a7f0d720ccfdfd0f219bf"
+  },
+  "b832025a-5904-4623-acbd-a483e7e48f57/1": {
+   "source_artifact_id": "b832025a-5904-4623-acbd-a483e7e48f57",
+   "source_sha256": "bd93616da2fcc8d34d15271b2bb4481ba99d0048ef45f36bd1505deb834cae5d",
+   "page": 1,
+   "page_count": 1,
+   "has_text": false,
+   "text": "",
+   "text_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "representation_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "extraction_version": "pdfium_text_layer:2946016bcb32c76a5546a18eecb780056c364f34354a7f0d720ccfdfd0f219bf"
+  }
+ },
+ "citations": {
+  "0": {
+   "reference": {
+    "contract": "evidence_reference",
+    "schema_version": "1.0",
+    "availability": "available",
+    "source_artifact_id": "d8990726-e8fe-4dba-a725-ceb967db4fb0",
+    "source_sha256": "0a094a81c8898a824c2218009d20a345e5e6fcc5f35bb6df636766de62918121",
+    "representation_sha256": "a5a0b1de7ee09bc66f77e3a929687972becb2f74d99eb59865113ec2e09dd759",
+    "extraction_version": "pdfium_text_layer:2946016bcb32c76a5546a18eecb780056c364f34354a7f0d720ccfdfd0f219bf",
+    "locator": {
+     "kind": "text_span",
+     "unit": "unicode_codepoint",
+     "start": 5,
+     "end": 16
+    },
+    "excerpt_sha256": "6c5a6990038d66c5ecddf6c983345ed18acc416e188ff1476e3cd7201699aaed",
+    "page": 1
+   },
+   "span_id": null,
+   "text": "measurement",
+   "before": "Café ",
+   "after": ": conductivity rose with temperature in this source.\r\nThe authors report a single laboratory; no replication is described.",
+   "representation_length": 138
+  },
+  "1": {
+   "reference": {
+    "contract": "evidence_reference",
+    "schema_version": "1.0",
+    "availability": "available",
+    "source_artifact_id": "d8990726-e8fe-4dba-a725-ceb967db4fb0",
+    "source_sha256": "0a094a81c8898a824c2218009d20a345e5e6fcc5f35bb6df636766de62918121",
+    "representation_sha256": "7a0a161215eb027ba6779270e3e6bdcec2f8d205ffe8219257543b9468430f57",
+    "extraction_version": "pdfium_text_layer:2946016bcb32c76a5546a18eecb780056c364f34354a7f0d720ccfdfd0f219bf:concatenated-pages-v1",
+    "locator": {
+     "kind": "text_span",
+     "unit": "unicode_codepoint",
+     "start": 0,
+     "end": 4
+    },
+    "excerpt_sha256": "73473dcc12b763085904a5279d048c4d5b3b008c46f1f32443b99de04aa83a14",
+    "page": null
+   },
+   "span_id": null,
+   "text": "Café",
+   "before": "",
+   "after": " measurement: conductivity rose with temperature in this source.\r\nThe authors report a single laboratory; no replication is described.Second page: methods used a fixed electrolyte batch.",
+   "representation_length": 190
+  }
+ },
+ "anchor_span": {
+  "reference": {
+   "contract": "evidence_reference",
+   "schema_version": "1.0",
+   "availability": "available",
+   "source_artifact_id": "d8990726-e8fe-4dba-a725-ceb967db4fb0",
+   "source_sha256": "0a094a81c8898a824c2218009d20a345e5e6fcc5f35bb6df636766de62918121",
+   "representation_sha256": "e31387dfbb6dc578f2588dcf0473c9a756e1fe173086c235915b190e4debb600",
+   "extraction_version": "pdfium_text_layer:2946016bcb32c76a5546a18eecb780056c364f34354a7f0d720ccfdfd0f219bf",
+   "locator": {
+    "kind": "text_span",
+    "unit": "unicode_codepoint",
+    "start": 0,
+    "end": 11
+   },
+   "excerpt_sha256": "eefc49551d6965c57a5ea784c02c14b40cb10818da3bfe1730fad7972c553225",
+   "page": 2
+  },
+  "span_id": "1f31db36-9151-4ba7-a991-7183b575d254",
+  "text": "Second page",
+  "before": "",
+  "after": ": methods used a fixed electrolyte batch.",
+  "representation_length": 52
+ },
+ "ids": {
+  "claim_set": "1c439b76-4855-4671-b810-7801c23645fc",
+  "anchor": "1f31db36-9151-4ba7-a991-7183b575d254",
+  "text": "d8990726-e8fe-4dba-a725-ceb967db4fb0",
+  "mixed": "c00cb505-336a-48b2-a8b9-80a6002e8b99",
+  "scanned": "b832025a-5904-4623-acbd-a483e7e48f57"
+ }
+}

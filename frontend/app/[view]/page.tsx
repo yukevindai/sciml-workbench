@@ -10,6 +10,13 @@ export default async function Page({ params, searchParams }: { params: Promise<{
   const audit = typeof query.audit === 'string' ? query.audit : undefined;
   const split = typeof query.split === 'string' ? query.split : undefined;
   const benchmark = typeof query.benchmark === 'string' ? query.benchmark : undefined;
+  const evidence = typeof query.evidence === 'string' ? query.evidence : undefined;
+  const claimSet = typeof query.claim_set === 'string' ? query.claim_set : undefined;
+  const valid = (value: unknown, parsed: string | undefined) => value === undefined || (parsed !== undefined && /^[a-zA-Z0-9_-]+$/.test(parsed));
+  if (view === 'evidence' && (query.evidence !== undefined || query.claim_set !== undefined || query.project !== undefined)) {
+    if (!project || !/^[a-zA-Z0-9_-]+$/.test(project) || !valid(query.evidence, evidence) || !valid(query.claim_set, claimSet)) notFound();
+    return <Workbench key={`${project}:${evidence ?? ''}:${claimSet ?? ''}`} view={view} requestedProjectId={project} requestedEvidenceId={evidence} requestedClaimSetId={claimSet} />;
+  }
   if (view === 'benchmark' && (query.benchmark !== undefined || query.project !== undefined)) {
     if (!project || !/^[a-zA-Z0-9_-]+$/.test(project) || (query.benchmark !== undefined && (!benchmark || !/^[a-zA-Z0-9_-]+$/.test(benchmark)))) notFound();
     return <Workbench key={`${project}:${benchmark ?? ''}`} view={view} requestedProjectId={project} requestedBenchmarkId={benchmark} />;

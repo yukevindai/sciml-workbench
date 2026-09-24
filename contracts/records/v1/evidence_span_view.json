@@ -1,0 +1,169 @@
+{
+  "$defs": {
+    "AvailableEvidenceReference": {
+      "additionalProperties": false,
+      "properties": {
+        "contract": {
+          "const": "evidence_reference",
+          "default": "evidence_reference",
+          "title": "Contract",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "1.0",
+          "default": "1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "availability": {
+          "const": "available",
+          "title": "Availability",
+          "type": "string"
+        },
+        "source_artifact_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Source Artifact Id",
+          "type": "string"
+        },
+        "source_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Source Sha256",
+          "type": "string"
+        },
+        "representation_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Representation Sha256",
+          "type": "string"
+        },
+        "extraction_version": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Extraction Version",
+          "type": "string"
+        },
+        "locator": {
+          "$ref": "#/$defs/TextSpan"
+        },
+        "excerpt_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Excerpt Sha256",
+          "type": "string"
+        },
+        "page": {
+          "anyOf": [
+            {
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Page"
+        }
+      },
+      "required": [
+        "availability",
+        "source_artifact_id",
+        "source_sha256",
+        "representation_sha256",
+        "extraction_version",
+        "locator",
+        "excerpt_sha256"
+      ],
+      "title": "AvailableEvidenceReference",
+      "type": "object"
+    },
+    "TextSpan": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "const": "text_span",
+          "default": "text_span",
+          "title": "Kind",
+          "type": "string"
+        },
+        "unit": {
+          "const": "unicode_codepoint",
+          "default": "unicode_codepoint",
+          "title": "Unit",
+          "type": "string"
+        },
+        "start": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "title": "Start",
+          "type": "integer"
+        },
+        "end": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "title": "End",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "start",
+        "end"
+      ],
+      "title": "TextSpan",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "A reverified citation with bounded unmodified context; not semantic support.",
+  "properties": {
+    "reference": {
+      "$ref": "#/$defs/AvailableEvidenceReference"
+    },
+    "span_id": {
+      "anyOf": [
+        {
+          "maxLength": 160,
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Span Id"
+    },
+    "text": {
+      "maxLength": 4000,
+      "minLength": 1,
+      "title": "Text",
+      "type": "string"
+    },
+    "before": {
+      "maxLength": 320,
+      "title": "Before",
+      "type": "string"
+    },
+    "after": {
+      "maxLength": 320,
+      "title": "After",
+      "type": "string"
+    },
+    "representation_length": {
+      "maximum": 9007199254740991,
+      "minimum": 0,
+      "title": "Representation Length",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "reference",
+    "text",
+    "before",
+    "after",
+    "representation_length"
+  ],
+  "title": "EvidenceSpanView",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sciml-workbench.local/contracts/records/v1/evidence_span_view.json"
+}

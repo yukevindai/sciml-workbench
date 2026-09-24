@@ -2032,6 +2032,160 @@
       "title": "Evidence",
       "type": "object"
     },
+    "EvidenceAnchor": {
+      "additionalProperties": false,
+      "description": "Immutable named anchor; text is read and reverified separately.",
+      "properties": {
+        "id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "source_artifact_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Source Artifact Id",
+          "type": "string"
+        },
+        "reference": {
+          "$ref": "#/$defs/AvailableEvidenceReference"
+        },
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "source_artifact_id",
+        "reference",
+        "created_at"
+      ],
+      "title": "EvidenceAnchor",
+      "type": "object"
+    },
+    "EvidencePageText": {
+      "additionalProperties": false,
+      "description": "Exact retained PDFium text layer for one upstream page; never OCR or normalized.",
+      "properties": {
+        "source_artifact_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Source Artifact Id",
+          "type": "string"
+        },
+        "source_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Source Sha256",
+          "type": "string"
+        },
+        "page": {
+          "minimum": 1,
+          "title": "Page",
+          "type": "integer"
+        },
+        "page_count": {
+          "minimum": 1,
+          "title": "Page Count",
+          "type": "integer"
+        },
+        "has_text": {
+          "title": "Has Text",
+          "type": "boolean"
+        },
+        "text": {
+          "maxLength": 1000000,
+          "title": "Text",
+          "type": "string"
+        },
+        "text_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Text Sha256",
+          "type": "string"
+        },
+        "representation_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Representation Sha256",
+          "type": "string"
+        },
+        "extraction_version": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Extraction Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "source_artifact_id",
+        "source_sha256",
+        "page",
+        "page_count",
+        "has_text",
+        "text",
+        "text_sha256",
+        "representation_sha256",
+        "extraction_version"
+      ],
+      "title": "EvidencePageText",
+      "type": "object"
+    },
+    "EvidenceSpanView": {
+      "additionalProperties": false,
+      "description": "A reverified citation with bounded unmodified context; not semantic support.",
+      "properties": {
+        "reference": {
+          "$ref": "#/$defs/AvailableEvidenceReference"
+        },
+        "span_id": {
+          "anyOf": [
+            {
+              "maxLength": 160,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Span Id"
+        },
+        "text": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Text",
+          "type": "string"
+        },
+        "before": {
+          "maxLength": 320,
+          "title": "Before",
+          "type": "string"
+        },
+        "after": {
+          "maxLength": 320,
+          "title": "After",
+          "type": "string"
+        },
+        "representation_length": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "title": "Representation Length",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "reference",
+        "span_id",
+        "text",
+        "before",
+        "after",
+        "representation_length"
+      ],
+      "title": "EvidenceSpanView",
+      "type": "object"
+    },
     "ExecutionFailure": {
       "additionalProperties": false,
       "properties": {
@@ -6062,6 +6216,12 @@
         }
       }
     },
+    "EvidenceAnchors": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/EvidenceAnchor"
+      }
+    },
     "ResearchRuns": {
       "type": "array",
       "items": {
@@ -6108,6 +6268,15 @@
     },
     {
       "$ref": "#/$defs/ArtifactPreviews"
+    },
+    {
+      "$ref": "#/$defs/EvidencePageText"
+    },
+    {
+      "$ref": "#/$defs/EvidenceSpanView"
+    },
+    {
+      "$ref": "#/$defs/EvidenceAnchors"
     },
     {
       "$ref": "#/$defs/MaterialResponse"

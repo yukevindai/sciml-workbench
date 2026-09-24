@@ -49,13 +49,20 @@ comparison context, validation results and outcome history. Test scores are
 withheld until you confirm a reveal, which records holdout exposure. See the
 [A05 handoff](docs/tickets/A05.md).
 
+Evidence shows each ingested PDF's supplied (unverified) metadata separately from
+what was derived from the PDF: page inventory, per-page text-layer availability
+and exact page text loaded on request. Claims show their category, reference
+check and review status; opening a citation reverifies it and highlights the
+exact span, on its page when one was recorded. See the
+[A06 handoff](docs/tickets/A06.md).
+
 1. **Projects:** create a project and describe its research question.
 2. **Dataset audit:** upload `examples/demo.csv`, then explicitly choose **Use bundled synthetic demo declarations** for this fixture. Ordinary uploads start with unknown source metadata and can be audited without a license declaration. Click **Run audit** using the prefilled configuration.
 3. **Split designer:** click **Generate partition**. SciSplit produces a 60/20/20 requested train/validation/test split by generated family; actual group-constrained counts are visualized.
 4. **Benchmarks:** run the prefilled ridge baseline. All 60 CSV rows are used by the upstream admission and evaluation protocol. The run shows validation metrics and the validation grid; choose **Reveal test results…** and confirm to read the held-out scores, which records exposure of that holdout.
 5. **Failure memory:** select the run, explain why it was unsuccessful for your research objective, and record uncertainty. For this fixture, a valid example is “The synthetic demonstration cannot establish empirical predictive performance.” This assessment does not change execution status or claim an experimental failure.
 6. To exercise an **execution failure**, run another benchmark with `units: {}` in the task card. Upstream admission rejects missing units. Select that failed run and save the reason to Failure Memory.
-7. **Evidence:** attach a PDF to preserve its original bytes, then optionally choose **Extract text**. The filename becomes the extraction title. Originals remain downloadable even if extraction fails. Ingestion is not OCR, figure digitization or automatic claim verification.
+7. **Evidence:** attach a PDF to preserve its original bytes, then optionally choose **Extract text**. The filename becomes the extraction title. Originals remain downloadable even if extraction fails. After extraction, choose **Show text** on a page to read its exact text layer; pages without one say so. Ingestion is not OCR, figure digitization or automatic claim verification.
 8. **Provenance:** inspect linked artifact IDs and configurations.
 9. **Reports:** after jobs settle, generate and download the ZIP. It includes original inputs, complete artifacts, nested benchmark bundles with predictions and task cards, source evidence, failure snapshots, schemas, dependency pins, a readable report and SHA-256 manifest.
 

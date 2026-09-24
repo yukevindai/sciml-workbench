@@ -2,10 +2,10 @@
 from datetime import datetime
 from typing import Annotated, Literal
 from pydantic import AwareDatetime, Field, JsonValue, model_validator
-from .contract_core import ContractModel, Digest, Identifier
+from .contract_core import ContractModel, Counter, Digest, Identifier, Text
 from .contracts import Audit, Evidence, Provenance, Report, Split
 from .http_contracts import IntakeDataset, IntakeFailure, JobResponse
-from .scientific_contracts import ClaimSet, EvaluationProtocol
+from .scientific_contracts import AvailableEvidenceReference, ClaimSet, EvaluationProtocol
 
 
 class ExternalReceiptProjection(ContractModel):
@@ -162,3 +162,48 @@ class EvaluationView(ContractModel):
 
 ArtifactPreview = Annotated[IntakeDataset | Audit | Split | BenchmarkPreview | Evidence | IntakeFailure | Provenance
                             | Report | EvaluationProtocol | ClaimSet, Field(discriminator="kind")]
+
+
+class EvidencePageText(ContractModel):
+    """Exact retained PDFium text layer for one upstream page; never OCR or normalized."""
+    source_artifact_id: Identifier
+    source_sha256: Digest
+    page: Annotated[int, Field(strict=True, ge=1)]
+    page_count: Annotated[int, Field(strict=True, ge=1)]
+    has_text: bool
+    text: Annotated[str, Field(max_length=1_000_000)]
+    text_sha256: Digest
+    representation_sha256: Digest
+    extraction_version: Text
+
+    @model_validator(mode="after")
+    def consistent_page(self):
+        if self.page > self.page_count or bool(self.text.strip()) != self.has_text:
+            raise ValueError("Page text must match its inventory and availability")
+        return self
+
+
+class EvidenceSpanView(ContractModel):
+    """A reverified citation with bounded unmodified context; not semantic support."""
+    reference: AvailableEvidenceReference
+    span_id: Identifier | None = None
+    text: Annotated[str, Field(min_length=1, max_length=4000)]
+    before: Annotated[str, Field(max_length=320)]
+    after: Annotated[str, Field(max_length=320)]
+    representation_length: Counter
+
+    @model_validator(mode="after")
+    def consistent_span(self):
+        start, end = self.reference.locator.start, self.reference.locator.end
+        if (len(self.text) != end - start or len(self.before) != min(start, 320)
+                or end > self.representation_length or len(self.after) != min(self.representation_length - end, 320)):
+            raise ValueError("Span context must match its code-point locator")
+        return self
+
+
+class EvidenceAnchor(ContractModel):
+    """Immutable named anchor; text is read and reverified separately."""
+    id: Identifier
+    source_artifact_id: Identifier
+    reference: AvailableEvidenceReference
+    created_at: AwareDatetime

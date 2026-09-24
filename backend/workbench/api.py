@@ -1,6 +1,6 @@
 import hmac
 from typing import Literal
-from fastapi import Depends, FastAPI, Header, Request, Query
+from fastapi import Depends, FastAPI, Header, Path, Request, Query
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse, Response
 from starlette.concurrency import run_in_threadpool
@@ -31,7 +31,7 @@ from .artifacts import ArtifactResolver
 from .capabilities import capabilities
 from .projections import ReadScope, ReadService, safe_job_fields
 from .read_contracts import Capabilities, JobDetail, JobPage, ArtifactPage
-from .read_contracts import ArtifactPreview, EvaluationStatusView
+from .read_contracts import ArtifactPreview, EvaluationStatusView, EvidenceAnchor, EvidencePageText, EvidenceSpanView
 
 
 def job_json(j):
@@ -222,6 +222,28 @@ def create_app(settings=None):
         value = reads.artifact(s, ReadScope(pid), aid)
         s.commit()
         return value
+
+    # Evidence inspection reverifies retained bytes on every read and never extracts.
+    @app.get("/api/v1/projects/{pid}/evidence/{aid}/pages/{page}", dependencies=protected, response_model=EvidencePageText)
+    def evidence_page(pid: str, aid: str, page: int = Path(ge=1, le=100_000), s=Depends(session)):
+        from .references import page_text
+        return page_text(s, store, ReadScope(pid), aid, page)
+
+    @app.get("/api/v1/projects/{pid}/claim-sets/{cid}/claims/{claim_id}/source-references/{index}",
+             dependencies=protected, response_model=EvidenceSpanView)
+    def claim_citation(pid: str, cid: str, claim_id: str, index: int = Path(ge=0, le=999), s=Depends(session)):
+        from .references import claim_source_span
+        return claim_source_span(s, store, ReadScope(pid), cid, claim_id, index)
+
+    @app.get("/api/v1/projects/{pid}/evidence-spans", dependencies=protected, response_model=list[EvidenceAnchor])
+    def evidence_spans(pid: str, s=Depends(session)):
+        from .references import evidence_anchors
+        return evidence_anchors(s, ReadScope(pid))
+
+    @app.get("/api/v1/projects/{pid}/evidence-spans/{sid}", dependencies=protected, response_model=EvidenceSpanView)
+    def evidence_span(pid: str, sid: str, s=Depends(session)):
+        from .references import registered_span_context
+        return registered_span_context(s, store, ReadScope(pid), sid)
 
     @app.post(
         "/api/v1/projects/{pid}/datasets", dependencies=protected, status_code=201, response_model=IntakeDataset

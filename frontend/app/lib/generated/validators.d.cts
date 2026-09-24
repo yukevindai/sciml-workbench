@@ -1,5 +1,5 @@
 /* Generated from Pydantic JSON schemas. Do not edit; run npm run contracts:generate. */
-import type { ProjectResponse, ProjectsResponse, LegacyJobResponse, JobsResponse, LegacyArtifact, IntakeArtifact, MaterialResponse, ArtifactsResponse, ArtifactPreviews, Capabilities, JobDetail, JobPage, ArtifactPage, EvaluationStatusView, EvaluationView, ResearchRun, ResearchRuns, RunDetail, RunResult, RunEvents } from './http';
+import type { ProjectResponse, ProjectsResponse, LegacyJobResponse, JobsResponse, LegacyArtifact, IntakeArtifact, MaterialResponse, ArtifactsResponse, ArtifactPreviews, EvidencePageText, EvidenceSpanView, EvidenceAnchors, Capabilities, JobDetail, JobPage, ArtifactPage, EvaluationStatusView, EvaluationView, ResearchRun, ResearchRuns, RunDetail, RunResult, RunEvents } from './http';
 export function validateProjectResponse(value: unknown): value is ProjectResponse;
 export function validateProjectsResponse(value: unknown): value is ProjectsResponse;
 export function validateLegacyJobResponse(value: unknown): value is LegacyJobResponse;
@@ -9,6 +9,9 @@ export function validateIntakeArtifact(value: unknown): value is IntakeArtifact;
 export function validateMaterialResponse(value: unknown): value is MaterialResponse;
 export function validateArtifactsResponse(value: unknown): value is ArtifactsResponse;
 export function validateArtifactPreviews(value: unknown): value is ArtifactPreviews;
+export function validateEvidencePageText(value: unknown): value is EvidencePageText;
+export function validateEvidenceSpanView(value: unknown): value is EvidenceSpanView;
+export function validateEvidenceAnchors(value: unknown): value is EvidenceAnchors;
 export function validateCapabilities(value: unknown): value is Capabilities;
 export function validateJobDetail(value: unknown): value is JobDetail;
 export function validateJobPage(value: unknown): value is JobPage;

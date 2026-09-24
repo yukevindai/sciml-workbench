@@ -15,3 +15,13 @@ An explicit page identifies the upstream PDFium page. With no page, the represen
 Reports retain claim sets, source artifacts, named anchors and schemas, and reverify references against frozen captures and retained bytes during assembly. Missing/corrupt sources or false captured metrics block assembly. Original artifacts and earlier reports are not rewritten.
 
 Apply migration **0005** before using these services. It introduces immutable named anchors alongside the C12 evaluation/exposure tables. These are trusted backend entry points: E03 must construct authorized `ReadScope` values; provider arguments cannot choose project/run authority. No new evidence or claim write endpoint is advertised.
+
+## Manual inspection routes (A06)
+
+Four read-only manual routes expose retained evidence for inspection. Each reverifies the original PDF, record, bundle inventory and page hashes through `evidence_text` on every call. None extracts, normalizes or infers text.
+
+- `GET /projects/{p}/evidence/{e}/pages/{n}` returns one page's exact text, digest and extraction version (`EvidencePageText`). Pages outside the inventory fail with `REFERENCE_INVALID`. Pages above 1,000,000 code points are refused.
+- `GET /projects/{p}/claim-sets/{c}/claims/{claim}/source-references/{i}` resolves the reference stored in that claim, not one supplied by the client. It returns the excerpt plus at most 320 code points of unmodified context on each side (`EvidenceSpanView`). A reference with a null page is located in the concatenated whole-document representation and keeps `page: null`. No page is derived for it.
+- `GET /projects/{p}/evidence-spans` lists named anchors without text. `GET /projects/{p}/evidence-spans/{s}` returns one reverified anchor with context.
+
+Corrupt or mismatched bytes return an error and no text. These routes are project scoped, record no holdout exposure (they return evidence text, not benchmark values), and are not agent tools. Agents keep using the scoped C11 services.

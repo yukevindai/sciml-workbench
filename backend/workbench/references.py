@@ -87,7 +87,8 @@ def read_span(session, store, scope, reference):
     return verify_span(store, evidence, ref)
 
 
-def verify_span(store, evidence, reference):
+def checked_span(store, evidence, reference):
+    """Return the verified reference and its complete exact representation."""
     ref = AvailableEvidenceReference.model_validate(reference)
     if evidence.id != ref.source_artifact_id or evidence.kind != "evidence":
         invalid("Evidence span references the wrong source artifact")
@@ -97,7 +98,61 @@ def verify_span(store, evidence, reference):
             or ref.extraction_version != version or not 0 <= start < end <= len(text) or end - start > 4000
             or hashlib.sha256(text[start:end].encode()).hexdigest() != ref.excerpt_sha256):
         invalid("Evidence span does not match its retained source and exact text")
-    return {"reference": ref.model_dump(mode="json"), "text": text[start:end]}
+    return ref, text
+
+
+def verify_span(store, evidence, reference):
+    ref, text = checked_span(store, evidence, reference)
+    return {"reference": ref.model_dump(mode="json"), "text": text[ref.locator.start:ref.locator.end]}
+
+
+SPAN_CONTEXT = 320
+
+
+def span_context(store, evidence, reference, *, span_id=None):
+    """Verified excerpt plus bounded unmodified neighbouring text for inspection."""
+    ref, text = checked_span(store, evidence, reference)
+    start, end = ref.locator.start, ref.locator.end
+    return {"reference": ref.model_dump(mode="json"), "span_id": span_id, "text": text[start:end],
+            "before": text[max(0, start - SPAN_CONTEXT):start], "after": text[end:end + SPAN_CONTEXT],
+            "representation_length": len(text)}
+
+
+PAGE_TEXT_LIMIT = 1_000_000
+
+
+def page_text(session, store, scope, artifact_id, page):
+    """Exact retained text layer of one upstream page, reverified against the bundle."""
+    evidence = resolver_for(session, scope).resolve(artifact_id, "evidence")
+    text, digest, version = evidence_text(store, evidence, page)
+    if len(text) > PAGE_TEXT_LIMIT:
+        raise DomainError("Page text exceeds the bounded inspection response", 422, "UNSUPPORTED_CAPABILITY")
+    item = evidence.result["pages"][page - 1]
+    return {"source_artifact_id": evidence.id, "source_sha256": evidence.sha256, "page": page,
+            "page_count": len(evidence.result["pages"]), "has_text": item["has_text"], "text": text,
+            "text_sha256": item["text_sha256"], "representation_sha256": digest, "extraction_version": version}
+
+
+def claim_source_span(session, store, scope, claim_set_id, claim_id, index):
+    """Open a stored claim's own citation; clients cannot supply the reference."""
+    resolver = resolver_for(session, scope)
+    claims = resolver.resolve(claim_set_id, "claim_set").claims
+    claim = next((c for c in claims if c.id == claim_id), None)
+    if claim is None or not 0 <= index < len(claim.source_references):
+        raise DomainError("Claim source reference not found", 404)
+    ref = claim.source_references[index]
+    return span_context(store, resolver.resolve(ref.source_artifact_id, "evidence"), ref)
+
+
+def evidence_anchors(session, scope):
+    from sqlalchemy import select
+    from .db import EvidenceSpanRow
+    from .projections import utc
+    resolver_for(session, scope)
+    rows = session.scalars(select(EvidenceSpanRow).where(EvidenceSpanRow.project_id == scope.project_id)
+                           .order_by(EvidenceSpanRow.created_at, EvidenceSpanRow.id))
+    return [{"id": row.id, "source_artifact_id": row.source_artifact_id,
+             "reference": row.reference, "created_at": utc(row.created_at)} for row in rows]
 
 
 def register_reference(session, store, scope, reference):
@@ -120,6 +175,15 @@ def read_registered_span(session, store, scope, span_id):
     if row is None or row.project_id != scope.project_id:
         raise DomainError("Evidence anchor not found in this project", 404)
     return read_span(session, store, scope, row.reference)
+
+
+def registered_span_context(session, store, scope, span_id):
+    from .db import EvidenceSpanRow
+    resolver = resolver_for(session, scope)
+    row = session.get(EvidenceSpanRow, span_id)
+    if row is None or row.project_id != scope.project_id:
+        raise DomainError("Evidence anchor not found in this project", 404)
+    return span_context(store, resolver.resolve(row.source_artifact_id, "evidence"), row.reference, span_id=row.id)
 
 
 def check_metric(session, scope, reference):

@@ -26,7 +26,7 @@ const ajv = new Ajv2020({ strict: true, code: { source: true, lines: true }, all
 ajv.addKeyword('discriminator');
 addFormats(ajv);
 ajv.addSchema(responses);
-const names = ['ProjectResponse', 'ProjectsResponse', 'LegacyJobResponse', 'JobsResponse', 'LegacyArtifact', 'IntakeArtifact', 'MaterialResponse', 'ArtifactsResponse', 'ArtifactPreviews', 'Capabilities', 'JobDetail', 'JobPage', 'ArtifactPage', 'EvaluationStatusView', 'EvaluationView', 'ResearchRun', 'ResearchRuns', 'RunDetail', 'RunResult', 'RunEvents'];
+const names = ['ProjectResponse', 'ProjectsResponse', 'LegacyJobResponse', 'JobsResponse', 'LegacyArtifact', 'IntakeArtifact', 'MaterialResponse', 'ArtifactsResponse', 'ArtifactPreviews', 'EvidencePageText', 'EvidenceSpanView', 'EvidenceAnchors', 'Capabilities', 'JobDetail', 'JobPage', 'ArtifactPage', 'EvaluationStatusView', 'EvaluationView', 'ResearchRun', 'ResearchRuns', 'RunDetail', 'RunResult', 'RunEvents'];
 const validators = Object.fromEntries(names.map(name => [`validate${name}`, `${responses.$id}#/$defs/${name}`]));
 files.set('validators.cjs', banner + '\n' + standaloneCode(ajv, validators).trimEnd() + '\n');
 files.set('validators.d.cts', banner + '\n' +

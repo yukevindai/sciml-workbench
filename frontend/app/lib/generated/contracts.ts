@@ -19,6 +19,9 @@ export type WorkbenchContract =
   | EvaluationStatusView
   | EvaluationView
   | BenchmarkPreview
+  | EvidencePageText
+  | EvidenceSpanView
+  | EvidenceAnchor
   | EvidenceReference
   | MetricReference
   | FailureReceipt
@@ -705,6 +708,23 @@ export type VerificationScope = string | null;
 export type TestResults = 'withheld' | 'not_produced';
 export type HoldoutExposure = 'unexposed' | 'exposed' | 'unknown';
 export type BundleAvailable = boolean;
+export type SourceArtifactId2 = string;
+export type SourceSha2562 = string;
+export type Page1 = number;
+export type PageCount = number;
+export type HasText = boolean;
+export type Text = string;
+export type TextSha256 = string;
+export type RepresentationSha2561 = string;
+export type ExtractionVersion1 = string;
+export type SpanId = string | null;
+export type Text1 = string;
+export type Before = string;
+export type After = string;
+export type RepresentationLength = number;
+export type Id25 = string;
+export type SourceArtifactId3 = string;
+export type CreatedAt17 = string;
 export type EvidenceReference = AvailableEvidenceReference | UnavailableEvidenceReference;
 export type Objective3 = string;
 export type PolicyRevision = number;
@@ -717,9 +737,9 @@ export type PolicyRevision1 = number | null;
 export type ExpectedRunRevision2 = number;
 export type ExpectedPlanRevision1 = number;
 export type SchemaVersion20 = '1.0';
-export type Id25 = string;
+export type Id26 = string;
 export type ProjectId17 = string;
-export type CreatedAt17 = string;
+export type CreatedAt18 = string;
 export type Contract6 = 'specialist_assignment';
 export type RunId6 = string;
 export type PlanRevision2 = number;
@@ -922,7 +942,7 @@ export type Contract11 = 'run_event';
 export type SchemaVersion25 = '1.0';
 export type RunId8 = string;
 export type Sequence = number;
-export type CreatedAt18 = string;
+export type CreatedAt19 = string;
 export type EventType =
   | 'accepted'
   | 'state_changed'
@@ -982,17 +1002,17 @@ export type RequestId = string;
 export type Loc = (string | number)[];
 export type Msg = string;
 export type Details = ValidationIssue[];
-export type Id26 = string;
+export type Id27 = string;
 export type Name4 = string;
 export type Description = string;
-export type Id27 = string;
+export type Id28 = string;
 export type ProjectId18 = string;
 export type Kind21 =
   'audit' | 'split' | 'benchmark' | 'evidence' | 'failure' | 'report' | 'report_verify' | 'scientific_replay';
 export type State8 = 'queued' | 'running' | 'succeeded' | 'failed';
 export type ResultId = string | null;
 export type Error4 = string | null;
-export type CreatedAt19 = string;
+export type CreatedAt20 = string;
 export type StartedAt = string | null;
 export type FinishedAt1 = string | null;
 export type ErrorCode4 =
@@ -1031,7 +1051,7 @@ export type ErrorCode4 =
   | null;
 export type RetryOfJobId = string | null;
 export type DeadlineAt1 = string | null;
-export type Id28 = string;
+export type Id29 = string;
 export type ProjectId19 = string;
 export type Filename2 = string;
 export type MediaType = 'text/csv' | 'application/pdf';
@@ -1075,14 +1095,14 @@ export type ExternalProjectId2 = string | null;
 export type ExternalRecordId2 = string | null;
 export type ArtifactId2 = string | null;
 export type ReconciliationRequired = boolean;
-export type Id29 = string;
+export type Id30 = string;
 export type ProjectId20 = string;
 export type Kind22 =
   'audit' | 'split' | 'benchmark' | 'evidence' | 'failure' | 'report' | 'report_verify' | 'scientific_replay';
 export type State10 = 'queued' | 'running' | 'succeeded' | 'failed';
 export type ResultId1 = string | null;
 export type Error5 = string | null;
-export type CreatedAt20 = string;
+export type CreatedAt21 = string;
 export type StartedAt1 = string | null;
 export type FinishedAt2 = string | null;
 export type ErrorCode5 =
@@ -1126,11 +1146,11 @@ export type DeadlineAt2 = string | null;
  */
 export type Items = JobDetail[];
 export type NextCursor = string | null;
-export type Id30 = string;
+export type Id31 = string;
 export type ProjectId21 = string;
 export type Kind23 = string;
 export type SchemaVersion27 = string;
-export type CreatedAt21 = string;
+export type CreatedAt22 = string;
 /**
  * @maxItems 100
  */
@@ -1150,13 +1170,13 @@ export type VersionedArtifact =
   | EvaluationProtocol
   | AgentExecutionRecord;
 export type ProjectsResponse = ProjectResponse[];
-export type Id31 = string;
+export type Id32 = string;
 export type ProjectId22 = string;
 export type Kind24 = 'audit' | 'split' | 'benchmark' | 'evidence' | 'failure' | 'report';
 export type State11 = 'queued' | 'running' | 'succeeded' | 'failed';
 export type ResultId2 = string | null;
 export type Error6 = string | null;
-export type CreatedAt22 = string;
+export type CreatedAt23 = string;
 export type StartedAt2 = string | null;
 export type FinishedAt3 = string | null;
 export type JobsResponse = LegacyJobResponse[];
@@ -2029,6 +2049,40 @@ export interface ValidationSearchPreview {
 export interface Parameters2 {
   [k: string]: JsonValue;
 }
+/**
+ * Exact retained PDFium text layer for one upstream page; never OCR or normalized.
+ */
+export interface EvidencePageText {
+  source_artifact_id: SourceArtifactId2;
+  source_sha256: SourceSha2562;
+  page: Page1;
+  page_count: PageCount;
+  has_text: HasText;
+  text: Text;
+  text_sha256: TextSha256;
+  representation_sha256: RepresentationSha2561;
+  extraction_version: ExtractionVersion1;
+}
+/**
+ * A reverified citation with bounded unmodified context; not semantic support.
+ */
+export interface EvidenceSpanView {
+  reference: AvailableEvidenceReference;
+  span_id?: SpanId;
+  text: Text1;
+  before: Before;
+  after: After;
+  representation_length: RepresentationLength;
+}
+/**
+ * Immutable named anchor; text is read and reverified separately.
+ */
+export interface EvidenceAnchor {
+  id: Id25;
+  source_artifact_id: SourceArtifactId3;
+  reference: AvailableEvidenceReference;
+  created_at: CreatedAt17;
+}
 export interface RunInput {
   objective: Objective3;
   inputs: InputScope;
@@ -2052,9 +2106,9 @@ export interface PlanAcceptanceInput {
 }
 export interface SpecialistAssignment {
   schema_version?: SchemaVersion20;
-  id: Id25;
+  id: Id26;
   project_id: ProjectId17;
-  created_at: CreatedAt17;
+  created_at: CreatedAt18;
   contract?: Contract6;
   run_id: RunId6;
   plan_revision: PlanRevision2;
@@ -2162,7 +2216,7 @@ export interface RunEvent {
   schema_version?: SchemaVersion25;
   run_id: RunId8;
   sequence: Sequence;
-  created_at: CreatedAt18;
+  created_at: CreatedAt19;
   event_type: EventType;
   run_revision: RunRevision1;
   state: State7;
@@ -2185,18 +2239,18 @@ export interface ValidationIssue {
   msg: Msg;
 }
 export interface ProjectResponse {
-  id: Id26;
+  id: Id27;
   name: Name4;
   description: Description;
 }
 export interface JobResponse {
-  id: Id27;
+  id: Id28;
   project_id: ProjectId18;
   kind: Kind21;
   state: State8;
   result_id: ResultId;
   error: Error4;
-  created_at: CreatedAt19;
+  created_at: CreatedAt20;
   started_at: StartedAt;
   finished_at: FinishedAt1;
   error_code?: ErrorCode4;
@@ -2204,7 +2258,7 @@ export interface JobResponse {
   deadline_at?: DeadlineAt1;
 }
 export interface MaterialResponse {
-  id: Id28;
+  id: Id29;
   project_id: ProjectId19;
   filename: Filename2;
   media_type: MediaType;
@@ -2257,13 +2311,13 @@ export interface ExternalReceiptProjection {
   reconciliation_required: ReconciliationRequired;
 }
 export interface JobDetail {
-  id: Id29;
+  id: Id30;
   project_id: ProjectId20;
   kind: Kind22;
   state: State10;
   result_id: ResultId1;
   error: Error5;
-  created_at: CreatedAt20;
+  created_at: CreatedAt21;
   started_at: StartedAt1;
   finished_at: FinishedAt2;
   error_code?: ErrorCode5;
@@ -2276,24 +2330,24 @@ export interface JobPage {
   next_cursor?: NextCursor;
 }
 export interface ArtifactSummary {
-  id: Id30;
+  id: Id31;
   project_id: ProjectId21;
   kind: Kind23;
   schema_version: SchemaVersion27;
-  created_at: CreatedAt21;
+  created_at: CreatedAt22;
 }
 export interface ArtifactPage {
   items: Items1;
   next_cursor?: NextCursor1;
 }
 export interface LegacyJobResponse {
-  id: Id31;
+  id: Id32;
   project_id: ProjectId22;
   kind: Kind24;
   state: State11;
   result_id: ResultId2;
   error: Error6;
-  created_at: CreatedAt22;
+  created_at: CreatedAt23;
   started_at: StartedAt2;
   finished_at: FinishedAt3;
 }
