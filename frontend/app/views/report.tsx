@@ -1,85 +1,76 @@
 'use client';
 
+import { useRef } from 'react';
+import Link from 'next/link';
 import { Check, Download, FileCheck } from 'lucide-react';
 import type { Workbench } from '../lib/context';
+import { api } from '../lib/api';
+import { parseJob } from '../lib/decode';
+import { reportHref } from '../lib/lineage';
 import { formatDate, shortId } from '../lib/format';
 import { kinds } from '../lib/types';
-import { Alert, EmptyState, Panel } from '../components/ui';
+import { Alert, Badge, EmptyState, Panel } from '../components/ui';
+import { ReportCard } from '../components/report-inspection';
 
 const CONTENTS = [
-  'The original CSV bytes, and the source metadata you declared for them',
-  'Every audit and its findings, plus the configuration that produced them',
-  'Frozen split assignments for all rows, not just the ones shown on screen',
-  'Benchmark bundles with task cards, predictions and metrics',
-  'Failure memory snapshots and the evidence documents you ingested',
-  'Pinned dependency versions, JSON Schemas and a SHA-256 manifest',
+  'The original CSV and PDF bytes, with the source metadata declared for them',
+  'Every audit, split, benchmark, evidence, claim and failure record, with its dependencies',
+  'Settled jobs, including failed ones, without request payloads or raw worker errors',
+  'Evaluation protocol state and the holdout exposure history at capture time',
+  'Pinned upstream commits, Python/platform/package versions and JSON Schemas',
+  'A readable report.md and a SHA-256 manifest over every file',
 ];
+const AUTO_VERIFY = 3;
 
-export function ReportView({ wb }: { wb: Workbench }) {
-  const reports = kinds(wb.artifacts, 'report');
-  const blocked = wb.jobsActive;
+export function ReportView({ wb, requestedReportId }: { wb: Workbench; requestedReportId?: string }) {
+  const reports = kinds(wb.artifacts, 'report').sort((a, b) => b.created_at.localeCompare(a.created_at));
+  const exports = wb.jobs.filter(job => job.kind === 'report');
+  const active = wb.jobs.filter(job => job.kind !== 'report' && (job.state === 'queued' || job.state === 'running'));
+  const exporting = exports.some(job => job.state === 'queued' || job.state === 'running');
+  const key = useRef<string | null>(null);
 
-  return (
-    <>
-      <div className="split split--wide-first">
-        <Panel
-          title="A reproducible record of this project"
-          description="One archive that another researcher can verify, and that `workbench.replay` can re-execute end to end."
-        >
-          <ul className="checklist">
-            {CONTENTS.map(item => (
-              <li key={item}><Check size={15} aria-hidden="true" />{item}</li>
-            ))}
-          </ul>
+  return <>
+    <div className="split split--wide-first">
+      <Panel title="Export this project" description="A manual export freezes the whole project at submission. Research runs export their own selected scope automatically when finished.">
+        <ul className="checklist">{CONTENTS.map(item => <li key={item}><Check size={15} aria-hidden="true" />{item}</li>)}</ul>
+        <Alert title="What verification does and does not mean">
+          The workbench checks each archive&rsquo;s structure when it is created and again when you inspect it here. It does not rerun the science. Scientific replay is a separate command and is always shown as not run.
+        </Alert>
+        <div className="panel-foot">
+          <span className="field-hint">{active.length
+            ? `Wait for ${active.length} running job${active.length === 1 ? '' : 's'} to settle; a project export requires all work to be finished.`
+            : exporting ? 'An export is in progress.' : `${wb.artifacts.filter(a => a.kind !== 'report').length} artifacts would be captured.`}</span>
+          <button type="button" className="button" disabled={wb.busy || !wb.projectId || active.length > 0 || exporting || !wb.artifacts.length}
+            onClick={() => void wb.act(async () => {
+              key.current ??= crypto.randomUUID();
+              const job = await api(`projects/${wb.projectId}/report`, parseJob, { method: 'POST', headers: { 'Idempotency-Key': key.current } });
+              if (job.project_id !== wb.projectId || job.kind !== 'report') throw new Error('The server returned a different job.');
+              key.current = null;
+              wb.setNotice('Export accepted. The archive appears below once assembled and structurally verified.');
+            })}>
+            <FileCheck size={15} aria-hidden="true" />Export project
+          </button>
+        </div>
+      </Panel>
 
-          <Alert variant="info" title="Replay checks the archive against itself">
-            Replay validates every file against the manifest, regenerates the audit and split, and confirms the row assignments match exactly. Scores may differ in the last decimal places across platforms; hashes and partitions must not.
-          </Alert>
+      <Panel title="Export jobs" description={exports.length ? 'Recent exports, newest first. A failed export produced no archive.' : 'No exports requested.'}>
+        {exports.length === 0 ? <EmptyState icon={Download} title="No archives yet">Export once your runs have settled. Each export is a separate snapshot.</EmptyState>
+          : <ul className="stack stack--tight">{exports.slice(0, 10).map(job => <li key={job.id} className="cluster">
+            <Badge state={job.state} />
+            <span className="mono">{shortId(job.id)}</span>
+            <span className="dim">{formatDate(job.created_at)}</span>
+            {job.result_id ? <Link className="text-link" href={reportHref(job.project_id, job.result_id)}>Inspect archive</Link>
+              : job.state === 'failed' ? <span className="lineage-missing">No archive{job.error ? `: ${job.error}` : ''}</span> : null}
+          </li>)}</ul>}
+      </Panel>
+    </div>
 
-          <div className="panel-foot">
-            <span className="field-hint">
-              {blocked
-                ? 'Wait for running jobs to finish so the archive captures their results.'
-                : `${wb.artifacts.length} artifact${wb.artifacts.length === 1 ? '' : 's'} will be included.`}
-            </span>
-            <button
-              className="button"
-              disabled={wb.busy || !wb.projectId || blocked || !wb.artifacts.length}
-              onClick={() => wb.act(() => wb.submit('report'))}
-            >
-              <FileCheck size={15} aria-hidden="true" />Generate report
-            </button>
-          </div>
-        </Panel>
-
-        <Panel title="Exports" description={reports.length ? undefined : 'Nothing exported yet.'}>
-          {reports.length === 0 ? (
-            <EmptyState icon={Download} title="No archives yet">
-              Generate one once your runs have settled. Each export is a snapshot, so you can keep several.
-            </EmptyState>
-          ) : (
-            <div className="stack stack--tight">
-              {reports.map(report => (
-                <div className="download-row" key={report.id}>
-                  <div className="download-text">
-                    <strong>Reproducible research bundle</strong>
-                    <span className="meta-list">
-                      <span>{formatDate(report.created_at)}</span>
-                      <span className="meta-id">{shortId(report.id)}</span>
-                    </span>
-                  </div>
-                  <a
-                    className="button"
-                    href={`/api/projects/${wb.projectId}/artifacts/${report.id}/download`}
-                  >
-                    <Download size={15} aria-hidden="true" />Download ZIP
-                  </a>
-                </div>
-              ))}
-            </div>
-          )}
-        </Panel>
-      </div>
-    </>
-  );
+    {requestedReportId && !reports.some(r => r.id === requestedReportId) && <Alert variant="error" title="Requested report unavailable">
+      This project has no report with ID {requestedReportId}. No other archive is substituted.
+    </Alert>}
+    {reports.length === 0
+      ? <Panel title="Archives"><p>No archives in this project.</p></Panel>
+      : reports.map((report, index) => <ReportCard key={report.id} wb={wb} report={report}
+        focus={report.id === requestedReportId} autoVerify={index < AUTO_VERIFY} />)}
+  </>;
 }

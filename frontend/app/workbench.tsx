@@ -25,7 +25,7 @@ import { ReportView } from './views/report';
 const PROJECT_STORAGE_KEY = 'sciml-project';
 const POLL_INTERVAL = 2500;
 
-export default function Workbench({ view, fixture, children, requestedProjectId, requestedAuditId, requestedSplitId, requestedBenchmarkId, requestedEvidenceId, requestedClaimSetId, requestedFailureId }: { view: View; fixture?: ShellFixture; children?: ReactNode; requestedProjectId?: string; requestedAuditId?: string; requestedSplitId?: string; requestedBenchmarkId?: string; requestedEvidenceId?: string; requestedClaimSetId?: string; requestedFailureId?: string }) {
+export default function Workbench({ view, fixture, children, requestedProjectId, requestedAuditId, requestedSplitId, requestedBenchmarkId, requestedEvidenceId, requestedClaimSetId, requestedFailureId, requestedArtifactId, requestedReportId }: { view: View; fixture?: ShellFixture; children?: ReactNode; requestedProjectId?: string; requestedAuditId?: string; requestedSplitId?: string; requestedBenchmarkId?: string; requestedEvidenceId?: string; requestedClaimSetId?: string; requestedFailureId?: string; requestedArtifactId?: string; requestedReportId?: string }) {
   const [projects, setProjects] = useState<Project[]>(fixture?.projects ?? []);
   const [projectId, updateProjectId] = useState(fixture?.projects[0]?.id ?? '');
   const [artifacts, setArtifacts] = useState<Artifact[]>(fixture?.artifacts ?? []);
@@ -256,8 +256,8 @@ export default function Workbench({ view, fixture, children, requestedProjectId,
               {view === 'benchmark' && <BenchmarkView key={projectId} wb={model} requestedBenchmarkId={projectId === requestedProjectId ? requestedBenchmarkId : undefined} />}
               {view === 'failure-memory' && <FailureMemoryView key={projectId} wb={model} requestedFailureId={projectId === requestedProjectId ? requestedFailureId : undefined} requestedBenchmarkId={projectId === requestedProjectId ? requestedBenchmarkId : undefined} />}
               {view === 'evidence' && <EvidenceView key={projectId} wb={model} requestedEvidenceId={projectId === requestedProjectId ? requestedEvidenceId : undefined} requestedClaimSetId={projectId === requestedProjectId ? requestedClaimSetId : undefined} />}
-              {view === 'provenance' && <ProvenanceView wb={model} />}
-              {view === 'report' && <ReportView wb={model} />}
+              {view === 'provenance' && <ProvenanceView key={projectId} wb={model} requestedArtifactId={projectId === requestedProjectId ? requestedArtifactId : undefined} />}
+              {view === 'report' && <ReportView key={projectId} wb={model} requestedReportId={projectId === requestedProjectId ? requestedReportId : undefined} />}
 
               <JobActivity jobs={jobs} />
               {children}

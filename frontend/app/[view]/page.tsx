@@ -26,6 +26,16 @@ export default async function Page({ params, searchParams }: { params: Promise<{
     if (!project || !/^[a-zA-Z0-9_-]+$/.test(project) || !valid(query.failure, failure) || !valid(query.benchmark, benchmark)) notFound();
     return <Workbench key={`${project}:${failure ?? ''}:${benchmark ?? ''}`} view={view} requestedProjectId={project} requestedFailureId={failure} requestedBenchmarkId={benchmark} />;
   }
+  const artifact = typeof query.artifact === 'string' ? query.artifact : undefined;
+  const report = typeof query.report === 'string' ? query.report : undefined;
+  if (view === 'provenance' && (query.artifact !== undefined || query.project !== undefined)) {
+    if (!project || !/^[a-zA-Z0-9_-]+$/.test(project) || !valid(query.artifact, artifact)) notFound();
+    return <Workbench key={`${project}:${artifact ?? ''}`} view={view} requestedProjectId={project} requestedArtifactId={artifact} />;
+  }
+  if (view === 'report' && (query.report !== undefined || query.project !== undefined)) {
+    if (!project || !/^[a-zA-Z0-9_-]+$/.test(project) || !valid(query.report, report)) notFound();
+    return <Workbench key={`${project}:${report ?? ''}`} view={view} requestedProjectId={project} requestedReportId={report} />;
+  }
   if (view === 'split-designer' && (query.split !== undefined || query.project !== undefined)) {
     if (!project || !/^[a-zA-Z0-9_-]+$/.test(project) || (query.split !== undefined && (!split || !/^[a-zA-Z0-9_-]+$/.test(split)))) notFound();
     return <Workbench key={`${project}:${split ?? ''}`} view={view} requestedProjectId={project} requestedSplitId={split} />;

@@ -22,6 +22,7 @@ export type EvidenceArtifact = Wire.Evidence;
 export type FailureArtifact = Wire.Failure | Wire.FailureV2;
 export type ProvenanceArtifact = Wire.Provenance;
 export type ReportArtifact = Wire.Report;
+export type AgentExecutionArtifact = Wire.AgentExecutionRecord;
 
 export type AuditFinding = {
   code?: string;
@@ -42,6 +43,7 @@ type ByKind = {
   provenance: ProvenanceArtifact; report: ReportArtifact;
   evaluation_protocol: Wire.EvaluationProtocol;
   claim_set: Wire.ClaimSet;
+  agent_execution: Wire.AgentExecutionRecord;
 };
 export function kinds<K extends ArtifactKind>(artifacts: Artifact[], kind: K): ByKind[K][] {
   return artifacts.filter((a): a is ByKind[K] => a.kind === kind);

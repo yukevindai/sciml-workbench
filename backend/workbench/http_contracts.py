@@ -4,11 +4,12 @@ from typing import Annotated, Literal
 from pydantic import Field
 from .contracts import Audit, Benchmark, Dataset, Evidence, Failure, Provenance, Report, Split
 from .scientific_contracts import DatasetV2, FailureV2, EvaluationProtocol, ClaimSet
+from .research_contracts import AgentExecutionRecord
 from .contract_core import Digest
 
 IntakeDataset = Annotated[Dataset | DatasetV2, Field(discriminator="schema_version")]
 IntakeFailure = Annotated[Failure | FailureV2, Field(discriminator="schema_version")]
-IntakeArtifact = Annotated[IntakeDataset | Audit | Split | Benchmark | Evidence | IntakeFailure | Provenance | Report | EvaluationProtocol | ClaimSet,
+IntakeArtifact = Annotated[IntakeDataset | Audit | Split | Benchmark | Evidence | IntakeFailure | Provenance | Report | EvaluationProtocol | ClaimSet | AgentExecutionRecord,
                            Field(discriminator="kind")]
 from pydantic import AwareDatetime
 

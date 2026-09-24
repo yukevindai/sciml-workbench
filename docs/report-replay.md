@@ -26,3 +26,9 @@ python scripts/check_scientific_integration.py
 ```
 
 This checks installed source pins, constraints and public surfaces before running real audit, split, benchmark, evidence, Failure Memory, outcome, grounding, evaluation, report and replay fixtures. Deliberately invalid scientific inputs must be rejected; metadata-only canaries cannot substitute for scientific bundles. `--all` runs all backend regressions behind the same pin gate and is used by CI. PostgreSQL fixture parameters require `TEST_DATABASE_URL`; skipped parameters are not PostgreSQL acceptance evidence.
+
+## Inspecting archives in the workbench (A08)
+
+`GET /api/v1/projects/{p}/reports/{r}/summary` reads the stored report bytes, checks them against the report's digest and runs `verify_archive` on every request. It then returns identities only: frozen scope (project or run, with run ID, capture revision, cutoff and the `pending` export status at capture), artifact kinds, labels, parents and timestamps, settled jobs with error codes, attachments, Python/platform, software and upstream pins, and each archived agent execution record's versions and policy. It returns no metrics, predictions, text or assignments, and records no holdout exposure. Digest mismatches, malformed archives and inventory disagreements return `verification.status: failed` with a reason and an empty summary. Storage outages still return an error. The Reports view checks the three newest archives automatically and the others on request. It always shows scientific replay as not run, because the workbench never executes `workbench.replay`.
+
+A08 also adds `AgentExecutionRecord` to the manual artifact list, detail and preview response types. Previously, once an E13 finalization saved an `agent_execution` artifact, `/artifacts` and `/artifact-previews` failed response validation with a 500. That made the whole workspace unreadable for that project.

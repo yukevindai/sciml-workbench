@@ -255,3 +255,22 @@
 /* ---------------------------------- failure memory (A07) --------------- */
 .receipt { padding: var(--space-5) var(--space-6); border: 1px solid var(--color-border-subtle); border-radius: var(--radius-md); }
 .failure-record:focus-visible, .receipt:target { outline: 2px solid var(--color-accent-solid); outline-offset: 2px; }
+
+/* ---------------------------------- lineage & reports (A08) ------------ */
+.lineage--plain { grid-template-columns: minmax(0, 1fr); }
+.link-button { background: none; border: 0; padding: 0; font: inherit; cursor: pointer; text-align: left; overflow-wrap: anywhere; }
+.lineage-missing { color: var(--color-danger-text); font-weight: var(--weight-medium); overflow-wrap: anywhere; }
+.lineage-row--missing th, .lineage-row--missing td { background: var(--color-danger-bg); }
+.lineage-table td, .lineage-table th { white-space: normal; vertical-align: top; }
+.lineage-table ul { display: grid; gap: var(--space-2); }
+.lineage-graph { overflow: auto; max-height: 34rem; padding: var(--space-4); border: 1px solid var(--color-border-subtle); border-radius: var(--radius-md); background: var(--color-bg-inset); }
+.lineage-graph svg { display: block; }
+.lineage-edge { fill: none; stroke: var(--color-border); stroke-width: 1.5; }
+.lineage-node { cursor: pointer; }
+.lineage-node rect { fill: var(--color-bg-surface); stroke: var(--color-border); stroke-width: 1; }
+.lineage-node--selected rect { stroke: var(--color-accent-solid); stroke-width: 2.5; }
+.lineage-node--missing rect { fill: var(--color-danger-bg); stroke: var(--color-danger-border); stroke-dasharray: 5 3; }
+.lineage-node-kind { font-size: 11px; fill: var(--color-text-tertiary); font-family: var(--font-mono), monospace; }
+.lineage-node-label { font-size: 12px; fill: var(--color-text-primary); }
+.report-card { display: grid; gap: var(--space-5); }
+.report-card .audit-config > div, .report-card .audit-config dd { min-width: 0; overflow-wrap: anywhere; }

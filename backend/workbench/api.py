@@ -31,7 +31,7 @@ from .artifacts import ArtifactResolver
 from .capabilities import capabilities
 from .projections import ReadScope, ReadService, safe_job_fields
 from .read_contracts import Capabilities, JobDetail, JobPage, ArtifactPage
-from .read_contracts import ArtifactPreview, EvaluationStatusView, EvidenceAnchor, EvidencePageText, EvidenceSpanView
+from .read_contracts import ArtifactPreview, EvaluationStatusView, EvidenceAnchor, EvidencePageText, EvidenceSpanView, ReportSummary
 
 
 def job_json(j):
@@ -222,6 +222,11 @@ def create_app(settings=None):
         value = reads.artifact(s, ReadScope(pid), aid)
         s.commit()
         return value
+
+    @app.get("/api/v1/projects/{pid}/reports/{rid}/summary", dependencies=protected, response_model=ReportSummary)
+    def report_summary(pid: str, rid: str, s=Depends(session)):
+        from .report_inspection import report_summary as summarize
+        return summarize(s, store, ReadScope(pid), rid)
 
     # Evidence inspection reverifies retained bytes on every read and never extracts.
     @app.get("/api/v1/projects/{pid}/evidence/{aid}/pages/{page}", dependencies=protected, response_model=EvidencePageText)

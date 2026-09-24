@@ -6,6 +6,8 @@ from .contract_core import ContractModel, Counter, Digest, Identifier, Text
 from .contracts import Audit, Evidence, Provenance, Report, Split
 from .http_contracts import IntakeDataset, IntakeFailure, JobResponse
 from .scientific_contracts import AvailableEvidenceReference, ClaimSet, EvaluationProtocol
+from .research_contracts import AgentExecutionRecord, ExecutionVersions
+from .contract_core import PolicyReference, RunState
 
 
 class ExternalReceiptProjection(ContractModel):
@@ -161,7 +163,7 @@ class EvaluationView(ContractModel):
 
 
 ArtifactPreview = Annotated[IntakeDataset | Audit | Split | BenchmarkPreview | Evidence | IntakeFailure | Provenance
-                            | Report | EvaluationProtocol | ClaimSet, Field(discriminator="kind")]
+                            | Report | EvaluationProtocol | ClaimSet | AgentExecutionRecord, Field(discriminator="kind")]
 
 
 class EvidencePageText(ContractModel):
@@ -207,3 +209,97 @@ class EvidenceAnchor(ContractModel):
     source_artifact_id: Identifier
     reference: AvailableEvidenceReference
     created_at: AwareDatetime
+
+
+class ReportInput(ContractModel):
+    """Identity of one frozen archived artifact; scientific values are not projected."""
+    id: Identifier
+    kind: Annotated[str, Field(max_length=40)]
+    schema_version: Annotated[str, Field(max_length=16)]
+    created_at: AwareDatetime
+    label: Annotated[str, Field(max_length=300)]
+    parents: list[Identifier]
+
+
+class ReportJob(ContractModel):
+    id: Identifier
+    kind: Annotated[str, Field(max_length=40)]
+    state: Literal["succeeded", "failed"]
+    result_id: Identifier | None
+    error_code: Annotated[str, Field(max_length=60)] | None
+
+
+class ReportMaterial(ContractModel):
+    id: Identifier
+    filename: Annotated[str, Field(max_length=300)]
+    media_type: Literal["text/csv", "application/pdf"]
+    sha256: Digest
+
+
+class ReportScope(ContractModel):
+    kind: Literal["project", "run"]
+    run_id: Identifier | None
+    revision: int | None
+    execution_cutoff: int | None
+    export_status_at_cutoff: Literal["pending"] | None
+
+
+class ReportAgentExecution(ContractModel):
+    execution_record_id: Identifier
+    run_id: Identifier
+    objective: Text
+    versions: ExecutionVersions
+    policy: PolicyReference
+    state_at_cutoff: RunState
+    event_cutoff: Counter
+    captured_at: AwareDatetime
+    pending_finalization_action_ids: list[Identifier]
+
+
+class ReportFinalization(ContractModel):
+    execution_record_id: Identifier | None
+    claim_set_id: Identifier | None
+    review_status: Annotated[str, Field(max_length=60)] | None
+    runtime_version_count: Counter
+    gaps: list[Annotated[str, Field(max_length=4000)]]
+
+
+class ReportVerification(ContractModel):
+    status: Literal["verified", "failed"]
+    method: Literal["structural"] = "structural"
+    checked_at: AwareDatetime
+    reason: Text | None = None
+
+
+class ReportSummary(ContractModel):
+    """Current structural reverification of stored report bytes plus frozen identities.
+
+    Scientific replay is never run by this read; its status is always reported as not run.
+    """
+    report_id: Identifier
+    sha256: Digest
+    size_bytes: Counter
+    verification: ReportVerification
+    scientific_replay: Literal["not_run"] = "not_run"
+    manifest_version: Literal["1.0", "2.0"] | None
+    captured_at: AwareDatetime | None
+    scope: ReportScope | None
+    file_count: Counter
+    inputs: list[ReportInput]
+    jobs: list[ReportJob]
+    materials: list[ReportMaterial]
+    software: dict[Identifier, Annotated[str, Field(max_length=300)]]
+    python: Annotated[str, Field(max_length=60)] | None
+    platform: Annotated[str, Field(max_length=300)] | None
+    upstream_commits: dict[Identifier, Annotated[str, Field(max_length=100)]]
+    agent_executions: list[ReportAgentExecution]
+    finalization: ReportFinalization | None
+
+    @model_validator(mode="after")
+    def failed_reports_have_no_contents(self):
+        if self.verification.status == "failed":
+            if self.verification.reason is None or self.inputs or self.jobs or self.materials or self.agent_executions                     or self.scope is not None or self.finalization is not None or self.software or self.upstream_commits:
+                raise ValueError("A report that failed verification cannot project its contents")
+        elif self.verification.reason is not None or self.manifest_version is None:
+            raise ValueError("Verified reports require a manifest and no failure reason")
+        return self

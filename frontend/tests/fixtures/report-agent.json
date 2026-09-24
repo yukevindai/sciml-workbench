@@ -1,0 +1,589 @@
+{
+ "project": {
+  "id": "p",
+  "name": "Agent study",
+  "description": ""
+ },
+ "previews": [
+  {
+   "schema_version": "1.0",
+   "id": "d0c3cd0a-bb24-4d0a-8578-5baa075ec6ca",
+   "project_id": "p",
+   "created_at": "2026-09-24T22:33:18.196361Z",
+   "parents": [],
+   "software": {
+    "chemdata-auditor": "0.3.0@eff3ed3c43ec71e9ceecabc1f04d1dfb5c91c116",
+    "cheme-ml-benchmarks": "0.1.0@db02d8963725a1d406b9b07eb6f4cc3436fbb082",
+    "scientific-evidence-engine": "0.1.0@09f5ec810e8f04bf8d233ec12eb9448342ee5121",
+    "experiment-failure-memory": "0.1.0@63492787cbbea6d03662db63f2d958a6eec8d804",
+    "workbench": "0.1.0"
+   },
+   "kind": "dataset",
+   "filename": "input.csv",
+   "blob_key": "d1a204d054632471fea3ed96e764a9e70402f69ff2818394a182a8d73bf64a4e",
+   "sha256": "d1a204d054632471fea3ed96e764a9e70402f69ff2818394a182a8d73bf64a4e",
+   "rows": 3,
+   "columns": [
+    "x",
+    "y"
+   ],
+   "source": {
+    "citation": "Synthetic",
+    "url": "Not supplied",
+    "license": "CC0",
+    "data_kind": "synthetic",
+    "transformations": "Generated"
+   }
+  },
+  {
+   "schema_version": "1.0",
+   "id": "bbb2d495-8907-490d-a143-8d8f49ce57b3",
+   "project_id": "p",
+   "created_at": "2026-09-24T22:33:18.200370Z",
+   "parents": [],
+   "software": {
+    "chemdata-auditor": "0.3.0@eff3ed3c43ec71e9ceecabc1f04d1dfb5c91c116",
+    "cheme-ml-benchmarks": "0.1.0@db02d8963725a1d406b9b07eb6f4cc3436fbb082",
+    "scientific-evidence-engine": "0.1.0@09f5ec810e8f04bf8d233ec12eb9448342ee5121",
+    "experiment-failure-memory": "0.1.0@63492787cbbea6d03662db63f2d958a6eec8d804",
+    "workbench": "0.1.0"
+   },
+   "kind": "provenance",
+   "activity": "upload",
+   "inputs": [],
+   "outputs": [
+    "d0c3cd0a-bb24-4d0a-8578-5baa075ec6ca"
+   ],
+   "parameters": {
+    "source": {
+     "citation": "Synthetic",
+     "url": "Not supplied",
+     "license": "CC0",
+     "data_kind": "synthetic",
+     "transformations": "Generated"
+    }
+   }
+  },
+  {
+   "schema_version": "1.0",
+   "id": "4e83e708-725d-4878-b6bd-c8ab3119a429",
+   "project_id": "p",
+   "created_at": "2026-09-24T22:33:19.525746Z",
+   "parents": [
+    "d0c3cd0a-bb24-4d0a-8578-5baa075ec6ca"
+   ],
+   "software": {
+    "chemdata-auditor": "0.3.0@eff3ed3c43ec71e9ceecabc1f04d1dfb5c91c116",
+    "cheme-ml-benchmarks": "0.1.0@db02d8963725a1d406b9b07eb6f4cc3436fbb082",
+    "scientific-evidence-engine": "0.1.0@09f5ec810e8f04bf8d233ec12eb9448342ee5121",
+    "experiment-failure-memory": "0.1.0@63492787cbbea6d03662db63f2d958a6eec8d804",
+    "workbench": "0.1.0"
+   },
+   "kind": "audit",
+   "dataset_id": "d0c3cd0a-bb24-4d0a-8578-5baa075ec6ca",
+   "config": {
+    "duplicate_columns": null,
+    "group_columns": [],
+    "split_column": null,
+    "bounds": {},
+    "units": {},
+    "provenance_columns": [],
+    "sparse_bins": {},
+    "min_bin_count": 3,
+    "feature_columns": [],
+    "unavailable_features": [],
+    "target_column": null,
+    "check_missing": true,
+    "numeric_columns": [],
+    "identity_columns": [],
+    "conflict_columns": [],
+    "conflict_tolerance": 0.0,
+    "identifier_columns": [],
+    "correlation_threshold": 0.995,
+    "unit_aliases": {},
+    "compositions": [],
+    "rules": [],
+    "near_duplicates": {},
+    "smiles_column": null,
+    "molecular_similarity": null,
+    "density_columns": [],
+    "density_scales": {},
+    "density_radius": 1.0,
+    "min_neighbors": 3,
+    "max_pair_comparisons": 2000000,
+    "provenance_patterns": {}
+   },
+   "result": {
+    "n_rows": 3,
+    "findings": [],
+    "checks_run": [
+     "duplicates",
+     "missing_values",
+     "schema_quality"
+    ],
+    "checks_skipped": {
+     "split_leakage": "No split_column configured.",
+     "feature_leakage": "No feature_columns configured.",
+     "bounds": "No physical bounds configured.",
+     "units": "No unit rules configured.",
+     "provenance": "No provenance_columns configured.",
+     "sparse_regions": "No sparse_bins configured.",
+     "conflicting_samples": "Configure identity_columns and conflict_columns.",
+     "near_duplicates": "No per-column absolute tolerances configured.",
+     "molecular_identity": "No smiles_column configured.",
+     "multivariate_density": "No density_columns and density_scales configured.",
+     "domain_constraints": "No compositions or rules configured."
+    },
+    "metadata": {
+     "tool_version": "0.3.0",
+     "row_reference": "zero-based row position; use df.iloc, not df.loc",
+     "dataset_sha256": "e218730e5e7c8707fc64c6e5b0984646bfd64628f0276207d1b1bfb914c2389e",
+     "fingerprint_format": "pandas split JSON, index excluded, 15-digit float precision",
+     "config": {
+      "duplicate_columns": null,
+      "group_columns": [],
+      "split_column": null,
+      "bounds": {},
+      "units": {},
+      "provenance_columns": [],
+      "sparse_bins": {},
+      "min_bin_count": 3,
+      "feature_columns": [],
+      "unavailable_features": [],
+      "target_column": null,
+      "check_missing": true,
+      "numeric_columns": [],
+      "identity_columns": [],
+      "conflict_columns": [],
+      "conflict_tolerance": 0.0,
+      "identifier_columns": [],
+      "correlation_threshold": 0.995,
+      "unit_aliases": {},
+      "compositions": [],
+      "rules": [],
+      "near_duplicates": {},
+      "smiles_column": null,
+      "molecular_similarity": null,
+      "density_columns": [],
+      "density_scales": {},
+      "density_radius": 1.0,
+      "min_neighbors": 3,
+      "max_pair_comparisons": 2000000,
+      "provenance_patterns": {}
+     },
+     "dependencies": {
+      "numpy": "2.5.3",
+      "pandas": "3.0.5",
+      "pint": "0.26.1",
+      "scikit-learn": "1.9.1"
+     },
+     "canonical_units": {},
+     "limitations": [
+      "Configured checks cannot certify scientific validity or causal leakage.",
+      "Evidence examples are capped at 20 rows; affected row positions are complete.",
+      "Near-duplicate pair examples are capped at 100; counts are complete.",
+      "Provenance syntax is checked locally; source authenticity is not verified."
+     ]
+    }
+   }
+  },
+  {
+   "schema_version": "1.0",
+   "id": "a79ab8a8-9deb-4142-bf45-83fd5cb10f1c",
+   "project_id": "p",
+   "created_at": "2026-09-24T22:33:19.530330Z",
+   "parents": [
+    "d0c3cd0a-bb24-4d0a-8578-5baa075ec6ca"
+   ],
+   "software": {
+    "chemdata-auditor": "0.3.0@eff3ed3c43ec71e9ceecabc1f04d1dfb5c91c116",
+    "cheme-ml-benchmarks": "0.1.0@db02d8963725a1d406b9b07eb6f4cc3436fbb082",
+    "scientific-evidence-engine": "0.1.0@09f5ec810e8f04bf8d233ec12eb9448342ee5121",
+    "experiment-failure-memory": "0.1.0@63492787cbbea6d03662db63f2d958a6eec8d804",
+    "workbench": "0.1.0"
+   },
+   "kind": "provenance",
+   "activity": "audit",
+   "inputs": [
+    "d0c3cd0a-bb24-4d0a-8578-5baa075ec6ca"
+   ],
+   "outputs": [
+    "4e83e708-725d-4878-b6bd-c8ab3119a429"
+   ],
+   "parameters": {
+    "dataset_id": "d0c3cd0a-bb24-4d0a-8578-5baa075ec6ca",
+    "config": {
+     "duplicate_columns": null,
+     "group_columns": [],
+     "split_column": null,
+     "bounds": {},
+     "units": {},
+     "provenance_columns": [],
+     "sparse_bins": {},
+     "min_bin_count": 3,
+     "feature_columns": [],
+     "unavailable_features": [],
+     "target_column": null,
+     "check_missing": true,
+     "numeric_columns": [],
+     "identity_columns": [],
+     "conflict_columns": [],
+     "conflict_tolerance": 0.0,
+     "identifier_columns": [],
+     "correlation_threshold": 0.995,
+     "unit_aliases": {},
+     "compositions": [],
+     "rules": [],
+     "near_duplicates": {},
+     "smiles_column": null,
+     "molecular_similarity": null,
+     "density_columns": [],
+     "density_scales": {},
+     "density_radius": 1.0,
+     "min_neighbors": 3,
+     "max_pair_comparisons": 2000000,
+     "provenance_patterns": {}
+    }
+   }
+  },
+  {
+   "schema_version": "1.0",
+   "id": "dd9e5a95-9761-4f00-89ac-d3bfb5747db6",
+   "project_id": "p",
+   "created_at": "2026-09-24T22:33:19.865214Z",
+   "parents": [
+    "4e83e708-725d-4878-b6bd-c8ab3119a429",
+    "d0c3cd0a-bb24-4d0a-8578-5baa075ec6ca"
+   ],
+   "software": {
+    "chemdata-auditor": "0.3.0@eff3ed3c43ec71e9ceecabc1f04d1dfb5c91c116",
+    "cheme-ml-benchmarks": "0.1.0@db02d8963725a1d406b9b07eb6f4cc3436fbb082",
+    "scientific-evidence-engine": "0.1.0@09f5ec810e8f04bf8d233ec12eb9448342ee5121",
+    "experiment-failure-memory": "0.1.0@63492787cbbea6d03662db63f2d958a6eec8d804",
+    "workbench": "0.1.0"
+   },
+   "kind": "agent_execution",
+   "run_id": "d495e1d8-b903-49a3-9de9-17b237b69564",
+   "objective": "Audit",
+   "inputs": {
+    "material_ids": [],
+    "artifact_ids": [
+     "d0c3cd0a-bb24-4d0a-8578-5baa075ec6ca"
+    ],
+    "conversation_id": null,
+    "message_cutoff": null
+   },
+   "policy": {
+    "policy_id": "trusted",
+    "revision": 2,
+    "sha256": "591863a81547a8f5464a4542bd6f7110de06b706b6e08afcebe0c3c8b7e1078e"
+   },
+   "plan_revisions": [
+    {
+     "schema_version": "1.0",
+     "id": "5247c31e-1db3-4cf2-8a80-0ed3b41e0345",
+     "project_id": "p",
+     "created_at": "2026-09-24T22:33:19.081558Z",
+     "contract": "research_plan",
+     "run_id": "d495e1d8-b903-49a3-9de9-17b237b69564",
+     "revision": 1,
+     "steps": [
+      {
+       "id": "audit",
+       "objective": "Audit",
+       "depends_on": [],
+       "allowed_input_ids": [],
+       "expected_artifact_kinds": [
+        "audit"
+       ],
+       "completion_criteria": [
+        "Inspect audit findings"
+       ],
+       "status": "ready",
+       "action_ids": []
+      }
+     ],
+     "rationale_summary": "Audit the declared dataset"
+    }
+   ],
+   "decisions": [],
+   "assignment_ids": [],
+   "actions": [
+    {
+     "action_id": "aa108f9d-4d89-4beb-bc84-9478ea6441b8",
+     "attempt_id": "1",
+     "tool": "run_audit",
+     "tool_version": "1.0",
+     "request_sha256": "0b36ee7c0dc7272b849fa31ba5ec732cc5afac37a85cd741a20f76eec1fff745",
+     "state": "completed",
+     "job_id": "6f68d154-5772-4aab-b5c0-6ba3ae616bc2",
+     "receipt_id": null,
+     "artifact_ids": [
+      "4e83e708-725d-4878-b6bd-c8ab3119a429"
+     ]
+    }
+   ],
+   "limits": {
+    "model_tokens": 32000,
+    "model_requests": 24,
+    "tool_calls": 60,
+    "coordinator_iterations": 24,
+    "specialist_assignments": 4,
+    "specialist_concurrency": 2,
+    "delegation_depth": 1,
+    "review_rounds": 1,
+    "scientific_attempts": 8,
+    "active_seconds": 900,
+    "transient_retries": 2,
+    "finalization_model_tokens": 2000,
+    "finalization_scientific_attempts": 0
+   },
+   "usage": {
+    "billed_token_categories": {
+     "input_tokens": 30,
+     "output_tokens": 30
+    },
+    "reserved_tokens": 0,
+    "model_requests": 3,
+    "tool_calls": 1,
+    "scientific_attempts": 1,
+    "active_seconds": 0,
+    "unknown_request_ids": [],
+    "cost": {
+     "status": "unknown",
+     "reason": "Unpriced or unsettled model usage"
+    }
+   },
+   "versions": {
+    "workbench_revision": "0.1.0+fe5fe1a618dec3a3277ba98361ef7f9c8688c2268e3177e901c4a44bfd039672",
+    "provider": "anthropic",
+    "model": "model",
+    "model_revision": "model",
+    "provider_sdk": "anthropic-messages/1.0;httpx/0.28.1",
+    "runtime": "langgraph/1.2.11",
+    "checkpointer": "langgraph-checkpoint-postgres/3.1.2",
+    "prompt": "c60fc32cf51e6633e53f9fc3c1cafbe8a2f90d5a279f1e738e05c4407d1b0f81",
+    "tool_catalog": "1.0"
+   },
+   "state_at_cutoff": "running",
+   "event_cutoff": 40,
+   "captured_at": "2026-09-24T22:33:19.863210Z",
+   "pending_finalization_action_ids": [
+    "36fe3818-86c6-474e-a903-ca4ca9cd9ced"
+   ]
+  },
+  {
+   "schema_version": "1.0",
+   "id": "cdf12ed9-b263-49f4-9972-66a1dab57517",
+   "project_id": "p",
+   "created_at": "2026-09-24T22:33:20.196472Z",
+   "parents": [
+    "4e83e708-725d-4878-b6bd-c8ab3119a429",
+    "d0c3cd0a-bb24-4d0a-8578-5baa075ec6ca",
+    "dd9e5a95-9761-4f00-89ac-d3bfb5747db6"
+   ],
+   "software": {
+    "chemdata-auditor": "0.3.0@eff3ed3c43ec71e9ceecabc1f04d1dfb5c91c116",
+    "cheme-ml-benchmarks": "0.1.0@db02d8963725a1d406b9b07eb6f4cc3436fbb082",
+    "scientific-evidence-engine": "0.1.0@09f5ec810e8f04bf8d233ec12eb9448342ee5121",
+    "experiment-failure-memory": "0.1.0@63492787cbbea6d03662db63f2d958a6eec8d804",
+    "workbench": "0.1.0"
+   },
+   "kind": "report",
+   "blob_key": "67224aa31981bd32ccd163d8041752d4ecfffa621e714394300bd9b31d3d28f2",
+   "sha256": "67224aa31981bd32ccd163d8041752d4ecfffa621e714394300bd9b31d3d28f2",
+   "artifact_ids": [
+    "4e83e708-725d-4878-b6bd-c8ab3119a429",
+    "d0c3cd0a-bb24-4d0a-8578-5baa075ec6ca",
+    "dd9e5a95-9761-4f00-89ac-d3bfb5747db6"
+   ]
+  },
+  {
+   "schema_version": "1.0",
+   "id": "fd7105f8-37d1-497e-b032-3bcfd3abe52a",
+   "project_id": "p",
+   "created_at": "2026-09-24T22:33:20.236853Z",
+   "parents": [
+    "4e83e708-725d-4878-b6bd-c8ab3119a429",
+    "d0c3cd0a-bb24-4d0a-8578-5baa075ec6ca",
+    "dd9e5a95-9761-4f00-89ac-d3bfb5747db6"
+   ],
+   "software": {
+    "chemdata-auditor": "0.3.0@eff3ed3c43ec71e9ceecabc1f04d1dfb5c91c116",
+    "cheme-ml-benchmarks": "0.1.0@db02d8963725a1d406b9b07eb6f4cc3436fbb082",
+    "scientific-evidence-engine": "0.1.0@09f5ec810e8f04bf8d233ec12eb9448342ee5121",
+    "experiment-failure-memory": "0.1.0@63492787cbbea6d03662db63f2d958a6eec8d804",
+    "workbench": "0.1.0"
+   },
+   "kind": "provenance",
+   "activity": "report",
+   "inputs": [
+    "4e83e708-725d-4878-b6bd-c8ab3119a429",
+    "d0c3cd0a-bb24-4d0a-8578-5baa075ec6ca",
+    "dd9e5a95-9761-4f00-89ac-d3bfb5747db6"
+   ],
+   "outputs": [
+    "cdf12ed9-b263-49f4-9972-66a1dab57517"
+   ],
+   "parameters": {
+    "request": {
+     "run_id": "d495e1d8-b903-49a3-9de9-17b237b69564",
+     "artifact_ids": [
+      "4e83e708-725d-4878-b6bd-c8ab3119a429",
+      "d0c3cd0a-bb24-4d0a-8578-5baa075ec6ca",
+      "dd9e5a95-9761-4f00-89ac-d3bfb5747db6"
+     ],
+     "job_ids": [
+      "6f68d154-5772-4aab-b5c0-6ba3ae616bc2"
+     ],
+     "material_ids": [],
+     "revision": 2,
+     "execution_cutoff": 40
+    },
+    "snapshot_digest": "e46ccd6e7473b548c403ef74bc93a236d3f3b1256b3517bb1ed36aed017e7439"
+   }
+  }
+ ],
+ "jobs": [
+  {
+   "id": "397f7230-4232-42fe-8334-ffe06f78da83",
+   "project_id": "p",
+   "kind": "report",
+   "state": "succeeded",
+   "result_id": "cdf12ed9-b263-49f4-9972-66a1dab57517",
+   "error": null,
+   "created_at": "2026-09-24T22:33:20.024840Z",
+   "started_at": "2026-09-24T22:33:20.059000Z",
+   "finished_at": "2026-09-24T22:33:20.242000Z"
+  },
+  {
+   "id": "6f68d154-5772-4aab-b5c0-6ba3ae616bc2",
+   "project_id": "p",
+   "kind": "audit",
+   "state": "succeeded",
+   "result_id": "4e83e708-725d-4878-b6bd-c8ab3119a429",
+   "error": null,
+   "created_at": "2026-09-24T22:33:19.456777Z",
+   "started_at": "2026-09-24T22:33:19.500000Z",
+   "finished_at": "2026-09-24T22:33:19.531000Z"
+  }
+ ],
+ "summary": {
+  "report_id": "cdf12ed9-b263-49f4-9972-66a1dab57517",
+  "sha256": "67224aa31981bd32ccd163d8041752d4ecfffa621e714394300bd9b31d3d28f2",
+  "size_bytes": 27729,
+  "verification": {
+   "status": "verified",
+   "method": "structural",
+   "checked_at": "2026-09-24T22:33:20.585666Z",
+   "reason": null
+  },
+  "scientific_replay": "not_run",
+  "manifest_version": "2.0",
+  "captured_at": "2026-09-24T22:33:20.020000Z",
+  "scope": {
+   "kind": "run",
+   "run_id": "d495e1d8-b903-49a3-9de9-17b237b69564",
+   "revision": 2,
+   "execution_cutoff": 40,
+   "export_status_at_cutoff": "pending"
+  },
+  "file_count": 28,
+  "inputs": [
+   {
+    "id": "d0c3cd0a-bb24-4d0a-8578-5baa075ec6ca",
+    "kind": "dataset",
+    "schema_version": "1.0",
+    "created_at": "2026-09-24T22:33:18.196361Z",
+    "label": "input.csv · 3 rows",
+    "parents": []
+   },
+   {
+    "id": "4e83e708-725d-4878-b6bd-c8ab3119a429",
+    "kind": "audit",
+    "schema_version": "1.0",
+    "created_at": "2026-09-24T22:33:19.525746Z",
+    "label": "Audit of dataset d0c3cd0a-bb24-4d0a-8578-5baa075ec6ca",
+    "parents": [
+     "d0c3cd0a-bb24-4d0a-8578-5baa075ec6ca"
+    ]
+   },
+   {
+    "id": "dd9e5a95-9761-4f00-89ac-d3bfb5747db6",
+    "kind": "agent_execution",
+    "schema_version": "1.0",
+    "created_at": "2026-09-24T22:33:19.865214Z",
+    "label": "Audit",
+    "parents": [
+     "4e83e708-725d-4878-b6bd-c8ab3119a429",
+     "d0c3cd0a-bb24-4d0a-8578-5baa075ec6ca"
+    ]
+   }
+  ],
+  "jobs": [
+   {
+    "id": "6f68d154-5772-4aab-b5c0-6ba3ae616bc2",
+    "kind": "audit",
+    "state": "succeeded",
+    "result_id": "4e83e708-725d-4878-b6bd-c8ab3119a429",
+    "error_code": null
+   }
+  ],
+  "materials": [],
+  "software": {
+   "chemdata-auditor": "0.3.0@eff3ed3c43ec71e9ceecabc1f04d1dfb5c91c116",
+   "cheme-ml-benchmarks": "0.1.0@db02d8963725a1d406b9b07eb6f4cc3436fbb082",
+   "experiment-failure-memory": "0.1.0@63492787cbbea6d03662db63f2d958a6eec8d804",
+   "scientific-evidence-engine": "0.1.0@09f5ec810e8f04bf8d233ec12eb9448342ee5121",
+   "workbench": "0.1.0"
+  },
+  "python": "3.12.13",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "upstream_commits": {
+   "chemdata-auditor": "eff3ed3c43ec71e9ceecabc1f04d1dfb5c91c116",
+   "cheme-ml-benchmarks": "db02d8963725a1d406b9b07eb6f4cc3436fbb082",
+   "experiment-failure-memory": "63492787cbbea6d03662db63f2d958a6eec8d804",
+   "scientific-evidence-engine": "09f5ec810e8f04bf8d233ec12eb9448342ee5121"
+  },
+  "agent_executions": [
+   {
+    "execution_record_id": "dd9e5a95-9761-4f00-89ac-d3bfb5747db6",
+    "run_id": "d495e1d8-b903-49a3-9de9-17b237b69564",
+    "objective": "Audit",
+    "versions": {
+     "workbench_revision": "0.1.0+fe5fe1a618dec3a3277ba98361ef7f9c8688c2268e3177e901c4a44bfd039672",
+     "provider": "anthropic",
+     "model": "model",
+     "model_revision": "model",
+     "provider_sdk": "anthropic-messages/1.0;httpx/0.28.1",
+     "runtime": "langgraph/1.2.11",
+     "checkpointer": "langgraph-checkpoint-postgres/3.1.2",
+     "prompt": "c60fc32cf51e6633e53f9fc3c1cafbe8a2f90d5a279f1e738e05c4407d1b0f81",
+     "tool_catalog": "1.0"
+    },
+    "policy": {
+     "policy_id": "trusted",
+     "revision": 2,
+     "sha256": "591863a81547a8f5464a4542bd6f7110de06b706b6e08afcebe0c3c8b7e1078e"
+    },
+    "state_at_cutoff": "running",
+    "event_cutoff": 40,
+    "captured_at": "2026-09-24T22:33:19.863210Z",
+    "pending_finalization_action_ids": [
+     "36fe3818-86c6-474e-a903-ca4ca9cd9ced"
+    ]
+   }
+  ],
+  "finalization": {
+   "execution_record_id": "dd9e5a95-9761-4f00-89ac-d3bfb5747db6",
+   "claim_set_id": null,
+   "review_status": null,
+   "runtime_version_count": 1,
+   "gaps": []
+  }
+ },
+ "ids": {
+  "report": "cdf12ed9-b263-49f4-9972-66a1dab57517",
+  "run": "d495e1d8-b903-49a3-9de9-17b237b69564"
+ }
+}

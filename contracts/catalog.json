@@ -4741,6 +4741,590 @@
       "title": "Report",
       "type": "object"
     },
+    "ReportAgentExecution": {
+      "additionalProperties": false,
+      "properties": {
+        "execution_record_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Execution Record Id",
+          "type": "string"
+        },
+        "run_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Run Id",
+          "type": "string"
+        },
+        "objective": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Objective",
+          "type": "string"
+        },
+        "versions": {
+          "$ref": "#/$defs/ExecutionVersions"
+        },
+        "policy": {
+          "$ref": "#/$defs/PolicyReference"
+        },
+        "state_at_cutoff": {
+          "enum": [
+            "queued",
+            "running",
+            "waiting_for_job",
+            "waiting_for_input",
+            "paused",
+            "completed",
+            "partially_completed",
+            "failed",
+            "cancelled"
+          ],
+          "title": "State At Cutoff",
+          "type": "string"
+        },
+        "event_cutoff": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "title": "Event Cutoff",
+          "type": "integer"
+        },
+        "captured_at": {
+          "format": "date-time",
+          "title": "Captured At",
+          "type": "string"
+        },
+        "pending_finalization_action_ids": {
+          "items": {
+            "maxLength": 160,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Pending Finalization Action Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "execution_record_id",
+        "run_id",
+        "objective",
+        "versions",
+        "policy",
+        "state_at_cutoff",
+        "event_cutoff",
+        "captured_at",
+        "pending_finalization_action_ids"
+      ],
+      "title": "ReportAgentExecution",
+      "type": "object"
+    },
+    "ReportFinalization": {
+      "additionalProperties": false,
+      "properties": {
+        "execution_record_id": {
+          "anyOf": [
+            {
+              "maxLength": 160,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Execution Record Id"
+        },
+        "claim_set_id": {
+          "anyOf": [
+            {
+              "maxLength": 160,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Claim Set Id"
+        },
+        "review_status": {
+          "anyOf": [
+            {
+              "maxLength": 60,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Review Status"
+        },
+        "runtime_version_count": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "title": "Runtime Version Count",
+          "type": "integer"
+        },
+        "gaps": {
+          "items": {
+            "maxLength": 4000,
+            "type": "string"
+          },
+          "title": "Gaps",
+          "type": "array"
+        }
+      },
+      "required": [
+        "execution_record_id",
+        "claim_set_id",
+        "review_status",
+        "runtime_version_count",
+        "gaps"
+      ],
+      "title": "ReportFinalization",
+      "type": "object"
+    },
+    "ReportInput": {
+      "additionalProperties": false,
+      "description": "Identity of one frozen archived artifact; scientific values are not projected.",
+      "properties": {
+        "id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "kind": {
+          "maxLength": 40,
+          "title": "Kind",
+          "type": "string"
+        },
+        "schema_version": {
+          "maxLength": 16,
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        },
+        "label": {
+          "maxLength": 300,
+          "title": "Label",
+          "type": "string"
+        },
+        "parents": {
+          "items": {
+            "maxLength": 160,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Parents",
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "kind",
+        "schema_version",
+        "created_at",
+        "label",
+        "parents"
+      ],
+      "title": "ReportInput",
+      "type": "object"
+    },
+    "ReportJob": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "kind": {
+          "maxLength": 40,
+          "title": "Kind",
+          "type": "string"
+        },
+        "state": {
+          "enum": [
+            "succeeded",
+            "failed"
+          ],
+          "title": "State",
+          "type": "string"
+        },
+        "result_id": {
+          "anyOf": [
+            {
+              "maxLength": 160,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Result Id"
+        },
+        "error_code": {
+          "anyOf": [
+            {
+              "maxLength": 60,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Error Code"
+        }
+      },
+      "required": [
+        "id",
+        "kind",
+        "state",
+        "result_id",
+        "error_code"
+      ],
+      "title": "ReportJob",
+      "type": "object"
+    },
+    "ReportMaterial": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "filename": {
+          "maxLength": 300,
+          "title": "Filename",
+          "type": "string"
+        },
+        "media_type": {
+          "enum": [
+            "text/csv",
+            "application/pdf"
+          ],
+          "title": "Media Type",
+          "type": "string"
+        },
+        "sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "filename",
+        "media_type",
+        "sha256"
+      ],
+      "title": "ReportMaterial",
+      "type": "object"
+    },
+    "ReportScope": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "enum": [
+            "project",
+            "run"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "run_id": {
+          "anyOf": [
+            {
+              "maxLength": 160,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Run Id"
+        },
+        "revision": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Revision"
+        },
+        "execution_cutoff": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Execution Cutoff"
+        },
+        "export_status_at_cutoff": {
+          "anyOf": [
+            {
+              "const": "pending",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Export Status At Cutoff"
+        }
+      },
+      "required": [
+        "kind",
+        "run_id",
+        "revision",
+        "execution_cutoff",
+        "export_status_at_cutoff"
+      ],
+      "title": "ReportScope",
+      "type": "object"
+    },
+    "ReportSummary": {
+      "additionalProperties": false,
+      "description": "Current structural reverification of stored report bytes plus frozen identities.\n\nScientific replay is never run by this read; its status is always reported as not run.",
+      "properties": {
+        "report_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Report Id",
+          "type": "string"
+        },
+        "sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        },
+        "size_bytes": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "title": "Size Bytes",
+          "type": "integer"
+        },
+        "verification": {
+          "$ref": "#/$defs/ReportVerification"
+        },
+        "scientific_replay": {
+          "const": "not_run",
+          "default": "not_run",
+          "title": "Scientific Replay",
+          "type": "string"
+        },
+        "manifest_version": {
+          "anyOf": [
+            {
+              "enum": [
+                "1.0",
+                "2.0"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Manifest Version"
+        },
+        "captured_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Captured At"
+        },
+        "scope": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ReportScope"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "file_count": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "title": "File Count",
+          "type": "integer"
+        },
+        "inputs": {
+          "items": {
+            "$ref": "#/$defs/ReportInput"
+          },
+          "title": "Inputs",
+          "type": "array"
+        },
+        "jobs": {
+          "items": {
+            "$ref": "#/$defs/ReportJob"
+          },
+          "title": "Jobs",
+          "type": "array"
+        },
+        "materials": {
+          "items": {
+            "$ref": "#/$defs/ReportMaterial"
+          },
+          "title": "Materials",
+          "type": "array"
+        },
+        "software": {
+          "additionalProperties": {
+            "maxLength": 300,
+            "type": "string"
+          },
+          "propertyNames": {
+            "maxLength": 160,
+            "minLength": 1
+          },
+          "title": "Software",
+          "type": "object"
+        },
+        "python": {
+          "anyOf": [
+            {
+              "maxLength": 60,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Python"
+        },
+        "platform": {
+          "anyOf": [
+            {
+              "maxLength": 300,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Platform"
+        },
+        "upstream_commits": {
+          "additionalProperties": {
+            "maxLength": 100,
+            "type": "string"
+          },
+          "propertyNames": {
+            "maxLength": 160,
+            "minLength": 1
+          },
+          "title": "Upstream Commits",
+          "type": "object"
+        },
+        "agent_executions": {
+          "items": {
+            "$ref": "#/$defs/ReportAgentExecution"
+          },
+          "title": "Agent Executions",
+          "type": "array"
+        },
+        "finalization": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ReportFinalization"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "report_id",
+        "sha256",
+        "size_bytes",
+        "verification",
+        "manifest_version",
+        "captured_at",
+        "scope",
+        "file_count",
+        "inputs",
+        "jobs",
+        "materials",
+        "software",
+        "python",
+        "platform",
+        "upstream_commits",
+        "agent_executions",
+        "finalization"
+      ],
+      "title": "ReportSummary",
+      "type": "object"
+    },
+    "ReportVerification": {
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "enum": [
+            "verified",
+            "failed"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "method": {
+          "const": "structural",
+          "default": "structural",
+          "title": "Method",
+          "type": "string"
+        },
+        "checked_at": {
+          "format": "date-time",
+          "title": "Checked At",
+          "type": "string"
+        },
+        "reason": {
+          "anyOf": [
+            {
+              "maxLength": 4000,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Reason"
+        }
+      },
+      "required": [
+        "status",
+        "checked_at"
+      ],
+      "title": "ReportVerification",
+      "type": "object"
+    },
     "ResearchPlan": {
       "additionalProperties": false,
       "properties": {
@@ -7830,6 +8414,9 @@
           },
           {
             "$ref": "#/$defs/ClaimSet"
+          },
+          {
+            "$ref": "#/$defs/AgentExecutionRecord"
           }
         ],
         "discriminator": {
@@ -7876,7 +8463,8 @@
             "provenance": "#/$defs/Provenance",
             "report": "#/$defs/Report",
             "evaluation_protocol": "#/$defs/EvaluationProtocol",
-            "claim_set": "#/$defs/ClaimSet"
+            "claim_set": "#/$defs/ClaimSet",
+            "agent_execution": "#/$defs/AgentExecutionRecord"
           }
         }
       }
@@ -7940,6 +8528,9 @@
         },
         {
           "$ref": "#/$defs/ClaimSet"
+        },
+        {
+          "$ref": "#/$defs/AgentExecutionRecord"
         }
       ],
       "discriminator": {
@@ -7986,7 +8577,8 @@
           "provenance": "#/$defs/Provenance",
           "report": "#/$defs/Report",
           "evaluation_protocol": "#/$defs/EvaluationProtocol",
-          "claim_set": "#/$defs/ClaimSet"
+          "claim_set": "#/$defs/ClaimSet",
+          "agent_execution": "#/$defs/AgentExecutionRecord"
         }
       }
     }
@@ -8057,6 +8649,9 @@
     },
     {
       "$ref": "#/$defs/EvidenceAnchor"
+    },
+    {
+      "$ref": "#/$defs/ReportSummary"
     },
     {
       "$ref": "#/$defs/EvidenceReference"

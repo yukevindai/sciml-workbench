@@ -7,6 +7,7 @@ import { splitHref } from '../lib/split';
 import { benchmarkHref } from '../lib/benchmark';
 import { evidenceHref } from '../lib/evidence';
 import { failureHref } from '../lib/failure';
+import { reportHref } from '../lib/lineage';
 import type { Job } from '../lib/types';
 import { shortId } from '../lib/format';
 import { Badge, Disclosure } from './ui';
@@ -43,6 +44,7 @@ export function JobActivity({ jobs }: { jobs: Job[] }) {
               {job.kind === 'audit' && job.result_id && <Link className="text-link" href={auditHref(job.project_id, job.result_id)}>Inspect audit result</Link>}
               {job.kind === 'split' && job.result_id && <Link className="text-link" href={splitHref(job.project_id, job.result_id)}>Inspect split result</Link>}
               {job.kind === 'benchmark' && job.result_id && <Link className="text-link" href={benchmarkHref(job.project_id, job.result_id)}>Inspect benchmark result</Link>}
+              {job.kind === 'report' && job.result_id && <Link className="text-link" href={reportHref(job.project_id, job.result_id)}>Inspect report archive</Link>}
               {job.kind === 'failure' && job.result_id && <Link className="text-link" href={failureHref(job.project_id, job.result_id)}>Inspect failure record</Link>}
               {job.kind === 'evidence' && job.result_id && <Link className="text-link" href={evidenceHref(job.project_id, job.result_id)}>Inspect extracted evidence</Link>}
             </span>

@@ -11,6 +11,7 @@ The manual read surface is implemented. B09's C12 prerequisite is not present: e
 | `GET /api/v1/projects/{p}/evidence/{e}/pages/{n}` | `EvidencePageText`: exact retained PDFium text of one upstream page, reverified against the original and bundle (A06). No OCR; image-only pages return their empty text with `has_text: false`. |
 | `GET /api/v1/projects/{p}/claim-sets/{c}/claims/{claim}/source-references/{i}` | `EvidenceSpanView`: a stored claim's own citation, reverified, with up to 320 unmodified code points of context each side (A06). Clients cannot supply the reference. |
 | `GET /api/v1/projects/{p}/evidence-spans` and `/evidence-spans/{s}` | `EvidenceAnchor` list (no text) and one named anchor as a reverified `EvidenceSpanView` (A06). |
+| `GET /api/v1/projects/{p}/reports/{r}/summary` | `ReportSummary` (A08): current structural reverification of the stored archive, plus frozen scope, artifact identities (no values), settled jobs, attachments, environment, agent execution versions and finalization gaps. A failed check returns `status: failed` with a reason and no contents. `scientific_replay` is always `not_run`. Agent scopes are denied. |
 | `GET /api/v1/projects/{p}/artifact-index` | `ArtifactPage`: lightweight identity, kind, schema version and creation time. |
 | `GET /api/v1/projects/{p}/job-index` | `JobPage`: safe job details and optional external-receipt projections. |
 | `GET /api/v1/projects/{p}/jobs/{j}` | One project-scoped `JobDetail`, including a receipt when journaled. |

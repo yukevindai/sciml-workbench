@@ -62,6 +62,12 @@ assessment), uncertainty and the exact run, plus every import's receipt. Unknown
 import outcomes stay separate from confirmed records, and a retried or
 double-clicked save reuses one request. See the [A07 handoff](docs/tickets/A07.md).
 
+Provenance shows a lineage table and graph of every artifact's recorded
+dependencies. References that do not resolve stay visible as missing. Reports
+reverify each archive's structure and list its frozen scope, inputs,
+environment and agent versions; scientific replay is always shown as not run.
+See the [A08 handoff](docs/tickets/A08.md).
+
 1. **Projects:** create a project and describe its research question.
 2. **Dataset audit:** upload `examples/demo.csv`, then explicitly choose **Use bundled synthetic demo declarations** for this fixture. Ordinary uploads start with unknown source metadata and can be audited without a license declaration. Click **Run audit** using the prefilled configuration.
 3. **Split designer:** click **Generate partition**. SciSplit produces a 60/20/20 requested train/validation/test split by generated family; actual group-constrained counts are visualized.
@@ -70,7 +76,7 @@ double-clicked save reuses one request. See the [A07 handoff](docs/tickets/A07.m
 6. To exercise an **execution failure**, run another benchmark with `units: {}` in the task card. Upstream admission rejects missing units. Select that failed run and save the reason to Failure Memory.
 7. **Evidence:** attach a PDF to preserve its original bytes, then optionally choose **Extract text**. The filename becomes the extraction title. Originals remain downloadable even if extraction fails. After extraction, choose **Show text** on a page to read its exact text layer; pages without one say so. Ingestion is not OCR, figure digitization or automatic claim verification.
 8. **Provenance:** inspect linked artifact IDs and configurations.
-9. **Reports:** after jobs settle, generate and download the ZIP. It includes original inputs, complete artifacts, nested benchmark bundles with predictions and task cards, source evidence, failure snapshots, schemas, dependency pins, a readable report and SHA-256 manifest.
+9. **Reports:** after jobs settle, choose **Export project**; the archive is checked and listed with its frozen inputs. Download the ZIP. It includes original inputs, complete artifacts, nested benchmark bundles with predictions and task cards, source evidence, failure snapshots, schemas, dependency pins, a readable report and SHA-256 manifest.
 
 For other CSVs, change the configuration declarations to match the columns, target, units, provenance and scientific question. The defaults are only for the fixture. The MVP supports upstream **mean and ridge regression** baselines. It does not silently rename features, impute targets, waive audit errors, accept warnings or regenerate a split. Nonempty train/validation/test partitions are mandatory for benchmarking. User datasets are local task cards, not admissions to the public benchmark catalog.
 
