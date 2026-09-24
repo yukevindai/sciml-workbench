@@ -25,7 +25,7 @@ import { ReportView } from './views/report';
 const PROJECT_STORAGE_KEY = 'sciml-project';
 const POLL_INTERVAL = 2500;
 
-export default function Workbench({ view, fixture, children, requestedProjectId, requestedAuditId }: { view: View; fixture?: ShellFixture; children?: ReactNode; requestedProjectId?: string; requestedAuditId?: string }) {
+export default function Workbench({ view, fixture, children, requestedProjectId, requestedAuditId, requestedSplitId }: { view: View; fixture?: ShellFixture; children?: ReactNode; requestedProjectId?: string; requestedAuditId?: string; requestedSplitId?: string }) {
   const [projects, setProjects] = useState<Project[]>(fixture?.projects ?? []);
   const [projectId, updateProjectId] = useState(fixture?.projects[0]?.id ?? '');
   const [artifacts, setArtifacts] = useState<Artifact[]>(fixture?.artifacts ?? []);
@@ -46,6 +46,7 @@ export default function Workbench({ view, fixture, children, requestedProjectId,
   const requestSequence = useRef(0);
   const actionInFlight = useRef(false);
   const auditLinkApplied = useRef(false);
+  const splitLinkApplied = useRef(false);
 
   const setProjectId = useCallback((id: string) => {
     if (fixture || activeProject.current === id) return;
@@ -79,6 +80,13 @@ export default function Workbench({ view, fixture, children, requestedProjectId,
       }
       setArtifacts(nextArtifacts);
       setJobs(nextJobs);
+      if (requestedSplitId && projectId === requestedProjectId && !splitLinkApplied.current) {
+        const split = kinds(nextArtifacts, 'split').find(value => value.id === requestedSplitId);
+        if (split) {
+          setDatasetId(split.dataset_id); setSplitId(split.id);
+          splitLinkApplied.current = true;
+        }
+      }
       if (requestedAuditId && projectId === requestedProjectId && !auditLinkApplied.current) {
         const audit = kinds(nextArtifacts, 'audit').find(value => value.id === requestedAuditId);
         if (audit) {
@@ -93,7 +101,7 @@ export default function Workbench({ view, fixture, children, requestedProjectId,
     } finally {
       if (current()) setProjectLoading(false);
     }
-  }, [projectId, fixture, requestedAuditId, requestedProjectId, setDatasetId]);
+  }, [projectId, fixture, requestedAuditId, requestedSplitId, requestedProjectId, setDatasetId]);
 
   useEffect(() => {
     if (fixture) return;
@@ -104,7 +112,7 @@ export default function Workbench({ view, fixture, children, requestedProjectId,
         if (controller.signal.aborted) return;
         setProjects(list);
         if (requestedProjectId) {
-          if (!list.some(project => project.id === requestedProjectId)) throw new Error('Requested project unavailable. No other project was selected for this audit link.');
+          if (!list.some(project => project.id === requestedProjectId)) throw new Error('Requested project unavailable. No other project was selected for this result link.');
           setProjectId(requestedProjectId);
           return;
         }
@@ -236,7 +244,7 @@ export default function Workbench({ view, fixture, children, requestedProjectId,
               {view === 'research' && <ResearchView wb={model} />}
               {view === 'projects' && <ProjectsView wb={model} />}
               {view === 'dataset-audit' && <AuditView key={projectId} wb={model} requestedAuditId={projectId === requestedProjectId ? requestedAuditId : undefined} />}
-              {view === 'split-designer' && <SplitView wb={model} />}
+              {view === 'split-designer' && <SplitView wb={model} requestedSplitId={projectId === requestedProjectId ? requestedSplitId : undefined} />}
               {view === 'benchmark' && <BenchmarkView wb={model} />}
               {view === 'failure-memory' && <FailureMemoryView wb={model} />}
               {view === 'evidence' && <EvidenceView wb={model} />}

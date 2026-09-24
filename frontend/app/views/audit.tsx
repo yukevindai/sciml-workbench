@@ -11,7 +11,7 @@ import type { SourceMetadata } from '../lib/types';
 import { emptySource, fileDigest, isBundledDemo, isDemoSource, parseSourceDraft, reusableSource, sourceDeclarations, sourceHeader, type SourceDraft } from '../lib/intake';
 import { AuditForm } from '../components/audit-form';
 import { AuditInspection } from '../components/audit-inspection';
-import { AuditAgentActivity } from '../components/audit-agent-activity';
+import { ArtifactAgentActivity } from '../components/artifact-agent-activity';
 import { Alert, Disclosure, EmptyState, Field, Panel } from '../components/ui';
 import { AdvancedJson } from '../components/inputs';
 import { StageGate } from '../components/workflow';
@@ -228,7 +228,7 @@ export function AuditView({ wb, requestedAuditId }: { wb: Workbench; requestedAu
         </Panel>
       </div>
       <AuditInspection wb={wb} requestedAuditId={requestedAuditId} />
-      <AuditAgentActivity key={wb.projectId} wb={wb} />
+      <ArtifactAgentActivity key={wb.projectId} wb={wb} kind="audit" />
     </>
   );
 }

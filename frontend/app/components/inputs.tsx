@@ -345,9 +345,14 @@ export function RatioDesigner({
         {validation > 0 && <div className="validation" style={{ flex: validation }}>{pct(validation)}</div>}
         {test > 0 && <div className="test" style={{ flex: test }}>{pct(test)}</div>}
       </div>
-      <p className="field-hint">
-        Training {pct(train)} · Validation {pct(validation)} · Test {pct(test)}
-      </p>
+      <div className="table-scroll" tabIndex={0} role="region" aria-label="Requested partition shares">
+        <table className="table"><caption>Requested shares; actual assignments are shown after execution.</caption>
+          <thead><tr><th scope="col">Partition</th><th scope="col">Requested share</th></tr></thead>
+          <tbody><tr><th scope="row">Training</th><td>{pct(train)}</td></tr>
+            <tr><th scope="row">Validation</th><td>{pct(validation)}</td></tr>
+            <tr><th scope="row">Test</th><td>{pct(test)}</td></tr></tbody>
+        </table>
+      </div>
 
       {(['validation', 'test'] as const).map(which => {
         const current = which === 'validation' ? validation : test;
@@ -366,7 +371,7 @@ export function RatioDesigner({
                 <input
                   type="range"
                   className="range"
-                  min={0.05}
+                  min={which === 'validation' ? 0 : 0.05}
                   max={0.5}
                   step={0.05}
                   value={current}

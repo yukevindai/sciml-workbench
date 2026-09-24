@@ -3,6 +3,7 @@
 import { Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { auditHref } from '../lib/audit';
+import { splitHref } from '../lib/split';
 import type { Job } from '../lib/types';
 import { shortId } from '../lib/format';
 import { Badge, Disclosure } from './ui';
@@ -37,6 +38,7 @@ export function JobActivity({ jobs }: { jobs: Job[] }) {
               <span className="meta-list"><span className="meta-id">{shortId(job.id)}</span></span>
               {job.error && <span className="job-error">{job.error}</span>}
               {job.kind === 'audit' && job.result_id && <Link className="text-link" href={auditHref(job.project_id, job.result_id)}>Inspect audit result</Link>}
+              {job.kind === 'split' && job.result_id && <Link className="text-link" href={splitHref(job.project_id, job.result_id)}>Inspect split result</Link>}
             </span>
             <Badge state={job.state} />
           </li>

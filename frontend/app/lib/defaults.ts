@@ -49,7 +49,7 @@ export const benchmarkDefault: BenchmarkConfig = {
 
 /** Known SciSplit strategy. Offered as a suggestion, not a closed list: the
  *  value is passed straight through to the upstream package. */
-export const SPLIT_STRATEGIES = ['composition'];
+export const SPLIT_STRATEGIES = ['random', 'formulation', 'composition', 'publication', 'laboratory', 'cluster', 'time', 'temporal', 'extrapolation'];
 
 export const COMMON_UNITS = [
   'dimensionless', 'kelvin', 'celsius', 'pascal', 'bar', 'mole_per_litre',

@@ -30,3 +30,47 @@ No dependency pin, Split 1.0/public API schema or migration changes. Existing re
 `backend/tests/test_split_integrity.py` runs real public APIs for all nine base strategy names, checks repeatability for fixed seeds/configuration, exercises temporal/extrapolation exclusions, and validates full diagnostics against public serialization. An eight-row boundary fixture retains `005`/`006` as excluded IDs. Corruption tests cover short/long/unknown labels, duplicate/missing/out-of-range/boolean positions, misalignment, wrong counts/configuration, altered digest/row order, mismatched ownership and bad row identities.
 
 Tests also run a real benchmark exchange, the upstream exclusion rejection, durable split publication/read through the API, and report replay with corrupted split cover or changed input order. Corrupt exchange must raise an integrity error rather than return a scientific failure artifact. See [C03 acceptance](tickets/C03.md) for executed checks and limitations. General report archive hardening and numerical replay tolerances remain C09 work; these checks do not establish scientific validity or tamper-proof provenance.
+
+## Split inspection UI (A04)
+
+`/split-designer?project=<project-id>&split=<split-id>#split-<split-id>` selects
+the owning project/dataset and focuses the exact stored split. Job results and
+the read-only agent activity snapshot provide this link. A partition selector
+also allows inspection of earlier results. Recorded audit lineage is never
+replaced with the newest audit, and broken references remain explicit.
+
+The inspection shows requested configuration separately from upstream effective
+configuration. Counts and percentages derive from all stored assignments,
+including excluded rows; this denominator differs from upstream fractions that
+exclude excluded rows. Both are preserved and labeled in their respective
+contexts. Missing or inconsistent positional/count diagnostics show a warning,
+not successful integrity verification. Backend exchange validation remains
+authoritative.
+
+Requested-share and actual-count charts have table alternatives. The visual row
+grid is limited to 400 rows and labeled as a preview. The accessible assignment
+table pages through all rows, 50 at a time. A JSON download includes every stored
+assignment in original order plus project, split, dataset and audit IDs. Positions
+are explicitly zero-based; they are not CSV row-ID values. Original CSV download
+is offered only when dataset/audit/parent lineage resolves in the project.
+
+Supported diagnostics include upstream warnings, generalization scope,
+unconfigured checks, pairwise duplicate/group overlap counts and findings.
+Complete diagnostics, including boundaries, ranges, distribution checks and
+effective diagnostic configuration, remain available in JSON disclosures/the
+complete artifact. Missing values are unavailable, not zero. Exclusions remain
+visible and do not silently curate the source dataset. Split completion never
+implies benchmark admission or permission to expose test metrics.
+
+The manual form scopes audit choices to the selected dataset and matching parent
+lineage. Dataset changes reset configuration and audit choice. Ordinary datasets
+start with a random design, empty column choices and no target; exact bundled
+demo bytes receive the established demo defaults. Form parsing rejects malformed
+JSON, invalid shares/seeds and stale common column references. Advanced options
+and rejected drafts are preserved; the worker validates strategy-specific science.
+Zero validation share is supported. Strategy suggestions cover the nine base
+names; optional molecular support is not advertised as installed.
+
+See [A04 verification and limits](tickets/A04.md). Focused backend verification:
+`PYTHONPATH=backend:backend/tests python -m pytest backend/tests/test_split_integrity.py -p test_metadata -q`
+(use a semicolon path separator on Windows).

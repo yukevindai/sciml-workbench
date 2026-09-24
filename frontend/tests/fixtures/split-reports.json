@@ -1,0 +1,646 @@
+{
+  "demo": {
+    "dataset": {
+      "schema_version": "1.0",
+      "id": "demo-dataset",
+      "project_id": "p",
+      "created_at": "2026-09-24T12:00:00Z",
+      "parents": [],
+      "software": {},
+      "kind": "dataset",
+      "filename": "fixture.csv",
+      "blob_key": "aa0e1db7ba154779d11787120c4ea7dd87aab22d8a8fbd1e4a5b1446507afe3c",
+      "sha256": "aa0e1db7ba154779d11787120c4ea7dd87aab22d8a8fbd1e4a5b1446507afe3c",
+      "rows": 60,
+      "columns": [
+        "row_id",
+        "group_id",
+        "source_id",
+        "temperature",
+        "response"
+      ],
+      "source": {
+        "citation": "Workbench synthetic demonstration",
+        "url": "Not applicable: generated fixture",
+        "license": "CC0-1.0",
+        "data_kind": "synthetic",
+        "transformations": "Deterministic toy fixture; no empirical claims."
+      }
+    },
+    "split": {
+      "schema_version": "1.0",
+      "id": "demo-split",
+      "project_id": "p",
+      "created_at": "2026-09-24T12:01:00Z",
+      "parents": [
+        "demo-dataset",
+        "demo-audit"
+      ],
+      "software": {},
+      "kind": "split",
+      "dataset_id": "demo-dataset",
+      "audit_id": "demo-audit",
+      "config": {
+        "strategy": "composition",
+        "columns": [
+          "group_id"
+        ],
+        "group_columns": [
+          "group_id"
+        ],
+        "target_column": "response",
+        "validation_size": 0.2,
+        "test_size": 0.2,
+        "seed": 42
+      },
+      "assignments": [
+        "train",
+        "train",
+        "train",
+        "train",
+        "train",
+        "train",
+        "train",
+        "train",
+        "train",
+        "train",
+        "train",
+        "train",
+        "test",
+        "test",
+        "test",
+        "test",
+        "test",
+        "test",
+        "train",
+        "train",
+        "train",
+        "train",
+        "train",
+        "train",
+        "train",
+        "train",
+        "train",
+        "validation",
+        "validation",
+        "validation",
+        "train",
+        "train",
+        "train",
+        "train",
+        "train",
+        "train",
+        "train",
+        "train",
+        "train",
+        "validation",
+        "validation",
+        "validation",
+        "test",
+        "test",
+        "test",
+        "validation",
+        "validation",
+        "validation",
+        "train",
+        "train",
+        "train",
+        "train",
+        "train",
+        "train",
+        "validation",
+        "validation",
+        "validation",
+        "test",
+        "test",
+        "test"
+      ],
+      "result": {
+        "train": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23,
+          24,
+          25,
+          26,
+          30,
+          31,
+          32,
+          33,
+          34,
+          35,
+          36,
+          37,
+          38,
+          48,
+          49,
+          50,
+          51,
+          52,
+          53
+        ],
+        "test": [
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          42,
+          43,
+          44,
+          57,
+          58,
+          59
+        ],
+        "excluded": [],
+        "diagnostics": {
+          "strategy": "composition",
+          "warnings": [
+            "Numeric composition representations are normalized by decimal value; rounding is explicit. Units and chemical equivalence are not inferred."
+          ],
+          "selection": "seeded connected-group holdout",
+          "requested_test_group_fraction": 0.2,
+          "requested_validation_group_fraction": 0.2,
+          "heldout_components": 4,
+          "validation_components": 4,
+          "scientific_groups": 20,
+          "independent_components": 20,
+          "group_overlap_counts": {
+            "group_id": 0
+          },
+          "scientific_group_overlap": 0,
+          "n_train": 36,
+          "n_validation": 12,
+          "n_test": 12,
+          "n_excluded": 0,
+          "actual_test_row_fraction": 0.2,
+          "actual_validation_row_fraction": 0.2,
+          "generalization": {
+            "supports": "Transfer to compositions absent from training under declared representation and rounding.",
+            "does_not_establish": "Composition holdout alone does not establish extrapolation, novel scaffold transfer, or new-laboratory performance.",
+            "conditional_on": "Sample independence, provenance, measurement validity, and absence of target leakage must be checked separately."
+          },
+          "evaluation": {
+            "partition_sizes": {
+              "train": 36,
+              "validation": 12,
+              "test": 12
+            },
+            "excluded_count": 0,
+            "pairwise_overlap": {
+              "train:validation": {
+                "groups": {
+                  "group_id": 0
+                },
+                "exact_duplicate_pairs": 0
+              },
+              "train:test": {
+                "groups": {
+                  "group_id": 0
+                },
+                "exact_duplicate_pairs": 0
+              },
+              "validation:test": {
+                "groups": {
+                  "group_id": 0
+                },
+                "exact_duplicate_pairs": 0
+              }
+            },
+            "distribution_shift": {
+              "validation": {
+                "numeric": {},
+                "categorical": {}
+              },
+              "test": {
+                "numeric": {},
+                "categorical": {}
+              }
+            },
+            "training_domain": {
+              "status": "not_configured"
+            },
+            "checks_not_configured": [
+              "numeric_similarity",
+              "molecular_similarity",
+              "numeric_shift",
+              "categorical_shift",
+              "training_domain"
+            ]
+          }
+        },
+        "metadata": {
+          "tool_version": "0.3.0",
+          "row_reference": "zero-based row position; use df.iloc, not df.loc",
+          "dataset_sha256": "0eb2ca1f5e808f352e36b767fdf74f5494253bed6b024ff6e7631ad657ef45bc",
+          "fingerprint_format": "pandas split JSON, index excluded, 15-digit float precision",
+          "config": {
+            "strategy": "composition",
+            "columns": [
+              "group_id"
+            ],
+            "group_columns": [
+              "group_id"
+            ],
+            "test_size": 0.2,
+            "validation_size": 0.2,
+            "seed": 42,
+            "holdout_values": null,
+            "validation_values": null,
+            "cutoff": null,
+            "validation_cutoff": null,
+            "threshold": null,
+            "validation_threshold": null,
+            "direction": "high",
+            "extrapolation_bounds": {},
+            "validation_bounds": {},
+            "crossing_policy": "error",
+            "composition_decimals": null,
+            "n_clusters": 5,
+            "cluster_scales": {},
+            "group_near_duplicates": {},
+            "group_smiles_column": null,
+            "group_molecular_similarity": null,
+            "target_column": "response",
+            "allow_target_in_split": false,
+            "max_pair_comparisons": 2000000,
+            "diagnostics": {}
+          },
+          "dependencies": {
+            "numpy": "2.5.3",
+            "pandas": "3.0.5",
+            "pint": "0.26.1",
+            "scikit-learn": "1.9.1"
+          },
+          "effective_diagnostics_config": {
+            "group_columns": [
+              "group_id"
+            ],
+            "duplicate_columns": null,
+            "near_duplicates": {},
+            "smiles_column": null,
+            "molecular_similarity": null,
+            "numeric_columns": [],
+            "categorical_columns": [],
+            "shift_threshold": 0.2,
+            "domain_columns": [],
+            "domain_scales": {},
+            "domain_quantile": 0.95,
+            "domain_distance_threshold": null,
+            "max_pair_comparisons": 2000000
+          }
+        },
+        "validation": [
+          27,
+          28,
+          29,
+          39,
+          40,
+          41,
+          45,
+          46,
+          47,
+          54,
+          55,
+          56
+        ],
+        "findings": [
+          {
+            "code": "generalization_scope",
+            "severity": "info",
+            "columns": [
+              "group_id"
+            ],
+            "rows": [
+              27,
+              28,
+              29,
+              39,
+              40,
+              41,
+              45,
+              46,
+              47,
+              54,
+              55,
+              56,
+              12,
+              13,
+              14,
+              15,
+              16,
+              17,
+              42,
+              43,
+              44,
+              57,
+              58,
+              59
+            ],
+            "message": "Transfer to compositions absent from training under declared representation and rounding.",
+            "suggestion": "Report this evaluation scope and its limitations alongside model metrics.",
+            "details": {
+              "supports": "Transfer to compositions absent from training under declared representation and rounding.",
+              "does_not_establish": "Composition holdout alone does not establish extrapolation, novel scaffold transfer, or new-laboratory performance.",
+              "conditional_on": "Sample independence, provenance, measurement validity, and absence of target leakage must be checked separately."
+            }
+          }
+        ]
+      }
+    }
+  },
+  "boundary": {
+    "dataset": {
+      "schema_version": "1.0",
+      "id": "boundary-dataset",
+      "project_id": "p",
+      "created_at": "2026-09-24T12:00:00Z",
+      "parents": [],
+      "software": {},
+      "kind": "dataset",
+      "filename": "fixture.csv",
+      "blob_key": "514ee4c9ce1b1e14fd52ff0931f2dc6b16a29f1e02b5fdb26dab62eb9c835e0d",
+      "sha256": "514ee4c9ce1b1e14fd52ff0931f2dc6b16a29f1e02b5fdb26dab62eb9c835e0d",
+      "rows": 8,
+      "columns": [
+        "row_id",
+        "group_id",
+        "date",
+        "x",
+        "y"
+      ],
+      "source": {
+        "citation": "Workbench synthetic demonstration",
+        "url": "Not applicable: generated fixture",
+        "license": "CC0-1.0",
+        "data_kind": "synthetic",
+        "transformations": "Deterministic toy fixture; no empirical claims."
+      }
+    },
+    "split": {
+      "schema_version": "1.0",
+      "id": "boundary-split",
+      "project_id": "p",
+      "created_at": "2026-09-24T12:01:00Z",
+      "parents": [
+        "boundary-dataset",
+        "boundary-audit"
+      ],
+      "software": {},
+      "kind": "split",
+      "dataset_id": "boundary-dataset",
+      "audit_id": "boundary-audit",
+      "config": {
+        "strategy": "time",
+        "columns": [
+          "date"
+        ],
+        "group_columns": [
+          "group_id"
+        ],
+        "target_column": "y",
+        "cutoff": "2020-01-07",
+        "validation_cutoff": "2020-01-03",
+        "crossing_policy": "exclude"
+      },
+      "assignments": [
+        "train",
+        "train",
+        "validation",
+        "validation",
+        "excluded",
+        "excluded",
+        "test",
+        "test"
+      ],
+      "result": {
+        "train": [
+          0,
+          1
+        ],
+        "test": [
+          6,
+          7
+        ],
+        "excluded": [
+          4,
+          5
+        ],
+        "diagnostics": {
+          "strategy": "time",
+          "warnings": [
+            "Entire crossing groups were excluded; assess selection bias and reduced coverage."
+          ],
+          "boundary": {
+            "cutoff_utc": "2020-01-07T00:00:00+00:00",
+            "validation_cutoff_utc": "2020-01-03T00:00:00+00:00",
+            "boundary_equality": "earlier partition"
+          },
+          "excluded_crossing_groups": 1,
+          "independent_components": 4,
+          "group_overlap_counts": {
+            "group_id": 0
+          },
+          "observed_ranges": {
+            "train": {
+              "date": [
+                "2020-01-01T00:00:00+00:00",
+                "2020-01-02T00:00:00+00:00"
+              ]
+            },
+            "validation": {
+              "date": [
+                "2020-01-04T00:00:00+00:00",
+                "2020-01-05T00:00:00+00:00"
+              ]
+            },
+            "test": {
+              "date": [
+                "2020-01-08T00:00:00+00:00",
+                "2020-01-09T00:00:00+00:00"
+              ]
+            }
+          },
+          "n_train": 2,
+          "n_validation": 2,
+          "n_test": 2,
+          "n_excluded": 2,
+          "actual_test_row_fraction": 0.3333333333333333,
+          "actual_validation_row_fraction": 0.3333333333333333,
+          "generalization": {
+            "supports": "Performance on observations available after the declared training and validation cutoffs.",
+            "does_not_establish": "Temporal order does not guarantee independence of repeated samples or resistance to later distribution drift.",
+            "conditional_on": "Sample independence, provenance, measurement validity, and absence of target leakage must be checked separately."
+          },
+          "evaluation": {
+            "partition_sizes": {
+              "train": 2,
+              "validation": 2,
+              "test": 2
+            },
+            "excluded_count": 2,
+            "pairwise_overlap": {
+              "train:validation": {
+                "groups": {
+                  "group_id": 0
+                },
+                "exact_duplicate_pairs": 0
+              },
+              "train:test": {
+                "groups": {
+                  "group_id": 0
+                },
+                "exact_duplicate_pairs": 0
+              },
+              "validation:test": {
+                "groups": {
+                  "group_id": 0
+                },
+                "exact_duplicate_pairs": 0
+              }
+            },
+            "distribution_shift": {
+              "validation": {
+                "numeric": {},
+                "categorical": {}
+              },
+              "test": {
+                "numeric": {},
+                "categorical": {}
+              }
+            },
+            "training_domain": {
+              "status": "not_configured"
+            },
+            "checks_not_configured": [
+              "numeric_similarity",
+              "molecular_similarity",
+              "numeric_shift",
+              "categorical_shift",
+              "training_domain"
+            ]
+          }
+        },
+        "metadata": {
+          "tool_version": "0.3.0",
+          "row_reference": "zero-based row position; use df.iloc, not df.loc",
+          "dataset_sha256": "3412ae988943858239fbdb12ea0f0cf047968476047ced91880e545509401822",
+          "fingerprint_format": "pandas split JSON, index excluded, 15-digit float precision",
+          "config": {
+            "strategy": "time",
+            "columns": [
+              "date"
+            ],
+            "group_columns": [
+              "group_id"
+            ],
+            "test_size": 0.2,
+            "validation_size": 0,
+            "seed": 0,
+            "holdout_values": null,
+            "validation_values": null,
+            "cutoff": "2020-01-07",
+            "validation_cutoff": "2020-01-03",
+            "threshold": null,
+            "validation_threshold": null,
+            "direction": "high",
+            "extrapolation_bounds": {},
+            "validation_bounds": {},
+            "crossing_policy": "exclude",
+            "composition_decimals": null,
+            "n_clusters": 5,
+            "cluster_scales": {},
+            "group_near_duplicates": {},
+            "group_smiles_column": null,
+            "group_molecular_similarity": null,
+            "target_column": "y",
+            "allow_target_in_split": false,
+            "max_pair_comparisons": 2000000,
+            "diagnostics": {}
+          },
+          "dependencies": {
+            "numpy": "2.5.3",
+            "pandas": "3.0.5",
+            "pint": "0.26.1",
+            "scikit-learn": "1.9.1"
+          },
+          "effective_diagnostics_config": {
+            "group_columns": [
+              "group_id"
+            ],
+            "duplicate_columns": null,
+            "near_duplicates": {},
+            "smiles_column": null,
+            "molecular_similarity": null,
+            "numeric_columns": [],
+            "categorical_columns": [],
+            "shift_threshold": 0.2,
+            "domain_columns": [],
+            "domain_scales": {},
+            "domain_quantile": 0.95,
+            "domain_distance_threshold": null,
+            "max_pair_comparisons": 2000000
+          }
+        },
+        "validation": [
+          2,
+          3
+        ],
+        "findings": [
+          {
+            "code": "generalization_scope",
+            "severity": "info",
+            "columns": [
+              "date"
+            ],
+            "rows": [
+              2,
+              3,
+              6,
+              7
+            ],
+            "message": "Performance on observations available after the declared training and validation cutoffs.",
+            "suggestion": "Report this evaluation scope and its limitations alongside model metrics.",
+            "details": {
+              "supports": "Performance on observations available after the declared training and validation cutoffs.",
+              "does_not_establish": "Temporal order does not guarantee independence of repeated samples or resistance to later distribution drift.",
+              "conditional_on": "Sample independence, provenance, measurement validity, and absence of target leakage must be checked separately."
+            }
+          },
+          {
+            "code": "boundary_group_exclusion",
+            "severity": "warning",
+            "columns": [
+              "group_id"
+            ],
+            "rows": [
+              4,
+              5
+            ],
+            "message": "Entire related groups were excluded to preserve scientific boundaries.",
+            "suggestion": "Investigate selection bias before interpreting performance.",
+            "details": {
+              "excluded_groups": 1
+            }
+          }
+        ]
+      }
+    }
+  }
+}

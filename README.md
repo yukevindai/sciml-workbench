@@ -39,6 +39,11 @@ dataset lineage, with direct links from audit jobs and a bounded, read-only agen
 activity snapshot. Manual audit remains available alongside that activity.
 See the [A03 handoff](docs/tickets/A03.md) for behavior and validation limits.
 
+Split inspection links the exact recorded dataset and audit, shows actual counts
+and upstream diagnostics, and provides every row assignment through a paginated
+table and JSON download. The manual form resets on dataset changes and only
+offers audits of that dataset. See the [A04 handoff](docs/tickets/A04.md).
+
 1. **Projects:** create a project and describe its research question.
 2. **Dataset audit:** upload `examples/demo.csv`, then explicitly choose **Use bundled synthetic demo declarations** for this fixture. Ordinary uploads start with unknown source metadata and can be audited without a license declaration. Click **Run audit** using the prefilled configuration.
 3. **Split designer:** click **Generate partition**. SciSplit produces a 60/20/20 requested train/validation/test split by generated family; actual group-constrained counts are visualized.
