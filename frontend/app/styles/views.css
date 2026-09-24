@@ -3,6 +3,11 @@
    ========================================================================== */
 
 /* ---------------------------------- project switcher ------------------- */
+.audit-inspection { scroll-margin-top: calc(var(--topbar-height) + var(--space-9)); overflow-wrap: anywhere; }
+.audit-config { display: grid; gap: var(--space-4); }
+.audit-config dt { font-weight: var(--weight-semibold); }
+.audit-config dd { margin: 0; }
+
 .project-switcher { display: flex; align-items: center; gap: var(--space-4); min-width: 0; }
 .project-switcher .select {
   min-width: 12rem; max-width: 20rem;

@@ -9,7 +9,7 @@ import {
 /* ---------------------------------- panel -------------------------------- */
 
 export function Panel({
-  title, description, aside, children, className = '', headingLevel = 2, id,
+  title, description, aside, children, className = '', headingLevel = 2, id, tabIndex,
 }: {
   title?: ReactNode;
   description?: ReactNode;
@@ -18,10 +18,11 @@ export function Panel({
   className?: string;
   headingLevel?: 2 | 3;
   id?: string;
+  tabIndex?: number;
 }) {
   const Heading = headingLevel === 2 ? 'h2' : 'h3';
   return (
-    <section className={`panel ${className}`.trim()} id={id}>
+    <section className={`panel ${className}`.trim()} id={id} tabIndex={tabIndex}>
       {(title || aside) && (
         <div className="panel-head">
           <div className="panel-head-text">

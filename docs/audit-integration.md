@@ -30,4 +30,31 @@ The audit parser retains strings with `dtype=str, keep_default_na=False`; text s
 
 Reusable clean/problematic fixtures live in `backend/tests/fixtures/audit/`. Acceptance compares typed output directly with the installed public auditor's serialization and verifies known duplicate, out-of-bounds, invalid-numeric and provenance-gap findings and row positions. Durable tests exercise manual and scoped action submissions, including exact-byte downloads and unchanged Dataset 2.0 unknown source declarations. Invalid configuration produces a failed job without a result artifact.
 
-Run `python -m pytest backend/tests/test_audit_adapter.py -q`. See [C02 acceptance](tickets/C02.md) for additional regression checks and [C01](scientific-public-surface.md) for exact pins and available checks. These tests establish integration behavior, not scientific validity of an arbitrary research dataset.
+Run `PYTHONPATH=backend:backend/tests python -m pytest backend/tests/test_audit_adapter.py -p test_metadata -q` (use a semicolon path separator on Windows). The plugin loads the shared database fixtures; PostgreSQL cases require `TEST_DATABASE_URL`. See [C02 acceptance](tickets/C02.md) for additional regression checks and [C01](scientific-public-surface.md) for exact pins and available checks. These tests establish integration behavior, not scientific validity of an arbitrary research dataset.
+
+## Audit inspection UI (A03)
+
+`/dataset-audit?project=<project-id>&audit=<audit-id>#audit-<audit-id>` opens the
+owning project and dataset and focuses the requested result, overriding saved
+selection. Missing projects/audits are explicit errors. Malformed or incomplete
+links return 404. Existing audit job results and the read-only agent snapshot
+offer this link; callers do not need to infer whether an artifact was created by
+a human or an agent.
+
+The view displays upstream suggestions, columns, zero-based row positions and
+details, requested/effective configuration, checks run/skipped, and the original
+dataset hash/download. Unsupported findings retain a complete artifact
+disclosure. Completed execution and empty findings never imply scientific
+acceptance. Dataset lineage must resolve within the project and agree with the
+audit's parent reference before a CSV download is offered.
+
+The manual form clears every configuration choice when the dataset changes.
+Ordinary data starts with empty column choices and no target. Only exact bundled
+demo fingerprints receive demo defaults. Invalid JSON, stale common column
+references and target/feature overlap block submission; advanced scientific
+configuration remains upstream-validated and survives rejected requests.
+
+Agent activity uses the existing validated list of the first 50 project runs,
+filtered by dataset inputs or audit results. It is a refreshable snapshot, not
+complete history or a live event stream. Failure to load it does not disable
+manual audit. See [A03 acceptance and limits](tickets/A03.md).

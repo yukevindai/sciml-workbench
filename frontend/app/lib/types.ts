@@ -26,6 +26,10 @@ export type AuditFinding = {
   message?: string;
   action?: string;
   recommendation?: string;
+  suggestion?: string;
+  columns?: string[];
+  rows?: number[];
+  details?: Record<string, unknown>;
 };
 
 /** Narrowing helper: `kinds(artifacts, 'dataset')` returns DatasetArtifact[]. */

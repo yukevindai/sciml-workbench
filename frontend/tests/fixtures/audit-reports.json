@@ -1,0 +1,328 @@
+{
+  "clean": {
+    "n_rows": 4,
+    "findings": [],
+    "checks_run": [
+      "duplicates",
+      "numeric_validity",
+      "bounds",
+      "provenance",
+      "missing_values",
+      "schema_quality"
+    ],
+    "checks_skipped": {
+      "split_leakage": "No split_column configured.",
+      "feature_leakage": "No feature_columns configured.",
+      "units": "No unit rules configured.",
+      "sparse_regions": "No sparse_bins configured.",
+      "conflicting_samples": "Configure identity_columns and conflict_columns.",
+      "near_duplicates": "No per-column absolute tolerances configured.",
+      "molecular_identity": "No smiles_column configured.",
+      "multivariate_density": "No density_columns and density_scales configured.",
+      "domain_constraints": "No compositions or rules configured."
+    },
+    "metadata": {
+      "tool_version": "0.3.0",
+      "row_reference": "zero-based row position; use df.iloc, not df.loc",
+      "dataset_sha256": "d695a7486cbfd09a56413200a118773057a8f6adc4a7e4afad00d56b16482f38",
+      "fingerprint_format": "pandas split JSON, index excluded, 15-digit float precision",
+      "config": {
+        "duplicate_columns": null,
+        "group_columns": [],
+        "split_column": null,
+        "bounds": {
+          "x": [
+            0,
+            10
+          ]
+        },
+        "units": {},
+        "provenance_columns": [
+          "source"
+        ],
+        "sparse_bins": {},
+        "min_bin_count": 3,
+        "feature_columns": [],
+        "unavailable_features": [],
+        "target_column": null,
+        "check_missing": true,
+        "numeric_columns": [
+          "x"
+        ],
+        "identity_columns": [],
+        "conflict_columns": [],
+        "conflict_tolerance": 0.0,
+        "identifier_columns": [],
+        "correlation_threshold": 0.995,
+        "unit_aliases": {},
+        "compositions": [],
+        "rules": [],
+        "near_duplicates": {},
+        "smiles_column": null,
+        "molecular_similarity": null,
+        "density_columns": [],
+        "density_scales": {},
+        "density_radius": 1.0,
+        "min_neighbors": 3,
+        "max_pair_comparisons": 2000000,
+        "provenance_patterns": {}
+      },
+      "dependencies": {
+        "numpy": "2.5.3",
+        "pandas": "3.0.5",
+        "pint": "0.26.1",
+        "scikit-learn": "1.9.1"
+      },
+      "canonical_units": {},
+      "limitations": [
+        "Configured checks cannot certify scientific validity or causal leakage.",
+        "Evidence examples are capped at 20 rows; affected row positions are complete.",
+        "Near-duplicate pair examples are capped at 100; counts are complete.",
+        "Provenance syntax is checked locally; source authenticity is not verified."
+      ]
+    }
+  },
+  "problematic": {
+    "n_rows": 4,
+    "findings": [
+      {
+        "code": "duplicate_samples",
+        "severity": "warning",
+        "columns": [
+          "row_id",
+          "x",
+          "source"
+        ],
+        "rows": [
+          0,
+          1
+        ],
+        "message": "Records repeat on the comparison columns; missing values compare equal.",
+        "suggestion": "Check whether these are duplicate records or legitimate replicate measurements.",
+        "details": {
+          "affected_count": 2,
+          "raw_examples": [
+            {
+              "row_id": "r1",
+              "x": "1",
+              "source": "study-a"
+            },
+            {
+              "row_id": "r1",
+              "x": "1",
+              "source": "study-a"
+            }
+          ],
+          "row_examples": [
+            0,
+            1
+          ],
+          "examples_truncated": false
+        }
+      },
+      {
+        "code": "invalid_numeric",
+        "severity": "error",
+        "columns": [
+          "x"
+        ],
+        "rows": [
+          3
+        ],
+        "message": "Missing, nonnumeric, or nonfinite measurement.",
+        "suggestion": "Recover or explicitly exclude invalid measurements.",
+        "details": {
+          "affected_count": 1,
+          "raw_examples": [
+            {
+              "x": ""
+            }
+          ],
+          "row_examples": [
+            3
+          ],
+          "examples_truncated": false
+        }
+      },
+      {
+        "code": "out_of_bounds",
+        "severity": "error",
+        "columns": [
+          "x"
+        ],
+        "rows": [
+          2
+        ],
+        "message": "Values violate inclusive configured bounds.",
+        "suggestion": "Verify the measurement, unit, and scientific applicability of the bounds.",
+        "details": {
+          "lower": 0,
+          "upper": 10,
+          "affected_count": 1,
+          "raw_examples": [
+            {
+              "x": "99"
+            }
+          ],
+          "row_examples": [
+            2
+          ],
+          "examples_truncated": false
+        }
+      },
+      {
+        "code": "provenance_gap",
+        "severity": "warning",
+        "columns": [
+          "source"
+        ],
+        "rows": [
+          3
+        ],
+        "message": "Required provenance metadata is missing or blank.",
+        "suggestion": "Recover source references and experimental context; do not fabricate missing metadata.",
+        "details": {
+          "affected_count": 1,
+          "raw_examples": [
+            {
+              "source": ""
+            }
+          ],
+          "row_examples": [
+            3
+          ],
+          "examples_truncated": false
+        }
+      },
+      {
+        "code": "missing_values",
+        "severity": "warning",
+        "columns": [
+          "x"
+        ],
+        "rows": [
+          3
+        ],
+        "message": "Missing or blank values in the dataset.",
+        "suggestion": "Check missingness mechanisms; fit any imputation using training data only.",
+        "details": {
+          "fraction": 0.25,
+          "affected_count": 1,
+          "raw_examples": [
+            {
+              "x": ""
+            }
+          ],
+          "row_examples": [
+            3
+          ],
+          "examples_truncated": false
+        }
+      },
+      {
+        "code": "missing_values",
+        "severity": "warning",
+        "columns": [
+          "source"
+        ],
+        "rows": [
+          3
+        ],
+        "message": "Missing or blank values in the dataset.",
+        "suggestion": "Check missingness mechanisms; fit any imputation using training data only.",
+        "details": {
+          "fraction": 0.25,
+          "affected_count": 1,
+          "raw_examples": [
+            {
+              "source": ""
+            }
+          ],
+          "row_examples": [
+            3
+          ],
+          "examples_truncated": false
+        }
+      }
+    ],
+    "checks_run": [
+      "duplicates",
+      "numeric_validity",
+      "bounds",
+      "provenance",
+      "missing_values",
+      "schema_quality"
+    ],
+    "checks_skipped": {
+      "split_leakage": "No split_column configured.",
+      "feature_leakage": "No feature_columns configured.",
+      "units": "No unit rules configured.",
+      "sparse_regions": "No sparse_bins configured.",
+      "conflicting_samples": "Configure identity_columns and conflict_columns.",
+      "near_duplicates": "No per-column absolute tolerances configured.",
+      "molecular_identity": "No smiles_column configured.",
+      "multivariate_density": "No density_columns and density_scales configured.",
+      "domain_constraints": "No compositions or rules configured."
+    },
+    "metadata": {
+      "tool_version": "0.3.0",
+      "row_reference": "zero-based row position; use df.iloc, not df.loc",
+      "dataset_sha256": "d2c6bf39ed0eda2e40d6ef90667f9873b86a61c2a236b14bdf402e9360b9b67a",
+      "fingerprint_format": "pandas split JSON, index excluded, 15-digit float precision",
+      "config": {
+        "duplicate_columns": null,
+        "group_columns": [],
+        "split_column": null,
+        "bounds": {
+          "x": [
+            0,
+            10
+          ]
+        },
+        "units": {},
+        "provenance_columns": [
+          "source"
+        ],
+        "sparse_bins": {},
+        "min_bin_count": 3,
+        "feature_columns": [],
+        "unavailable_features": [],
+        "target_column": null,
+        "check_missing": true,
+        "numeric_columns": [
+          "x"
+        ],
+        "identity_columns": [],
+        "conflict_columns": [],
+        "conflict_tolerance": 0.0,
+        "identifier_columns": [],
+        "correlation_threshold": 0.995,
+        "unit_aliases": {},
+        "compositions": [],
+        "rules": [],
+        "near_duplicates": {},
+        "smiles_column": null,
+        "molecular_similarity": null,
+        "density_columns": [],
+        "density_scales": {},
+        "density_radius": 1.0,
+        "min_neighbors": 3,
+        "max_pair_comparisons": 2000000,
+        "provenance_patterns": {}
+      },
+      "dependencies": {
+        "numpy": "2.5.3",
+        "pandas": "3.0.5",
+        "pint": "0.26.1",
+        "scikit-learn": "1.9.1"
+      },
+      "canonical_units": {},
+      "limitations": [
+        "Configured checks cannot certify scientific validity or causal leakage.",
+        "Evidence examples are capped at 20 rows; affected row positions are complete.",
+        "Near-duplicate pair examples are capped at 100; counts are complete.",
+        "Provenance syntax is checked locally; source authenticity is not verified."
+      ]
+    }
+  }
+}

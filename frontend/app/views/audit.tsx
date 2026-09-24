@@ -1,23 +1,23 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { ArrowUpRight, Database, FileSpreadsheet, ShieldCheck } from 'lucide-react';
+import { ArrowUpRight, Database, FileSpreadsheet } from 'lucide-react';
 import { api } from '../lib/api';
 import { parseMaterial } from '../lib/decode';
-import { auditFindings } from '../lib/result-projections';
 import { readPreview, looksNumeric, type CsvPreview } from '../lib/csv';
-import { auditDefault, sourceDefault } from '../lib/defaults';
+import { sourceDefault } from '../lib/defaults';
 import type { Workbench } from '../lib/context';
-import type { AuditConfig, SourceMetadata } from '../lib/types';
+import type { SourceMetadata } from '../lib/types';
 import { emptySource, fileDigest, isBundledDemo, isDemoSource, parseSourceDraft, reusableSource, sourceDeclarations, sourceHeader, type SourceDraft } from '../lib/intake';
-import { formatDate } from '../lib/format';
-import { Alert, Disclosure, EmptyState, Field, JsonBox, Panel } from '../components/ui';
-import { AdvancedJson, ColumnSelect, ColumnToggles } from '../components/inputs';
-import { FindingList, FindingSummary } from '../components/results';
+import { AuditForm } from '../components/audit-form';
+import { AuditInspection } from '../components/audit-inspection';
+import { AuditAgentActivity } from '../components/audit-agent-activity';
+import { Alert, Disclosure, EmptyState, Field, Panel } from '../components/ui';
+import { AdvancedJson } from '../components/inputs';
 import { StageGate } from '../components/workflow';
 import { DatasetSelect } from './shared';
 
-export function AuditView({ wb }: { wb: Workbench }) {
+export function AuditView({ wb, requestedAuditId }: { wb: Workbench; requestedAuditId?: string }) {
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<CsvPreview | null>(null);
   const [source, setSource] = useState<SourceDraft>(emptySource);
@@ -28,10 +28,8 @@ export function AuditView({ wb }: { wb: Workbench }) {
   const [sourceNote, setSourceNote] = useState('');
   const [sourceRevision, setSourceRevision] = useState(0);
   const uploadRequest = useRef<{ signature: string; key: string } | null>(null);
-  const [config, setConfig] = useState<AuditConfig>(auditDefault);
 
   const stage = wb.workflow.stages.find(s => s.view === 'dataset-audit');
-  const columns = wb.selectedDataset?.columns ?? [];
 
   useEffect(() => {
     setPreview(null); setDigest(''); setFileError('');
@@ -223,108 +221,14 @@ export function AuditView({ wb }: { wb: Workbench }) {
           </fieldset>
         </Panel>
 
-        {/* ------------------------------- audit -------------------------- */}
-        <Panel
-          title="Run ChemData Auditor"
-          description="Tell the auditor what each column is for. It checks completeness, provenance and leakage against those declarations."
-        >
+        <Panel title="Run ChemData Auditor" description="Manual audit is available independently of agent activity. Choose checks for this dataset; no data is repaired or rewritten.">
           <DatasetSelect wb={wb} />
-
-          {wb.selectedDataset ? (
-            <>
-              <ColumnSelect
-                label="Target column"
-                hint="The quantity you eventually want to predict."
-                columns={columns}
-                value={config.target_column}
-                onChange={value => setConfig({ ...config, target_column: value })}
-              />
-
-              <ColumnToggles
-                label="Numeric columns"
-                hint="Every column the auditor should treat as a number, including the target."
-                columns={columns}
-                selected={config.numeric_columns}
-                onChange={value => setConfig({ ...config, numeric_columns: value })}
-              />
-
-              <ColumnToggles
-                label="Feature columns"
-                hint="Columns a model is allowed to learn from. The target must not appear here."
-                columns={columns}
-                selected={config.feature_columns}
-                onChange={value => setConfig({ ...config, feature_columns: value })}
-                disabledColumns={[config.target_column]}
-              />
-
-              <ColumnToggles
-                label="Provenance columns"
-                hint="Columns that identify where a row came from — sample, batch, family, source. These are what leakage checks rely on."
-                columns={columns}
-                selected={config.provenance_columns}
-                onChange={value => setConfig({ ...config, provenance_columns: value })}
-              />
-
-              <Disclosure summary="Advanced — edit audit configuration as JSON">
-                <AdvancedJson label="Audit configuration (JSON)" value={config} onChange={setConfig} />
-              </Disclosure>
-            </>
-          ) : (
-            <EmptyState icon={Database} title="No dataset yet">
-              Upload a CSV on the left and its columns will appear here to choose from.
-            </EmptyState>
-          )}
-
-          <div className="panel-foot">
-            <span className="field-hint">
-              {config.feature_columns.includes(config.target_column)
-                ? 'The target cannot also be a feature.'
-                : 'Runs upstream, unchanged.'}
-            </span>
-            <button
-              className="button"
-              disabled={wb.busy || !wb.projectId || !wb.selectedDataset}
-              onClick={() => wb.act(() => wb.submit('audit', {
-                dataset_id: wb.selectedDataset!.id,
-                config,
-              }))}
-            >
-              <ShieldCheck size={15} aria-hidden="true" />Run audit
-            </button>
-          </div>
+          {wb.selectedDataset ? <AuditForm key={wb.selectedDataset.id} dataset={wb.selectedDataset} wb={wb} />
+            : <EmptyState icon={Database} title="No dataset yet">Upload a CSV to inspect its columns.</EmptyState>}
         </Panel>
       </div>
-
-      {/* --------------------------------- results ------------------------ */}
-      {wb.audits.map(audit => {
-        const findings = auditFindings(audit.result);
-        return (
-          <Panel
-            key={audit.id}
-            title="Audit findings"
-            description={`Run ${formatDate(audit.created_at)}`}
-            aside={findings && <FindingSummary findings={findings} />}
-          >
-            {findings === null ? (
-              <Alert variant="warning" title="Findings summary unavailable">
-                Inspect the complete artifact below; this result has no supported findings summary.
-              </Alert>
-            ) : findings.length === 0 ? (
-              <Alert variant="success" title="No findings for the checks you configured">
-                This is not a certificate of scientific validity — it means nothing the auditor looks for was triggered by these declarations.
-              </Alert>
-            ) : (
-              <>
-                <FindingList findings={findings} />
-                <p className="field-hint">
-                  Errors block benchmark admission. Warnings can be accepted only with a written scientific justification, declared on the benchmark step.
-                </p>
-              </>
-            )}
-            <JsonBox value={audit} />
-          </Panel>
-        );
-      })}
+      <AuditInspection wb={wb} requestedAuditId={requestedAuditId} />
+      <AuditAgentActivity key={wb.projectId} wb={wb} />
     </>
   );
 }

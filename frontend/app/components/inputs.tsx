@@ -68,7 +68,7 @@ export function ColumnToggles({
 /** Single-column choice. Keeps an unknown stored value visible instead of
  *  resetting it to the first column. */
 export function ColumnSelect({
-  label, hint, columns, value, onChange, placeholder = 'Select a column',
+  label, hint, columns, value, onChange, placeholder = 'Select a column', allowEmpty = false,
 }: {
   label: string;
   hint?: string;
@@ -76,13 +76,14 @@ export function ColumnSelect({
   value: string;
   onChange: (next: string) => void;
   placeholder?: string;
+  allowEmpty?: boolean;
 }) {
   const options = value && !columns.includes(value) ? [value, ...columns] : columns;
   return (
     <Field label={label} hint={hint}>
       {props => (
         <select className="select" value={value} onChange={e => onChange(e.target.value)} {...props}>
-          <option value="" disabled>{placeholder}</option>
+          <option value="" disabled={!allowEmpty}>{placeholder}</option>
           {options.map(column => (
             <option key={column} value={column}>
               {column}{columns.includes(column) ? '' : ' (not in dataset)'}

@@ -25,7 +25,7 @@ import { ReportView } from './views/report';
 const PROJECT_STORAGE_KEY = 'sciml-project';
 const POLL_INTERVAL = 2500;
 
-export default function Workbench({ view, fixture, children }: { view: View; fixture?: ShellFixture; children?: ReactNode }) {
+export default function Workbench({ view, fixture, children, requestedProjectId, requestedAuditId }: { view: View; fixture?: ShellFixture; children?: ReactNode; requestedProjectId?: string; requestedAuditId?: string }) {
   const [projects, setProjects] = useState<Project[]>(fixture?.projects ?? []);
   const [projectId, updateProjectId] = useState(fixture?.projects[0]?.id ?? '');
   const [artifacts, setArtifacts] = useState<Artifact[]>(fixture?.artifacts ?? []);
@@ -45,6 +45,7 @@ export default function Workbench({ view, fixture, children }: { view: View; fix
   const activeProject = useRef(projectId);
   const requestSequence = useRef(0);
   const actionInFlight = useRef(false);
+  const auditLinkApplied = useRef(false);
 
   const setProjectId = useCallback((id: string) => {
     if (fixture || activeProject.current === id) return;
@@ -78,6 +79,13 @@ export default function Workbench({ view, fixture, children }: { view: View; fix
       }
       setArtifacts(nextArtifacts);
       setJobs(nextJobs);
+      if (requestedAuditId && projectId === requestedProjectId && !auditLinkApplied.current) {
+        const audit = kinds(nextArtifacts, 'audit').find(value => value.id === requestedAuditId);
+        if (audit) {
+          setDatasetId(audit.dataset_id);
+          auditLinkApplied.current = true;
+        }
+      }
       setProjectLoaded(true);
       setProjectError('');
     } catch (e) {
@@ -85,7 +93,7 @@ export default function Workbench({ view, fixture, children }: { view: View; fix
     } finally {
       if (current()) setProjectLoading(false);
     }
-  }, [projectId, fixture]);
+  }, [projectId, fixture, requestedAuditId, requestedProjectId, setDatasetId]);
 
   useEffect(() => {
     if (fixture) return;
@@ -95,6 +103,11 @@ export default function Workbench({ view, fixture, children }: { view: View; fix
       .then(list => {
         if (controller.signal.aborted) return;
         setProjects(list);
+        if (requestedProjectId) {
+          if (!list.some(project => project.id === requestedProjectId)) throw new Error('Requested project unavailable. No other project was selected for this audit link.');
+          setProjectId(requestedProjectId);
+          return;
+        }
         let saved: string | null = null;
         try { saved = localStorage.getItem(PROJECT_STORAGE_KEY); } catch { /* storage unavailable */ }
         setProjectId(list.find(p => p.id === saved)?.id || list[0]?.id || '');
@@ -102,7 +115,7 @@ export default function Workbench({ view, fixture, children }: { view: View; fix
       .catch(e => { if (!controller.signal.aborted) setProjectsError(e instanceof Error ? e.message : 'Could not load projects'); })
       .finally(() => { if (!controller.signal.aborted) setProjectsLoading(false); });
     return () => controller.abort();
-  }, [loadAttempt, fixture, setProjectId]);
+  }, [loadAttempt, fixture, setProjectId, requestedProjectId]);
 
   useEffect(() => {
     if (fixture || !projectId) return;
@@ -222,7 +235,7 @@ export default function Workbench({ view, fixture, children }: { view: View; fix
             {showViews && <>
               {view === 'research' && <ResearchView wb={model} />}
               {view === 'projects' && <ProjectsView wb={model} />}
-              {view === 'dataset-audit' && <AuditView key={projectId} wb={model} />}
+              {view === 'dataset-audit' && <AuditView key={projectId} wb={model} requestedAuditId={projectId === requestedProjectId ? requestedAuditId : undefined} />}
               {view === 'split-designer' && <SplitView wb={model} />}
               {view === 'benchmark' && <BenchmarkView wb={model} />}
               {view === 'failure-memory' && <FailureMemoryView wb={model} />}
