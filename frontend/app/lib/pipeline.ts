@@ -5,11 +5,11 @@ import {
 import { kinds, type Artifact } from './types';
 
 export type View =
-  | 'projects' | 'evidence' | 'dataset-audit' | 'split-designer'
+  | 'research' | 'projects' | 'evidence' | 'dataset-audit' | 'split-designer'
   | 'benchmark' | 'failure-memory' | 'provenance' | 'report';
 
 export const VIEWS: View[] = [
-  'projects', 'evidence', 'dataset-audit', 'split-designer',
+  'research', 'projects', 'evidence', 'dataset-audit', 'split-designer',
   'benchmark', 'failure-memory', 'provenance', 'report',
 ];
 
@@ -28,6 +28,11 @@ export type NavItem = {
 };
 
 export const NAV: NavItem[] = [
+  {
+    view: 'research', label: 'Research', icon: FlaskConical,
+    title: 'Research',
+    lede: 'Choose a project, inspect its data, and continue your research with traceable results.',
+  },
   {
     view: 'projects', label: 'Projects', icon: Boxes,
     title: 'Projects',
@@ -71,7 +76,7 @@ export const NAV: NavItem[] = [
 ];
 
 export const NAV_GROUPS: { label: string; views: View[] }[] = [
-  { label: 'Workspace', views: ['projects'] },
+  { label: 'Workspace', views: ['research', 'projects'] },
   { label: 'Workflow', views: ['dataset-audit', 'split-designer', 'benchmark', 'failure-memory'] },
   { label: 'Sources & records', views: ['evidence', 'provenance', 'report'] },
 ];

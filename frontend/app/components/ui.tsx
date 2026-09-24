@@ -1,6 +1,7 @@
 'use client';
 
 import { useId, type ReactNode } from 'react';
+import { executionStatus } from '../lib/status';
 import {
   AlertTriangle, Check, ChevronRight, CircleAlert, Info, type LucideIcon,
 } from 'lucide-react';
@@ -47,8 +48,9 @@ const BADGE_TONE: Record<string, string> = {
 
 /** Renders the state as text; colour is a second, redundant cue only. */
 export function Badge({ state, tone }: { state: string; tone?: string }) {
-  const resolved = tone ?? BADGE_TONE[state.toLowerCase()] ?? '';
-  return <span className={`badge ${resolved}`.trim()}>{state.replaceAll('_', ' ')}</span>;
+  const status = executionStatus(state);
+  const resolved = tone ?? status?.tone ?? BADGE_TONE[state.toLowerCase()] ?? '';
+  return <span className={`badge ${resolved}`.trim()} title={status?.description}>{status?.label ?? state.replaceAll('_', ' ')}</span>;
 }
 
 /* ---------------------------------- alert -------------------------------- */

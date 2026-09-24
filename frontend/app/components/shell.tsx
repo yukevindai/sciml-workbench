@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { Beaker, Loader2, ShieldCheck } from 'lucide-react';
 import { NAV_GROUPS, navItem, type Stage, type View } from '../lib/pipeline';
-import type { Project } from '../lib/types';
+import type { DatasetArtifact, Project } from '../lib/types';
 import { ThemeToggle } from './theme-toggle';
 
 /* ---------------------------------- sidebar ------------------------------ */
@@ -13,7 +13,7 @@ export function Sidebar({ view, stages }: { view: string; stages: Stage[] }) {
 
   return (
     <aside className="sidebar">
-      <Link href="/projects" className="brand">
+      <Link href="/research" className="brand" aria-label="SciML Workbench home">
         <span className="brand-mark" aria-hidden="true"><Beaker size={19} /></span>
         <span className="brand-text">
           <span className="brand-name">SciML Workbench</span>
@@ -36,6 +36,8 @@ export function Sidebar({ view, stages }: { view: string; stages: Stage[] }) {
                     key={target}
                     href={`/${target}`}
                     className="nav-item"
+                    aria-label={item.label}
+                    title={item.label}
                     aria-current={target === view ? 'page' : undefined}
                   >
                     <Icon size={16} className="nav-icon" aria-hidden="true" strokeWidth={1.75} />
@@ -71,29 +73,44 @@ export function Sidebar({ view, stages }: { view: string; stages: Stage[] }) {
 /* ---------------------------------- topbar ------------------------------- */
 
 export function TopBar({
-  projects, projectId, onProjectChange, busyJobs,
+  projects, projectId, onProjectChange, busyJobs, datasets, datasetId, onDatasetChange, loading, preview,
 }: {
   projects: Project[];
   projectId: string;
   onProjectChange: (id: string) => void;
   busyJobs: number;
+  datasets: DatasetArtifact[];
+  datasetId: string;
+  onDatasetChange: (id: string) => void;
+  loading: boolean;
+  preview: boolean;
 }) {
   return (
     <header className="topbar">
       <div className="topbar-left">
         <div className="project-switcher">
-          <label className="visually-hidden" htmlFor="active-project">Active project</label>
+          <label className="field-label" htmlFor="active-project">Active project</label>
           <select
             id="active-project"
             className="select"
             aria-label="Active project"
             value={projectId}
+            disabled={loading || preview || !projects.length}
             onChange={event => onProjectChange(event.target.value)}
           >
-            <option value="" disabled>Select a project</option>
+            <option value="" disabled>{loading ? 'Loading projects…' : 'No project selected'}</option>
             {projects.map(project => (
               <option key={project.id} value={project.id}>{project.name}</option>
             ))}
+          </select>
+        </div>
+        <div className="project-switcher">
+          <label className="field-label" htmlFor="active-dataset">Active dataset</label>
+          <select id="active-dataset" className="select" value={datasetId}
+            disabled={loading || preview || !datasets.length}
+            onChange={event => onDatasetChange(event.target.value)}>
+            <option value="" disabled>{loading ? 'Loading datasets…' : 'No dataset selected'}</option>
+            {datasets.map(dataset => <option key={dataset.id} value={dataset.id}>{dataset.filename} · {dataset.id.slice(0, 8)}</option>)}
           </select>
         </div>
       </div>
@@ -103,12 +120,12 @@ export function TopBar({
           {busyJobs ? (
             <>
               <Loader2 size={13} className="spin" aria-hidden="true" />
-              {busyJobs} running
+              {busyJobs} active jobs
             </>
           ) : (
             <>
               <ShieldCheck size={13} aria-hidden="true" />
-              <span>Private workspace</span>
+              <span>{preview ? 'Development preview' : 'Private workspace'}</span>
             </>
           )}
         </span>

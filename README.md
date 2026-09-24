@@ -29,6 +29,11 @@ This MVP is a **single trusted operator workspace**. All projects are accessible
 
 ## Try the complete workflow
 
+The home page opens the **Research** entry. Choose a project and dataset in the
+header, or open **Projects** to create one. The eight manual tools remain in the
+navigation; automated requests and run controls are not yet connected in the UI.
+See the [A01 shell handoff](docs/tickets/A01.md) for development previews and verification.
+
 1. **Projects:** create a project and describe its research question.
 2. **Dataset audit:** upload `examples/demo.csv`, then explicitly choose **Use bundled synthetic demo declarations** for this fixture. Ordinary uploads start with unknown source metadata and can be audited without a license declaration. Click **Run audit** using the prefilled configuration.
 3. **Split designer:** click **Generate partition**. SciSplit produces a 60/20/20 requested train/validation/test split by generated family; actual group-constrained counts are visualized.

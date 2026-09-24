@@ -20,7 +20,7 @@ export function JobActivity({ jobs }: { jobs: Job[] }) {
           {active.length > 0 && (
             <>
               <Loader2 size={13} className="spin" aria-hidden="true" />
-              <span>{active.length} running</span>
+              <span>{active.length} active jobs</span>
             </>
           )}
           <span className="dim" style={{ marginLeft: 'auto' }}>{jobs.length} total</span>

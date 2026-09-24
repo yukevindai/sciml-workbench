@@ -1,5 +1,5 @@
 import Workbench from './workbench';
 
 export default function Page() {
-  return <Workbench view="projects" />;
+  return <Workbench view="research" />;
 }
