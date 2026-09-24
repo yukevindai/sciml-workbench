@@ -73,7 +73,7 @@ export function Sidebar({ view, stages }: { view: string; stages: Stage[] }) {
 /* ---------------------------------- topbar ------------------------------- */
 
 export function TopBar({
-  projects, projectId, onProjectChange, busyJobs, datasets, datasetId, onDatasetChange, loading, preview,
+  projects, projectId, onProjectChange, busyJobs, datasets, datasetId, onDatasetChange, loading, preview, locked,
 }: {
   projects: Project[];
   projectId: string;
@@ -84,6 +84,7 @@ export function TopBar({
   onDatasetChange: (id: string) => void;
   loading: boolean;
   preview: boolean;
+  locked: boolean;
 }) {
   return (
     <header className="topbar">
@@ -95,7 +96,7 @@ export function TopBar({
             className="select"
             aria-label="Active project"
             value={projectId}
-            disabled={loading || preview || !projects.length}
+            disabled={loading || preview || locked || !projects.length}
             onChange={event => onProjectChange(event.target.value)}
           >
             <option value="" disabled>{loading ? 'Loading projects…' : 'No project selected'}</option>
@@ -107,7 +108,7 @@ export function TopBar({
         <div className="project-switcher">
           <label className="field-label" htmlFor="active-dataset">Active dataset</label>
           <select id="active-dataset" className="select" value={datasetId}
-            disabled={loading || preview || !datasets.length}
+            disabled={loading || preview || locked || !datasets.length}
             onChange={event => onDatasetChange(event.target.value)}>
             <option value="" disabled>{loading ? 'Loading datasets…' : 'No dataset selected'}</option>
             {datasets.map(dataset => <option key={dataset.id} value={dataset.id}>{dataset.filename} · {dataset.id.slice(0, 8)}</option>)}

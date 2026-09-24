@@ -9,6 +9,7 @@ import { readPreview, looksNumeric, type CsvPreview } from '../lib/csv';
 import { auditDefault, sourceDefault } from '../lib/defaults';
 import type { Workbench } from '../lib/context';
 import type { AuditConfig, SourceMetadata } from '../lib/types';
+import { emptySource, fileDigest, isBundledDemo, isDemoSource, parseSourceDraft, reusableSource, sourceDeclarations, sourceHeader, type SourceDraft } from '../lib/intake';
 import { formatDate } from '../lib/format';
 import { Alert, Disclosure, EmptyState, Field, JsonBox, Panel } from '../components/ui';
 import { AdvancedJson, ColumnSelect, ColumnToggles } from '../components/inputs';
@@ -19,7 +20,13 @@ import { DatasetSelect } from './shared';
 export function AuditView({ wb }: { wb: Workbench }) {
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<CsvPreview | null>(null);
-  const [source, setSource] = useState<Omit<SourceMetadata, 'data_kind'> & { data_kind: SourceMetadata['data_kind'] | '' }>({ citation: '', url: '', license: '', data_kind: '', transformations: '' });
+  const [source, setSource] = useState<SourceDraft>(emptySource);
+  const [sourceValid, setSourceValid] = useState(true);
+  const [digest, setDigest] = useState('');
+  const [fileError, setFileError] = useState('');
+  const [reuseId, setReuseId] = useState('');
+  const [sourceNote, setSourceNote] = useState('');
+  const [sourceRevision, setSourceRevision] = useState(0);
   const uploadRequest = useRef<{ signature: string; key: string } | null>(null);
   const [config, setConfig] = useState<AuditConfig>(auditDefault);
 
@@ -27,11 +34,13 @@ export function AuditView({ wb }: { wb: Workbench }) {
   const columns = wb.selectedDataset?.columns ?? [];
 
   useEffect(() => {
-    if (!file) { setPreview(null); return; }
+    setPreview(null); setDigest(''); setFileError('');
+    if (!file) return;
+    if (!file.size || file.size > 10 * 1024 * 1024) { setFileError('Choose a nonempty CSV no larger than 10 MiB.'); return; }
     let cancelled = false;
-    readPreview(file)
-      .then(result => { if (!cancelled) setPreview(result); })
-      .catch(() => { if (!cancelled) setPreview(null); });
+    Promise.all([readPreview(file), fileDigest(file)])
+      .then(([result, sha]) => { if (!cancelled) { setPreview(result); setDigest(sha); } })
+      .catch(() => { if (!cancelled) setFileError('Could not read this file. Select it again. Your declarations have been preserved.'); });
     return () => { cancelled = true; };
   }, [file]);
 
@@ -45,9 +54,11 @@ export function AuditView({ wb }: { wb: Workbench }) {
           title="Upload a CSV"
           description="UTF-8, up to 10 MiB and 20,000 rows, with unique column names. The original bytes are stored untouched and shipped in the final report."
         >
+          <fieldset className="intake-fields" disabled={wb.busy || !wb.projectId}>
           <Field
             label="CSV file"
             hint="Nothing is uploaded until you choose Upload dataset."
+            error={fileError || undefined}
           >
             {props => (
               <div className="dropzone">
@@ -62,7 +73,7 @@ export function AuditView({ wb }: { wb: Workbench }) {
                   className="input-file"
                   type="file"
                   accept=".csv,text/csv"
-                  onChange={event => { setFile(event.target.files?.[0] ?? null); uploadRequest.current = null; setSource({ citation: '', url: '', license: '', data_kind: '', transformations: '' }); }}
+                  onChange={event => { setFile(event.target.files?.[0] ?? null); setDigest(''); setPreview(null); uploadRequest.current = null; setSource(emptySource()); setSourceValid(true); setSourceRevision(value => value + 1); setReuseId(''); setSourceNote(''); }}
                   {...props}
                 />
               </div>
@@ -77,7 +88,7 @@ export function AuditView({ wb }: { wb: Workbench }) {
                   <thead>
                     <tr>
                       {preview.columns.map((column, index) => (
-                        <th key={column} scope="col">
+                        <th key={index} scope="col">
                           {column}
                           <span className="col-type">
                             {' '}{looksNumeric(preview.rows.map(r => r[index] ?? '')) ? 'numeric' : 'text'}
@@ -89,7 +100,7 @@ export function AuditView({ wb }: { wb: Workbench }) {
                   <tbody>
                     {preview.rows.map((row, rowIndex) => (
                       <tr key={rowIndex}>
-                        {preview.columns.map((column, index) => <td key={column}>{row[index] ?? ''}</td>)}
+                        {preview.columns.map((column, index) => <td key={index}>{row[index] ?? ''}</td>)}
                       </tr>
                     ))}
                   </tbody>
@@ -104,10 +115,30 @@ export function AuditView({ wb }: { wb: Workbench }) {
           <div className="panel-section">
             <span className="panel-section-title">Where this data came from (optional)</span>
             <p className="field-hint">
-              Leave unknown fields blank. These declarations are your assertions; nothing here is verified.
+              Leave unknown fields blank. You can upload and inspect data without knowing its provenance. These declarations are your assertions; nothing here is verified.
             </p>
 
-            <button className="button" type="button" onClick={() => setSource(sourceDefault)}>Use bundled synthetic demo declarations</button>
+            <button className="button" type="button" disabled={!isBundledDemo(digest)}
+              onClick={() => { if (isBundledDemo(digest)) { setSource(sourceDefault); setSourceValid(true); setSourceRevision(value => value + 1); setSourceNote('Synthetic declarations applied only to the exact bundled demo bytes.'); } }}>Use bundled synthetic demo declarations</button>
+            <p className="field-hint">Available only when the selected file exactly matches examples/demo.csv.</p>
+            <Disclosure summary="Reuse known metadata from this project">
+              <Field label="Metadata from dataset" hint="Choose a source, then explicitly copy its known values. Unknown and inferred declarations are not copied. Demo metadata is available only for the exact demo file.">
+                {props => <select className="select" value={reuseId} onChange={event => setReuseId(event.target.value)} {...props}>
+                  <option value="">Choose a dataset</option>
+                  {wb.datasets.filter(dataset => !isDemoSource(dataset) || isBundledDemo(digest)).map(dataset => (
+                    <option key={dataset.id} value={dataset.id}>{dataset.filename} · {dataset.id.slice(0, 8)}</option>
+                  ))}
+                </select>}
+              </Field>
+              <button type="button" className="button button--secondary" disabled={!reuseId || !file}
+                onClick={() => {
+                  const dataset = wb.datasets.find(candidate => candidate.id === reuseId);
+                  if (!dataset || (isDemoSource(dataset) && !isBundledDemo(digest))) return;
+                  setSource(reusableSource(dataset)); setSourceValid(true); setSourceRevision(value => value + 1);
+                  setSourceNote(`Copied known values from ${dataset.filename}. Review every field: uploading makes new user assertions and does not verify them or change the original dataset.`);
+                }}>Copy known metadata</button>
+            </Disclosure>
+            {sourceNote && <Alert>{sourceNote}</Alert>}
             <Field label="Citation" hint="Paper, dataset release or internal record this data comes from.">
               {props => (
                 <input className="input" value={source.citation}
@@ -144,16 +175,20 @@ export function AuditView({ wb }: { wb: Workbench }) {
 
             <Field
               label="Transformations applied"
-              hint="Anything done to the data before this file: unit conversion, filtering, deduplication, averaging."
+              hint={Array.isArray(source.transformations) && source.transformations.length === 0
+                ? 'No transformations explicitly declared. Clear or edit this value in advanced JSON to change that assertion.'
+                : 'Anything done before this file: unit conversion, filtering, deduplication, averaging. Blank means unknown.'}
             >
               {props => (
-                <textarea className="textarea" value={source.transformations}
+                <textarea className="textarea" value={Array.isArray(source.transformations) ? source.transformations.join('\n') : source.transformations}
                   onChange={e => setSource({ ...source, transformations: e.target.value })} {...props} />
               )}
             </Field>
 
             <Disclosure summary="Advanced — edit source metadata as JSON">
-              <AdvancedJson label="Source metadata (JSON)" value={source} onChange={setSource} />
+              <p className="field-hint">Optional fields: target (column name), units (column-to-unit object), and independent_unit (name, group_columns, rationale). Omit unknown fields. An empty transformations array declares no transformations.</p>
+              <AdvancedJson key={sourceRevision} label="Source metadata (JSON)" value={source} onChange={setSource}
+                parse={parseSourceDraft} onValidityChange={setSourceValid} />
             </Disclosure>
           </div>
 
@@ -161,31 +196,31 @@ export function AuditView({ wb }: { wb: Workbench }) {
             <span className="field-hint">{file ? 'Ready to upload' : 'Choose a file to continue'}</span>
             <button
               className="button"
-              disabled={wb.busy || !wb.projectId || !file}
+              disabled={wb.busy || !wb.projectId || !file || !digest || Boolean(fileError) || !sourceValid}
               onClick={() => wb.act(async () => {
                 const signature = JSON.stringify({ project: wb.projectId, source });
                 if (uploadRequest.current?.signature !== signature) uploadRequest.current = { signature, key: crypto.randomUUID() };
                 const key = uploadRequest.current.key;
-                const declarations = Object.fromEntries(Object.entries(source).filter(([, value]) => value.trim()).map(([name, value]) => [name, {
-                  origin: 'user_supplied', value: name === 'transformations' ? [value] : value,
-                  supporting_references: [{ kind: 'operator_assertion', id: key }],
-                }]));
-                await api(`projects/${wb.projectId}/research-materials`, parseMaterial, {
+                const declarations = sourceDeclarations(source, key);
+                const material = await api(`projects/${wb.projectId}/research-materials`, parseMaterial, {
                   method: 'POST',
                   headers: {
                     'Content-Type': 'text/csv',
                     'X-Filename': file!.name,
-                    'X-Source': JSON.stringify(declarations),
+                    'X-Source': sourceHeader(declarations),
                     'Idempotency-Key': key,
                   },
                   body: file,
                 });
+                if (material.project_id !== wb.projectId || !material.dataset_id) throw new Error('The server returned an attachment outside this dataset context.');
+                wb.setDatasetId(material.dataset_id);
                 wb.setNotice('Dataset uploaded. Blank declarations remain unknown. Configure the audit next.');
               })}
             >
               Upload dataset <ArrowUpRight size={15} aria-hidden="true" />
             </button>
           </div>
+          </fieldset>
         </Panel>
 
         {/* ------------------------------- audit -------------------------- */}

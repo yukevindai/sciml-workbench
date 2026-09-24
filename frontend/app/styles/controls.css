@@ -116,6 +116,8 @@
 }
 .input-file::file-selector-button:hover { background: var(--color-bg-subtle); }
 
+.intake-fields { min-width: 0; margin: 0; padding: 0; border: 0; }
+
 /* iOS Safari zooms any input rendering below 16px. */
 @media (max-width: 640px) {
   .input, .select, .textarea, .input-file { font-size: var(--text-md); }

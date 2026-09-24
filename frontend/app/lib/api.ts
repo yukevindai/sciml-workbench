@@ -4,11 +4,15 @@ export async function api<T>(path: string, decode: (value: unknown) => T, init?:
   const response = await fetch(`/api/${path}`, init);
   const data = await response.json().catch(() => ({}));
   if (!response.ok) {
-    throw new Error(
-      (data as { error?: string; detail?: string }).error ||
-      (data as { detail?: string }).detail ||
-      `Request failed (${response.status})`
-    );
+    const payload = (data && typeof data === 'object' ? data : {}) as { error?: unknown; detail?: unknown };
+    const detail = payload.error ?? payload.detail;
+    const message = typeof detail === 'string' ? detail : Array.isArray(detail)
+      ? detail.map(issue => {
+          if (!issue || typeof issue !== 'object' || typeof issue.msg !== 'string') return '';
+          const path = Array.isArray(issue.loc) ? issue.loc.filter((part: unknown) => typeof part === 'string' && part !== 'body').join(' · ') : '';
+          return `${path ? path + ': ' : ''}${issue.msg}`;
+        }).filter(Boolean).join('; ') : '';
+    throw new Error(message || `Request failed (${response.status})`);
   }
   return decode(data);
 }

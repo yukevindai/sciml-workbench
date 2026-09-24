@@ -81,7 +81,7 @@ export function Alert({
 
 /* ---------------------------------- field -------------------------------- */
 
-type ControlProps = { id: string; 'aria-describedby': string | undefined };
+type ControlProps = { id: string; 'aria-describedby': string | undefined; 'aria-invalid': boolean | undefined };
 
 /** The label element holds the label text and nothing else, so a control's
  *  accessible name is exactly what the researcher reads. Hints and errors are
@@ -102,7 +102,7 @@ export function Field({
   return (
     <div className="field">
       <label className="field-label" htmlFor={id}>{label}</label>
-      {children({ id, 'aria-describedby': describedBy })}
+      {children({ id, 'aria-describedby': describedBy, 'aria-invalid': error ? true : undefined })}
       {hint && <p className="field-hint" id={hintId}>{hint}</p>}
       {error && (
         <p className="field-error" id={errorId}>

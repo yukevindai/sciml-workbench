@@ -40,7 +40,7 @@ See the [A01 shell handoff](docs/tickets/A01.md) for development previews and ve
 4. **Benchmarks:** run the prefilled ridge baseline. All 60 CSV rows are used by the upstream admission and evaluation protocol; the frontend shows test metrics. The complete record includes validation results and model configuration.
 5. **Failure memory:** select the run, explain why it was unsuccessful for your research objective, and record uncertainty. For this fixture, a valid example is “The synthetic demonstration cannot establish empirical predictive performance.” This assessment does not change execution status or claim an experimental failure.
 6. To exercise an **execution failure**, run another benchmark with `units: {}` in the task card. Upstream admission rejects missing units. Select that failed run and save the reason to Failure Memory.
-7. **Evidence:** optionally upload a PDF and title. Scientific Evidence Engine preserves PDF bytes, text-layer extraction, page hashes and metadata. Ingestion is not OCR, figure digitization or automatic claim verification.
+7. **Evidence:** attach a PDF to preserve its original bytes, then optionally choose **Extract text**. The filename becomes the extraction title. Originals remain downloadable even if extraction fails. Ingestion is not OCR, figure digitization or automatic claim verification.
 8. **Provenance:** inspect linked artifact IDs and configurations.
 9. **Reports:** after jobs settle, generate and download the ZIP. It includes original inputs, complete artifacts, nested benchmark bundles with predictions and task cards, source evidence, failure snapshots, schemas, dependency pins, a readable report and SHA-256 manifest.
 

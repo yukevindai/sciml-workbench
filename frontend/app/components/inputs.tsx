@@ -279,15 +279,15 @@ export function JustificationEditor({
 /** The same configuration the form builds, editable as raw JSON. Edits flow
  *  back into the form, so neither view is a dead end. */
 export function AdvancedJson<T>({
-  label, value, onChange,
-}: { label: string; value: T; onChange: (next: T) => void }) {
+  label, value, onChange, parse, onValidityChange,
+}: { label: string; value: T; onChange: (next: T) => void; parse?: (value: unknown) => T; onValidityChange?: (valid: boolean) => void }) {
   const serialised = JSON.stringify(value, null, 2);
   const [text, setText] = useState(serialised);
   const [error, setError] = useState('');
   const editing = useRef(false);
 
   useEffect(() => {
-    if (!editing.current) { setText(serialised); setError(''); }
+    if (!editing.current) { setText(serialised); setError(''); onValidityChange?.(true); }
   }, [serialised]);
 
   return (
@@ -302,15 +302,18 @@ export function AdvancedJson<T>({
           spellCheck={false}
           value={text}
           onFocus={() => { editing.current = true; }}
-          onBlur={() => { editing.current = false; setText(serialised); setError(''); }}
+          onBlur={() => { editing.current = false; if (!parse || !error) { setText(serialised); setError(''); } }}
           onChange={event => {
             setText(event.target.value);
             try {
-              const parsed = JSON.parse(event.target.value) as T;
+              const raw: unknown = JSON.parse(event.target.value);
+              const parsed = parse ? parse(raw) : raw as T;
               setError('');
+              onValidityChange?.(true);
               onChange(parsed);
             } catch (e) {
               setError(e instanceof Error ? e.message : 'Invalid JSON');
+              onValidityChange?.(false);
             }
           }}
           {...props}

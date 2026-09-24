@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import path from 'node:path';
 
 test('ordinary uploads keep declarations unknown and retain the request key after a failed response', async ({ page }) => {
   const requests: Record<string, string>[] = [];
@@ -26,6 +27,8 @@ test('ordinary uploads keep declarations unknown and retain the request key afte
   await expect(page.getByRole('status')).toContainText('Blank declarations remain unknown');
   expect(JSON.parse(requests[0]['x-source'])).toEqual({});
   expect(requests[1]['idempotency-key']).toBe(requests[0]['idempotency-key']);
+  await expect(page.getByRole('button', { name: 'Use bundled synthetic demo declarations' })).toBeDisabled();
+  await file.setInputFiles(path.resolve(__dirname, '../../examples/demo.csv'));
   await page.getByRole('button', { name: 'Use bundled synthetic demo declarations' }).click();
   await expect(page.getByLabel('Kind of data', { exact: true })).toHaveValue('synthetic');
   await file.setInputFiles({ name: 'unrelated.csv', mimeType: 'text/csv', buffer: Buffer.from('z\n1\n2\n3\n') });

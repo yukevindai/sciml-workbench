@@ -44,6 +44,7 @@ export default function Workbench({ view, fixture, children }: { view: View; fix
   const [loadAttempt, setLoadAttempt] = useState(0);
   const activeProject = useRef(projectId);
   const requestSequence = useRef(0);
+  const actionInFlight = useRef(false);
 
   const setProjectId = useCallback((id: string) => {
     if (fixture || activeProject.current === id) return;
@@ -117,7 +118,8 @@ export default function Workbench({ view, fixture, children }: { view: View; fix
   }, [projectId, refresh, fixture]);
 
   const act = useCallback(async (fn: () => Promise<void>) => {
-    if (fixture) return;
+    if (fixture || actionInFlight.current) return;
+    actionInFlight.current = true;
     setBusy(true); setError(''); setNotice('');
     try {
       await fn();
@@ -125,6 +127,7 @@ export default function Workbench({ view, fixture, children }: { view: View; fix
     } catch (e) {
       setError(e instanceof Error ? e.message : 'That operation did not complete');
     } finally {
+      actionInFlight.current = false;
       setBusy(false);
     }
   }, [refresh, fixture]);
@@ -179,6 +182,7 @@ export default function Workbench({ view, fixture, children }: { view: View; fix
           onDatasetChange={setDatasetId}
           loading={projectsLoading}
           preview={Boolean(fixture)}
+          locked={busy}
         />
 
         <main className="page" id="main" tabIndex={-1}>
@@ -218,7 +222,7 @@ export default function Workbench({ view, fixture, children }: { view: View; fix
             {showViews && <>
               {view === 'research' && <ResearchView wb={model} />}
               {view === 'projects' && <ProjectsView wb={model} />}
-              {view === 'dataset-audit' && <AuditView wb={model} />}
+              {view === 'dataset-audit' && <AuditView key={projectId} wb={model} />}
               {view === 'split-designer' && <SplitView wb={model} />}
               {view === 'benchmark' && <BenchmarkView wb={model} />}
               {view === 'failure-memory' && <FailureMemoryView wb={model} />}

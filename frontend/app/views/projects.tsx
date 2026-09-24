@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { Activity, Database, FlaskConical, Plus, ShieldCheck } from 'lucide-react';
 import { api, json } from '../lib/api';
 import { parseProject } from '../lib/decode';
@@ -11,6 +12,7 @@ import { NextAction, PipelineRail } from '../components/workflow';
 export function ProjectsView({ wb }: { wb: Workbench }) {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
+  const [nameError, setNameError] = useState('');
   const { counts } = wb.workflow;
   const hasWork = wb.artifacts.length > 0;
 
@@ -37,22 +39,25 @@ export function ProjectsView({ wb }: { wb: Workbench }) {
 
         <Panel
           title="Create a project"
-          description="A home for one dataset, the sources behind it, and every run you make from it."
+          description="Start with a name. You can add a research question, datasets, and source PDFs as you go."
         >
           <form
             onSubmit={event => {
               event.preventDefault();
+              if (!name.trim()) { setNameError('Enter a project name; spaces alone are not a name.'); return; }
+              setNameError('');
               void wb.act(async () => {
-                const project = await api('projects', parseProject, json({ name, description }));
+                const project = await api('projects', parseProject, json({ name: name.trim(), description }));
                 wb.setProjects(current => [project, ...current]);
                 wb.setProjectId(project.id);
                 setName('');
                 setDescription('');
-                wb.setNotice('Project created. Upload your first dataset to begin.');
+                wb.setNotice('Project created. Attach a CSV or source PDF to begin.');
               });
             }}
           >
-            <Field label="Project name" hint="Something you will recognise in six months.">
+            <fieldset className="intake-fields" disabled={wb.busy}>
+            <Field label="Project name" hint="Something you will recognise in six months." error={nameError || undefined}>
               {props => (
                 <input
                   className="input"
@@ -60,7 +65,7 @@ export function ProjectsView({ wb }: { wb: Workbench }) {
                   maxLength={160}
                   placeholder="Electrolyte screening study"
                   value={name}
-                  onChange={event => setName(event.target.value)}
+                  onChange={event => { setName(event.target.value); setNameError(''); }}
                   {...props}
                 />
               )}
@@ -68,7 +73,7 @@ export function ProjectsView({ wb }: { wb: Workbench }) {
 
             <Field
               label="Research question"
-              hint="What should a model trained on this data be able to predict, and for what?"
+              hint="Optional. What should a model trained on this data be able to predict, and for what?"
             >
               {props => (
                 <textarea
@@ -92,6 +97,7 @@ export function ProjectsView({ wb }: { wb: Workbench }) {
                 <Plus size={15} aria-hidden="true" />Create project
               </button>
             </div>
+            </fieldset>
           </form>
         </Panel>
       </div>
@@ -103,6 +109,10 @@ export function ProjectsView({ wb }: { wb: Workbench }) {
             <p className="prose">
               {wb.activeProject.description || 'No research question recorded for this project yet.'}
             </p>
+            <div className="research-actions">
+              <Link className="button" href="/dataset-audit">Attach a CSV</Link>
+              <Link className="button button--secondary" href="/evidence">Attach a source PDF</Link>
+            </div>
           </div>
         </Panel>
       )}

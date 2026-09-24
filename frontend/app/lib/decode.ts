@@ -25,3 +25,7 @@ export const parseJobs = decoder(validateJobsResponse);
 export const parseJob = decoder(validateLegacyJobResponse);
 
 export const parseMaterial = decoder(validateMaterialResponse);
+export const parseMaterials = (value: unknown) => {
+  if (!Array.isArray(value)) throw new Error('The server returned an invalid attachment list.');
+  return value.map(parseMaterial);
+};
