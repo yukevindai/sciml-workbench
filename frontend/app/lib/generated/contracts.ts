@@ -16,6 +16,7 @@ export type WorkbenchContract =
   | AgentExecutionRecord
   | RunDetail
   | RunResult
+  | ExecutionPolicySummary
   | EvaluationStatusView
   | EvaluationView
   | BenchmarkPreview
@@ -668,6 +669,42 @@ export type State4 =
   | 'cancelled';
 export type ArtifactIds3 = string[];
 export type StopReason1 = string | null;
+export type ProjectId16 = string;
+export type ProjectPolicyRevision = number;
+export type Exposure = 'schema_aggregates' | 'selected_excerpts' | 'raw_project_content';
+export type AllowedTools = (
+  | 'inspect_project'
+  | 'inspect_dataset'
+  | 'list_artifacts'
+  | 'read_artifact'
+  | 'read_job'
+  | 'run_audit'
+  | 'generate_split'
+  | 'seal_evaluation'
+  | 'run_baseline'
+  | 'read_evaluation'
+  | 'ingest_evidence'
+  | 'search_evidence'
+  | 'read_evidence_span'
+  | 'search_failures'
+  | 'read_failure'
+  | 'record_outcome'
+  | 'reconcile_outcome'
+  | 'validate_claims'
+  | 'build_report'
+  | 'verify_report'
+  | 'replay_science'
+  | 'read_memory'
+)[];
+export type MaterialIds1 = string[];
+export type ArtifactIds4 = string[];
+export type SpendCeilingUsd = number | null;
+export type AllowReuse = boolean;
+export type AutomaticFailureRecording = boolean;
+export type VerifyReports = boolean;
+export type ShareOperatorMessages = boolean;
+export type AgentAvailable = boolean;
+export type UnavailableReason = string | null;
 export type ProtocolId1 = string;
 export type State5 = 'sealed' | 'released';
 export type Exploratory = boolean;
@@ -684,7 +721,7 @@ export type TestVisible = boolean;
 export type Kind20 = 'benchmark_preview';
 export type SchemaVersion19 = '1.0';
 export type Id24 = string;
-export type ProjectId16 = string;
+export type ProjectId17 = string;
 export type CreatedAt16 = string;
 export type Parents13 = string[];
 export type DatasetId4 = string;
@@ -797,7 +834,7 @@ export type ExpectedRunRevision2 = number;
 export type ExpectedPlanRevision1 = number;
 export type SchemaVersion21 = '1.0';
 export type Id29 = string;
-export type ProjectId17 = string;
+export type ProjectId18 = string;
 export type CreatedAt19 = string;
 export type Contract6 = 'specialist_assignment';
 export type RunId8 = string;
@@ -806,7 +843,7 @@ export type Role = 'data_evaluation' | 'evidence' | 'failure_memory' | 'scientif
 export type Objective6 = string;
 export type AllowedArtifactIds = string[];
 export type AllowedMaterialIds = string[];
-export type AllowedTools = (
+export type AllowedTools1 = (
   | 'inspect_project'
   | 'inspect_dataset'
   | 'list_artifacts'
@@ -885,7 +922,7 @@ export type ActionId4 = string;
 export type AttemptId2 = string;
 export type Outcome = ToolCompleted | ToolSubmitted | ToolBlocked | ToolFailed;
 export type Status10 = 'completed';
-export type ArtifactIds4 = string[];
+export type ArtifactIds5 = string[];
 export type Status11 = 'submitted';
 export type JobId1 = string;
 export type Status12 = 'blocked';
@@ -1023,7 +1060,7 @@ export type State8 =
   | 'cancelled';
 export type ActionId5 = string | null;
 export type QuestionId = string | null;
-export type ArtifactIds5 = string[];
+export type ArtifactIds6 = string[];
 export type Summary1 = string | null;
 export type Error3 = string;
 export type ErrorCode4 =
@@ -1065,7 +1102,7 @@ export type Id30 = string;
 export type Name4 = string;
 export type Description = string;
 export type Id31 = string;
-export type ProjectId18 = string;
+export type ProjectId19 = string;
 export type Kind24 =
   'audit' | 'split' | 'benchmark' | 'evidence' | 'failure' | 'report' | 'report_verify' | 'scientific_replay';
 export type State9 = 'queued' | 'running' | 'succeeded' | 'failed';
@@ -1111,7 +1148,7 @@ export type ErrorCode5 =
 export type RetryOfJobId = string | null;
 export type DeadlineAt1 = string | null;
 export type Id32 = string;
-export type ProjectId19 = string;
+export type ProjectId20 = string;
 export type Filename3 = string;
 export type MediaType1 = 'text/csv' | 'application/pdf';
 export type Sha2568 = string;
@@ -1155,7 +1192,7 @@ export type ExternalRecordId2 = string | null;
 export type ArtifactId2 = string | null;
 export type ReconciliationRequired = boolean;
 export type Id33 = string;
-export type ProjectId20 = string;
+export type ProjectId21 = string;
 export type Kind25 =
   'audit' | 'split' | 'benchmark' | 'evidence' | 'failure' | 'report' | 'report_verify' | 'scientific_replay';
 export type State11 = 'queued' | 'running' | 'succeeded' | 'failed';
@@ -1253,7 +1290,7 @@ export type LastErrorCode =
 export type Items = JobDetail[];
 export type NextCursor = string | null;
 export type Id34 = string;
-export type ProjectId21 = string;
+export type ProjectId22 = string;
 export type Kind26 = string;
 export type SchemaVersion28 = string;
 export type CreatedAt23 = string;
@@ -1277,7 +1314,7 @@ export type VersionedArtifact =
   | AgentExecutionRecord;
 export type ProjectsResponse = ProjectResponse[];
 export type Id35 = string;
-export type ProjectId22 = string;
+export type ProjectId23 = string;
 export type Kind27 = 'audit' | 'split' | 'benchmark' | 'evidence' | 'failure' | 'report';
 export type State13 = 'queued' | 'running' | 'succeeded' | 'failed';
 export type ResultId3 = string | null;
@@ -2085,6 +2122,31 @@ export interface RunResult {
   artifact_ids: ArtifactIds3;
   stop_reason: StopReason1;
 }
+export interface ExecutionPolicySummary {
+  project_id: ProjectId16;
+  policy: EffectivePolicy | null;
+  agent_available: AgentAvailable;
+  unavailable_reason: UnavailableReason;
+}
+/**
+ * The current server/project intersection a new run would be admitted under.
+ *
+ * Input IDs are limited to this project's records; model identities are omitted.
+ */
+export interface EffectivePolicy {
+  reference: PolicyReference;
+  project_policy_revision: ProjectPolicyRevision;
+  exposure: Exposure;
+  allowed_tools: AllowedTools;
+  material_ids: MaterialIds1;
+  artifact_ids: ArtifactIds4;
+  limits: ResourceLimits;
+  spend_ceiling_usd: SpendCeilingUsd;
+  allow_reuse: AllowReuse;
+  automatic_failure_recording: AutomaticFailureRecording;
+  verify_reports: VerifyReports;
+  share_operator_messages: ShareOperatorMessages;
+}
 export interface EvaluationStatusView {
   protocol_id: ProtocolId1;
   state: State5;
@@ -2118,7 +2180,7 @@ export interface BenchmarkPreview {
   kind?: Kind20;
   schema_version?: SchemaVersion19;
   id: Id24;
-  project_id: ProjectId16;
+  project_id: ProjectId17;
   created_at: CreatedAt16;
   parents: Parents13;
   software: Software13;
@@ -2301,7 +2363,7 @@ export interface PlanAcceptanceInput {
 export interface SpecialistAssignment {
   schema_version?: SchemaVersion21;
   id: Id29;
-  project_id: ProjectId17;
+  project_id: ProjectId18;
   created_at: CreatedAt19;
   contract?: Contract6;
   run_id: RunId8;
@@ -2310,7 +2372,7 @@ export interface SpecialistAssignment {
   objective: Objective6;
   allowed_artifact_ids: AllowedArtifactIds;
   allowed_material_ids: AllowedMaterialIds;
-  allowed_tools: AllowedTools;
+  allowed_tools: AllowedTools1;
   budget_allocation_id: BudgetAllocationId;
   deadline_at: DeadlineAt;
   completion_criteria: CompletionCriteria1;
@@ -2363,7 +2425,7 @@ export interface ToolResponse {
 }
 export interface ToolCompleted {
   status: Status10;
-  artifact_ids: ArtifactIds4;
+  artifact_ids: ArtifactIds5;
   result: Result4;
 }
 export interface Result4 {
@@ -2416,7 +2478,7 @@ export interface RunEvent {
   state: State8;
   action_id?: ActionId5;
   question_id?: QuestionId;
-  artifact_ids?: ArtifactIds5;
+  artifact_ids?: ArtifactIds6;
   summary?: Summary1;
 }
 /**
@@ -2439,7 +2501,7 @@ export interface ProjectResponse {
 }
 export interface JobResponse {
   id: Id31;
-  project_id: ProjectId18;
+  project_id: ProjectId19;
   kind: Kind24;
   state: State9;
   result_id: ResultId1;
@@ -2453,7 +2515,7 @@ export interface JobResponse {
 }
 export interface MaterialResponse {
   id: Id32;
-  project_id: ProjectId19;
+  project_id: ProjectId20;
   filename: Filename3;
   media_type: MediaType1;
   sha256: Sha2568;
@@ -2506,7 +2568,7 @@ export interface ExternalReceiptProjection {
 }
 export interface JobDetail {
   id: Id33;
-  project_id: ProjectId20;
+  project_id: ProjectId21;
   kind: Kind25;
   state: State11;
   result_id: ResultId2;
@@ -2547,7 +2609,7 @@ export interface JobPage {
 }
 export interface ArtifactSummary {
   id: Id34;
-  project_id: ProjectId21;
+  project_id: ProjectId22;
   kind: Kind26;
   schema_version: SchemaVersion28;
   created_at: CreatedAt23;
@@ -2558,7 +2620,7 @@ export interface ArtifactPage {
 }
 export interface LegacyJobResponse {
   id: Id35;
-  project_id: ProjectId22;
+  project_id: ProjectId23;
   kind: Kind27;
   state: State13;
   result_id: ResultId3;

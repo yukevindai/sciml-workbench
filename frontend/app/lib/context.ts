@@ -22,6 +22,8 @@ export type Workbench = {
   /** When project data was last read successfully (ISO time), or '' before the first read. */
   lastUpdated: string;
   busy: boolean;
+  /** Development fixture preview: views must not call the API. */
+  preview: boolean;
   /** True while any job is queued or running. */
   jobsActive: boolean;
   workflow: Workflow;

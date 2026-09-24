@@ -1,6 +1,7 @@
 import {
   validateArtifactPreviews, validateArtifactsResponse, validateEvaluationStatusView, validateEvidenceAnchors, validateEvidencePageText, validateEvidenceSpanView, validateIntakeArtifact, validateMaterialResponse, validateLegacyJobResponse,
   validateJobPage, validateJobsResponse, validateReportSummary, validateProjectResponse, validateProjectsResponse, validateResearchRuns,
+  validateResearchRun, validateRunDetail, validateRunEvents, validateExecutionPolicySummary,
 } from './generated/validators.cjs';
 
 function finite(value: unknown): boolean {
@@ -31,6 +32,10 @@ export const parseJobPage = decoder(validateJobPage);
 export const parseReportSummary = decoder(validateReportSummary);
 export const parseJob = decoder(validateLegacyJobResponse);
 export const parseResearchRuns = decoder(validateResearchRuns);
+export const parseResearchRun = decoder(validateResearchRun);
+export const parseRunDetail = decoder(validateRunDetail);
+export const parseRunEvents = decoder(validateRunEvents);
+export const parseExecutionPolicy = decoder(validateExecutionPolicySummary);
 
 export const parseMaterial = decoder(validateMaterialResponse);
 export const parseMaterials = (value: unknown) => {

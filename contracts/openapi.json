@@ -6187,6 +6187,126 @@
           }
         }
       }
+    },
+    "/api/v1/projects/{pid}/execution-policy": {
+      "get": {
+        "summary": "Execution Policy",
+        "description": "Read-only summary for the request workspace. Policy writes stay operator-provisioned.",
+        "operationId": "execution_policy_api_v1_projects__pid__execution_policy_get",
+        "parameters": [
+          {
+            "name": "pid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Pid"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExecutionPolicySummary"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Content Too Large"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Content"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -8139,6 +8259,126 @@
           }
         }
       },
+      "EffectivePolicy": {
+        "properties": {
+          "reference": {
+            "$ref": "#/components/schemas/PolicyReference"
+          },
+          "project_policy_revision": {
+            "type": "integer",
+            "maximum": 9007199254740991.0,
+            "minimum": 1.0,
+            "title": "Project Policy Revision"
+          },
+          "exposure": {
+            "type": "string",
+            "enum": [
+              "schema_aggregates",
+              "selected_excerpts",
+              "raw_project_content"
+            ],
+            "title": "Exposure"
+          },
+          "allowed_tools": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "inspect_project",
+                "inspect_dataset",
+                "list_artifacts",
+                "read_artifact",
+                "read_job",
+                "run_audit",
+                "generate_split",
+                "seal_evaluation",
+                "run_baseline",
+                "read_evaluation",
+                "ingest_evidence",
+                "search_evidence",
+                "read_evidence_span",
+                "search_failures",
+                "read_failure",
+                "record_outcome",
+                "reconcile_outcome",
+                "validate_claims",
+                "build_report",
+                "verify_report",
+                "replay_science",
+                "read_memory"
+              ]
+            },
+            "type": "array",
+            "title": "Allowed Tools"
+          },
+          "material_ids": {
+            "items": {
+              "type": "string",
+              "maxLength": 160,
+              "minLength": 1
+            },
+            "type": "array",
+            "title": "Material Ids"
+          },
+          "artifact_ids": {
+            "items": {
+              "type": "string",
+              "maxLength": 160,
+              "minLength": 1
+            },
+            "type": "array",
+            "title": "Artifact Ids"
+          },
+          "limits": {
+            "$ref": "#/components/schemas/ResourceLimits"
+          },
+          "spend_ceiling_usd": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Spend Ceiling Usd"
+          },
+          "allow_reuse": {
+            "type": "boolean",
+            "title": "Allow Reuse"
+          },
+          "automatic_failure_recording": {
+            "type": "boolean",
+            "title": "Automatic Failure Recording"
+          },
+          "verify_reports": {
+            "type": "boolean",
+            "title": "Verify Reports"
+          },
+          "share_operator_messages": {
+            "type": "boolean",
+            "title": "Share Operator Messages"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "reference",
+          "project_policy_revision",
+          "exposure",
+          "allowed_tools",
+          "material_ids",
+          "artifact_ids",
+          "limits",
+          "spend_ceiling_usd",
+          "allow_reuse",
+          "automatic_failure_recording",
+          "verify_reports",
+          "share_operator_messages"
+        ],
+        "title": "EffectivePolicy",
+        "description": "The current server/project intersection a new run would be admitted under.\n\nInput IDs are limited to this project's records; model identities are omitted."
+      },
       "ErrorResponse": {
         "properties": {
           "error": {
@@ -8828,6 +9068,52 @@
           "observed_error"
         ],
         "title": "ExecutionFailure"
+      },
+      "ExecutionPolicySummary": {
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "maxLength": 160,
+            "minLength": 1,
+            "title": "Project Id"
+          },
+          "policy": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/EffectivePolicy"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "agent_available": {
+            "type": "boolean",
+            "title": "Agent Available"
+          },
+          "unavailable_reason": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 4000,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unavailable Reason"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "project_id",
+          "policy",
+          "agent_available",
+          "unavailable_reason"
+        ],
+        "title": "ExecutionPolicySummary"
       },
       "ExecutionVersions": {
         "properties": {

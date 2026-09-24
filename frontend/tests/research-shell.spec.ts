@@ -28,7 +28,8 @@ test('research is the entry point and all eight manual views remain reachable', 
   await expect(page.getByLabel('Active project', { exact: true })).toHaveValue(project.id);
   await expect(page.getByLabel('Active dataset', { exact: true })).toHaveValue(dataset.id);
   await expect(page.getByText('Unresolved declarations:')).toBeVisible();
-  await expect(page.getByRole('button', { name: /Run research|Review plan|Pause|Resume|Cancel/ })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Run research' })).toBeDisabled();
+  await expect(page.getByRole('button', { name: /Pause|Resume|Cancel/ })).toHaveCount(0);
   const nav = page.getByRole('navigation', { name: 'Workbench sections' });
   for (const label of ['Research', 'Projects', 'Dataset audit', 'Split designer', 'Benchmarks', 'Failure memory', 'Evidence', 'Provenance', 'Reports']) {
     await expect(nav.getByRole('link', { name: label, exact: true })).toHaveCount(1);
@@ -131,12 +132,12 @@ test('a polling outage retains the last validated project data and clears on ret
     return true;
   });
   await page.goto('/research');
-  await expect(page.getByText(dataset.filename, { exact: true })).toBeVisible();
+  await expect(page.locator('.research-context').getByText(dataset.filename, { exact: true })).toBeVisible();
   outage = true;
   // Idle projects poll every 10 s.
   await expect(page.getByRole('main').getByRole('alert')).toContainText('Previously loaded data remains visible', { timeout: 15_000 });
   await expect(page.getByRole('main').getByRole('alert')).toContainText('Retrying automatically');
-  await expect(page.getByText(dataset.filename, { exact: true })).toBeVisible();
+  await expect(page.locator('.research-context').getByText(dataset.filename, { exact: true })).toBeVisible();
   outage = false;
   await page.getByRole('button', { name: 'Retry loading' }).click();
   await expect(page.getByRole('main').getByRole('alert')).toHaveCount(0);

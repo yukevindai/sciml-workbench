@@ -4,9 +4,11 @@ from fastapi import APIRouter, Depends, Header, Query
 from fastapi.responses import Response
 from fastapi.routing import APIRoute
 from sqlalchemy import select
-from .agent_db import PlanRow, QuestionRow
+from .agent_db import PlanRow, QuestionRow, ProjectPolicyRow
 from .agent_runs import RunService, TERMINAL
-from .agent_http_contracts import RunDetail, RunResult
+from .agent_http_contracts import RunDetail, RunResult, ExecutionPolicySummary
+from .agent_policy import intersect_policy
+from .db import ArtifactRow, MaterialRow
 from .errors import DomainError
 from .research_contracts import (RunInput, ResearchRun, RunControlInput, RunAmendmentInput,
     QuestionAnswerInput, PlanAcceptanceInput, RunEvent)
@@ -107,4 +109,40 @@ def router(service: RunService, session, protected, *, settings=None):
         return dict(run_id=rid, state=row.state, artifact_ids=row.payload['result_artifact_ids'],
                     stop_reason=row.payload.get('stop_reason'))
 
-    return routes
+    policy_routes = APIRouter(dependencies=protected, route_class=SafeAgentRoute)
+
+    @policy_routes.get('/api/v1/projects/{pid}/execution-policy', response_model=ExecutionPolicySummary)
+    def execution_policy(pid: str, s=Depends(session)):
+        """Read-only summary for the request workspace. Policy writes stay operator-provisioned."""
+        from .services import project
+        project(s, pid)
+        try:
+            service.admission()
+            available, reason = True, None
+        except DomainError as exc:
+            available, reason = False, str(exc)
+        try:
+            server, current = service.policies(s, pid)
+        except DomainError:
+            return dict(project_id=pid, policy=None, agent_available=available, unavailable_reason=reason)
+        # Run admission compares the stored row revision, so report that one.
+        revision = s.scalar(select(ProjectPolicyRow.revision).where(ProjectPolicyRow.project_id == pid)
+                            .order_by(ProjectPolicyRow.revision.desc()).limit(1))
+        effective = intersect_policy(server, current)
+        if pid not in effective.project_ids:
+            return dict(project_id=pid, policy=None, agent_available=available, unavailable_reason=reason)
+        owned = lambda model, ids: sorted(s.scalars(select(model.id).where(
+            model.project_id == pid, model.id.in_(sorted(ids))))) if ids else []
+        return dict(project_id=pid, agent_available=available, unavailable_reason=reason, policy=dict(
+            reference=effective.reference(), project_policy_revision=revision,
+            exposure=effective.exposure, allowed_tools=sorted(effective.allowed_tools),
+            material_ids=owned(MaterialRow, effective.material_ids),
+            artifact_ids=owned(ArtifactRow, effective.artifact_ids),
+            limits=effective.limits, spend_ceiling_usd=effective.spend_ceiling_usd,
+            allow_reuse=effective.allow_reuse, automatic_failure_recording=effective.automatic_failure_recording,
+            verify_reports=effective.verify_reports, share_operator_messages=effective.share_operator_messages))
+
+    outer = APIRouter()
+    outer.include_router(routes)
+    outer.include_router(policy_routes)
+    return outer

@@ -74,6 +74,13 @@ A submission whose response was lost keeps its request key across reloads and
 is only resent when you choose to; polling backs off during outages and keeps
 earlier results visible. See the [A09 handoff](docs/tickets/A09.md).
 
+The Research view accepts a research goal with attached CSV/PDF files and a
+compact summary of the saved Autopilot policy. **Run research** starts one run
+with no further approval; **Review the plan** is optional. Inputs the saved
+policy does not authorize are marked and block the run. A reload or another
+browser finds the same run from server history, with its plan, ordered
+activity, linked jobs and results. See the [A11 handoff](docs/tickets/A11.md).
+
 1. **Projects:** create a project and describe its research question.
 2. **Dataset audit:** upload `examples/demo.csv`, then explicitly choose **Use bundled synthetic demo declarations** for this fixture. Ordinary uploads start with unknown source metadata and can be audited without a license declaration. Click **Run audit** using the prefilled configuration.
 3. **Split designer:** click **Generate partition**. SciSplit produces a 60/20/20 requested train/validation/test split by generated family; actual group-constrained counts are visualized.

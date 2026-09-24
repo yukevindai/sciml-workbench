@@ -24,7 +24,8 @@ export type HttpResponse =
   | ResearchRuns
   | RunDetail
   | RunResult
-  | RunEvents;
+  | RunEvents
+  | ExecutionPolicySummary;
 export type ProtocolId = string;
 export type State = 'sealed' | 'released';
 export type Exploratory = boolean;
@@ -981,6 +982,42 @@ export type QuestionId = string | null;
 export type ArtifactIds4 = string[];
 export type Summary1 = string | null;
 export type RunEvents = RunEvent[];
+export type ProjectId21 = string;
+export type ProjectPolicyRevision = number;
+export type Exposure = 'schema_aggregates' | 'selected_excerpts' | 'raw_project_content';
+export type AllowedTools = (
+  | 'inspect_project'
+  | 'inspect_dataset'
+  | 'list_artifacts'
+  | 'read_artifact'
+  | 'read_job'
+  | 'run_audit'
+  | 'generate_split'
+  | 'seal_evaluation'
+  | 'run_baseline'
+  | 'read_evaluation'
+  | 'ingest_evidence'
+  | 'search_evidence'
+  | 'read_evidence_span'
+  | 'search_failures'
+  | 'read_failure'
+  | 'record_outcome'
+  | 'reconcile_outcome'
+  | 'validate_claims'
+  | 'build_report'
+  | 'verify_report'
+  | 'replay_science'
+  | 'read_memory'
+)[];
+export type MaterialIds1 = string[];
+export type ArtifactIds5 = string[];
+export type SpendCeilingUsd = number | null;
+export type AllowReuse = boolean;
+export type AutomaticFailureRecording = boolean;
+export type VerifyReports = boolean;
+export type ShareOperatorMessages = boolean;
+export type AgentAvailable = boolean;
+export type UnavailableReason = string | null;
 
 export interface EvaluationStatusView {
   protocol_id: ProtocolId;
@@ -2040,4 +2077,29 @@ export interface RunEvent {
   question_id: QuestionId;
   artifact_ids: ArtifactIds4;
   summary: Summary1;
+}
+export interface ExecutionPolicySummary {
+  project_id: ProjectId21;
+  policy: EffectivePolicy | null;
+  agent_available: AgentAvailable;
+  unavailable_reason: UnavailableReason;
+}
+/**
+ * The current server/project intersection a new run would be admitted under.
+ *
+ * Input IDs are limited to this project's records; model identities are omitted.
+ */
+export interface EffectivePolicy {
+  reference: PolicyReference;
+  project_policy_revision: ProjectPolicyRevision;
+  exposure: Exposure;
+  allowed_tools: AllowedTools;
+  material_ids: MaterialIds1;
+  artifact_ids: ArtifactIds5;
+  limits: ResourceLimits;
+  spend_ceiling_usd: SpendCeilingUsd;
+  allow_reuse: AllowReuse;
+  automatic_failure_recording: AutomaticFailureRecording;
+  verify_reports: VerifyReports;
+  share_operator_messages: ShareOperatorMessages;
 }

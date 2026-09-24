@@ -1856,6 +1856,126 @@
         }
       ]
     },
+    "EffectivePolicy": {
+      "additionalProperties": false,
+      "description": "The current server/project intersection a new run would be admitted under.\n\nInput IDs are limited to this project's records; model identities are omitted.",
+      "properties": {
+        "reference": {
+          "$ref": "#/$defs/PolicyReference"
+        },
+        "project_policy_revision": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "title": "Project Policy Revision",
+          "type": "integer"
+        },
+        "exposure": {
+          "enum": [
+            "schema_aggregates",
+            "selected_excerpts",
+            "raw_project_content"
+          ],
+          "title": "Exposure",
+          "type": "string"
+        },
+        "allowed_tools": {
+          "items": {
+            "enum": [
+              "inspect_project",
+              "inspect_dataset",
+              "list_artifacts",
+              "read_artifact",
+              "read_job",
+              "run_audit",
+              "generate_split",
+              "seal_evaluation",
+              "run_baseline",
+              "read_evaluation",
+              "ingest_evidence",
+              "search_evidence",
+              "read_evidence_span",
+              "search_failures",
+              "read_failure",
+              "record_outcome",
+              "reconcile_outcome",
+              "validate_claims",
+              "build_report",
+              "verify_report",
+              "replay_science",
+              "read_memory"
+            ],
+            "type": "string"
+          },
+          "title": "Allowed Tools",
+          "type": "array"
+        },
+        "material_ids": {
+          "items": {
+            "maxLength": 160,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Material Ids",
+          "type": "array"
+        },
+        "artifact_ids": {
+          "items": {
+            "maxLength": 160,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Artifact Ids",
+          "type": "array"
+        },
+        "limits": {
+          "$ref": "#/$defs/ResourceLimits"
+        },
+        "spend_ceiling_usd": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Spend Ceiling Usd"
+        },
+        "allow_reuse": {
+          "title": "Allow Reuse",
+          "type": "boolean"
+        },
+        "automatic_failure_recording": {
+          "title": "Automatic Failure Recording",
+          "type": "boolean"
+        },
+        "verify_reports": {
+          "title": "Verify Reports",
+          "type": "boolean"
+        },
+        "share_operator_messages": {
+          "title": "Share Operator Messages",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "reference",
+        "project_policy_revision",
+        "exposure",
+        "allowed_tools",
+        "material_ids",
+        "artifact_ids",
+        "limits",
+        "spend_ceiling_usd",
+        "allow_reuse",
+        "automatic_failure_recording",
+        "verify_reports",
+        "share_operator_messages"
+      ],
+      "title": "EffectivePolicy",
+      "type": "object"
+    },
     "EstimatedCost": {
       "additionalProperties": false,
       "properties": {
@@ -2582,6 +2702,52 @@
         "observed_error"
       ],
       "title": "ExecutionFailure",
+      "type": "object"
+    },
+    "ExecutionPolicySummary": {
+      "additionalProperties": false,
+      "properties": {
+        "project_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Project Id",
+          "type": "string"
+        },
+        "policy": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/EffectivePolicy"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "agent_available": {
+          "title": "Agent Available",
+          "type": "boolean"
+        },
+        "unavailable_reason": {
+          "anyOf": [
+            {
+              "maxLength": 4000,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Unavailable Reason"
+        }
+      },
+      "required": [
+        "project_id",
+        "policy",
+        "agent_available",
+        "unavailable_reason"
+      ],
+      "title": "ExecutionPolicySummary",
       "type": "object"
     },
     "ExecutionVersions": {
@@ -7517,6 +7683,9 @@
     },
     {
       "$ref": "#/$defs/RunEvents"
+    },
+    {
+      "$ref": "#/$defs/ExecutionPolicySummary"
     }
   ]
 }

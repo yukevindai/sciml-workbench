@@ -12,12 +12,13 @@ from .http_contracts import JobResponse, LegacyJobResponse, ProjectResponse, Int
 from .read_contracts import Capabilities, ExternalReceiptProjection, JobDetail, JobPage, ArtifactPage, ArtifactSummary
 from .read_contracts import ArtifactPreview, BenchmarkPreview, EvaluationStatusView, EvaluationView
 from .read_contracts import EvidenceAnchor, EvidencePageText, EvidenceSpanView, ReportSummary
-from .agent_http_contracts import RunDetail, RunResult
+from .agent_http_contracts import RunDetail, RunResult, ExecutionPolicySummary
 
 BASE_URI = "https://sciml-workbench.local/contracts"
 RECORD_TYPES = {
     "run_detail": RunDetail,
     "run_result": RunResult,
+    "execution_policy_summary": ExecutionPolicySummary,
     "evaluation_status_view": EvaluationStatusView,
     "evaluation_view": EvaluationView,
     "benchmark_preview": BenchmarkPreview,
@@ -95,6 +96,7 @@ HTTP_RESPONSE_TYPES = {
     "RunDetail": RunDetail,
     "RunResult": RunResult,
     "RunEvents": list[r.RunEvent],
+    "ExecutionPolicySummary": ExecutionPolicySummary,
 }
 
 

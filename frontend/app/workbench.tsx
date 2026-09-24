@@ -228,7 +228,7 @@ export default function Workbench({ view, fixture, children, requestedProjectId,
     return {
       projects, setProjects, projectId, setProjectId,
       activeProject: projects.find(p => p.id === projectId),
-      artifacts, jobs, jobsTruncated, lastUpdated, busy: busy || Boolean(fixture),
+      artifacts, jobs, jobsTruncated, lastUpdated, busy: busy || Boolean(fixture), preview: Boolean(fixture),
       jobsActive: jobs.some(isActive),
       workflow: deriveWorkflow(artifacts, Boolean(projectId)),
       act, submit, setNotice,

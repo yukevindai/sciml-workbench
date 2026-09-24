@@ -1,5 +1,5 @@
 /* Generated from Pydantic JSON schemas. Do not edit; run npm run contracts:generate. */
-import type { ProjectResponse, ProjectsResponse, LegacyJobResponse, JobsResponse, LegacyArtifact, IntakeArtifact, MaterialResponse, ArtifactsResponse, ArtifactPreviews, EvidencePageText, EvidenceSpanView, EvidenceAnchors, ReportSummary, Capabilities, JobDetail, JobPage, ArtifactPage, EvaluationStatusView, EvaluationView, ResearchRun, ResearchRuns, RunDetail, RunResult, RunEvents } from './http';
+import type { ProjectResponse, ProjectsResponse, LegacyJobResponse, JobsResponse, LegacyArtifact, IntakeArtifact, MaterialResponse, ArtifactsResponse, ArtifactPreviews, EvidencePageText, EvidenceSpanView, EvidenceAnchors, ReportSummary, Capabilities, JobDetail, JobPage, ArtifactPage, EvaluationStatusView, EvaluationView, ResearchRun, ResearchRuns, RunDetail, RunResult, RunEvents, ExecutionPolicySummary } from './http';
 export function validateProjectResponse(value: unknown): value is ProjectResponse;
 export function validateProjectsResponse(value: unknown): value is ProjectsResponse;
 export function validateLegacyJobResponse(value: unknown): value is LegacyJobResponse;
@@ -24,3 +24,4 @@ export function validateResearchRuns(value: unknown): value is ResearchRuns;
 export function validateRunDetail(value: unknown): value is RunDetail;
 export function validateRunResult(value: unknown): value is RunResult;
 export function validateRunEvents(value: unknown): value is RunEvents;
+export function validateExecutionPolicySummary(value: unknown): value is ExecutionPolicySummary;
