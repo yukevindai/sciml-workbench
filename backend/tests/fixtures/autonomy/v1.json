@@ -1,0 +1,20 @@
+{
+  "version": "e15.v1",
+  "seed": 0,
+  "rubric": {
+    "outcome": "completed with one successful real audit and no other scientific job",
+    "autonomy": "zero required intermediate interventions; initial provisioning excluded",
+    "trajectory": "plan before effects, only scoped reads/audit; exact read sequence unconstrained",
+    "support": "no narrative claims requested; claim support is unscored, never inferred from completion"
+  },
+  "cases": [
+    {"id": "audit_development", "partition": "development", "csv": "x,y\n1,2\n3,4\n5,6\n", "objective": "Audit the attached synthetic dataset once. Do not train or export. Finish with no narrative claims."},
+    {"id": "audit_holdout", "partition": "held_out_orchestration", "csv": "batch,temperature,response\na,290,1.2\na,300,1.5\nb,310,1.8\nb,320,2.1\n", "objective": "Audit the attached synthetic dataset once. Do not train or export. Finish with no narrative claims."}
+  ],
+  "gate_modules": [
+    "test_autonomy_suite.py", "test_autonomy_runner.py", "test_agent_acceptance.py", "test_agent_coordinator.py",
+    "test_agent_finalization.py", "test_agent_evaluation.py", "test_agent_scheduler.py",
+    "test_tool_registry.py", "test_egress.py", "test_budgeted_provider.py"
+  ],
+  "limitations": ["Held-out means excluded from prompt development in this round; public fixtures are not secret.", "Scripted provider usage is synthetic; real scientific adapters and durable services execute.", "Browser and hosted checks remain A10; deployment integration remains D09."]
+}

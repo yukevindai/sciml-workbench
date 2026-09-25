@@ -48,3 +48,6 @@ the trusted frozen-export final-purpose boundary; [E11](tickets/E11.md) reviewer
 remain in selection scope. E10 specialists must use this same consumer.
 Tests use synthetic retained metric canaries
 to verify masking, not to claim scientific model performance.
+
+For the E15 autonomy evaluation harness and opt-in live pilot, see
+[autonomy evaluation](autonomy-evaluation.md).
