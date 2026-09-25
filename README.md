@@ -9,7 +9,13 @@ For a hosted private workspace, follow the [Render setup walkthrough](docs/rende
 The [integrated CI gates](docs/integrated-ci.md) describe required checks,
 revision-specific evidence and the separate hosted/live-provider acceptance limits.
 
-The [agent-operated release blueprint](sciml-workbench-mvp-design.md) defines the next release's five workstreams and 64 tickets. The [pre-implementation readiness record](docs/implementation-readiness.md) distinguishes existing behavior, pending work, and current validation results. The application currently implements the manual workflow described below.
+The [release candidate handoff](docs/release-handoff.md) connects setup, the agent
+operator walkthrough, compatibility inventory, a replayable synthetic report and
+remaining acceptance gates. The application implements manual tools and the
+optional agent workspace; live-provider and hosted acceptance remain incomplete.
+The [blueprint](sciml-workbench-mvp-design.md) defines the five workstreams and 64
+tickets. The [pre-implementation readiness record](docs/implementation-readiness.md)
+is historical; current validation belongs to the ticket and release records.
 
 ## Start with Docker Compose
 
@@ -34,7 +40,8 @@ This MVP is a **single trusted operator workspace**. All projects are accessible
 
 The home page opens the **Research** entry. Choose a project and dataset in the
 header, or open **Projects** to create one. The eight manual tools remain in the
-navigation; automated requests and run controls are not yet connected in the UI.
+navigation; Research provides automated requests and run controls when the
+operator has configured the agent runtime and saved policy.
 See the [A01 shell handoff](docs/tickets/A01.md) for development previews and verification.
 
 Dataset audit now shows findings, requested/effective configuration and original

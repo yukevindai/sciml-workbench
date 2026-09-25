@@ -1,0 +1,54 @@
+{
+  "format": "workbench-release-validation/1",
+  "base_revision": "d9b20528a15ec353fa8c46fcad5f0bbaf024066b",
+  "working_changes": true,
+  "source_sha256_lf": "533ff5e693ccb41e1da6cb73d5b23ee73e907761cf1eb45219d7be6a148455b1",
+  "source_files": 224,
+  "source_scope": [
+    "backend/workbench and backend/tests and scripts and contracts: .py/.json/.csv (excluding __pycache__)",
+    "backend pyproject/constraints, frontend package/lock, Dockerfiles, compose.yaml, CI workflow, .python-version"
+  ],
+  "runtime": {
+    "python": "3.12.14",
+    "postgresql": "16.15",
+    "platform": "Linux-6.18.33.2-microsoft-standard-WSL2-aarch64-with-glibc2.41",
+    "backend_image_id": "sha256:f38d7fd1dae2f3c20c9adcdfc042ea23def9f3e194ce733e3214f56d80877bf1",
+    "source": "current workspace mounted over installed backend via PYTHONPATH",
+    "test_dependencies": "isolated pytest 8.4.2 and ReportLab; no Windows scientific distribution metadata"
+  },
+  "acceptance": {
+    "date": "2026-09-25",
+    "tests": 50,
+    "passed": 50,
+    "skipped": 0,
+    "failed": 0,
+    "schema_files_checked": 55,
+    "installed_pins_constraints_surface": "passed",
+    "pip_check": "passed",
+    "example_structure": "passed",
+    "example_scientific_replay": "matched",
+    "shipped_archive_cli_replay": "matched",
+    "workflow_yaml": "parsed"
+  },
+  "pending": [
+    "Full D09 CI at accepted revision (GitHub CLI unauthenticated)",
+    "Fresh human-operated live one-request demonstration",
+    "Representative live-provider quality/claim support",
+    "Hosted private access and redeploy recovery",
+    "Production/hosted coordinated restore"
+  ],
+  "limitations": [
+    "Existing constrained image, not a clean image build.",
+    "Synthetic offline example uses real science but is not an autonomous research run.",
+    "Disposable local PostgreSQL restore does not establish a production recovery SLA.",
+    "No provider calls, deployment, production writes, commit or push."
+  ],
+  "files_sha256": {
+    "examples/release/report.zip": "1a241196edc610202c620c7b5eab9477e66e8d72f7cb83c921cddf27de197ca8"
+  },
+  "files_sha256_lf": {
+    "docs/release/acceptance.xml": "d0eddec48e5375a85bc140280b0893f204ea7271e5674449cae466f77ed31656",
+    "docs/release/compatibility.json": "93cc0d56105e2625e131fd45c4ae27aad3a96a5ac3bec0fb959256581d3f4c8d",
+    "examples/release/verification.json": "5c1f10d646a6374366048b22df91d6d23558b7ba03aa3e48872ce4a96c443a52"
+  }
+}

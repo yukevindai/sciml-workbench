@@ -51,6 +51,20 @@ jobs:
       - name: Strict report replay and isolated backup restore
         run: python scripts/ci_gate.py --name replay-restore --output outputs/d09/replay-restore.json --junit outputs/d09/replay-restore.xml -- python -m pytest backend/tests/test_archive.py backend/tests/test_backup.py -q --junitxml outputs/d09/replay-restore.xml
       - run: python scripts/ci_gate.py --name schemas --output outputs/d09/schemas.json -- python scripts/export_schemas.py --check
+      - name: Release compatibility and real example report
+        run: |
+          python scripts/release_manifest.py --check
+          python scripts/ci_gate.py --name release-example --output outputs/d10/example-gate.json -- python scripts/build_example_report.py outputs/d10/example
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: release-example
+          path: |
+            docs/release/compatibility.json
+            outputs/d10/example-gate.json
+            outputs/d10/example/report.zip
+            outputs/d10/example/verification.json
+            outputs/d10/example/replayed/replay-comparison.json
       - name: Deterministic autonomy evaluation and measured trajectories
         run: python scripts/ci_gate.py --name deterministic-agent --output outputs/d09/agent.json -- python scripts/check_agent_evaluation.py
       - uses: actions/upload-artifact@v4
