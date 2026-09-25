@@ -1,8 +1,11 @@
 name: Validate workbench
 on: [push, pull_request]
+permissions:
+  contents: read
 jobs:
   integration:
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     services:
       postgres:
         image: postgres:16
@@ -41,25 +44,34 @@ jobs:
       - run: python scripts/check_scientific_surface.py
       - run: python -m workbench.config
       - run: alembic -c backend/alembic.ini upgrade head
+      - name: Strict PostgreSQL concurrency and data acceptance
+        run: python scripts/ci_gate.py --name postgres --output outputs/d09/postgres.json --junit outputs/d09/postgres.xml -- python scripts/check_data_integration.py --junitxml outputs/d09/postgres.xml
       - name: Source-pinned scientific integration and backend regressions
-        run: python scripts/check_scientific_integration.py --all
-      - run: python scripts/export_schemas.py --check
+        run: python scripts/ci_gate.py --name scientific --output outputs/d09/scientific.json -- python scripts/check_scientific_integration.py --all --junitxml outputs/d09/backend.xml
+      - name: Strict report replay and isolated backup restore
+        run: python scripts/ci_gate.py --name replay-restore --output outputs/d09/replay-restore.json --junit outputs/d09/replay-restore.xml -- python -m pytest backend/tests/test_archive.py backend/tests/test_backup.py -q --junitxml outputs/d09/replay-restore.xml
+      - run: python scripts/ci_gate.py --name schemas --output outputs/d09/schemas.json -- python scripts/export_schemas.py --check
       - name: Deterministic autonomy evaluation and measured trajectories
-        run: python scripts/check_agent_evaluation.py
+        run: python scripts/ci_gate.py --name deterministic-agent --output outputs/d09/agent.json -- python scripts/check_agent_evaluation.py
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: agent-evaluation
           path: outputs/e15/report.json
-      - run: npm ci && npm run contracts:check && npm run test:contracts && npm run test:boundary && npm run build
-        working-directory: frontend
+      - name: Frontend contracts, boundary checks and production build
+        run: python scripts/ci_gate.py --name frontend --output outputs/d09/frontend.json -- sh -c 'cd frontend && npm ci && npm run contracts:check && npm run test:contracts && npm run test:boundary && npm run build'
       - run: npx playwright install --with-deps chromium
         working-directory: frontend
       - run: |
           python -m workbench.serve > /tmp/runtime.log 2>&1 &
           npm --prefix frontend run start > /tmp/web.log 2>&1 &
           for i in $(seq 1 60); do curl -fsS http://localhost:3000/healthz >/dev/null && break || sleep 1; done
-          npm --prefix frontend run test:e2e
+          python scripts/ci_gate.py --name browser --output outputs/d09/browser.json -- npm --prefix frontend run test:e2e
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: integration-gate-receipts
+          path: outputs/d09
       - uses: actions/upload-artifact@v4
         if: failure()
         with:
@@ -70,6 +82,7 @@ jobs:
             /tmp/web.log
   compose:
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     env:
       POSTGRES_PASSWORD: compose-test-password
       WB_API_TOKEN: compose-test-token-at-least-32-characters
@@ -78,7 +91,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: python scripts/check_compose.py
-      - run: docker compose up --build -d --wait
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - uses: actions/setup-node@v4
+        with: {node-version: '22', cache: npm, cache-dependency-path: frontend/package-lock.json}
+      - run: npm ci
+        working-directory: frontend
+      - run: npx playwright install --with-deps chromium
+        working-directory: frontend
+      - run: python scripts/ci_gate.py --name compose-startup --output outputs/d09/compose.json -- docker compose up --build -d --wait
       - name: Verify repeatable setup and unconfigured agent rejection
         run: |
           docker compose stop web api worker
@@ -95,5 +116,34 @@ jobs:
           curl --fail http://localhost:3000/healthz
           test "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:3000/)" = "401"
           curl --fail -u "workbench:$WB_LOGIN_PASSWORD" http://localhost:3000/
-      - if: always()
-        run: docker compose logs --no-color && docker compose down -v
+      - name: Stop smoke stack before real-stack browser acceptance
+        run: docker compose down -v
+      - name: Prepare isolated scripted acceptance configuration
+        run: python scripts/acceptance/prepare_ci.py
+      - name: A10 real-stack browser acceptance (scripted coordinator, real science)
+        env:
+          PLAYWRIGHT_JUNIT_OUTPUT_FILE: ../outputs/d09/a10.xml
+        run: python scripts/ci_gate.py --name a10 --output outputs/d09/a10.json --junit outputs/d09/a10.xml -- sh scripts/acceptance/run_a10.sh outputs/a10/ci.env --reporter=line,junit
+      - name: Collect Compose diagnostics
+        if: always()
+        run: |
+          mkdir -p outputs/d09
+          docker compose logs --no-color > outputs/d09/compose.log 2>&1
+          if test -f outputs/a10/ci.env; then
+            docker compose -p a10 --env-file outputs/a10/ci.env logs --no-color > outputs/d09/a10.log 2>&1
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: compose-browser-evidence
+          path: |
+            outputs/d09
+            outputs/a10/coordinator.log
+            frontend/test-results
+      - name: Remove disposable CI stacks
+        if: always()
+        run: |
+          docker compose down -v
+          if test -f outputs/a10/ci.env; then
+            docker compose -p a10 --env-file outputs/a10/ci.env down -v
+          fi

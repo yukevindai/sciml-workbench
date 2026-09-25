@@ -6,6 +6,9 @@ A unified local web interface for four independent scientific Python projects. N
 
 For a hosted private workspace, follow the [Render setup walkthrough](docs/render-setup.md).
 
+The [integrated CI gates](docs/integrated-ci.md) describe required checks,
+revision-specific evidence and the separate hosted/live-provider acceptance limits.
+
 The [agent-operated release blueprint](sciml-workbench-mvp-design.md) defines the next release's five workstreams and 64 tickets. The [pre-implementation readiness record](docs/implementation-readiness.md) distinguishes existing behavior, pending work, and current validation results. The application currently implements the manual workflow described below.
 
 ## Start with Docker Compose
