@@ -83,3 +83,54 @@ B11 and downgrade refuses populated memory. Preserve the ledger in backups.
 This ticket adds internal services and tools, not a public memory-editing route,
 specialist scheduler or live provider. E04/E06 must consume the explicit authority
 and reuse labels; E14 remains responsible for comprehensive provider egress.
+
+## Operator correction
+
+Use the trusted backend environment, with its configured database and storage.
+There is no public memory-editing endpoint. Pause the affected run before changing
+a preference it is using; a correction cannot revise already published outputs.
+The example below corrects a **confirmed_preference** to `report_full`. Use the
+same kind as the old record. For a provisional finding, provide a supported lesson
+and the exact still-authorized source artifacts; do not promote it to a confirmed
+fact. Failure snapshots require exactly one retained failure artifact.
+
+Save this as a private operator script and run with the installed backend Python,
+or feed it to `docker compose exec -T api python -`. Replace `PROJECT_ID`,
+`MEMORY_ID` and the expected revision after inspecting metadata locally.
+Keep notes and scientific contents out of logs.
+
+```python
+from workbench.config import load_settings
+from workbench.db import Database
+from workbench.agent_runs import RunService
+from workbench.agent_policy import intersect_policy
+from workbench.agent_memory import MemoryService, MemoryInput
+
+db = Database(load_settings().database_url)
+try:
+    with db.session.begin() as session:
+        server, project = RunService().policies(session, 'PROJECT_ID')
+        policy = intersect_policy(server, project)
+        row = MemoryService().record(
+            session, 'PROJECT_ID', policy,
+            MemoryInput(kind='confirmed_preference',
+                        content={'preference': 'report_full'}, source_artifact_ids=[]),
+            actor='human', supersedes='MEMORY_ID', expected_revision=1,
+        )
+        identity, revision = row.id, row.revision
+    print({'memory_id': identity, 'revision': revision, 'status': 'corrected'})
+except Exception:
+    print('Correction refused; check project, current revision, kind and authorized sources.')
+    raise SystemExit(2) from None
+finally:
+    db.engine.dispose()
+```
+
+If a response is lost, inspect whether the original is now superseded before
+trying again. The expected-revision check prevents a second correction of the
+same old row. Current retrieval excludes superseded records and cached memory
+reads become stale. Original rows remain in backups and historical provenance;
+never delete them to conceal a mistaken preference. To inspect identities without
+printing notes, query `MemoryRow` in a read-only session for the owning project
+and print only `id`, `revision`, `kind`, `status`, `source_artifact_ids` and
+`attribution`. See the [operator handoff](agent-operator-guide.md).

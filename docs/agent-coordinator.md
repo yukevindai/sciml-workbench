@@ -1,5 +1,8 @@
 ﻿# Adaptive coordinator and runtime
 
+For step-by-step setup, reviewed policy installation, the one-request demo and
+recovery handoff, start with the [agent operator guide](agent-operator-guide.md).
+
 E04, E06, E07, E08 and E10 now have backend runtime integration and acceptance
 fixtures. Provider decisions are adaptive proposals checked by trusted services;
 the coordinator does not encode a fixed audit/split/baseline pipeline. Live

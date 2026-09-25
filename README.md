@@ -191,6 +191,7 @@ Replay verifies archive structure and source-pin compatibility before comparing 
 - [Scoped memory, corrections and compatible scientific reuse (E09)](docs/agent-memory-reuse.md)
 - [Agent evaluation discipline and final-exposure fences (E12)](docs/agent-evaluation.md)
 - [Autonomy evaluation, measured comparisons and opt-in live pilot (E15)](docs/autonomy-evaluation.md)
+- [Agent setup, policy installation and operator handoff (E16)](docs/agent-operator-guide.md)
 - [Agent egress and untrusted-content defenses (E14)](docs/agent-egress.md)
 - [Operations, backups and troubleshooting](docs/operations.md)
 - [Versioned JSON Schemas](contracts/v1/)

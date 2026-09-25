@@ -2,6 +2,9 @@
 
 ## Starting and updating
 
+The [agent operator guide](agent-operator-guide.md) covers provider readiness,
+one-time policy grants, the one-request demo, exposure, budgets and memory correction.
+
 `docker compose up --build -d` builds pinned dependencies, waits for PostgreSQL, runs migrations/provisioning, then starts the API, worker and Next.js. Never run multiple setup containers concurrently. Named volumes preserve files and metadata across restarts. `docker compose down` preserves volumes; adding `-v` irreversibly removes them.
 
 For code updates, back up first and stop `web api worker` (plus `agent-worker` if explicitly started) before running migrations; old workers must not run alongside a metadata upgrade. Follow the [runtime setup procedure](runtime-setup.md). Keep library pins and resolved constraints together. Do not change the Auditor revision independently of ChemE Benchmarks.
