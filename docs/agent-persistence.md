@@ -35,13 +35,13 @@ All routes share the existing bearer-token and origin boundary. The base path is
 |---|---|
 | `POST /` | Accept strict `RunInput` and `Idempotency-Key`; same key/body resolves one run, different body conflicts. Production admission remains gated on D11. |
 | `GET /` | Bounded history, `after` equal to the last returned run ID and `limit` up to 100. |
-| `GET /{rid}` | Current run, latest plan, questions and truthful control effect. |
+| `GET /{rid}` | Current run, latest plan, questions and truthful control effect. A12 adds `earlier_plans` (up to 20, newest first), `actions` (tool, attempt, state, specialist link, job, output artifacts and a safe error code; never arguments) and `assignments` (specialist role, objective, plan revision, state and deadline; no tool grants or budget IDs). |
 | `POST /{rid}/amend` | Expected run/plan revisions, immutable original intent, recorded amendment, invalidated prior plan acceptance and superseded old questions. |
 | `POST /{rid}/questions/{qid}/answer` | Exact current question/run revisions and all requested fields; retains an attributed operator message. |
 | `POST /{rid}/review-plan` | Accept exact current plan in Review plan mode. A dirty plan after amendment must be regenerated first. |
 | `POST /{rid}/pause`, `/resume`, `/cancel` | Expected revision and request key; enforce state transitions and advance the control fence without resetting usage. |
 | `GET /{rid}/events` | Durable sequence order, exclusive `after` and bounded `limit` (maximum 500). |
-| `GET /{rid}/stream` | Authenticated bounded SSE replay; uses `Last-Event-ID`, then closes. EventSource reconnects after two seconds. No database session waits for future work. |
+| `GET /{rid}/stream` | Authenticated bounded SSE replay after the later of `after` and `Last-Event-ID`, then closes. No database session waits for future work. The browser (A12) reopens with `?after=<last merged sequence>` after two seconds rather than relying on `Last-Event-ID`, and polls `/events` if a connection never opens. |
 | `GET /{rid}/result` | Terminal state, validated artifact references and stop reason; unfinished runs conflict. |
 
 Control request keys are shared across a run's operations; reuse for different content or operations conflicts. A compatible replay returns the original recorded control response, even after subsequent state changes. Refetch the run for its current state. Generic Resume cannot bypass outstanding questions or plan review; answering while paused leaves the run paused. Terminal runs cannot be resumed or amended. Autopilot has no plan-acceptance step.

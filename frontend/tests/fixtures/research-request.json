@@ -1,44 +1,44 @@
 {
   "project": {
-    "id": "e7fed740-ab69-49a2-95df-637f537f9d41",
+    "id": "5c7cb73a-9f6e-4b85-940f-c2092b85c33d",
     "name": "Electrolyte screening",
     "description": "Is the conductivity table fit for a baseline comparison?"
   },
   "ids": {
-    "project": "e7fed740-ab69-49a2-95df-637f537f9d41",
-    "material": "6bfd240c-85ff-46b0-bbbf-b0096219df9b",
-    "dataset": "7f9e7056-290a-4518-80ff-84735873e459",
-    "unauthorized": "1139577e-54db-461c-85f9-2e88eb25a409",
-    "completed_run": "0c846269-a10e-4860-8c44-54bd8a5a9d1a",
-    "review_run": "4dadb741-d9c3-465d-8a82-6d1a4e8750af",
-    "audit": "35bb784a-f4df-4d42-86a5-6772c38715d1",
-    "job": "3f7990b4-54ce-471b-a79a-2e394d4f806c"
+    "project": "5c7cb73a-9f6e-4b85-940f-c2092b85c33d",
+    "material": "353d541a-966a-42e7-9e42-062da10ca97e",
+    "dataset": "f513d71a-4ad4-4723-878e-68bb0ed5e731",
+    "unauthorized": "0c770cf7-a853-4c18-899b-15ae06d34716",
+    "completed_run": "9b1454cc-b517-4ff6-90be-440521d4fc68",
+    "review_run": "e47c5c46-5b80-4313-baa2-6c80fd4cd35a",
+    "audit": "be6bad81-5428-4fd9-a0ed-2241fb5c24fc",
+    "job": "dacfd279-b48f-4a2c-8825-9186142a1306"
   },
   "materials": [
     {
-      "id": "6bfd240c-85ff-46b0-bbbf-b0096219df9b",
-      "project_id": "e7fed740-ab69-49a2-95df-637f537f9d41",
+      "id": "353d541a-966a-42e7-9e42-062da10ca97e",
+      "project_id": "5c7cb73a-9f6e-4b85-940f-c2092b85c33d",
       "filename": "demo.csv",
       "media_type": "text/csv",
       "sha256": "aa0e1db7ba154779d11787120c4ea7dd87aab22d8a8fbd1e4a5b1446507afe3c",
-      "dataset_id": "7f9e7056-290a-4518-80ff-84735873e459"
+      "dataset_id": "f513d71a-4ad4-4723-878e-68bb0ed5e731"
     },
     {
-      "id": "1139577e-54db-461c-85f9-2e88eb25a409",
-      "project_id": "e7fed740-ab69-49a2-95df-637f537f9d41",
+      "id": "0c770cf7-a853-4c18-899b-15ae06d34716",
+      "project_id": "5c7cb73a-9f6e-4b85-940f-c2092b85c33d",
       "filename": "unreviewed.csv",
       "media_type": "text/csv",
       "sha256": "593c86809b2ad57ffb27395c33e28c0b2b891fabba45564092316471fc2c382b",
-      "dataset_id": "4016ba85-b20c-4380-9acc-24a44155cd14"
+      "dataset_id": "ccdcc0e9-7940-4e06-a398-209245217723"
     }
   ],
   "policy": {
-    "project_id": "e7fed740-ab69-49a2-95df-637f537f9d41",
+    "project_id": "5c7cb73a-9f6e-4b85-940f-c2092b85c33d",
     "policy": {
       "reference": {
         "policy_id": "project-autopilot",
         "revision": 2,
-        "sha256": "f9e6fc722594387cfb6a2cd3be3d82f515bb4fcdc1d315227f8b06227a49beb7"
+        "sha256": "46ed1301484971bd89221846af5520fa1fcb3e6be3a8dd18af8648f8b3779000"
       },
       "project_policy_revision": 2,
       "exposure": "schema_aggregates",
@@ -66,10 +66,10 @@
         "verify_report"
       ],
       "material_ids": [
-        "6bfd240c-85ff-46b0-bbbf-b0096219df9b"
+        "353d541a-966a-42e7-9e42-062da10ca97e"
       ],
       "artifact_ids": [
-        "7f9e7056-290a-4518-80ff-84735873e459"
+        "f513d71a-4ad4-4723-878e-68bb0ed5e731"
       ],
       "limits": {
         "model_tokens": 32000,
@@ -98,17 +98,17 @@
   "runs": [
     {
       "schema_version": "1.0",
-      "id": "0c846269-a10e-4860-8c44-54bd8a5a9d1a",
-      "project_id": "e7fed740-ab69-49a2-95df-637f537f9d41",
-      "created_at": "2026-09-24T23:27:14.049341Z",
+      "id": "9b1454cc-b517-4ff6-90be-440521d4fc68",
+      "project_id": "5c7cb73a-9f6e-4b85-940f-c2092b85c33d",
+      "created_at": "2026-09-24T23:59:38.168333Z",
       "contract": "research_run",
       "objective": "Audit demo.csv for missing values, duplicate rows and outliers. Report the findings; do not train models.",
       "inputs": {
         "material_ids": [
-          "6bfd240c-85ff-46b0-bbbf-b0096219df9b"
+          "353d541a-966a-42e7-9e42-062da10ca97e"
         ],
         "artifact_ids": [
-          "7f9e7056-290a-4518-80ff-84735873e459"
+          "f513d71a-4ad4-4723-878e-68bb0ed5e731"
         ],
         "conversation_id": null,
         "message_cutoff": null
@@ -116,7 +116,7 @@
       "policy": {
         "policy_id": "project-autopilot",
         "revision": 2,
-        "sha256": "d8fd4988fbdfdd1cbde00ce4b1959d686a7aee2d9accd41f6226623adaff95df"
+        "sha256": "78488101c50a82bfb8bc6126090a0f4a64934049631f99501c9da138db2614d3"
       },
       "mode": "autopilot",
       "state": "completed",
@@ -152,25 +152,25 @@
       },
       "open_question_ids": [],
       "result_artifact_ids": [
-        "35bb784a-f4df-4d42-86a5-6772c38715d1"
+        "be6bad81-5428-4fd9-a0ed-2241fb5c24fc"
       ],
       "continued_from_run_id": null,
-      "finished_at": "2026-09-24T23:27:17.942978Z",
+      "finished_at": "2026-09-24T23:59:42.090835Z",
       "stop_reason": null
     },
     {
       "schema_version": "1.0",
-      "id": "4dadb741-d9c3-465d-8a82-6d1a4e8750af",
-      "project_id": "e7fed740-ab69-49a2-95df-637f537f9d41",
-      "created_at": "2026-09-24T23:27:17.951287Z",
+      "id": "e47c5c46-5b80-4313-baa2-6c80fd4cd35a",
+      "project_id": "5c7cb73a-9f6e-4b85-940f-c2092b85c33d",
+      "created_at": "2026-09-24T23:59:42.104276Z",
       "contract": "research_run",
       "objective": "Audit demo.csv, then split it by formulation and compare mean and ridge baselines.",
       "inputs": {
         "material_ids": [
-          "6bfd240c-85ff-46b0-bbbf-b0096219df9b"
+          "353d541a-966a-42e7-9e42-062da10ca97e"
         ],
         "artifact_ids": [
-          "7f9e7056-290a-4518-80ff-84735873e459"
+          "f513d71a-4ad4-4723-878e-68bb0ed5e731"
         ],
         "conversation_id": null,
         "message_cutoff": null
@@ -178,7 +178,7 @@
       "policy": {
         "policy_id": "project-autopilot",
         "revision": 2,
-        "sha256": "d8fd4988fbdfdd1cbde00ce4b1959d686a7aee2d9accd41f6226623adaff95df"
+        "sha256": "78488101c50a82bfb8bc6126090a0f4a64934049631f99501c9da138db2614d3"
       },
       "mode": "review_plan",
       "state": "waiting_for_input",
@@ -220,20 +220,20 @@
     }
   ],
   "details": {
-    "0c846269-a10e-4860-8c44-54bd8a5a9d1a": {
+    "9b1454cc-b517-4ff6-90be-440521d4fc68": {
       "run": {
         "schema_version": "1.0",
-        "id": "0c846269-a10e-4860-8c44-54bd8a5a9d1a",
-        "project_id": "e7fed740-ab69-49a2-95df-637f537f9d41",
-        "created_at": "2026-09-24T23:27:14.049341Z",
+        "id": "9b1454cc-b517-4ff6-90be-440521d4fc68",
+        "project_id": "5c7cb73a-9f6e-4b85-940f-c2092b85c33d",
+        "created_at": "2026-09-24T23:59:38.168333Z",
         "contract": "research_run",
         "objective": "Audit demo.csv for missing values, duplicate rows and outliers. Report the findings; do not train models.",
         "inputs": {
           "material_ids": [
-            "6bfd240c-85ff-46b0-bbbf-b0096219df9b"
+            "353d541a-966a-42e7-9e42-062da10ca97e"
           ],
           "artifact_ids": [
-            "7f9e7056-290a-4518-80ff-84735873e459"
+            "f513d71a-4ad4-4723-878e-68bb0ed5e731"
           ],
           "conversation_id": null,
           "message_cutoff": null
@@ -241,7 +241,7 @@
         "policy": {
           "policy_id": "project-autopilot",
           "revision": 2,
-          "sha256": "d8fd4988fbdfdd1cbde00ce4b1959d686a7aee2d9accd41f6226623adaff95df"
+          "sha256": "78488101c50a82bfb8bc6126090a0f4a64934049631f99501c9da138db2614d3"
         },
         "mode": "autopilot",
         "state": "completed",
@@ -277,19 +277,19 @@
         },
         "open_question_ids": [],
         "result_artifact_ids": [
-          "35bb784a-f4df-4d42-86a5-6772c38715d1"
+          "be6bad81-5428-4fd9-a0ed-2241fb5c24fc"
         ],
         "continued_from_run_id": null,
-        "finished_at": "2026-09-24T23:27:17.942978Z",
+        "finished_at": "2026-09-24T23:59:42.090835Z",
         "stop_reason": null
       },
       "plan": {
         "schema_version": "1.0",
-        "id": "4fe38cc2-c332-4585-8546-661c9593312c",
-        "project_id": "e7fed740-ab69-49a2-95df-637f537f9d41",
-        "created_at": "2026-09-24T23:27:14.100801Z",
+        "id": "228a12c6-765b-407a-9aa3-9080064ad561",
+        "project_id": "5c7cb73a-9f6e-4b85-940f-c2092b85c33d",
+        "created_at": "2026-09-24T23:59:38.201461Z",
         "contract": "research_plan",
-        "run_id": "0c846269-a10e-4860-8c44-54bd8a5a9d1a",
+        "run_id": "9b1454cc-b517-4ff6-90be-440521d4fc68",
         "revision": 1,
         "steps": [
           {
@@ -297,7 +297,7 @@
             "objective": "Inspect the attached dataset schema",
             "depends_on": [],
             "allowed_input_ids": [
-              "7f9e7056-290a-4518-80ff-84735873e459"
+              "f513d71a-4ad4-4723-878e-68bb0ed5e731"
             ],
             "expected_artifact_kinds": [],
             "completion_criteria": [
@@ -313,7 +313,7 @@
               "inspect"
             ],
             "allowed_input_ids": [
-              "7f9e7056-290a-4518-80ff-84735873e459"
+              "f513d71a-4ad4-4723-878e-68bb0ed5e731"
             ],
             "expected_artifact_kinds": [
               "audit"
@@ -328,22 +328,38 @@
         "rationale_summary": "Audit the attached CSV with the declared checks, then report findings. No model training was requested."
       },
       "questions": [],
-      "control_effect": "No stop control is active."
+      "control_effect": "No stop control is active.",
+      "earlier_plans": [],
+      "actions": [
+        {
+          "id": "3dbae1e5-1bc2-42cb-98f1-e0c8889d73a8",
+          "tool": "run_audit",
+          "attempt": 1,
+          "state": "completed",
+          "assignment_id": null,
+          "job_id": "dacfd279-b48f-4a2c-8825-9186142a1306",
+          "artifact_ids": [
+            "be6bad81-5428-4fd9-a0ed-2241fb5c24fc"
+          ],
+          "error_code": null
+        }
+      ],
+      "assignments": []
     },
-    "4dadb741-d9c3-465d-8a82-6d1a4e8750af": {
+    "e47c5c46-5b80-4313-baa2-6c80fd4cd35a": {
       "run": {
         "schema_version": "1.0",
-        "id": "4dadb741-d9c3-465d-8a82-6d1a4e8750af",
-        "project_id": "e7fed740-ab69-49a2-95df-637f537f9d41",
-        "created_at": "2026-09-24T23:27:17.951287Z",
+        "id": "e47c5c46-5b80-4313-baa2-6c80fd4cd35a",
+        "project_id": "5c7cb73a-9f6e-4b85-940f-c2092b85c33d",
+        "created_at": "2026-09-24T23:59:42.104276Z",
         "contract": "research_run",
         "objective": "Audit demo.csv, then split it by formulation and compare mean and ridge baselines.",
         "inputs": {
           "material_ids": [
-            "6bfd240c-85ff-46b0-bbbf-b0096219df9b"
+            "353d541a-966a-42e7-9e42-062da10ca97e"
           ],
           "artifact_ids": [
-            "7f9e7056-290a-4518-80ff-84735873e459"
+            "f513d71a-4ad4-4723-878e-68bb0ed5e731"
           ],
           "conversation_id": null,
           "message_cutoff": null
@@ -351,7 +367,7 @@
         "policy": {
           "policy_id": "project-autopilot",
           "revision": 2,
-          "sha256": "d8fd4988fbdfdd1cbde00ce4b1959d686a7aee2d9accd41f6226623adaff95df"
+          "sha256": "78488101c50a82bfb8bc6126090a0f4a64934049631f99501c9da138db2614d3"
         },
         "mode": "review_plan",
         "state": "waiting_for_input",
@@ -393,11 +409,11 @@
       },
       "plan": {
         "schema_version": "1.0",
-        "id": "1e82e23a-816c-4716-8676-c9c98aca1360",
-        "project_id": "e7fed740-ab69-49a2-95df-637f537f9d41",
-        "created_at": "2026-09-24T23:27:17.971628Z",
+        "id": "edf88693-e2a2-4736-869d-d8946a1e2351",
+        "project_id": "5c7cb73a-9f6e-4b85-940f-c2092b85c33d",
+        "created_at": "2026-09-24T23:59:42.127926Z",
         "contract": "research_plan",
-        "run_id": "4dadb741-d9c3-465d-8a82-6d1a4e8750af",
+        "run_id": "e47c5c46-5b80-4313-baa2-6c80fd4cd35a",
         "revision": 1,
         "steps": [
           {
@@ -405,7 +421,7 @@
             "objective": "Audit the attached dataset",
             "depends_on": [],
             "allowed_input_ids": [
-              "7f9e7056-290a-4518-80ff-84735873e459"
+              "f513d71a-4ad4-4723-878e-68bb0ed5e731"
             ],
             "expected_artifact_kinds": [
               "audit"
@@ -423,7 +439,7 @@
               "audit"
             ],
             "allowed_input_ids": [
-              "7f9e7056-290a-4518-80ff-84735873e459"
+              "f513d71a-4ad4-4723-878e-68bb0ed5e731"
             ],
             "expected_artifact_kinds": [
               "split"
@@ -438,17 +454,20 @@
         "rationale_summary": "Audit the attached CSV with the declared checks, then report findings. No model training was requested."
       },
       "questions": [],
-      "control_effect": "No stop control is active."
+      "control_effect": "No stop control is active.",
+      "earlier_plans": [],
+      "actions": [],
+      "assignments": []
     }
   },
   "events": {
-    "0c846269-a10e-4860-8c44-54bd8a5a9d1a": [
+    "9b1454cc-b517-4ff6-90be-440521d4fc68": [
       {
         "contract": "run_event",
         "schema_version": "1.0",
-        "run_id": "0c846269-a10e-4860-8c44-54bd8a5a9d1a",
+        "run_id": "9b1454cc-b517-4ff6-90be-440521d4fc68",
         "sequence": 1,
-        "created_at": "2026-09-24T23:27:14.067685Z",
+        "created_at": "2026-09-24T23:59:38.171254Z",
         "event_type": "accepted",
         "run_revision": 1,
         "state": "queued",
@@ -460,9 +479,9 @@
       {
         "contract": "run_event",
         "schema_version": "1.0",
-        "run_id": "0c846269-a10e-4860-8c44-54bd8a5a9d1a",
+        "run_id": "9b1454cc-b517-4ff6-90be-440521d4fc68",
         "sequence": 2,
-        "created_at": "2026-09-24T23:27:14.093682Z",
+        "created_at": "2026-09-24T23:59:38.194718Z",
         "event_type": "state_changed",
         "run_revision": 1,
         "state": "running",
@@ -474,9 +493,9 @@
       {
         "contract": "run_event",
         "schema_version": "1.0",
-        "run_id": "0c846269-a10e-4860-8c44-54bd8a5a9d1a",
+        "run_id": "9b1454cc-b517-4ff6-90be-440521d4fc68",
         "sequence": 3,
-        "created_at": "2026-09-24T23:27:14.102559Z",
+        "created_at": "2026-09-24T23:59:38.203016Z",
         "event_type": "plan_changed",
         "run_revision": 2,
         "state": "running",
@@ -488,13 +507,13 @@
       {
         "contract": "run_event",
         "schema_version": "1.0",
-        "run_id": "0c846269-a10e-4860-8c44-54bd8a5a9d1a",
+        "run_id": "9b1454cc-b517-4ff6-90be-440521d4fc68",
         "sequence": 4,
-        "created_at": "2026-09-24T23:27:14.560816Z",
+        "created_at": "2026-09-24T23:59:38.651817Z",
         "event_type": "action_changed",
         "run_revision": 2,
         "state": "running",
-        "action_id": "3550f141-1c2e-45de-b2a3-d352cf992f73",
+        "action_id": "3dbae1e5-1bc2-42cb-98f1-e0c8889d73a8",
         "question_id": null,
         "artifact_ids": [],
         "summary": null
@@ -502,9 +521,9 @@
       {
         "contract": "run_event",
         "schema_version": "1.0",
-        "run_id": "0c846269-a10e-4860-8c44-54bd8a5a9d1a",
+        "run_id": "9b1454cc-b517-4ff6-90be-440521d4fc68",
         "sequence": 5,
-        "created_at": "2026-09-24T23:27:14.619565Z",
+        "created_at": "2026-09-24T23:59:38.695426Z",
         "event_type": "usage_changed",
         "run_revision": 2,
         "state": "running",
@@ -516,9 +535,9 @@
       {
         "contract": "run_event",
         "schema_version": "1.0",
-        "run_id": "0c846269-a10e-4860-8c44-54bd8a5a9d1a",
+        "run_id": "9b1454cc-b517-4ff6-90be-440521d4fc68",
         "sequence": 6,
-        "created_at": "2026-09-24T23:27:14.622605Z",
+        "created_at": "2026-09-24T23:59:38.699503Z",
         "event_type": "usage_changed",
         "run_revision": 2,
         "state": "running",
@@ -530,9 +549,9 @@
       {
         "contract": "run_event",
         "schema_version": "1.0",
-        "run_id": "0c846269-a10e-4860-8c44-54bd8a5a9d1a",
+        "run_id": "9b1454cc-b517-4ff6-90be-440521d4fc68",
         "sequence": 7,
-        "created_at": "2026-09-24T23:27:14.632872Z",
+        "created_at": "2026-09-24T23:59:38.707106Z",
         "event_type": "usage_changed",
         "run_revision": 2,
         "state": "running",
@@ -544,13 +563,13 @@
       {
         "contract": "run_event",
         "schema_version": "1.0",
-        "run_id": "0c846269-a10e-4860-8c44-54bd8a5a9d1a",
+        "run_id": "9b1454cc-b517-4ff6-90be-440521d4fc68",
         "sequence": 8,
-        "created_at": "2026-09-24T23:27:14.633405Z",
+        "created_at": "2026-09-24T23:59:38.707106Z",
         "event_type": "action_changed",
         "run_revision": 2,
         "state": "running",
-        "action_id": "3550f141-1c2e-45de-b2a3-d352cf992f73",
+        "action_id": "3dbae1e5-1bc2-42cb-98f1-e0c8889d73a8",
         "question_id": null,
         "artifact_ids": [],
         "summary": null
@@ -558,13 +577,13 @@
       {
         "contract": "run_event",
         "schema_version": "1.0",
-        "run_id": "0c846269-a10e-4860-8c44-54bd8a5a9d1a",
+        "run_id": "9b1454cc-b517-4ff6-90be-440521d4fc68",
         "sequence": 9,
-        "created_at": "2026-09-24T23:27:17.922619Z",
+        "created_at": "2026-09-24T23:59:42.077605Z",
         "event_type": "action_changed",
         "run_revision": 2,
         "state": "running",
-        "action_id": "3550f141-1c2e-45de-b2a3-d352cf992f73",
+        "action_id": "3dbae1e5-1bc2-42cb-98f1-e0c8889d73a8",
         "question_id": null,
         "artifact_ids": [],
         "summary": null
@@ -572,27 +591,27 @@
       {
         "contract": "run_event",
         "schema_version": "1.0",
-        "run_id": "0c846269-a10e-4860-8c44-54bd8a5a9d1a",
+        "run_id": "9b1454cc-b517-4ff6-90be-440521d4fc68",
         "sequence": 10,
-        "created_at": "2026-09-24T23:27:17.942978Z",
+        "created_at": "2026-09-24T23:59:42.090835Z",
         "event_type": "result_published",
         "run_revision": 3,
         "state": "completed",
         "action_id": null,
         "question_id": null,
         "artifact_ids": [
-          "35bb784a-f4df-4d42-86a5-6772c38715d1"
+          "be6bad81-5428-4fd9-a0ed-2241fb5c24fc"
         ],
         "summary": null
       }
     ],
-    "4dadb741-d9c3-465d-8a82-6d1a4e8750af": [
+    "e47c5c46-5b80-4313-baa2-6c80fd4cd35a": [
       {
         "contract": "run_event",
         "schema_version": "1.0",
-        "run_id": "4dadb741-d9c3-465d-8a82-6d1a4e8750af",
+        "run_id": "e47c5c46-5b80-4313-baa2-6c80fd4cd35a",
         "sequence": 1,
-        "created_at": "2026-09-24T23:27:17.953290Z",
+        "created_at": "2026-09-24T23:59:42.104276Z",
         "event_type": "accepted",
         "run_revision": 1,
         "state": "queued",
@@ -604,9 +623,9 @@
       {
         "contract": "run_event",
         "schema_version": "1.0",
-        "run_id": "4dadb741-d9c3-465d-8a82-6d1a4e8750af",
+        "run_id": "e47c5c46-5b80-4313-baa2-6c80fd4cd35a",
         "sequence": 2,
-        "created_at": "2026-09-24T23:27:17.965681Z",
+        "created_at": "2026-09-24T23:59:42.123631Z",
         "event_type": "state_changed",
         "run_revision": 1,
         "state": "running",
@@ -618,9 +637,9 @@
       {
         "contract": "run_event",
         "schema_version": "1.0",
-        "run_id": "4dadb741-d9c3-465d-8a82-6d1a4e8750af",
+        "run_id": "e47c5c46-5b80-4313-baa2-6c80fd4cd35a",
         "sequence": 3,
-        "created_at": "2026-09-24T23:27:17.971628Z",
+        "created_at": "2026-09-24T23:59:42.129931Z",
         "event_type": "plan_changed",
         "run_revision": 2,
         "state": "waiting_for_input",
@@ -634,23 +653,23 @@
   "job_index": {
     "items": [
       {
-        "id": "3f7990b4-54ce-471b-a79a-2e394d4f806c",
-        "project_id": "e7fed740-ab69-49a2-95df-637f537f9d41",
+        "id": "dacfd279-b48f-4a2c-8825-9186142a1306",
+        "project_id": "5c7cb73a-9f6e-4b85-940f-c2092b85c33d",
         "kind": "audit",
         "state": "succeeded",
-        "result_id": "35bb784a-f4df-4d42-86a5-6772c38715d1",
+        "result_id": "be6bad81-5428-4fd9-a0ed-2241fb5c24fc",
         "error": null,
-        "created_at": "2026-09-24T23:27:14.592669Z",
-        "started_at": "2026-09-24T23:27:14.647000Z",
-        "finished_at": "2026-09-24T23:27:17.915000Z",
+        "created_at": "2026-09-24T23:59:38.677300Z",
+        "started_at": "2026-09-24T23:59:38.720000Z",
+        "finished_at": "2026-09-24T23:59:42.063000Z",
         "error_code": null,
         "retry_of_job_id": null,
-        "deadline_at": "2026-09-24T23:32:14.647000Z",
+        "deadline_at": "2026-09-25T00:04:38.720000Z",
         "external_receipt": null,
         "run_links": [
           {
-            "run_id": "0c846269-a10e-4860-8c44-54bd8a5a9d1a",
-            "action_id": "3550f141-1c2e-45de-b2a3-d352cf992f73",
+            "run_id": "9b1454cc-b517-4ff6-90be-440521d4fc68",
+            "action_id": "3dbae1e5-1bc2-42cb-98f1-e0c8889d73a8",
             "ownership": "owned"
           }
         ],
@@ -662,9 +681,9 @@
   "previews": [
     {
       "schema_version": "2.0",
-      "id": "7f9e7056-290a-4518-80ff-84735873e459",
-      "project_id": "e7fed740-ab69-49a2-95df-637f537f9d41",
-      "created_at": "2026-09-24T23:27:13.849621Z",
+      "id": "f513d71a-4ad4-4723-878e-68bb0ed5e731",
+      "project_id": "5c7cb73a-9f6e-4b85-940f-c2092b85c33d",
+      "created_at": "2026-09-24T23:59:37.970233Z",
       "parents": [],
       "software": {
         "chemdata-auditor": "0.3.0@eff3ed3c43ec71e9ceecabc1f04d1dfb5c91c116",
@@ -748,9 +767,9 @@
     },
     {
       "schema_version": "1.0",
-      "id": "9ddb9907-7c03-4d82-b720-2ae7e0afd2f6",
-      "project_id": "e7fed740-ab69-49a2-95df-637f537f9d41",
-      "created_at": "2026-09-24T23:27:13.857785Z",
+      "id": "245e8008-a488-4740-923a-71aa7e1949e6",
+      "project_id": "5c7cb73a-9f6e-4b85-940f-c2092b85c33d",
+      "created_at": "2026-09-24T23:59:37.979934Z",
       "parents": [],
       "software": {
         "chemdata-auditor": "0.3.0@eff3ed3c43ec71e9ceecabc1f04d1dfb5c91c116",
@@ -763,7 +782,7 @@
       "activity": "upload",
       "inputs": [],
       "outputs": [
-        "7f9e7056-290a-4518-80ff-84735873e459"
+        "f513d71a-4ad4-4723-878e-68bb0ed5e731"
       ],
       "parameters": {
         "source": {
@@ -820,9 +839,9 @@
     },
     {
       "schema_version": "2.0",
-      "id": "4016ba85-b20c-4380-9acc-24a44155cd14",
-      "project_id": "e7fed740-ab69-49a2-95df-637f537f9d41",
-      "created_at": "2026-09-24T23:27:13.877553Z",
+      "id": "ccdcc0e9-7940-4e06-a398-209245217723",
+      "project_id": "5c7cb73a-9f6e-4b85-940f-c2092b85c33d",
+      "created_at": "2026-09-24T23:59:37.995457Z",
       "parents": [],
       "software": {
         "chemdata-auditor": "0.3.0@eff3ed3c43ec71e9ceecabc1f04d1dfb5c91c116",
@@ -906,9 +925,9 @@
     },
     {
       "schema_version": "1.0",
-      "id": "c4574af6-689f-4b12-abe6-4a65c07e573b",
-      "project_id": "e7fed740-ab69-49a2-95df-637f537f9d41",
-      "created_at": "2026-09-24T23:27:13.885567Z",
+      "id": "f22b0e87-10f0-46fb-b688-afdd01809d9d",
+      "project_id": "5c7cb73a-9f6e-4b85-940f-c2092b85c33d",
+      "created_at": "2026-09-24T23:59:38.000361Z",
       "parents": [],
       "software": {
         "chemdata-auditor": "0.3.0@eff3ed3c43ec71e9ceecabc1f04d1dfb5c91c116",
@@ -921,7 +940,7 @@
       "activity": "upload",
       "inputs": [],
       "outputs": [
-        "4016ba85-b20c-4380-9acc-24a44155cd14"
+        "ccdcc0e9-7940-4e06-a398-209245217723"
       ],
       "parameters": {
         "source": {
@@ -978,11 +997,11 @@
     },
     {
       "schema_version": "1.0",
-      "id": "35bb784a-f4df-4d42-86a5-6772c38715d1",
-      "project_id": "e7fed740-ab69-49a2-95df-637f537f9d41",
-      "created_at": "2026-09-24T23:27:17.542886Z",
+      "id": "be6bad81-5428-4fd9-a0ed-2241fb5c24fc",
+      "project_id": "5c7cb73a-9f6e-4b85-940f-c2092b85c33d",
+      "created_at": "2026-09-24T23:59:41.735981Z",
       "parents": [
-        "7f9e7056-290a-4518-80ff-84735873e459"
+        "f513d71a-4ad4-4723-878e-68bb0ed5e731"
       ],
       "software": {
         "chemdata-auditor": "0.3.0@eff3ed3c43ec71e9ceecabc1f04d1dfb5c91c116",
@@ -992,7 +1011,7 @@
         "workbench": "0.1.0"
       },
       "kind": "audit",
-      "dataset_id": "7f9e7056-290a-4518-80ff-84735873e459",
+      "dataset_id": "f513d71a-4ad4-4723-878e-68bb0ed5e731",
       "config": {
         "duplicate_columns": null,
         "group_columns": [],
@@ -1261,11 +1280,11 @@
     },
     {
       "schema_version": "1.0",
-      "id": "675af2b6-5e6a-4367-bcb6-b3c587c81dc1",
-      "project_id": "e7fed740-ab69-49a2-95df-637f537f9d41",
-      "created_at": "2026-09-24T23:27:17.898474Z",
+      "id": "ba17f9c3-31e9-4e06-8ce3-b8a67b336f7f",
+      "project_id": "5c7cb73a-9f6e-4b85-940f-c2092b85c33d",
+      "created_at": "2026-09-24T23:59:42.052820Z",
       "parents": [
-        "7f9e7056-290a-4518-80ff-84735873e459"
+        "f513d71a-4ad4-4723-878e-68bb0ed5e731"
       ],
       "software": {
         "chemdata-auditor": "0.3.0@eff3ed3c43ec71e9ceecabc1f04d1dfb5c91c116",
@@ -1277,13 +1296,13 @@
       "kind": "provenance",
       "activity": "audit",
       "inputs": [
-        "7f9e7056-290a-4518-80ff-84735873e459"
+        "f513d71a-4ad4-4723-878e-68bb0ed5e731"
       ],
       "outputs": [
-        "35bb784a-f4df-4d42-86a5-6772c38715d1"
+        "be6bad81-5428-4fd9-a0ed-2241fb5c24fc"
       ],
       "parameters": {
-        "dataset_id": "7f9e7056-290a-4518-80ff-84735873e459",
+        "dataset_id": "f513d71a-4ad4-4723-878e-68bb0ed5e731",
         "config": {
           "duplicate_columns": null,
           "group_columns": [],
@@ -1324,10 +1343,10 @@
     "mode": "autopilot",
     "inputs": {
       "material_ids": [
-        "6bfd240c-85ff-46b0-bbbf-b0096219df9b"
+        "353d541a-966a-42e7-9e42-062da10ca97e"
       ],
       "artifact_ids": [
-        "7f9e7056-290a-4518-80ff-84735873e459"
+        "f513d71a-4ad4-4723-878e-68bb0ed5e731"
       ]
     },
     "policy_revision": 2,
@@ -1349,17 +1368,17 @@
   },
   "accepted": {
     "schema_version": "1.0",
-    "id": "0c846269-a10e-4860-8c44-54bd8a5a9d1a",
-    "project_id": "e7fed740-ab69-49a2-95df-637f537f9d41",
-    "created_at": "2026-09-24T23:27:14.049341Z",
+    "id": "9b1454cc-b517-4ff6-90be-440521d4fc68",
+    "project_id": "5c7cb73a-9f6e-4b85-940f-c2092b85c33d",
+    "created_at": "2026-09-24T23:59:38.168333Z",
     "contract": "research_run",
     "objective": "Audit demo.csv for missing values, duplicate rows and outliers. Report the findings; do not train models.",
     "inputs": {
       "material_ids": [
-        "6bfd240c-85ff-46b0-bbbf-b0096219df9b"
+        "353d541a-966a-42e7-9e42-062da10ca97e"
       ],
       "artifact_ids": [
-        "7f9e7056-290a-4518-80ff-84735873e459"
+        "f513d71a-4ad4-4723-878e-68bb0ed5e731"
       ],
       "conversation_id": null,
       "message_cutoff": null
@@ -1367,7 +1386,7 @@
     "policy": {
       "policy_id": "project-autopilot",
       "revision": 2,
-      "sha256": "d8fd4988fbdfdd1cbde00ce4b1959d686a7aee2d9accd41f6226623adaff95df"
+      "sha256": "78488101c50a82bfb8bc6126090a0f4a64934049631f99501c9da138db2614d3"
     },
     "mode": "autopilot",
     "state": "queued",
@@ -1409,17 +1428,17 @@
   },
   "review_accepted": {
     "schema_version": "1.0",
-    "id": "4dadb741-d9c3-465d-8a82-6d1a4e8750af",
-    "project_id": "e7fed740-ab69-49a2-95df-637f537f9d41",
-    "created_at": "2026-09-24T23:27:17.951287Z",
+    "id": "e47c5c46-5b80-4313-baa2-6c80fd4cd35a",
+    "project_id": "5c7cb73a-9f6e-4b85-940f-c2092b85c33d",
+    "created_at": "2026-09-24T23:59:42.104276Z",
     "contract": "research_run",
     "objective": "Audit demo.csv, then split it by formulation and compare mean and ridge baselines.",
     "inputs": {
       "material_ids": [
-        "6bfd240c-85ff-46b0-bbbf-b0096219df9b"
+        "353d541a-966a-42e7-9e42-062da10ca97e"
       ],
       "artifact_ids": [
-        "7f9e7056-290a-4518-80ff-84735873e459"
+        "f513d71a-4ad4-4723-878e-68bb0ed5e731"
       ],
       "conversation_id": null,
       "message_cutoff": null
@@ -1427,7 +1446,7 @@
     "policy": {
       "policy_id": "project-autopilot",
       "revision": 2,
-      "sha256": "d8fd4988fbdfdd1cbde00ce4b1959d686a7aee2d9accd41f6226623adaff95df"
+      "sha256": "78488101c50a82bfb8bc6126090a0f4a64934049631f99501c9da138db2614d3"
     },
     "mode": "review_plan",
     "state": "queued",

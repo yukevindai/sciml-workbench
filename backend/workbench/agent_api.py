@@ -4,12 +4,13 @@ from fastapi import APIRouter, Depends, Header, Query
 from fastapi.responses import Response
 from fastapi.routing import APIRoute
 from sqlalchemy import select
-from .agent_db import PlanRow, QuestionRow, ProjectPolicyRow
+from .agent_db import PlanRow, QuestionRow, ProjectPolicyRow, ActionRow, AssignmentRow
 from .agent_runs import RunService, TERMINAL
 from .agent_http_contracts import RunDetail, RunResult, ExecutionPolicySummary
 from .agent_policy import intersect_policy
 from .db import ArtifactRow, MaterialRow
 from .errors import DomainError
+from .contract_core import ErrorCode
 from .research_contracts import (RunInput, ResearchRun, RunControlInput, RunAmendmentInput,
     QuestionAnswerInput, PlanAcceptanceInput, RunEvent)
 
@@ -55,7 +56,22 @@ def router(service: RunService, session, protected, *, settings=None):
         row = service.get(s, pid, rid)
         plan = s.scalar(select(PlanRow).where(PlanRow.run_id == rid, PlanRow.revision == row.plan_revision))
         questions = [q.payload for q in s.scalars(select(QuestionRow).where(QuestionRow.run_id == rid).order_by(QuestionRow.id))]
+        earlier = [p.payload for p in s.scalars(select(PlanRow).where(PlanRow.run_id == rid,
+            PlanRow.revision < row.plan_revision).order_by(PlanRow.revision.desc()).limit(20))]
+        actions = []
+        for a in s.scalars(select(ActionRow).where(ActionRow.run_id == rid).order_by(ActionRow.action_key, ActionRow.attempt)):
+            outcome = a.outcome or {}
+            result = outcome.get('result') if isinstance(outcome.get('result'), dict) else {}
+            code = outcome.get('error_code') or result.get('error_code')
+            actions.append(dict(id=a.id, tool=a.request.get('tool', 'unknown'), attempt=a.attempt, state=a.state,
+                assignment_id=a.assignment_id, job_id=outcome.get('job_id'),
+                artifact_ids=[i for i in outcome.get('artifact_ids', []) if isinstance(i, str)],
+                error_code=code if code in ErrorCode.__args__ else None))
+        assignments = [dict(id=a.id, role=a.payload['role'], objective=a.payload['objective'],
+            plan_revision=a.payload['plan_revision'], state=a.state, created_at=a.payload['created_at'],
+            deadline_at=a.payload['deadline_at']) for a in s.scalars(select(AssignmentRow).where(AssignmentRow.run_id == rid))]
         return dict(run=service.projected_payload(s, row), plan=plan.payload if plan else None, questions=questions,
+                    earlier_plans=earlier, actions=actions, assignments=assignments,
                     control_effect=('New dispatch is fenced; accepted jobs drain under their fixed deadlines.'
                         if row.state == 'paused' else
                         'Owned jobs are fenced and shared jobs detached; prior external effects may have settled.'

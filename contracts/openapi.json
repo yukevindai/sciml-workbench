@@ -12225,6 +12225,132 @@
         "title": "ResourceLimits",
         "description": "Values are required; E01 owns defaults and server/project intersections."
       },
+      "RunActionView": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "maxLength": 160,
+            "minLength": 1,
+            "title": "Id"
+          },
+          "tool": {
+            "type": "string",
+            "maxLength": 160,
+            "minLength": 1,
+            "title": "Tool"
+          },
+          "attempt": {
+            "type": "integer",
+            "maximum": 9007199254740991.0,
+            "minimum": 1.0,
+            "title": "Attempt"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "prepared",
+              "submitted",
+              "completed",
+              "failed",
+              "unknown",
+              "cancelled"
+            ],
+            "title": "State"
+          },
+          "assignment_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 160,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Assignment Id"
+          },
+          "job_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 160,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Job Id"
+          },
+          "artifact_ids": {
+            "items": {
+              "type": "string",
+              "maxLength": 160,
+              "minLength": 1
+            },
+            "type": "array",
+            "title": "Artifact Ids"
+          },
+          "error_code": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "UNAUTHORIZED",
+                  "ORIGIN_REJECTED",
+                  "PROJECT_NOT_FOUND",
+                  "ARTIFACT_NOT_FOUND",
+                  "JOB_NOT_FOUND",
+                  "IDEMPOTENCY_CONFLICT",
+                  "PROJECT_BUSY",
+                  "VALIDATION_FAILED",
+                  "LINEAGE_MISMATCH",
+                  "UPLOAD_TOO_LARGE",
+                  "STORAGE_UNAVAILABLE",
+                  "DEPENDENCY_UNAVAILABLE",
+                  "INTERNAL_ERROR",
+                  "ADMISSION_REJECTED",
+                  "JOB_TIMED_OUT",
+                  "WORKER_INTERRUPTED",
+                  "INTEGRITY_FAILED",
+                  "EXTERNAL_OUTCOME_UNKNOWN",
+                  "AGENT_UNAVAILABLE",
+                  "POLICY_DENIED",
+                  "DATA_EXPOSURE_DENIED",
+                  "RUN_REVISION_CHANGED",
+                  "QUESTION_STALE",
+                  "BUDGET_EXHAUSTED",
+                  "PROVIDER_UNAVAILABLE",
+                  "TOOL_SCHEMA_INVALID",
+                  "UNSUPPORTED_CAPABILITY",
+                  "REFERENCE_INVALID",
+                  "TEST_PROTOCOL_SEALED",
+                  "RUN_CANCELLED"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error Code"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "tool",
+          "attempt",
+          "state",
+          "assignment_id",
+          "job_id",
+          "artifact_ids",
+          "error_code"
+        ],
+        "title": "RunActionView",
+        "description": "One recorded tool attempt: identity, state and outputs only, never its arguments."
+      },
       "RunAmendmentInput": {
         "properties": {
           "expected_run_revision": {
@@ -12284,6 +12410,73 @@
         ],
         "title": "RunAmendmentInput"
       },
+      "RunAssignmentView": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "maxLength": 160,
+            "minLength": 1,
+            "title": "Id"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "data_evaluation",
+              "evidence",
+              "failure_memory",
+              "scientific_reviewer"
+            ],
+            "title": "Role"
+          },
+          "objective": {
+            "type": "string",
+            "maxLength": 4000,
+            "minLength": 1,
+            "title": "Objective"
+          },
+          "plan_revision": {
+            "type": "integer",
+            "maximum": 9007199254740991.0,
+            "minimum": 1.0,
+            "title": "Plan Revision"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "queued",
+              "running",
+              "waiting",
+              "completed",
+              "failed",
+              "cancelled"
+            ],
+            "title": "State"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "deadline_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Deadline At"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "role",
+          "objective",
+          "plan_revision",
+          "state",
+          "created_at",
+          "deadline_at"
+        ],
+        "title": "RunAssignmentView",
+        "description": "A specialist assignment as scoped by the coordinator; results stay advisory."
+      },
       "RunControlInput": {
         "properties": {
           "expected_run_revision": {
@@ -12327,6 +12520,28 @@
             "maxLength": 4000,
             "minLength": 1,
             "title": "Control Effect"
+          },
+          "earlier_plans": {
+            "items": {
+              "$ref": "#/components/schemas/ResearchPlan"
+            },
+            "type": "array",
+            "maxItems": 20,
+            "title": "Earlier Plans"
+          },
+          "actions": {
+            "items": {
+              "$ref": "#/components/schemas/RunActionView"
+            },
+            "type": "array",
+            "title": "Actions"
+          },
+          "assignments": {
+            "items": {
+              "$ref": "#/components/schemas/RunAssignmentView"
+            },
+            "type": "array",
+            "title": "Assignments"
           }
         },
         "additionalProperties": false,

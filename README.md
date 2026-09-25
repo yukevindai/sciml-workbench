@@ -81,6 +81,14 @@ policy does not authorize are marked and block the run. A reload or another
 browser finds the same run from server history, with its plan, ordered
 activity, linked jobs and results. See the [A11 handoff](docs/tickets/A11.md).
 
+Run activity streams over SSE, reconnecting from the last event received, and
+falls back to polling. The run card offers Pause, Resume and Cancel. Each
+acknowledgment shows the state that was requested, the state the server
+recorded, and which jobs are still settling. Open questions appear together in
+one card whose drafts survive a refresh. Earlier plan revisions, specialist
+assignments, tool actions and partial completion are shown as recorded. See the
+[A12 handoff](docs/tickets/A12.md).
+
 1. **Projects:** create a project and describe its research question.
 2. **Dataset audit:** upload `examples/demo.csv`, then explicitly choose **Use bundled synthetic demo declarations** for this fixture. Ordinary uploads start with unknown source metadata and can be audited without a license declaration. Click **Run audit** using the prefilled configuration.
 3. **Split designer:** click **Generate partition**. SciSplit produces a 60/20/20 requested train/validation/test split by generated family; actual group-constrained counts are visualized.

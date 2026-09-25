@@ -1,0 +1,2462 @@
+{
+  "project": {
+    "id": "a0aa4ba4-e99a-4fd8-91cf-743e2c146b6e",
+    "name": "Electrolyte screening",
+    "description": "Controls and clarification fixture."
+  },
+  "ids": {
+    "project": "a0aa4ba4-e99a-4fd8-91cf-743e2c146b6e",
+    "material": "d9a372ee-42d5-4812-a26d-553daa254050",
+    "dataset": "c7430f45-bfae-4e63-8f01-b34ffbe39454",
+    "partial": "42b0f013-7458-4840-80cb-ad3142249f83",
+    "asking": "eec860f7-24eb-4e36-ad60-293c061825b9",
+    "control": "177aa7c9-3cae-4992-a9a7-333b2b9579cb",
+    "audit": "fc97aab0-9212-45b1-9c43-6f181ec1eaa2",
+    "control_job": "49d6d9b4-add9-4777-98e7-0c9bd2dd0178",
+    "question": "87fdbc8c-b82f-479f-b21c-95a2564e2e4b"
+  },
+  "materials": [
+    {
+      "id": "d9a372ee-42d5-4812-a26d-553daa254050",
+      "project_id": "a0aa4ba4-e99a-4fd8-91cf-743e2c146b6e",
+      "filename": "demo.csv",
+      "media_type": "text/csv",
+      "sha256": "aa0e1db7ba154779d11787120c4ea7dd87aab22d8a8fbd1e4a5b1446507afe3c",
+      "dataset_id": "c7430f45-bfae-4e63-8f01-b34ffbe39454"
+    }
+  ],
+  "policy": {
+    "project_id": "a0aa4ba4-e99a-4fd8-91cf-743e2c146b6e",
+    "policy": {
+      "reference": {
+        "policy_id": "policy",
+        "revision": 1,
+        "sha256": "167404784e5460a355619d5085d5fc221544f9f6fdd81f7009b199a4a548a469"
+      },
+      "project_policy_revision": 1,
+      "exposure": "schema_aggregates",
+      "allowed_tools": [
+        "build_report",
+        "generate_split",
+        "ingest_evidence",
+        "inspect_dataset",
+        "inspect_project",
+        "list_artifacts",
+        "read_artifact",
+        "read_evaluation",
+        "read_evidence_span",
+        "read_failure",
+        "read_job",
+        "read_memory",
+        "reconcile_outcome",
+        "record_outcome",
+        "run_audit",
+        "run_baseline",
+        "seal_evaluation",
+        "search_evidence",
+        "search_failures",
+        "validate_claims",
+        "verify_report"
+      ],
+      "material_ids": [
+        "d9a372ee-42d5-4812-a26d-553daa254050"
+      ],
+      "artifact_ids": [
+        "c7430f45-bfae-4e63-8f01-b34ffbe39454"
+      ],
+      "limits": {
+        "model_tokens": 32000,
+        "model_requests": 24,
+        "tool_calls": 60,
+        "coordinator_iterations": 24,
+        "specialist_assignments": 4,
+        "specialist_concurrency": 2,
+        "delegation_depth": 1,
+        "review_rounds": 1,
+        "scientific_attempts": 8,
+        "active_seconds": 900,
+        "transient_retries": 2,
+        "finalization_model_tokens": 2000,
+        "finalization_scientific_attempts": 0
+      },
+      "spend_ceiling_usd": null,
+      "allow_reuse": true,
+      "automatic_failure_recording": false,
+      "verify_reports": true,
+      "share_operator_messages": false
+    },
+    "agent_available": true,
+    "unavailable_reason": null
+  },
+  "runs": [
+    {
+      "schema_version": "1.0",
+      "id": "177aa7c9-3cae-4992-a9a7-333b2b9579cb",
+      "project_id": "a0aa4ba4-e99a-4fd8-91cf-743e2c146b6e",
+      "created_at": "2026-09-25T00:03:47.378140Z",
+      "contract": "research_run",
+      "objective": "Audit demo.csv for duplicates.",
+      "inputs": {
+        "material_ids": [
+          "d9a372ee-42d5-4812-a26d-553daa254050"
+        ],
+        "artifact_ids": [
+          "c7430f45-bfae-4e63-8f01-b34ffbe39454"
+        ],
+        "conversation_id": null,
+        "message_cutoff": null
+      },
+      "policy": {
+        "policy_id": "policy",
+        "revision": 1,
+        "sha256": "8280da8cb620d5e1f8569ff30843a026f5fe25b131bd17bb3a7e880dd05b0357"
+      },
+      "mode": "autopilot",
+      "state": "cancelled",
+      "control_revision": 5,
+      "plan_revision": 1,
+      "limits": {
+        "model_tokens": 32000,
+        "model_requests": 24,
+        "tool_calls": 60,
+        "coordinator_iterations": 24,
+        "specialist_assignments": 4,
+        "specialist_concurrency": 2,
+        "delegation_depth": 1,
+        "review_rounds": 1,
+        "scientific_attempts": 8,
+        "active_seconds": 900,
+        "transient_retries": 2,
+        "finalization_model_tokens": 2000,
+        "finalization_scientific_attempts": 0
+      },
+      "usage": {
+        "billed_token_categories": {},
+        "reserved_tokens": 0,
+        "model_requests": 0,
+        "tool_calls": 1,
+        "scientific_attempts": 1,
+        "active_seconds": 0,
+        "unknown_request_ids": [],
+        "cost": {
+          "status": "unknown",
+          "reason": "Unpriced or unsettled model usage"
+        }
+      },
+      "open_question_ids": [],
+      "result_artifact_ids": [],
+      "continued_from_run_id": null,
+      "finished_at": "2026-09-25T00:03:47.585541Z",
+      "stop_reason": "Cancelled by operator"
+    },
+    {
+      "schema_version": "1.0",
+      "id": "42b0f013-7458-4840-80cb-ad3142249f83",
+      "project_id": "a0aa4ba4-e99a-4fd8-91cf-743e2c146b6e",
+      "created_at": "2026-09-25T00:03:43.317619Z",
+      "contract": "research_run",
+      "objective": "Audit demo.csv and compare mean and ridge baselines on a grouped split.",
+      "inputs": {
+        "material_ids": [
+          "d9a372ee-42d5-4812-a26d-553daa254050"
+        ],
+        "artifact_ids": [
+          "c7430f45-bfae-4e63-8f01-b34ffbe39454"
+        ],
+        "conversation_id": null,
+        "message_cutoff": null
+      },
+      "policy": {
+        "policy_id": "policy",
+        "revision": 1,
+        "sha256": "8280da8cb620d5e1f8569ff30843a026f5fe25b131bd17bb3a7e880dd05b0357"
+      },
+      "mode": "autopilot",
+      "state": "partially_completed",
+      "control_revision": 4,
+      "plan_revision": 2,
+      "limits": {
+        "model_tokens": 32000,
+        "model_requests": 24,
+        "tool_calls": 60,
+        "coordinator_iterations": 24,
+        "specialist_assignments": 4,
+        "specialist_concurrency": 2,
+        "delegation_depth": 1,
+        "review_rounds": 1,
+        "scientific_attempts": 8,
+        "active_seconds": 900,
+        "transient_retries": 2,
+        "finalization_model_tokens": 2000,
+        "finalization_scientific_attempts": 0
+      },
+      "usage": {
+        "billed_token_categories": {},
+        "reserved_tokens": 3024,
+        "model_requests": 1,
+        "tool_calls": 1,
+        "scientific_attempts": 1,
+        "active_seconds": 60,
+        "unknown_request_ids": [],
+        "cost": {
+          "status": "unknown",
+          "reason": "Unpriced or unsettled model usage"
+        }
+      },
+      "open_question_ids": [],
+      "result_artifact_ids": [
+        "fc97aab0-9212-45b1-9c43-6f181ec1eaa2"
+      ],
+      "continued_from_run_id": null,
+      "finished_at": "2026-09-25T00:03:47.277929Z",
+      "stop_reason": "No column identifies independent formulations; the grouped split and baselines were not run."
+    },
+    {
+      "schema_version": "1.0",
+      "id": "eec860f7-24eb-4e36-ad60-293c061825b9",
+      "project_id": "a0aa4ba4-e99a-4fd8-91cf-743e2c146b6e",
+      "created_at": "2026-09-25T00:03:47.292468Z",
+      "contract": "research_run",
+      "objective": "Audit demo.csv and report conductivity statistics.",
+      "inputs": {
+        "material_ids": [
+          "d9a372ee-42d5-4812-a26d-553daa254050"
+        ],
+        "artifact_ids": [
+          "c7430f45-bfae-4e63-8f01-b34ffbe39454"
+        ],
+        "conversation_id": null,
+        "message_cutoff": null
+      },
+      "policy": {
+        "policy_id": "policy",
+        "revision": 1,
+        "sha256": "8280da8cb620d5e1f8569ff30843a026f5fe25b131bd17bb3a7e880dd05b0357"
+      },
+      "mode": "autopilot",
+      "state": "queued",
+      "control_revision": 4,
+      "plan_revision": 1,
+      "limits": {
+        "model_tokens": 32000,
+        "model_requests": 24,
+        "tool_calls": 60,
+        "coordinator_iterations": 24,
+        "specialist_assignments": 4,
+        "specialist_concurrency": 2,
+        "delegation_depth": 1,
+        "review_rounds": 1,
+        "scientific_attempts": 8,
+        "active_seconds": 900,
+        "transient_retries": 2,
+        "finalization_model_tokens": 2000,
+        "finalization_scientific_attempts": 0
+      },
+      "usage": {
+        "billed_token_categories": {},
+        "reserved_tokens": 0,
+        "model_requests": 0,
+        "tool_calls": 0,
+        "scientific_attempts": 0,
+        "active_seconds": 0,
+        "unknown_request_ids": [],
+        "cost": {
+          "status": "unknown",
+          "reason": "No settled usage"
+        }
+      },
+      "open_question_ids": [],
+      "result_artifact_ids": [],
+      "continued_from_run_id": null,
+      "finished_at": null,
+      "stop_reason": null
+    }
+  ],
+  "partial_detail": {
+    "run": {
+      "schema_version": "1.0",
+      "id": "42b0f013-7458-4840-80cb-ad3142249f83",
+      "project_id": "a0aa4ba4-e99a-4fd8-91cf-743e2c146b6e",
+      "created_at": "2026-09-25T00:03:43.317619Z",
+      "contract": "research_run",
+      "objective": "Audit demo.csv and compare mean and ridge baselines on a grouped split.",
+      "inputs": {
+        "material_ids": [
+          "d9a372ee-42d5-4812-a26d-553daa254050"
+        ],
+        "artifact_ids": [
+          "c7430f45-bfae-4e63-8f01-b34ffbe39454"
+        ],
+        "conversation_id": null,
+        "message_cutoff": null
+      },
+      "policy": {
+        "policy_id": "policy",
+        "revision": 1,
+        "sha256": "8280da8cb620d5e1f8569ff30843a026f5fe25b131bd17bb3a7e880dd05b0357"
+      },
+      "mode": "autopilot",
+      "state": "partially_completed",
+      "control_revision": 4,
+      "plan_revision": 2,
+      "limits": {
+        "model_tokens": 32000,
+        "model_requests": 24,
+        "tool_calls": 60,
+        "coordinator_iterations": 24,
+        "specialist_assignments": 4,
+        "specialist_concurrency": 2,
+        "delegation_depth": 1,
+        "review_rounds": 1,
+        "scientific_attempts": 8,
+        "active_seconds": 900,
+        "transient_retries": 2,
+        "finalization_model_tokens": 2000,
+        "finalization_scientific_attempts": 0
+      },
+      "usage": {
+        "billed_token_categories": {},
+        "reserved_tokens": 3024,
+        "model_requests": 1,
+        "tool_calls": 1,
+        "scientific_attempts": 1,
+        "active_seconds": 60,
+        "unknown_request_ids": [],
+        "cost": {
+          "status": "unknown",
+          "reason": "Unpriced or unsettled model usage"
+        }
+      },
+      "open_question_ids": [],
+      "result_artifact_ids": [
+        "fc97aab0-9212-45b1-9c43-6f181ec1eaa2"
+      ],
+      "continued_from_run_id": null,
+      "finished_at": "2026-09-25T00:03:47.277929Z",
+      "stop_reason": "No column identifies independent formulations; the grouped split and baselines were not run."
+    },
+    "plan": {
+      "schema_version": "1.0",
+      "id": "12faa077-58ba-4f9b-b0b8-af9f928d8dc0",
+      "project_id": "a0aa4ba4-e99a-4fd8-91cf-743e2c146b6e",
+      "created_at": "2026-09-25T00:03:43.371538Z",
+      "contract": "research_plan",
+      "run_id": "42b0f013-7458-4840-80cb-ad3142249f83",
+      "revision": 2,
+      "steps": [
+        {
+          "id": "audit",
+          "objective": "Audit the dataset",
+          "depends_on": [],
+          "allowed_input_ids": [
+            "c7430f45-bfae-4e63-8f01-b34ffbe39454"
+          ],
+          "expected_artifact_kinds": [
+            "audit"
+          ],
+          "completion_criteria": [
+            "Audit the dataset recorded"
+          ],
+          "status": "running",
+          "action_ids": []
+        },
+        {
+          "id": "split",
+          "objective": "Create a grouped split by formulation",
+          "depends_on": [
+            "audit"
+          ],
+          "allowed_input_ids": [],
+          "expected_artifact_kinds": [
+            "split"
+          ],
+          "completion_criteria": [
+            "Create a grouped split by formulation recorded"
+          ],
+          "status": "blocked",
+          "action_ids": []
+        },
+        {
+          "id": "baselines",
+          "objective": "Compare mean and ridge baselines",
+          "depends_on": [
+            "split"
+          ],
+          "allowed_input_ids": [],
+          "expected_artifact_kinds": [
+            "benchmark"
+          ],
+          "completion_criteria": [
+            "Compare mean and ridge baselines recorded"
+          ],
+          "status": "blocked",
+          "action_ids": []
+        }
+      ],
+      "rationale_summary": "The audit found no formulation column, so the grouped split is blocked until one is identified."
+    },
+    "questions": [],
+    "control_effect": "No stop control is active.",
+    "earlier_plans": [
+      {
+        "schema_version": "1.0",
+        "id": "d1bb4acf-8d5f-4abd-8b46-7cf4c6e5f87e",
+        "project_id": "a0aa4ba4-e99a-4fd8-91cf-743e2c146b6e",
+        "created_at": "2026-09-25T00:03:43.353738Z",
+        "contract": "research_plan",
+        "run_id": "42b0f013-7458-4840-80cb-ad3142249f83",
+        "revision": 1,
+        "steps": [
+          {
+            "id": "audit",
+            "objective": "Audit the dataset",
+            "depends_on": [],
+            "allowed_input_ids": [
+              "c7430f45-bfae-4e63-8f01-b34ffbe39454"
+            ],
+            "expected_artifact_kinds": [
+              "audit"
+            ],
+            "completion_criteria": [
+              "Audit the dataset recorded"
+            ],
+            "status": "ready",
+            "action_ids": []
+          }
+        ],
+        "rationale_summary": "Start with an audit before choosing a split."
+      }
+    ],
+    "actions": [
+      {
+        "id": "5e8d7682-4bdf-4524-8624-4ab9273f8ceb",
+        "tool": "run_audit",
+        "attempt": 1,
+        "state": "completed",
+        "assignment_id": null,
+        "job_id": "c1857d31-e239-4c2f-9dea-d21e5afd3e94",
+        "artifact_ids": [
+          "fc97aab0-9212-45b1-9c43-6f181ec1eaa2"
+        ],
+        "error_code": null
+      }
+    ],
+    "assignments": [
+      {
+        "id": "f54e3b3b3c1d3246f6eee1665566bd40e3563d74cfef0ac75c15da3be2829e71",
+        "role": "data_evaluation",
+        "objective": "Check whether any column identifies independent formulations.",
+        "plan_revision": 2,
+        "state": "queued",
+        "created_at": "2026-09-25T00:03:43.386416Z",
+        "deadline_at": "2026-09-25T00:08:43.386416Z"
+      }
+    ]
+  },
+  "events": {
+    "42b0f013-7458-4840-80cb-ad3142249f83": [
+      {
+        "contract": "run_event",
+        "schema_version": "1.0",
+        "run_id": "42b0f013-7458-4840-80cb-ad3142249f83",
+        "sequence": 1,
+        "created_at": "2026-09-25T00:03:43.317619Z",
+        "event_type": "accepted",
+        "run_revision": 1,
+        "state": "queued",
+        "action_id": null,
+        "question_id": null,
+        "artifact_ids": [],
+        "summary": null
+      },
+      {
+        "contract": "run_event",
+        "schema_version": "1.0",
+        "run_id": "42b0f013-7458-4840-80cb-ad3142249f83",
+        "sequence": 2,
+        "created_at": "2026-09-25T00:03:43.353738Z",
+        "event_type": "state_changed",
+        "run_revision": 1,
+        "state": "running",
+        "action_id": null,
+        "question_id": null,
+        "artifact_ids": [],
+        "summary": null
+      },
+      {
+        "contract": "run_event",
+        "schema_version": "1.0",
+        "run_id": "42b0f013-7458-4840-80cb-ad3142249f83",
+        "sequence": 3,
+        "created_at": "2026-09-25T00:03:43.353738Z",
+        "event_type": "plan_changed",
+        "run_revision": 2,
+        "state": "running",
+        "action_id": null,
+        "question_id": null,
+        "artifact_ids": [],
+        "summary": null
+      },
+      {
+        "contract": "run_event",
+        "schema_version": "1.0",
+        "run_id": "42b0f013-7458-4840-80cb-ad3142249f83",
+        "sequence": 4,
+        "created_at": "2026-09-25T00:03:43.373544Z",
+        "event_type": "plan_changed",
+        "run_revision": 3,
+        "state": "running",
+        "action_id": null,
+        "question_id": null,
+        "artifact_ids": [],
+        "summary": null
+      },
+      {
+        "contract": "run_event",
+        "schema_version": "1.0",
+        "run_id": "42b0f013-7458-4840-80cb-ad3142249f83",
+        "sequence": 5,
+        "created_at": "2026-09-25T00:03:43.405348Z",
+        "event_type": "usage_changed",
+        "run_revision": 3,
+        "state": "running",
+        "action_id": null,
+        "question_id": null,
+        "artifact_ids": [],
+        "summary": null
+      },
+      {
+        "contract": "run_event",
+        "schema_version": "1.0",
+        "run_id": "42b0f013-7458-4840-80cb-ad3142249f83",
+        "sequence": 6,
+        "created_at": "2026-09-25T00:03:43.850366Z",
+        "event_type": "action_changed",
+        "run_revision": 3,
+        "state": "running",
+        "action_id": "5e8d7682-4bdf-4524-8624-4ab9273f8ceb",
+        "question_id": null,
+        "artifact_ids": [],
+        "summary": null
+      },
+      {
+        "contract": "run_event",
+        "schema_version": "1.0",
+        "run_id": "42b0f013-7458-4840-80cb-ad3142249f83",
+        "sequence": 7,
+        "created_at": "2026-09-25T00:03:43.875039Z",
+        "event_type": "usage_changed",
+        "run_revision": 3,
+        "state": "running",
+        "action_id": null,
+        "question_id": null,
+        "artifact_ids": [],
+        "summary": null
+      },
+      {
+        "contract": "run_event",
+        "schema_version": "1.0",
+        "run_id": "42b0f013-7458-4840-80cb-ad3142249f83",
+        "sequence": 8,
+        "created_at": "2026-09-25T00:03:43.879950Z",
+        "event_type": "usage_changed",
+        "run_revision": 3,
+        "state": "running",
+        "action_id": null,
+        "question_id": null,
+        "artifact_ids": [],
+        "summary": null
+      },
+      {
+        "contract": "run_event",
+        "schema_version": "1.0",
+        "run_id": "42b0f013-7458-4840-80cb-ad3142249f83",
+        "sequence": 9,
+        "created_at": "2026-09-25T00:03:43.884670Z",
+        "event_type": "usage_changed",
+        "run_revision": 3,
+        "state": "running",
+        "action_id": null,
+        "question_id": null,
+        "artifact_ids": [],
+        "summary": null
+      },
+      {
+        "contract": "run_event",
+        "schema_version": "1.0",
+        "run_id": "42b0f013-7458-4840-80cb-ad3142249f83",
+        "sequence": 10,
+        "created_at": "2026-09-25T00:03:43.885408Z",
+        "event_type": "action_changed",
+        "run_revision": 3,
+        "state": "running",
+        "action_id": "5e8d7682-4bdf-4524-8624-4ab9273f8ceb",
+        "question_id": null,
+        "artifact_ids": [],
+        "summary": null
+      },
+      {
+        "contract": "run_event",
+        "schema_version": "1.0",
+        "run_id": "42b0f013-7458-4840-80cb-ad3142249f83",
+        "sequence": 11,
+        "created_at": "2026-09-25T00:03:47.264420Z",
+        "event_type": "action_changed",
+        "run_revision": 3,
+        "state": "running",
+        "action_id": "5e8d7682-4bdf-4524-8624-4ab9273f8ceb",
+        "question_id": null,
+        "artifact_ids": [],
+        "summary": null
+      },
+      {
+        "contract": "run_event",
+        "schema_version": "1.0",
+        "run_id": "42b0f013-7458-4840-80cb-ad3142249f83",
+        "sequence": 12,
+        "created_at": "2026-09-25T00:03:47.277929Z",
+        "event_type": "result_published",
+        "run_revision": 4,
+        "state": "partially_completed",
+        "action_id": null,
+        "question_id": null,
+        "artifact_ids": [
+          "fc97aab0-9212-45b1-9c43-6f181ec1eaa2"
+        ],
+        "summary": null
+      }
+    ],
+    "eec860f7-24eb-4e36-ad60-293c061825b9": [
+      {
+        "contract": "run_event",
+        "schema_version": "1.0",
+        "run_id": "eec860f7-24eb-4e36-ad60-293c061825b9",
+        "sequence": 1,
+        "created_at": "2026-09-25T00:03:47.294612Z",
+        "event_type": "accepted",
+        "run_revision": 1,
+        "state": "queued",
+        "action_id": null,
+        "question_id": null,
+        "artifact_ids": [],
+        "summary": null
+      },
+      {
+        "contract": "run_event",
+        "schema_version": "1.0",
+        "run_id": "eec860f7-24eb-4e36-ad60-293c061825b9",
+        "sequence": 2,
+        "created_at": "2026-09-25T00:03:47.309612Z",
+        "event_type": "state_changed",
+        "run_revision": 1,
+        "state": "running",
+        "action_id": null,
+        "question_id": null,
+        "artifact_ids": [],
+        "summary": null
+      },
+      {
+        "contract": "run_event",
+        "schema_version": "1.0",
+        "run_id": "eec860f7-24eb-4e36-ad60-293c061825b9",
+        "sequence": 3,
+        "created_at": "2026-09-25T00:03:47.315548Z",
+        "event_type": "plan_changed",
+        "run_revision": 2,
+        "state": "running",
+        "action_id": null,
+        "question_id": null,
+        "artifact_ids": [],
+        "summary": null
+      },
+      {
+        "contract": "run_event",
+        "schema_version": "1.0",
+        "run_id": "eec860f7-24eb-4e36-ad60-293c061825b9",
+        "sequence": 4,
+        "created_at": "2026-09-25T00:03:47.322208Z",
+        "event_type": "question_changed",
+        "run_revision": 3,
+        "state": "waiting_for_input",
+        "action_id": null,
+        "question_id": "87fdbc8c-b82f-479f-b21c-95a2564e2e4b",
+        "artifact_ids": [],
+        "summary": null
+      },
+      {
+        "contract": "run_event",
+        "schema_version": "1.0",
+        "run_id": "eec860f7-24eb-4e36-ad60-293c061825b9",
+        "sequence": 5,
+        "created_at": "2026-09-25T00:03:47.636676Z",
+        "event_type": "question_changed",
+        "run_revision": 4,
+        "state": "queued",
+        "action_id": null,
+        "question_id": "87fdbc8c-b82f-479f-b21c-95a2564e2e4b",
+        "artifact_ids": [],
+        "summary": null
+      }
+    ],
+    "177aa7c9-3cae-4992-a9a7-333b2b9579cb": [
+      {
+        "contract": "run_event",
+        "schema_version": "1.0",
+        "run_id": "177aa7c9-3cae-4992-a9a7-333b2b9579cb",
+        "sequence": 1,
+        "created_at": "2026-09-25T00:03:47.378140Z",
+        "event_type": "accepted",
+        "run_revision": 1,
+        "state": "queued",
+        "action_id": null,
+        "question_id": null,
+        "artifact_ids": [],
+        "summary": null
+      },
+      {
+        "contract": "run_event",
+        "schema_version": "1.0",
+        "run_id": "177aa7c9-3cae-4992-a9a7-333b2b9579cb",
+        "sequence": 2,
+        "created_at": "2026-09-25T00:03:47.398034Z",
+        "event_type": "state_changed",
+        "run_revision": 1,
+        "state": "running",
+        "action_id": null,
+        "question_id": null,
+        "artifact_ids": [],
+        "summary": null
+      },
+      {
+        "contract": "run_event",
+        "schema_version": "1.0",
+        "run_id": "177aa7c9-3cae-4992-a9a7-333b2b9579cb",
+        "sequence": 3,
+        "created_at": "2026-09-25T00:03:47.403776Z",
+        "event_type": "plan_changed",
+        "run_revision": 2,
+        "state": "running",
+        "action_id": null,
+        "question_id": null,
+        "artifact_ids": [],
+        "summary": null
+      },
+      {
+        "contract": "run_event",
+        "schema_version": "1.0",
+        "run_id": "177aa7c9-3cae-4992-a9a7-333b2b9579cb",
+        "sequence": 4,
+        "created_at": "2026-09-25T00:03:47.423649Z",
+        "event_type": "action_changed",
+        "run_revision": 2,
+        "state": "running",
+        "action_id": "29f7869a-8cd2-45d6-8b6c-78a023278bc4",
+        "question_id": null,
+        "artifact_ids": [],
+        "summary": null
+      },
+      {
+        "contract": "run_event",
+        "schema_version": "1.0",
+        "run_id": "177aa7c9-3cae-4992-a9a7-333b2b9579cb",
+        "sequence": 5,
+        "created_at": "2026-09-25T00:03:47.436874Z",
+        "event_type": "usage_changed",
+        "run_revision": 2,
+        "state": "running",
+        "action_id": null,
+        "question_id": null,
+        "artifact_ids": [],
+        "summary": null
+      },
+      {
+        "contract": "run_event",
+        "schema_version": "1.0",
+        "run_id": "177aa7c9-3cae-4992-a9a7-333b2b9579cb",
+        "sequence": 6,
+        "created_at": "2026-09-25T00:03:47.442886Z",
+        "event_type": "usage_changed",
+        "run_revision": 2,
+        "state": "running",
+        "action_id": null,
+        "question_id": null,
+        "artifact_ids": [],
+        "summary": null
+      },
+      {
+        "contract": "run_event",
+        "schema_version": "1.0",
+        "run_id": "177aa7c9-3cae-4992-a9a7-333b2b9579cb",
+        "sequence": 7,
+        "created_at": "2026-09-25T00:03:47.444888Z",
+        "event_type": "usage_changed",
+        "run_revision": 2,
+        "state": "running",
+        "action_id": null,
+        "question_id": null,
+        "artifact_ids": [],
+        "summary": null
+      },
+      {
+        "contract": "run_event",
+        "schema_version": "1.0",
+        "run_id": "177aa7c9-3cae-4992-a9a7-333b2b9579cb",
+        "sequence": 8,
+        "created_at": "2026-09-25T00:03:47.444888Z",
+        "event_type": "action_changed",
+        "run_revision": 2,
+        "state": "running",
+        "action_id": "29f7869a-8cd2-45d6-8b6c-78a023278bc4",
+        "question_id": null,
+        "artifact_ids": [],
+        "summary": null
+      },
+      {
+        "contract": "run_event",
+        "schema_version": "1.0",
+        "run_id": "177aa7c9-3cae-4992-a9a7-333b2b9579cb",
+        "sequence": 9,
+        "created_at": "2026-09-25T00:03:47.482548Z",
+        "event_type": "state_changed",
+        "run_revision": 3,
+        "state": "paused",
+        "action_id": null,
+        "question_id": null,
+        "artifact_ids": [],
+        "summary": null
+      },
+      {
+        "contract": "run_event",
+        "schema_version": "1.0",
+        "run_id": "177aa7c9-3cae-4992-a9a7-333b2b9579cb",
+        "sequence": 10,
+        "created_at": "2026-09-25T00:03:47.538516Z",
+        "event_type": "state_changed",
+        "run_revision": 4,
+        "state": "queued",
+        "action_id": null,
+        "question_id": null,
+        "artifact_ids": [],
+        "summary": null
+      },
+      {
+        "contract": "run_event",
+        "schema_version": "1.0",
+        "run_id": "177aa7c9-3cae-4992-a9a7-333b2b9579cb",
+        "sequence": 11,
+        "created_at": "2026-09-25T00:03:47.588871Z",
+        "event_type": "state_changed",
+        "run_revision": 5,
+        "state": "cancelled",
+        "action_id": null,
+        "question_id": null,
+        "artifact_ids": [],
+        "summary": null
+      }
+    ]
+  },
+  "job_index": {
+    "items": [
+      {
+        "id": "49d6d9b4-add9-4777-98e7-0c9bd2dd0178",
+        "project_id": "a0aa4ba4-e99a-4fd8-91cf-743e2c146b6e",
+        "kind": "audit",
+        "state": "failed",
+        "result_id": null,
+        "error": "Operation did not complete; inspect its safe error code.",
+        "created_at": "2026-09-25T00:03:47.428862Z",
+        "started_at": null,
+        "finished_at": "2026-09-25T00:03:47.583000Z",
+        "error_code": "RUN_CANCELLED",
+        "retry_of_job_id": null,
+        "deadline_at": null,
+        "external_receipt": null,
+        "run_links": [
+          {
+            "run_id": "177aa7c9-3cae-4992-a9a7-333b2b9579cb",
+            "action_id": "29f7869a-8cd2-45d6-8b6c-78a023278bc4",
+            "ownership": "detached"
+          }
+        ],
+        "recovery": null
+      },
+      {
+        "id": "c1857d31-e239-4c2f-9dea-d21e5afd3e94",
+        "project_id": "a0aa4ba4-e99a-4fd8-91cf-743e2c146b6e",
+        "kind": "audit",
+        "state": "succeeded",
+        "result_id": "fc97aab0-9212-45b1-9c43-6f181ec1eaa2",
+        "error": null,
+        "created_at": "2026-09-25T00:03:43.862014Z",
+        "started_at": "2026-09-25T00:03:43.892000Z",
+        "finished_at": "2026-09-25T00:03:47.243000Z",
+        "error_code": null,
+        "retry_of_job_id": null,
+        "deadline_at": "2026-09-25T00:08:43.892000Z",
+        "external_receipt": null,
+        "run_links": [
+          {
+            "run_id": "42b0f013-7458-4840-80cb-ad3142249f83",
+            "action_id": "5e8d7682-4bdf-4524-8624-4ab9273f8ceb",
+            "ownership": "owned"
+          }
+        ],
+        "recovery": null
+      }
+    ],
+    "next_cursor": null
+  },
+  "previews": [
+    {
+      "schema_version": "2.0",
+      "id": "c7430f45-bfae-4e63-8f01-b34ffbe39454",
+      "project_id": "a0aa4ba4-e99a-4fd8-91cf-743e2c146b6e",
+      "created_at": "2026-09-25T00:03:43.151709Z",
+      "parents": [],
+      "software": {
+        "chemdata-auditor": "0.3.0@eff3ed3c43ec71e9ceecabc1f04d1dfb5c91c116",
+        "cheme-ml-benchmarks": "0.1.0@db02d8963725a1d406b9b07eb6f4cc3436fbb082",
+        "scientific-evidence-engine": "0.1.0@09f5ec810e8f04bf8d233ec12eb9448342ee5121",
+        "experiment-failure-memory": "0.1.0@63492787cbbea6d03662db63f2d958a6eec8d804",
+        "workbench": "0.1.0"
+      },
+      "kind": "dataset",
+      "filename": "demo.csv",
+      "blob_key": "aa0e1db7ba154779d11787120c4ea7dd87aab22d8a8fbd1e4a5b1446507afe3c",
+      "sha256": "aa0e1db7ba154779d11787120c4ea7dd87aab22d8a8fbd1e4a5b1446507afe3c",
+      "rows": 60,
+      "columns": [
+        "row_id",
+        "group_id",
+        "source_id",
+        "temperature",
+        "response"
+      ],
+      "source": {
+        "citation": {
+          "origin": "unknown",
+          "value": null,
+          "supporting_references": [],
+          "uncertainty": null
+        },
+        "url": {
+          "origin": "unknown",
+          "value": null,
+          "supporting_references": [],
+          "uncertainty": null
+        },
+        "license": {
+          "origin": "unknown",
+          "value": null,
+          "supporting_references": [],
+          "uncertainty": null
+        },
+        "data_kind": {
+          "origin": "unknown",
+          "value": null,
+          "supporting_references": [],
+          "uncertainty": null
+        },
+        "transformations": {
+          "origin": "unknown",
+          "value": null,
+          "supporting_references": [],
+          "uncertainty": null
+        },
+        "units": {
+          "origin": "unknown",
+          "value": null,
+          "supporting_references": [],
+          "uncertainty": null
+        },
+        "target": {
+          "origin": "unknown",
+          "value": null,
+          "supporting_references": [],
+          "uncertainty": null
+        },
+        "independent_unit": {
+          "origin": "unknown",
+          "value": null,
+          "supporting_references": [],
+          "uncertainty": null
+        }
+      },
+      "unresolved_fields": [
+        "citation",
+        "url",
+        "license",
+        "data_kind",
+        "transformations",
+        "units",
+        "target",
+        "independent_unit"
+      ]
+    },
+    {
+      "schema_version": "1.0",
+      "id": "bdd6b1cf-fb00-40ad-b98b-284bba10cd66",
+      "project_id": "a0aa4ba4-e99a-4fd8-91cf-743e2c146b6e",
+      "created_at": "2026-09-25T00:03:43.159624Z",
+      "parents": [],
+      "software": {
+        "chemdata-auditor": "0.3.0@eff3ed3c43ec71e9ceecabc1f04d1dfb5c91c116",
+        "cheme-ml-benchmarks": "0.1.0@db02d8963725a1d406b9b07eb6f4cc3436fbb082",
+        "scientific-evidence-engine": "0.1.0@09f5ec810e8f04bf8d233ec12eb9448342ee5121",
+        "experiment-failure-memory": "0.1.0@63492787cbbea6d03662db63f2d958a6eec8d804",
+        "workbench": "0.1.0"
+      },
+      "kind": "provenance",
+      "activity": "upload",
+      "inputs": [],
+      "outputs": [
+        "c7430f45-bfae-4e63-8f01-b34ffbe39454"
+      ],
+      "parameters": {
+        "source": {
+          "citation": {
+            "origin": "unknown",
+            "value": null,
+            "supporting_references": [],
+            "uncertainty": null
+          },
+          "url": {
+            "origin": "unknown",
+            "value": null,
+            "supporting_references": [],
+            "uncertainty": null
+          },
+          "license": {
+            "origin": "unknown",
+            "value": null,
+            "supporting_references": [],
+            "uncertainty": null
+          },
+          "data_kind": {
+            "origin": "unknown",
+            "value": null,
+            "supporting_references": [],
+            "uncertainty": null
+          },
+          "transformations": {
+            "origin": "unknown",
+            "value": null,
+            "supporting_references": [],
+            "uncertainty": null
+          },
+          "units": {
+            "origin": "unknown",
+            "value": null,
+            "supporting_references": [],
+            "uncertainty": null
+          },
+          "target": {
+            "origin": "unknown",
+            "value": null,
+            "supporting_references": [],
+            "uncertainty": null
+          },
+          "independent_unit": {
+            "origin": "unknown",
+            "value": null,
+            "supporting_references": [],
+            "uncertainty": null
+          }
+        }
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "id": "5fdd191d-8aea-477a-8ac5-59f4c5aab071",
+      "project_id": "a0aa4ba4-e99a-4fd8-91cf-743e2c146b6e",
+      "created_at": "2026-09-25T00:03:47.243336Z",
+      "parents": [
+        "c7430f45-bfae-4e63-8f01-b34ffbe39454"
+      ],
+      "software": {
+        "chemdata-auditor": "0.3.0@eff3ed3c43ec71e9ceecabc1f04d1dfb5c91c116",
+        "cheme-ml-benchmarks": "0.1.0@db02d8963725a1d406b9b07eb6f4cc3436fbb082",
+        "scientific-evidence-engine": "0.1.0@09f5ec810e8f04bf8d233ec12eb9448342ee5121",
+        "experiment-failure-memory": "0.1.0@63492787cbbea6d03662db63f2d958a6eec8d804",
+        "workbench": "0.1.0"
+      },
+      "kind": "provenance",
+      "activity": "audit",
+      "inputs": [
+        "c7430f45-bfae-4e63-8f01-b34ffbe39454"
+      ],
+      "outputs": [
+        "fc97aab0-9212-45b1-9c43-6f181ec1eaa2"
+      ],
+      "parameters": {
+        "dataset_id": "c7430f45-bfae-4e63-8f01-b34ffbe39454",
+        "config": {
+          "duplicate_columns": null,
+          "group_columns": [],
+          "split_column": null,
+          "bounds": {},
+          "units": {},
+          "provenance_columns": [],
+          "sparse_bins": {},
+          "min_bin_count": 3,
+          "feature_columns": [],
+          "unavailable_features": [],
+          "target_column": null,
+          "check_missing": true,
+          "numeric_columns": [],
+          "identity_columns": [],
+          "conflict_columns": [],
+          "conflict_tolerance": 0.0,
+          "identifier_columns": [],
+          "correlation_threshold": 0.995,
+          "unit_aliases": {},
+          "compositions": [],
+          "rules": [],
+          "near_duplicates": {},
+          "smiles_column": null,
+          "molecular_similarity": null,
+          "density_columns": [],
+          "density_scales": {},
+          "density_radius": 1.0,
+          "min_neighbors": 3,
+          "max_pair_comparisons": 2000000,
+          "provenance_patterns": {}
+        }
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "id": "fc97aab0-9212-45b1-9c43-6f181ec1eaa2",
+      "project_id": "a0aa4ba4-e99a-4fd8-91cf-743e2c146b6e",
+      "created_at": "2026-09-25T00:03:46.838884Z",
+      "parents": [
+        "c7430f45-bfae-4e63-8f01-b34ffbe39454"
+      ],
+      "software": {
+        "chemdata-auditor": "0.3.0@eff3ed3c43ec71e9ceecabc1f04d1dfb5c91c116",
+        "cheme-ml-benchmarks": "0.1.0@db02d8963725a1d406b9b07eb6f4cc3436fbb082",
+        "scientific-evidence-engine": "0.1.0@09f5ec810e8f04bf8d233ec12eb9448342ee5121",
+        "experiment-failure-memory": "0.1.0@63492787cbbea6d03662db63f2d958a6eec8d804",
+        "workbench": "0.1.0"
+      },
+      "kind": "audit",
+      "dataset_id": "c7430f45-bfae-4e63-8f01-b34ffbe39454",
+      "config": {
+        "duplicate_columns": null,
+        "group_columns": [],
+        "split_column": null,
+        "bounds": {},
+        "units": {},
+        "provenance_columns": [],
+        "sparse_bins": {},
+        "min_bin_count": 3,
+        "feature_columns": [],
+        "unavailable_features": [],
+        "target_column": null,
+        "check_missing": true,
+        "numeric_columns": [],
+        "identity_columns": [],
+        "conflict_columns": [],
+        "conflict_tolerance": 0.0,
+        "identifier_columns": [],
+        "correlation_threshold": 0.995,
+        "unit_aliases": {},
+        "compositions": [],
+        "rules": [],
+        "near_duplicates": {},
+        "smiles_column": null,
+        "molecular_similarity": null,
+        "density_columns": [],
+        "density_scales": {},
+        "density_radius": 1.0,
+        "min_neighbors": 3,
+        "max_pair_comparisons": 2000000,
+        "provenance_patterns": {}
+      },
+      "result": {
+        "n_rows": 60,
+        "findings": [
+          {
+            "code": "constant_column",
+            "severity": "info",
+            "columns": [
+              "source_id"
+            ],
+            "rows": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8,
+              9,
+              10,
+              11,
+              12,
+              13,
+              14,
+              15,
+              16,
+              17,
+              18,
+              19,
+              20,
+              21,
+              22,
+              23,
+              24,
+              25,
+              26,
+              27,
+              28,
+              29,
+              30,
+              31,
+              32,
+              33,
+              34,
+              35,
+              36,
+              37,
+              38,
+              39,
+              40,
+              41,
+              42,
+              43,
+              44,
+              45,
+              46,
+              47,
+              48,
+              49,
+              50,
+              51,
+              52,
+              53,
+              54,
+              55,
+              56,
+              57,
+              58,
+              59
+            ],
+            "message": "Column has one observed value.",
+            "suggestion": "Keep useful metadata; avoid treating a constant feature as predictive evidence.",
+            "details": {
+              "affected_count": 60,
+              "raw_examples": [
+                {
+                  "source_id": "synthetic-fixture"
+                },
+                {
+                  "source_id": "synthetic-fixture"
+                },
+                {
+                  "source_id": "synthetic-fixture"
+                },
+                {
+                  "source_id": "synthetic-fixture"
+                },
+                {
+                  "source_id": "synthetic-fixture"
+                },
+                {
+                  "source_id": "synthetic-fixture"
+                },
+                {
+                  "source_id": "synthetic-fixture"
+                },
+                {
+                  "source_id": "synthetic-fixture"
+                },
+                {
+                  "source_id": "synthetic-fixture"
+                },
+                {
+                  "source_id": "synthetic-fixture"
+                },
+                {
+                  "source_id": "synthetic-fixture"
+                },
+                {
+                  "source_id": "synthetic-fixture"
+                },
+                {
+                  "source_id": "synthetic-fixture"
+                },
+                {
+                  "source_id": "synthetic-fixture"
+                },
+                {
+                  "source_id": "synthetic-fixture"
+                },
+                {
+                  "source_id": "synthetic-fixture"
+                },
+                {
+                  "source_id": "synthetic-fixture"
+                },
+                {
+                  "source_id": "synthetic-fixture"
+                },
+                {
+                  "source_id": "synthetic-fixture"
+                },
+                {
+                  "source_id": "synthetic-fixture"
+                }
+              ],
+              "row_examples": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                10,
+                11,
+                12,
+                13,
+                14,
+                15,
+                16,
+                17,
+                18,
+                19
+              ],
+              "examples_truncated": true
+            }
+          }
+        ],
+        "checks_run": [
+          "duplicates",
+          "missing_values",
+          "schema_quality"
+        ],
+        "checks_skipped": {
+          "split_leakage": "No split_column configured.",
+          "feature_leakage": "No feature_columns configured.",
+          "bounds": "No physical bounds configured.",
+          "units": "No unit rules configured.",
+          "provenance": "No provenance_columns configured.",
+          "sparse_regions": "No sparse_bins configured.",
+          "conflicting_samples": "Configure identity_columns and conflict_columns.",
+          "near_duplicates": "No per-column absolute tolerances configured.",
+          "molecular_identity": "No smiles_column configured.",
+          "multivariate_density": "No density_columns and density_scales configured.",
+          "domain_constraints": "No compositions or rules configured."
+        },
+        "metadata": {
+          "tool_version": "0.3.0",
+          "row_reference": "zero-based row position; use df.iloc, not df.loc",
+          "dataset_sha256": "0eb2ca1f5e808f352e36b767fdf74f5494253bed6b024ff6e7631ad657ef45bc",
+          "fingerprint_format": "pandas split JSON, index excluded, 15-digit float precision",
+          "config": {
+            "duplicate_columns": null,
+            "group_columns": [],
+            "split_column": null,
+            "bounds": {},
+            "units": {},
+            "provenance_columns": [],
+            "sparse_bins": {},
+            "min_bin_count": 3,
+            "feature_columns": [],
+            "unavailable_features": [],
+            "target_column": null,
+            "check_missing": true,
+            "numeric_columns": [],
+            "identity_columns": [],
+            "conflict_columns": [],
+            "conflict_tolerance": 0.0,
+            "identifier_columns": [],
+            "correlation_threshold": 0.995,
+            "unit_aliases": {},
+            "compositions": [],
+            "rules": [],
+            "near_duplicates": {},
+            "smiles_column": null,
+            "molecular_similarity": null,
+            "density_columns": [],
+            "density_scales": {},
+            "density_radius": 1.0,
+            "min_neighbors": 3,
+            "max_pair_comparisons": 2000000,
+            "provenance_patterns": {}
+          },
+          "dependencies": {
+            "numpy": "2.5.3",
+            "pandas": "3.0.5",
+            "pint": "0.26.1",
+            "scikit-learn": "1.9.1"
+          },
+          "canonical_units": {},
+          "limitations": [
+            "Configured checks cannot certify scientific validity or causal leakage.",
+            "Evidence examples are capped at 20 rows; affected row positions are complete.",
+            "Near-duplicate pair examples are capped at 100; counts are complete.",
+            "Provenance syntax is checked locally; source authenticity is not verified."
+          ]
+        }
+      }
+    }
+  ],
+  "asking_detail": {
+    "run": {
+      "schema_version": "1.0",
+      "id": "eec860f7-24eb-4e36-ad60-293c061825b9",
+      "project_id": "a0aa4ba4-e99a-4fd8-91cf-743e2c146b6e",
+      "created_at": "2026-09-25T00:03:47.292468Z",
+      "contract": "research_run",
+      "objective": "Audit demo.csv and report conductivity statistics.",
+      "inputs": {
+        "material_ids": [
+          "d9a372ee-42d5-4812-a26d-553daa254050"
+        ],
+        "artifact_ids": [
+          "c7430f45-bfae-4e63-8f01-b34ffbe39454"
+        ],
+        "conversation_id": null,
+        "message_cutoff": null
+      },
+      "policy": {
+        "policy_id": "policy",
+        "revision": 1,
+        "sha256": "8280da8cb620d5e1f8569ff30843a026f5fe25b131bd17bb3a7e880dd05b0357"
+      },
+      "mode": "autopilot",
+      "state": "waiting_for_input",
+      "control_revision": 3,
+      "plan_revision": 1,
+      "limits": {
+        "model_tokens": 32000,
+        "model_requests": 24,
+        "tool_calls": 60,
+        "coordinator_iterations": 24,
+        "specialist_assignments": 4,
+        "specialist_concurrency": 2,
+        "delegation_depth": 1,
+        "review_rounds": 1,
+        "scientific_attempts": 8,
+        "active_seconds": 900,
+        "transient_retries": 2,
+        "finalization_model_tokens": 2000,
+        "finalization_scientific_attempts": 0
+      },
+      "usage": {
+        "billed_token_categories": {},
+        "reserved_tokens": 0,
+        "model_requests": 0,
+        "tool_calls": 0,
+        "scientific_attempts": 0,
+        "active_seconds": 0,
+        "unknown_request_ids": [],
+        "cost": {
+          "status": "unknown",
+          "reason": "No settled usage"
+        }
+      },
+      "open_question_ids": [
+        "87fdbc8c-b82f-479f-b21c-95a2564e2e4b"
+      ],
+      "result_artifact_ids": [],
+      "continued_from_run_id": null,
+      "finished_at": null,
+      "stop_reason": null
+    },
+    "plan": {
+      "schema_version": "1.0",
+      "id": "9c4e299f-d851-42ed-bb0e-f953603e8c36",
+      "project_id": "a0aa4ba4-e99a-4fd8-91cf-743e2c146b6e",
+      "created_at": "2026-09-25T00:03:47.315548Z",
+      "contract": "research_plan",
+      "run_id": "eec860f7-24eb-4e36-ad60-293c061825b9",
+      "revision": 1,
+      "steps": [
+        {
+          "id": "units",
+          "objective": "Confirm conductivity units",
+          "depends_on": [],
+          "allowed_input_ids": [],
+          "expected_artifact_kinds": [],
+          "completion_criteria": [
+            "Confirm conductivity units recorded"
+          ],
+          "status": "blocked",
+          "action_ids": []
+        },
+        {
+          "id": "audit",
+          "objective": "Audit the dataset",
+          "depends_on": [],
+          "allowed_input_ids": [
+            "c7430f45-bfae-4e63-8f01-b34ffbe39454"
+          ],
+          "expected_artifact_kinds": [
+            "audit"
+          ],
+          "completion_criteria": [
+            "Audit the dataset recorded"
+          ],
+          "status": "ready",
+          "action_ids": []
+        }
+      ],
+      "rationale_summary": "Units change the reported statistics, so they are confirmed first."
+    },
+    "questions": [
+      {
+        "schema_version": "1.0",
+        "id": "87fdbc8c-b82f-479f-b21c-95a2564e2e4b",
+        "project_id": "a0aa4ba4-e99a-4fd8-91cf-743e2c146b6e",
+        "created_at": "2026-09-25T00:03:47.320976Z",
+        "contract": "research_question",
+        "run_id": "eec860f7-24eb-4e36-ad60-293c061825b9",
+        "revision": 1,
+        "run_revision": 2,
+        "questions": [
+          {
+            "id": "units",
+            "field": "target_unit",
+            "prompt": "Is conductivity recorded in mS/cm or S/m?",
+            "blocked_step_ids": [
+              "units"
+            ],
+            "options": [
+              {
+                "id": "ms_cm",
+                "label": "mS/cm",
+                "consequence": "Values are reported as recorded."
+              },
+              {
+                "id": "s_m",
+                "label": "S/m",
+                "consequence": "Values are converted before reporting."
+              }
+            ],
+            "evidence": []
+          },
+          {
+            "id": "groups",
+            "field": "independent_unit",
+            "prompt": "Which column identifies independent formulations?",
+            "blocked_step_ids": [
+              "units"
+            ],
+            "options": [],
+            "evidence": []
+          }
+        ],
+        "status": "open",
+        "expires_at": "2026-10-25T00:03:47.320976Z",
+        "answer_message_id": null
+      }
+    ],
+    "control_effect": "No stop control is active.",
+    "earlier_plans": [],
+    "actions": [],
+    "assignments": []
+  },
+  "asking_stream": "retry: 2000\n\nid: 1\nevent: accepted\ndata: {\"contract\":\"run_event\",\"schema_version\":\"1.0\",\"run_id\":\"eec860f7-24eb-4e36-ad60-293c061825b9\",\"sequence\":1,\"created_at\":\"2026-09-25T00:03:47.294612Z\",\"event_type\":\"accepted\",\"run_revision\":1,\"state\":\"queued\",\"action_id\":null,\"question_id\":null,\"artifact_ids\":[],\"summary\":null}\n\nid: 2\nevent: state_changed\ndata: {\"contract\":\"run_event\",\"schema_version\":\"1.0\",\"run_id\":\"eec860f7-24eb-4e36-ad60-293c061825b9\",\"sequence\":2,\"created_at\":\"2026-09-25T00:03:47.309612Z\",\"event_type\":\"state_changed\",\"run_revision\":1,\"state\":\"running\",\"action_id\":null,\"question_id\":null,\"artifact_ids\":[],\"summary\":null}\n\nid: 3\nevent: plan_changed\ndata: {\"contract\":\"run_event\",\"schema_version\":\"1.0\",\"run_id\":\"eec860f7-24eb-4e36-ad60-293c061825b9\",\"sequence\":3,\"created_at\":\"2026-09-25T00:03:47.315548Z\",\"event_type\":\"plan_changed\",\"run_revision\":2,\"state\":\"running\",\"action_id\":null,\"question_id\":null,\"artifact_ids\":[],\"summary\":null}\n\nid: 4\nevent: question_changed\ndata: {\"contract\":\"run_event\",\"schema_version\":\"1.0\",\"run_id\":\"eec860f7-24eb-4e36-ad60-293c061825b9\",\"sequence\":4,\"created_at\":\"2026-09-25T00:03:47.322208Z\",\"event_type\":\"question_changed\",\"run_revision\":3,\"state\":\"waiting_for_input\",\"action_id\":null,\"question_id\":\"87fdbc8c-b82f-479f-b21c-95a2564e2e4b\",\"artifact_ids\":[],\"summary\":null}\n\n",
+  "asking_stream_after": "retry: 2000\n\nid: 4\nevent: question_changed\ndata: {\"contract\":\"run_event\",\"schema_version\":\"1.0\",\"run_id\":\"eec860f7-24eb-4e36-ad60-293c061825b9\",\"sequence\":4,\"created_at\":\"2026-09-25T00:03:47.322208Z\",\"event_type\":\"question_changed\",\"run_revision\":3,\"state\":\"waiting_for_input\",\"action_id\":null,\"question_id\":\"87fdbc8c-b82f-479f-b21c-95a2564e2e4b\",\"artifact_ids\":[],\"summary\":null}\n\n",
+  "control_running": {
+    "run": {
+      "schema_version": "1.0",
+      "id": "177aa7c9-3cae-4992-a9a7-333b2b9579cb",
+      "project_id": "a0aa4ba4-e99a-4fd8-91cf-743e2c146b6e",
+      "created_at": "2026-09-25T00:03:47.378140Z",
+      "contract": "research_run",
+      "objective": "Audit demo.csv for duplicates.",
+      "inputs": {
+        "material_ids": [
+          "d9a372ee-42d5-4812-a26d-553daa254050"
+        ],
+        "artifact_ids": [
+          "c7430f45-bfae-4e63-8f01-b34ffbe39454"
+        ],
+        "conversation_id": null,
+        "message_cutoff": null
+      },
+      "policy": {
+        "policy_id": "policy",
+        "revision": 1,
+        "sha256": "8280da8cb620d5e1f8569ff30843a026f5fe25b131bd17bb3a7e880dd05b0357"
+      },
+      "mode": "autopilot",
+      "state": "running",
+      "control_revision": 2,
+      "plan_revision": 1,
+      "limits": {
+        "model_tokens": 32000,
+        "model_requests": 24,
+        "tool_calls": 60,
+        "coordinator_iterations": 24,
+        "specialist_assignments": 4,
+        "specialist_concurrency": 2,
+        "delegation_depth": 1,
+        "review_rounds": 1,
+        "scientific_attempts": 8,
+        "active_seconds": 900,
+        "transient_retries": 2,
+        "finalization_model_tokens": 2000,
+        "finalization_scientific_attempts": 0
+      },
+      "usage": {
+        "billed_token_categories": {},
+        "reserved_tokens": 0,
+        "model_requests": 0,
+        "tool_calls": 1,
+        "scientific_attempts": 1,
+        "active_seconds": 0,
+        "unknown_request_ids": [],
+        "cost": {
+          "status": "unknown",
+          "reason": "Unpriced or unsettled model usage"
+        }
+      },
+      "open_question_ids": [],
+      "result_artifact_ids": [],
+      "continued_from_run_id": null,
+      "finished_at": null,
+      "stop_reason": null
+    },
+    "plan": {
+      "schema_version": "1.0",
+      "id": "b0c300fa-649c-4d25-87fb-04ffef4be28f",
+      "project_id": "a0aa4ba4-e99a-4fd8-91cf-743e2c146b6e",
+      "created_at": "2026-09-25T00:03:47.403272Z",
+      "contract": "research_plan",
+      "run_id": "177aa7c9-3cae-4992-a9a7-333b2b9579cb",
+      "revision": 1,
+      "steps": [
+        {
+          "id": "audit",
+          "objective": "Audit the dataset",
+          "depends_on": [],
+          "allowed_input_ids": [
+            "c7430f45-bfae-4e63-8f01-b34ffbe39454"
+          ],
+          "expected_artifact_kinds": [
+            "audit"
+          ],
+          "completion_criteria": [
+            "Audit the dataset recorded"
+          ],
+          "status": "running",
+          "action_ids": []
+        }
+      ],
+      "rationale_summary": "A single audit answers the request."
+    },
+    "questions": [],
+    "control_effect": "No stop control is active.",
+    "earlier_plans": [],
+    "actions": [
+      {
+        "id": "29f7869a-8cd2-45d6-8b6c-78a023278bc4",
+        "tool": "run_audit",
+        "attempt": 1,
+        "state": "submitted",
+        "assignment_id": null,
+        "job_id": "49d6d9b4-add9-4777-98e7-0c9bd2dd0178",
+        "artifact_ids": [],
+        "error_code": null
+      }
+    ],
+    "assignments": []
+  },
+  "pause_response": {
+    "schema_version": "1.0",
+    "id": "177aa7c9-3cae-4992-a9a7-333b2b9579cb",
+    "project_id": "a0aa4ba4-e99a-4fd8-91cf-743e2c146b6e",
+    "created_at": "2026-09-25T00:03:47.378140Z",
+    "contract": "research_run",
+    "objective": "Audit demo.csv for duplicates.",
+    "inputs": {
+      "material_ids": [
+        "d9a372ee-42d5-4812-a26d-553daa254050"
+      ],
+      "artifact_ids": [
+        "c7430f45-bfae-4e63-8f01-b34ffbe39454"
+      ],
+      "conversation_id": null,
+      "message_cutoff": null
+    },
+    "policy": {
+      "policy_id": "policy",
+      "revision": 1,
+      "sha256": "8280da8cb620d5e1f8569ff30843a026f5fe25b131bd17bb3a7e880dd05b0357"
+    },
+    "mode": "autopilot",
+    "state": "paused",
+    "control_revision": 3,
+    "plan_revision": 1,
+    "limits": {
+      "model_tokens": 32000,
+      "model_requests": 24,
+      "tool_calls": 60,
+      "coordinator_iterations": 24,
+      "specialist_assignments": 4,
+      "specialist_concurrency": 2,
+      "delegation_depth": 1,
+      "review_rounds": 1,
+      "scientific_attempts": 8,
+      "active_seconds": 900,
+      "transient_retries": 2,
+      "finalization_model_tokens": 2000,
+      "finalization_scientific_attempts": 0
+    },
+    "usage": {
+      "billed_token_categories": {},
+      "reserved_tokens": 0,
+      "model_requests": 0,
+      "tool_calls": 1,
+      "scientific_attempts": 1,
+      "active_seconds": 0,
+      "unknown_request_ids": [],
+      "cost": {
+        "status": "unknown",
+        "reason": "Unpriced or unsettled model usage"
+      }
+    },
+    "open_question_ids": [],
+    "result_artifact_ids": [],
+    "continued_from_run_id": null,
+    "finished_at": null,
+    "stop_reason": null
+  },
+  "control_paused": {
+    "run": {
+      "schema_version": "1.0",
+      "id": "177aa7c9-3cae-4992-a9a7-333b2b9579cb",
+      "project_id": "a0aa4ba4-e99a-4fd8-91cf-743e2c146b6e",
+      "created_at": "2026-09-25T00:03:47.378140Z",
+      "contract": "research_run",
+      "objective": "Audit demo.csv for duplicates.",
+      "inputs": {
+        "material_ids": [
+          "d9a372ee-42d5-4812-a26d-553daa254050"
+        ],
+        "artifact_ids": [
+          "c7430f45-bfae-4e63-8f01-b34ffbe39454"
+        ],
+        "conversation_id": null,
+        "message_cutoff": null
+      },
+      "policy": {
+        "policy_id": "policy",
+        "revision": 1,
+        "sha256": "8280da8cb620d5e1f8569ff30843a026f5fe25b131bd17bb3a7e880dd05b0357"
+      },
+      "mode": "autopilot",
+      "state": "paused",
+      "control_revision": 3,
+      "plan_revision": 1,
+      "limits": {
+        "model_tokens": 32000,
+        "model_requests": 24,
+        "tool_calls": 60,
+        "coordinator_iterations": 24,
+        "specialist_assignments": 4,
+        "specialist_concurrency": 2,
+        "delegation_depth": 1,
+        "review_rounds": 1,
+        "scientific_attempts": 8,
+        "active_seconds": 900,
+        "transient_retries": 2,
+        "finalization_model_tokens": 2000,
+        "finalization_scientific_attempts": 0
+      },
+      "usage": {
+        "billed_token_categories": {},
+        "reserved_tokens": 0,
+        "model_requests": 0,
+        "tool_calls": 1,
+        "scientific_attempts": 1,
+        "active_seconds": 0,
+        "unknown_request_ids": [],
+        "cost": {
+          "status": "unknown",
+          "reason": "Unpriced or unsettled model usage"
+        }
+      },
+      "open_question_ids": [],
+      "result_artifact_ids": [],
+      "continued_from_run_id": null,
+      "finished_at": null,
+      "stop_reason": null
+    },
+    "plan": {
+      "schema_version": "1.0",
+      "id": "b0c300fa-649c-4d25-87fb-04ffef4be28f",
+      "project_id": "a0aa4ba4-e99a-4fd8-91cf-743e2c146b6e",
+      "created_at": "2026-09-25T00:03:47.403272Z",
+      "contract": "research_plan",
+      "run_id": "177aa7c9-3cae-4992-a9a7-333b2b9579cb",
+      "revision": 1,
+      "steps": [
+        {
+          "id": "audit",
+          "objective": "Audit the dataset",
+          "depends_on": [],
+          "allowed_input_ids": [
+            "c7430f45-bfae-4e63-8f01-b34ffbe39454"
+          ],
+          "expected_artifact_kinds": [
+            "audit"
+          ],
+          "completion_criteria": [
+            "Audit the dataset recorded"
+          ],
+          "status": "running",
+          "action_ids": []
+        }
+      ],
+      "rationale_summary": "A single audit answers the request."
+    },
+    "questions": [],
+    "control_effect": "New dispatch is fenced; accepted jobs drain under their fixed deadlines.",
+    "earlier_plans": [],
+    "actions": [
+      {
+        "id": "29f7869a-8cd2-45d6-8b6c-78a023278bc4",
+        "tool": "run_audit",
+        "attempt": 1,
+        "state": "submitted",
+        "assignment_id": null,
+        "job_id": "49d6d9b4-add9-4777-98e7-0c9bd2dd0178",
+        "artifact_ids": [],
+        "error_code": null
+      }
+    ],
+    "assignments": []
+  },
+  "job_index_paused": {
+    "items": [
+      {
+        "id": "49d6d9b4-add9-4777-98e7-0c9bd2dd0178",
+        "project_id": "a0aa4ba4-e99a-4fd8-91cf-743e2c146b6e",
+        "kind": "audit",
+        "state": "queued",
+        "result_id": null,
+        "error": null,
+        "created_at": "2026-09-25T00:03:47.428862Z",
+        "started_at": null,
+        "finished_at": null,
+        "error_code": null,
+        "retry_of_job_id": null,
+        "deadline_at": null,
+        "external_receipt": null,
+        "run_links": [
+          {
+            "run_id": "177aa7c9-3cae-4992-a9a7-333b2b9579cb",
+            "action_id": "29f7869a-8cd2-45d6-8b6c-78a023278bc4",
+            "ownership": "owned"
+          }
+        ],
+        "recovery": null
+      },
+      {
+        "id": "c1857d31-e239-4c2f-9dea-d21e5afd3e94",
+        "project_id": "a0aa4ba4-e99a-4fd8-91cf-743e2c146b6e",
+        "kind": "audit",
+        "state": "succeeded",
+        "result_id": "fc97aab0-9212-45b1-9c43-6f181ec1eaa2",
+        "error": null,
+        "created_at": "2026-09-25T00:03:43.862014Z",
+        "started_at": "2026-09-25T00:03:43.892000Z",
+        "finished_at": "2026-09-25T00:03:47.243000Z",
+        "error_code": null,
+        "retry_of_job_id": null,
+        "deadline_at": "2026-09-25T00:08:43.892000Z",
+        "external_receipt": null,
+        "run_links": [
+          {
+            "run_id": "42b0f013-7458-4840-80cb-ad3142249f83",
+            "action_id": "5e8d7682-4bdf-4524-8624-4ab9273f8ceb",
+            "ownership": "owned"
+          }
+        ],
+        "recovery": null
+      }
+    ],
+    "next_cursor": null
+  },
+  "resume_conflict": {
+    "status": 409,
+    "body": {
+      "error": "Run revision changed",
+      "error_code": "RUN_REVISION_CHANGED",
+      "request_id": "a4100150-ea3c-4efb-b14d-565141bf79dc"
+    }
+  },
+  "resume_response": {
+    "schema_version": "1.0",
+    "id": "177aa7c9-3cae-4992-a9a7-333b2b9579cb",
+    "project_id": "a0aa4ba4-e99a-4fd8-91cf-743e2c146b6e",
+    "created_at": "2026-09-25T00:03:47.378140Z",
+    "contract": "research_run",
+    "objective": "Audit demo.csv for duplicates.",
+    "inputs": {
+      "material_ids": [
+        "d9a372ee-42d5-4812-a26d-553daa254050"
+      ],
+      "artifact_ids": [
+        "c7430f45-bfae-4e63-8f01-b34ffbe39454"
+      ],
+      "conversation_id": null,
+      "message_cutoff": null
+    },
+    "policy": {
+      "policy_id": "policy",
+      "revision": 1,
+      "sha256": "8280da8cb620d5e1f8569ff30843a026f5fe25b131bd17bb3a7e880dd05b0357"
+    },
+    "mode": "autopilot",
+    "state": "queued",
+    "control_revision": 4,
+    "plan_revision": 1,
+    "limits": {
+      "model_tokens": 32000,
+      "model_requests": 24,
+      "tool_calls": 60,
+      "coordinator_iterations": 24,
+      "specialist_assignments": 4,
+      "specialist_concurrency": 2,
+      "delegation_depth": 1,
+      "review_rounds": 1,
+      "scientific_attempts": 8,
+      "active_seconds": 900,
+      "transient_retries": 2,
+      "finalization_model_tokens": 2000,
+      "finalization_scientific_attempts": 0
+    },
+    "usage": {
+      "billed_token_categories": {},
+      "reserved_tokens": 0,
+      "model_requests": 0,
+      "tool_calls": 1,
+      "scientific_attempts": 1,
+      "active_seconds": 0,
+      "unknown_request_ids": [],
+      "cost": {
+        "status": "unknown",
+        "reason": "Unpriced or unsettled model usage"
+      }
+    },
+    "open_question_ids": [],
+    "result_artifact_ids": [],
+    "continued_from_run_id": null,
+    "finished_at": null,
+    "stop_reason": null
+  },
+  "control_resumed": {
+    "run": {
+      "schema_version": "1.0",
+      "id": "177aa7c9-3cae-4992-a9a7-333b2b9579cb",
+      "project_id": "a0aa4ba4-e99a-4fd8-91cf-743e2c146b6e",
+      "created_at": "2026-09-25T00:03:47.378140Z",
+      "contract": "research_run",
+      "objective": "Audit demo.csv for duplicates.",
+      "inputs": {
+        "material_ids": [
+          "d9a372ee-42d5-4812-a26d-553daa254050"
+        ],
+        "artifact_ids": [
+          "c7430f45-bfae-4e63-8f01-b34ffbe39454"
+        ],
+        "conversation_id": null,
+        "message_cutoff": null
+      },
+      "policy": {
+        "policy_id": "policy",
+        "revision": 1,
+        "sha256": "8280da8cb620d5e1f8569ff30843a026f5fe25b131bd17bb3a7e880dd05b0357"
+      },
+      "mode": "autopilot",
+      "state": "queued",
+      "control_revision": 4,
+      "plan_revision": 1,
+      "limits": {
+        "model_tokens": 32000,
+        "model_requests": 24,
+        "tool_calls": 60,
+        "coordinator_iterations": 24,
+        "specialist_assignments": 4,
+        "specialist_concurrency": 2,
+        "delegation_depth": 1,
+        "review_rounds": 1,
+        "scientific_attempts": 8,
+        "active_seconds": 900,
+        "transient_retries": 2,
+        "finalization_model_tokens": 2000,
+        "finalization_scientific_attempts": 0
+      },
+      "usage": {
+        "billed_token_categories": {},
+        "reserved_tokens": 0,
+        "model_requests": 0,
+        "tool_calls": 1,
+        "scientific_attempts": 1,
+        "active_seconds": 0,
+        "unknown_request_ids": [],
+        "cost": {
+          "status": "unknown",
+          "reason": "Unpriced or unsettled model usage"
+        }
+      },
+      "open_question_ids": [],
+      "result_artifact_ids": [],
+      "continued_from_run_id": null,
+      "finished_at": null,
+      "stop_reason": null
+    },
+    "plan": {
+      "schema_version": "1.0",
+      "id": "b0c300fa-649c-4d25-87fb-04ffef4be28f",
+      "project_id": "a0aa4ba4-e99a-4fd8-91cf-743e2c146b6e",
+      "created_at": "2026-09-25T00:03:47.403272Z",
+      "contract": "research_plan",
+      "run_id": "177aa7c9-3cae-4992-a9a7-333b2b9579cb",
+      "revision": 1,
+      "steps": [
+        {
+          "id": "audit",
+          "objective": "Audit the dataset",
+          "depends_on": [],
+          "allowed_input_ids": [
+            "c7430f45-bfae-4e63-8f01-b34ffbe39454"
+          ],
+          "expected_artifact_kinds": [
+            "audit"
+          ],
+          "completion_criteria": [
+            "Audit the dataset recorded"
+          ],
+          "status": "running",
+          "action_ids": []
+        }
+      ],
+      "rationale_summary": "A single audit answers the request."
+    },
+    "questions": [],
+    "control_effect": "No stop control is active.",
+    "earlier_plans": [],
+    "actions": [
+      {
+        "id": "29f7869a-8cd2-45d6-8b6c-78a023278bc4",
+        "tool": "run_audit",
+        "attempt": 1,
+        "state": "submitted",
+        "assignment_id": null,
+        "job_id": "49d6d9b4-add9-4777-98e7-0c9bd2dd0178",
+        "artifact_ids": [],
+        "error_code": null
+      }
+    ],
+    "assignments": []
+  },
+  "cancel_response": {
+    "schema_version": "1.0",
+    "id": "177aa7c9-3cae-4992-a9a7-333b2b9579cb",
+    "project_id": "a0aa4ba4-e99a-4fd8-91cf-743e2c146b6e",
+    "created_at": "2026-09-25T00:03:47.378140Z",
+    "contract": "research_run",
+    "objective": "Audit demo.csv for duplicates.",
+    "inputs": {
+      "material_ids": [
+        "d9a372ee-42d5-4812-a26d-553daa254050"
+      ],
+      "artifact_ids": [
+        "c7430f45-bfae-4e63-8f01-b34ffbe39454"
+      ],
+      "conversation_id": null,
+      "message_cutoff": null
+    },
+    "policy": {
+      "policy_id": "policy",
+      "revision": 1,
+      "sha256": "8280da8cb620d5e1f8569ff30843a026f5fe25b131bd17bb3a7e880dd05b0357"
+    },
+    "mode": "autopilot",
+    "state": "cancelled",
+    "control_revision": 5,
+    "plan_revision": 1,
+    "limits": {
+      "model_tokens": 32000,
+      "model_requests": 24,
+      "tool_calls": 60,
+      "coordinator_iterations": 24,
+      "specialist_assignments": 4,
+      "specialist_concurrency": 2,
+      "delegation_depth": 1,
+      "review_rounds": 1,
+      "scientific_attempts": 8,
+      "active_seconds": 900,
+      "transient_retries": 2,
+      "finalization_model_tokens": 2000,
+      "finalization_scientific_attempts": 0
+    },
+    "usage": {
+      "billed_token_categories": {},
+      "reserved_tokens": 0,
+      "model_requests": 0,
+      "tool_calls": 1,
+      "scientific_attempts": 1,
+      "active_seconds": 0,
+      "unknown_request_ids": [],
+      "cost": {
+        "status": "unknown",
+        "reason": "Unpriced or unsettled model usage"
+      }
+    },
+    "open_question_ids": [],
+    "result_artifact_ids": [],
+    "continued_from_run_id": null,
+    "finished_at": "2026-09-25T00:03:47.585541Z",
+    "stop_reason": "Cancelled by operator"
+  },
+  "control_cancelled": {
+    "run": {
+      "schema_version": "1.0",
+      "id": "177aa7c9-3cae-4992-a9a7-333b2b9579cb",
+      "project_id": "a0aa4ba4-e99a-4fd8-91cf-743e2c146b6e",
+      "created_at": "2026-09-25T00:03:47.378140Z",
+      "contract": "research_run",
+      "objective": "Audit demo.csv for duplicates.",
+      "inputs": {
+        "material_ids": [
+          "d9a372ee-42d5-4812-a26d-553daa254050"
+        ],
+        "artifact_ids": [
+          "c7430f45-bfae-4e63-8f01-b34ffbe39454"
+        ],
+        "conversation_id": null,
+        "message_cutoff": null
+      },
+      "policy": {
+        "policy_id": "policy",
+        "revision": 1,
+        "sha256": "8280da8cb620d5e1f8569ff30843a026f5fe25b131bd17bb3a7e880dd05b0357"
+      },
+      "mode": "autopilot",
+      "state": "cancelled",
+      "control_revision": 5,
+      "plan_revision": 1,
+      "limits": {
+        "model_tokens": 32000,
+        "model_requests": 24,
+        "tool_calls": 60,
+        "coordinator_iterations": 24,
+        "specialist_assignments": 4,
+        "specialist_concurrency": 2,
+        "delegation_depth": 1,
+        "review_rounds": 1,
+        "scientific_attempts": 8,
+        "active_seconds": 900,
+        "transient_retries": 2,
+        "finalization_model_tokens": 2000,
+        "finalization_scientific_attempts": 0
+      },
+      "usage": {
+        "billed_token_categories": {},
+        "reserved_tokens": 0,
+        "model_requests": 0,
+        "tool_calls": 1,
+        "scientific_attempts": 1,
+        "active_seconds": 0,
+        "unknown_request_ids": [],
+        "cost": {
+          "status": "unknown",
+          "reason": "Unpriced or unsettled model usage"
+        }
+      },
+      "open_question_ids": [],
+      "result_artifact_ids": [],
+      "continued_from_run_id": null,
+      "finished_at": "2026-09-25T00:03:47.585541Z",
+      "stop_reason": "Cancelled by operator"
+    },
+    "plan": {
+      "schema_version": "1.0",
+      "id": "b0c300fa-649c-4d25-87fb-04ffef4be28f",
+      "project_id": "a0aa4ba4-e99a-4fd8-91cf-743e2c146b6e",
+      "created_at": "2026-09-25T00:03:47.403272Z",
+      "contract": "research_plan",
+      "run_id": "177aa7c9-3cae-4992-a9a7-333b2b9579cb",
+      "revision": 1,
+      "steps": [
+        {
+          "id": "audit",
+          "objective": "Audit the dataset",
+          "depends_on": [],
+          "allowed_input_ids": [
+            "c7430f45-bfae-4e63-8f01-b34ffbe39454"
+          ],
+          "expected_artifact_kinds": [
+            "audit"
+          ],
+          "completion_criteria": [
+            "Audit the dataset recorded"
+          ],
+          "status": "running",
+          "action_ids": []
+        }
+      ],
+      "rationale_summary": "A single audit answers the request."
+    },
+    "questions": [],
+    "control_effect": "Owned jobs are fenced and shared jobs detached; prior external effects may have settled.",
+    "earlier_plans": [],
+    "actions": [
+      {
+        "id": "29f7869a-8cd2-45d6-8b6c-78a023278bc4",
+        "tool": "run_audit",
+        "attempt": 1,
+        "state": "cancelled",
+        "assignment_id": null,
+        "job_id": "49d6d9b4-add9-4777-98e7-0c9bd2dd0178",
+        "artifact_ids": [],
+        "error_code": null
+      }
+    ],
+    "assignments": []
+  },
+  "answer_stale": {
+    "status": 409,
+    "body": {
+      "error": "Question is no longer current",
+      "error_code": "QUESTION_STALE",
+      "request_id": "4bd33b5f-93be-4e65-b28f-73e09ee49162"
+    }
+  },
+  "answer_body": {
+    "expected_run_revision": 3,
+    "expected_question_revision": 1,
+    "answers": {
+      "units": "mS/cm",
+      "groups": "formulation_id"
+    }
+  },
+  "answered_run": {
+    "schema_version": "1.0",
+    "id": "eec860f7-24eb-4e36-ad60-293c061825b9",
+    "project_id": "a0aa4ba4-e99a-4fd8-91cf-743e2c146b6e",
+    "created_at": "2026-09-25T00:03:47.292468Z",
+    "contract": "research_run",
+    "objective": "Audit demo.csv and report conductivity statistics.",
+    "inputs": {
+      "material_ids": [
+        "d9a372ee-42d5-4812-a26d-553daa254050"
+      ],
+      "artifact_ids": [
+        "c7430f45-bfae-4e63-8f01-b34ffbe39454"
+      ],
+      "conversation_id": null,
+      "message_cutoff": null
+    },
+    "policy": {
+      "policy_id": "policy",
+      "revision": 1,
+      "sha256": "8280da8cb620d5e1f8569ff30843a026f5fe25b131bd17bb3a7e880dd05b0357"
+    },
+    "mode": "autopilot",
+    "state": "queued",
+    "control_revision": 4,
+    "plan_revision": 1,
+    "limits": {
+      "model_tokens": 32000,
+      "model_requests": 24,
+      "tool_calls": 60,
+      "coordinator_iterations": 24,
+      "specialist_assignments": 4,
+      "specialist_concurrency": 2,
+      "delegation_depth": 1,
+      "review_rounds": 1,
+      "scientific_attempts": 8,
+      "active_seconds": 900,
+      "transient_retries": 2,
+      "finalization_model_tokens": 2000,
+      "finalization_scientific_attempts": 0
+    },
+    "usage": {
+      "billed_token_categories": {},
+      "reserved_tokens": 0,
+      "model_requests": 0,
+      "tool_calls": 0,
+      "scientific_attempts": 0,
+      "active_seconds": 0,
+      "unknown_request_ids": [],
+      "cost": {
+        "status": "unknown",
+        "reason": "No settled usage"
+      }
+    },
+    "open_question_ids": [],
+    "result_artifact_ids": [],
+    "continued_from_run_id": null,
+    "finished_at": null,
+    "stop_reason": null
+  },
+  "answered_detail": {
+    "run": {
+      "schema_version": "1.0",
+      "id": "eec860f7-24eb-4e36-ad60-293c061825b9",
+      "project_id": "a0aa4ba4-e99a-4fd8-91cf-743e2c146b6e",
+      "created_at": "2026-09-25T00:03:47.292468Z",
+      "contract": "research_run",
+      "objective": "Audit demo.csv and report conductivity statistics.",
+      "inputs": {
+        "material_ids": [
+          "d9a372ee-42d5-4812-a26d-553daa254050"
+        ],
+        "artifact_ids": [
+          "c7430f45-bfae-4e63-8f01-b34ffbe39454"
+        ],
+        "conversation_id": null,
+        "message_cutoff": null
+      },
+      "policy": {
+        "policy_id": "policy",
+        "revision": 1,
+        "sha256": "8280da8cb620d5e1f8569ff30843a026f5fe25b131bd17bb3a7e880dd05b0357"
+      },
+      "mode": "autopilot",
+      "state": "queued",
+      "control_revision": 4,
+      "plan_revision": 1,
+      "limits": {
+        "model_tokens": 32000,
+        "model_requests": 24,
+        "tool_calls": 60,
+        "coordinator_iterations": 24,
+        "specialist_assignments": 4,
+        "specialist_concurrency": 2,
+        "delegation_depth": 1,
+        "review_rounds": 1,
+        "scientific_attempts": 8,
+        "active_seconds": 900,
+        "transient_retries": 2,
+        "finalization_model_tokens": 2000,
+        "finalization_scientific_attempts": 0
+      },
+      "usage": {
+        "billed_token_categories": {},
+        "reserved_tokens": 0,
+        "model_requests": 0,
+        "tool_calls": 0,
+        "scientific_attempts": 0,
+        "active_seconds": 0,
+        "unknown_request_ids": [],
+        "cost": {
+          "status": "unknown",
+          "reason": "No settled usage"
+        }
+      },
+      "open_question_ids": [],
+      "result_artifact_ids": [],
+      "continued_from_run_id": null,
+      "finished_at": null,
+      "stop_reason": null
+    },
+    "plan": {
+      "schema_version": "1.0",
+      "id": "9c4e299f-d851-42ed-bb0e-f953603e8c36",
+      "project_id": "a0aa4ba4-e99a-4fd8-91cf-743e2c146b6e",
+      "created_at": "2026-09-25T00:03:47.315548Z",
+      "contract": "research_plan",
+      "run_id": "eec860f7-24eb-4e36-ad60-293c061825b9",
+      "revision": 1,
+      "steps": [
+        {
+          "id": "units",
+          "objective": "Confirm conductivity units",
+          "depends_on": [],
+          "allowed_input_ids": [],
+          "expected_artifact_kinds": [],
+          "completion_criteria": [
+            "Confirm conductivity units recorded"
+          ],
+          "status": "blocked",
+          "action_ids": []
+        },
+        {
+          "id": "audit",
+          "objective": "Audit the dataset",
+          "depends_on": [],
+          "allowed_input_ids": [
+            "c7430f45-bfae-4e63-8f01-b34ffbe39454"
+          ],
+          "expected_artifact_kinds": [
+            "audit"
+          ],
+          "completion_criteria": [
+            "Audit the dataset recorded"
+          ],
+          "status": "ready",
+          "action_ids": []
+        }
+      ],
+      "rationale_summary": "Units change the reported statistics, so they are confirmed first."
+    },
+    "questions": [
+      {
+        "schema_version": "1.0",
+        "id": "87fdbc8c-b82f-479f-b21c-95a2564e2e4b",
+        "project_id": "a0aa4ba4-e99a-4fd8-91cf-743e2c146b6e",
+        "created_at": "2026-09-25T00:03:47.320976Z",
+        "contract": "research_question",
+        "run_id": "eec860f7-24eb-4e36-ad60-293c061825b9",
+        "revision": 1,
+        "run_revision": 2,
+        "questions": [
+          {
+            "id": "units",
+            "field": "target_unit",
+            "prompt": "Is conductivity recorded in mS/cm or S/m?",
+            "blocked_step_ids": [
+              "units"
+            ],
+            "options": [
+              {
+                "id": "ms_cm",
+                "label": "mS/cm",
+                "consequence": "Values are reported as recorded."
+              },
+              {
+                "id": "s_m",
+                "label": "S/m",
+                "consequence": "Values are converted before reporting."
+              }
+            ],
+            "evidence": []
+          },
+          {
+            "id": "groups",
+            "field": "independent_unit",
+            "prompt": "Which column identifies independent formulations?",
+            "blocked_step_ids": [
+              "units"
+            ],
+            "options": [],
+            "evidence": []
+          }
+        ],
+        "status": "answered",
+        "expires_at": "2026-10-25T00:03:47.320976Z",
+        "answer_message_id": "5c4495b1-10cf-4248-83f7-64898876ec35"
+      }
+    ],
+    "control_effect": "No stop control is active.",
+    "earlier_plans": [],
+    "actions": [],
+    "assignments": []
+  }
+}

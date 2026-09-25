@@ -4,7 +4,7 @@ import {
   parseArtifactPreviews, parseExecutionPolicy, parseJobPage, parseMaterials, parseResearchRun, parseResearchRuns, parseRunDetail, parseRunEvents,
 } from '../app/lib/decode';
 import { authorized, chooseRun, runInput, runPollDelay, scopeItems, RUN_POLL_ACTIVE, RUN_POLL_MAX_BACKOFF } from '../app/lib/runs';
-import { mergeEvents } from '../app/components/research-run';
+import { mergeEvents } from '../app/lib/run-feed';
 import type { ResearchRun } from '../app/lib/generated/http';
 
 // Captured through the real API, scheduler, tool registry and worker (SQLite); validated on load.

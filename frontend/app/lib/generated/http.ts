@@ -940,8 +940,62 @@ export type ExpiresAt = string | null;
 export type AnswerMessageId = string | null;
 export type Questions = ResearchQuestion[];
 export type ControlEffect = string;
+/**
+ * @maxItems 20
+ */
+export type EarlierPlans = ResearchPlan[];
+export type Id34 = string;
+export type Tool1 = string;
+export type Attempt = number;
+export type State10 = 'prepared' | 'submitted' | 'completed' | 'failed' | 'unknown' | 'cancelled';
+export type AssignmentId1 = string | null;
+export type JobId1 = string | null;
+export type ArtifactIds3 = string[];
+export type ErrorCode3 =
+  | (
+      | 'UNAUTHORIZED'
+      | 'ORIGIN_REJECTED'
+      | 'PROJECT_NOT_FOUND'
+      | 'ARTIFACT_NOT_FOUND'
+      | 'JOB_NOT_FOUND'
+      | 'IDEMPOTENCY_CONFLICT'
+      | 'PROJECT_BUSY'
+      | 'VALIDATION_FAILED'
+      | 'LINEAGE_MISMATCH'
+      | 'UPLOAD_TOO_LARGE'
+      | 'STORAGE_UNAVAILABLE'
+      | 'DEPENDENCY_UNAVAILABLE'
+      | 'INTERNAL_ERROR'
+      | 'ADMISSION_REJECTED'
+      | 'JOB_TIMED_OUT'
+      | 'WORKER_INTERRUPTED'
+      | 'INTEGRITY_FAILED'
+      | 'EXTERNAL_OUTCOME_UNKNOWN'
+      | 'AGENT_UNAVAILABLE'
+      | 'POLICY_DENIED'
+      | 'DATA_EXPOSURE_DENIED'
+      | 'RUN_REVISION_CHANGED'
+      | 'QUESTION_STALE'
+      | 'BUDGET_EXHAUSTED'
+      | 'PROVIDER_UNAVAILABLE'
+      | 'TOOL_SCHEMA_INVALID'
+      | 'UNSUPPORTED_CAPABILITY'
+      | 'REFERENCE_INVALID'
+      | 'TEST_PROTOCOL_SEALED'
+      | 'RUN_CANCELLED'
+    )
+  | null;
+export type Actions1 = RunActionView[];
+export type Id35 = string;
+export type Role = 'data_evaluation' | 'evidence' | 'failure_memory' | 'scientific_reviewer';
+export type Objective4 = string;
+export type PlanRevision2 = number;
+export type State11 = 'queued' | 'running' | 'waiting' | 'completed' | 'failed' | 'cancelled';
+export type CreatedAt22 = string;
+export type DeadlineAt1 = string;
+export type Assignments1 = RunAssignmentView[];
 export type RunId8 = string;
-export type State10 =
+export type State12 =
   | 'queued'
   | 'running'
   | 'waiting_for_job'
@@ -951,13 +1005,13 @@ export type State10 =
   | 'partially_completed'
   | 'failed'
   | 'cancelled';
-export type ArtifactIds3 = string[];
+export type ArtifactIds4 = string[];
 export type StopReason1 = string | null;
 export type Contract6 = 'run_event';
 export type SchemaVersion23 = '1.0';
 export type RunId9 = string;
 export type Sequence = number;
-export type CreatedAt22 = string;
+export type CreatedAt23 = string;
 export type EventType =
   | 'accepted'
   | 'state_changed'
@@ -967,7 +1021,7 @@ export type EventType =
   | 'usage_changed'
   | 'result_published';
 export type RunRevision1 = number;
-export type State11 =
+export type State13 =
   | 'queued'
   | 'running'
   | 'waiting_for_job'
@@ -979,7 +1033,7 @@ export type State11 =
   | 'cancelled';
 export type ActionId4 = string | null;
 export type QuestionId = string | null;
-export type ArtifactIds4 = string[];
+export type ArtifactIds5 = string[];
 export type Summary1 = string | null;
 export type RunEvents = RunEvent[];
 export type ProjectId21 = string;
@@ -1010,7 +1064,7 @@ export type AllowedTools = (
   | 'read_memory'
 )[];
 export type MaterialIds1 = string[];
-export type ArtifactIds5 = string[];
+export type ArtifactIds6 = string[];
 export type SpendCeilingUsd = number | null;
 export type AllowReuse = boolean;
 export type AutomaticFailureRecording = boolean;
@@ -2022,6 +2076,9 @@ export interface RunDetail {
   plan: ResearchPlan | null;
   questions: Questions;
   control_effect: ControlEffect;
+  earlier_plans: EarlierPlans;
+  actions: Actions1;
+  assignments: Assignments1;
 }
 export interface ResearchQuestion {
   schema_version: SchemaVersion21;
@@ -2058,10 +2115,35 @@ export interface UnavailableEvidenceReference {
   source_sha256: SourceSha2562;
   reason: Reason4;
 }
+/**
+ * One recorded tool attempt: identity, state and outputs only, never its arguments.
+ */
+export interface RunActionView {
+  id: Id34;
+  tool: Tool1;
+  attempt: Attempt;
+  state: State10;
+  assignment_id: AssignmentId1;
+  job_id: JobId1;
+  artifact_ids: ArtifactIds3;
+  error_code: ErrorCode3;
+}
+/**
+ * A specialist assignment as scoped by the coordinator; results stay advisory.
+ */
+export interface RunAssignmentView {
+  id: Id35;
+  role: Role;
+  objective: Objective4;
+  plan_revision: PlanRevision2;
+  state: State11;
+  created_at: CreatedAt22;
+  deadline_at: DeadlineAt1;
+}
 export interface RunResult {
   run_id: RunId8;
-  state: State10;
-  artifact_ids: ArtifactIds3;
+  state: State12;
+  artifact_ids: ArtifactIds4;
   stop_reason: StopReason1;
 }
 export interface RunEvent {
@@ -2069,13 +2151,13 @@ export interface RunEvent {
   schema_version: SchemaVersion23;
   run_id: RunId9;
   sequence: Sequence;
-  created_at: CreatedAt22;
+  created_at: CreatedAt23;
   event_type: EventType;
   run_revision: RunRevision1;
-  state: State11;
+  state: State13;
   action_id: ActionId4;
   question_id: QuestionId;
-  artifact_ids: ArtifactIds4;
+  artifact_ids: ArtifactIds5;
   summary: Summary1;
 }
 export interface ExecutionPolicySummary {
@@ -2095,7 +2177,7 @@ export interface EffectivePolicy {
   exposure: Exposure;
   allowed_tools: AllowedTools;
   material_ids: MaterialIds1;
-  artifact_ids: ArtifactIds5;
+  artifact_ids: ArtifactIds6;
   limits: ResourceLimits;
   spend_ceiling_usd: SpendCeilingUsd;
   allow_reuse: AllowReuse;

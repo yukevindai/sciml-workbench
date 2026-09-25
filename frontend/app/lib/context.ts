@@ -33,6 +33,8 @@ export type Workbench = {
   /** Queues a backend job for the active project, retaining its request key until the outcome is known. */
   submit: (kind: OperationKind, payload?: object) => Promise<void>;
   setNotice: (message: string) => void;
+  /** Polls jobs and artifacts now, outside the normal cadence. */
+  refreshJobs: () => void;
 
   datasets: DatasetArtifact[];
   selectedDataset: DatasetArtifact | undefined;

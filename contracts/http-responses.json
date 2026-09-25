@@ -5830,6 +5830,199 @@
       "title": "ResourceLimits",
       "type": "object"
     },
+    "RunActionView": {
+      "additionalProperties": false,
+      "description": "One recorded tool attempt: identity, state and outputs only, never its arguments.",
+      "properties": {
+        "id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "tool": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Tool",
+          "type": "string"
+        },
+        "attempt": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "title": "Attempt",
+          "type": "integer"
+        },
+        "state": {
+          "enum": [
+            "prepared",
+            "submitted",
+            "completed",
+            "failed",
+            "unknown",
+            "cancelled"
+          ],
+          "title": "State",
+          "type": "string"
+        },
+        "assignment_id": {
+          "anyOf": [
+            {
+              "maxLength": 160,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Assignment Id"
+        },
+        "job_id": {
+          "anyOf": [
+            {
+              "maxLength": 160,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Job Id"
+        },
+        "artifact_ids": {
+          "items": {
+            "maxLength": 160,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Artifact Ids",
+          "type": "array"
+        },
+        "error_code": {
+          "anyOf": [
+            {
+              "enum": [
+                "UNAUTHORIZED",
+                "ORIGIN_REJECTED",
+                "PROJECT_NOT_FOUND",
+                "ARTIFACT_NOT_FOUND",
+                "JOB_NOT_FOUND",
+                "IDEMPOTENCY_CONFLICT",
+                "PROJECT_BUSY",
+                "VALIDATION_FAILED",
+                "LINEAGE_MISMATCH",
+                "UPLOAD_TOO_LARGE",
+                "STORAGE_UNAVAILABLE",
+                "DEPENDENCY_UNAVAILABLE",
+                "INTERNAL_ERROR",
+                "ADMISSION_REJECTED",
+                "JOB_TIMED_OUT",
+                "WORKER_INTERRUPTED",
+                "INTEGRITY_FAILED",
+                "EXTERNAL_OUTCOME_UNKNOWN",
+                "AGENT_UNAVAILABLE",
+                "POLICY_DENIED",
+                "DATA_EXPOSURE_DENIED",
+                "RUN_REVISION_CHANGED",
+                "QUESTION_STALE",
+                "BUDGET_EXHAUSTED",
+                "PROVIDER_UNAVAILABLE",
+                "TOOL_SCHEMA_INVALID",
+                "UNSUPPORTED_CAPABILITY",
+                "REFERENCE_INVALID",
+                "TEST_PROTOCOL_SEALED",
+                "RUN_CANCELLED"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Error Code"
+        }
+      },
+      "required": [
+        "id",
+        "tool",
+        "attempt",
+        "state",
+        "assignment_id",
+        "job_id",
+        "artifact_ids",
+        "error_code"
+      ],
+      "title": "RunActionView",
+      "type": "object"
+    },
+    "RunAssignmentView": {
+      "additionalProperties": false,
+      "description": "A specialist assignment as scoped by the coordinator; results stay advisory.",
+      "properties": {
+        "id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "role": {
+          "enum": [
+            "data_evaluation",
+            "evidence",
+            "failure_memory",
+            "scientific_reviewer"
+          ],
+          "title": "Role",
+          "type": "string"
+        },
+        "objective": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Objective",
+          "type": "string"
+        },
+        "plan_revision": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "title": "Plan Revision",
+          "type": "integer"
+        },
+        "state": {
+          "enum": [
+            "queued",
+            "running",
+            "waiting",
+            "completed",
+            "failed",
+            "cancelled"
+          ],
+          "title": "State",
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        },
+        "deadline_at": {
+          "format": "date-time",
+          "title": "Deadline At",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "role",
+        "objective",
+        "plan_revision",
+        "state",
+        "created_at",
+        "deadline_at"
+      ],
+      "title": "RunAssignmentView",
+      "type": "object"
+    },
     "RunDetail": {
       "additionalProperties": false,
       "properties": {
@@ -5858,13 +6051,38 @@
           "minLength": 1,
           "title": "Control Effect",
           "type": "string"
+        },
+        "earlier_plans": {
+          "items": {
+            "$ref": "#/$defs/ResearchPlan"
+          },
+          "maxItems": 20,
+          "title": "Earlier Plans",
+          "type": "array"
+        },
+        "actions": {
+          "items": {
+            "$ref": "#/$defs/RunActionView"
+          },
+          "title": "Actions",
+          "type": "array"
+        },
+        "assignments": {
+          "items": {
+            "$ref": "#/$defs/RunAssignmentView"
+          },
+          "title": "Assignments",
+          "type": "array"
         }
       },
       "required": [
         "run",
         "plan",
         "questions",
-        "control_effect"
+        "control_effect",
+        "earlier_plans",
+        "actions",
+        "assignments"
       ],
       "title": "RunDetail",
       "type": "object"

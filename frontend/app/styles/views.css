@@ -292,3 +292,9 @@
 .run-step, .run-event { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--space-4); align-items: start; padding: var(--space-4) 0; border-top: 1px solid var(--color-border-subtle); }
 .run-step > div, .run-event > div { min-width: 0; overflow-wrap: anywhere; }
 .run-event-seq { font-family: var(--font-mono), monospace; font-size: var(--text-xs); color: var(--color-text-tertiary); }
+
+/* ---------------------------------- run controls & questions (A12) ----- */
+.control-ack { padding: var(--space-5) var(--space-6); border: 1px solid var(--color-border-subtle); border-radius: var(--radius-md); background: var(--color-bg-inset); }
+.clarification { padding: var(--space-5) var(--space-6); border: 1px solid var(--color-warning-border); border-radius: var(--radius-md); background: var(--color-warning-bg); }
+.question { display: grid; gap: var(--space-4); border: 0; padding: 0; margin: 0; min-width: 0; }
+.question legend { font-weight: var(--weight-semibold); margin-bottom: var(--space-3); overflow-wrap: anywhere; }

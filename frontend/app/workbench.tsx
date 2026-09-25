@@ -217,6 +217,8 @@ export default function Workbench({ view, fixture, children, requestedProjectId,
     setNotice('Job queued. Progress appears under job activity below.');
   }, [projectId, fixture]);
 
+  const refreshJobs = useCallback(() => pollNow.current?.(), []);
+
   const model: WorkbenchModel = useMemo(() => {
     const datasets = kinds(artifacts, 'dataset');
     const selectedDataset = datasets.find(d => d.id === datasetId) ?? datasets.at(-1);
@@ -231,13 +233,13 @@ export default function Workbench({ view, fixture, children, requestedProjectId,
       artifacts, jobs, jobsTruncated, lastUpdated, busy: busy || Boolean(fixture), preview: Boolean(fixture),
       jobsActive: jobs.some(isActive),
       workflow: deriveWorkflow(artifacts, Boolean(projectId)),
-      act, submit, setNotice,
+      act, submit, setNotice, refreshJobs,
       datasets, selectedDataset, setDatasetId,
       audits: kinds(artifacts, 'audit').filter(a => a.dataset_id === selectedDataset?.id),
       partitions, selectedSplit, setSplitId,
       runs, selectedRun, setRunId,
     };
-  }, [projects, projectId, artifacts, jobs, jobsTruncated, lastUpdated, busy, datasetId, splitId, runId, act, submit, setProjectId, setDatasetId, fixture]);
+  }, [projects, projectId, artifacts, jobs, jobsTruncated, lastUpdated, busy, datasetId, splitId, runId, act, submit, refreshJobs, setProjectId, setDatasetId, fixture]);
 
   const item = navItem(view);
   const needsProject = view !== 'projects' && view !== 'research' && !projectId;

@@ -3,8 +3,33 @@ from typing import Literal
 
 from pydantic import Field
 
-from .contract_core import ContractModel, Identifier, PolicyReference, Revision, RunState, Text, ToolName
+from pydantic import AwareDatetime
+
+from .contract_core import ContractModel, ErrorCode, Identifier, PolicyReference, Revision, RunState, Text, ToolName
 from .research_contracts import ResearchRun, ResearchPlan, ResearchQuestion, ResourceLimits
+
+
+class RunActionView(ContractModel):
+    """One recorded tool attempt: identity, state and outputs only, never its arguments."""
+    id: Identifier
+    tool: Identifier
+    attempt: Revision
+    state: Literal["prepared", "submitted", "completed", "failed", "unknown", "cancelled"]
+    assignment_id: Identifier | None
+    job_id: Identifier | None
+    artifact_ids: list[Identifier]
+    error_code: ErrorCode | None
+
+
+class RunAssignmentView(ContractModel):
+    """A specialist assignment as scoped by the coordinator; results stay advisory."""
+    id: Identifier
+    role: Literal["data_evaluation", "evidence", "failure_memory", "scientific_reviewer"]
+    objective: Text
+    plan_revision: Revision
+    state: Literal["queued", "running", "waiting", "completed", "failed", "cancelled"]
+    created_at: AwareDatetime
+    deadline_at: AwareDatetime
 
 
 class RunDetail(ContractModel):
@@ -12,6 +37,10 @@ class RunDetail(ContractModel):
     plan: ResearchPlan | None
     questions: list[ResearchQuestion]
     control_effect: Text
+    # A12: additive projections for the run workspace. Earlier plans are newest first.
+    earlier_plans: list[ResearchPlan] = Field(default_factory=list, max_length=20)
+    actions: list[RunActionView] = Field(default_factory=list)
+    assignments: list[RunAssignmentView] = Field(default_factory=list)
 
 
 class RunResult(ContractModel):
