@@ -23,13 +23,17 @@ test('real CSV → audit → split → baseline → failure memory → report', 
   await expect(page.getByRole('heading', { name: 'ridge baseline' })).toBeVisible({ timeout: 45000 });
   await expect(page.locator('.result .badge')).toHaveText('succeeded');
   await page.getByRole('link', { name: 'Failure memory', exact: true }).click();
+  // A07: the assessed run is chosen explicitly; nothing is preselected.
+  await page.getByLabel('Benchmark run').selectOption({ index: 1 });
   await page.getByLabel('Why was this run unsuccessful?').fill('The toy model is not an empirical result.');
   await page.getByLabel('Uncertainty and limits').fill('Synthetic software fixture; no physical outcome.');
   await page.getByRole('button', { name: 'Save to Failure Memory' }).click();
   await expect(page.getByRole('heading', { name: 'The toy model is not an empirical result.' })).toBeVisible({ timeout: 30000 });
   await page.getByRole('link', { name: 'Reports', exact: true }).click();
-  await expect(page.getByRole('button', { name: 'Generate report' })).toBeEnabled();
-  await page.getByRole('button', { name: 'Generate report' }).click();
+  // A08: export freezes the project; the archive opens from its export job.
+  await expect(page.getByRole('button', { name: 'Export project' })).toBeEnabled({ timeout: 30000 });
+  await page.getByRole('button', { name: 'Export project' }).click();
+  await page.getByRole('link', { name: 'Inspect archive' }).first().click({ timeout: 60000 });
   await expect(page.getByRole('link', { name: 'Download ZIP' })).toBeVisible({ timeout: 30000 });
   const downloadPromise = page.waitForEvent('download');
   await page.getByRole('link', { name: 'Download ZIP' }).click();

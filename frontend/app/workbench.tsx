@@ -172,8 +172,11 @@ export default function Workbench({ view, fixture, children, requestedProjectId,
     let timer: ReturnType<typeof setTimeout> | undefined;
     // One loop per project. Failures back off exponentially; success returns to the
     // normal cadence, which is slower while nothing runs or the tab is hidden.
+    let forceQueued = false;
     const poll = async (force = false) => {
-      if (disposed || polling) return;
+      if (disposed) return;
+      // A forced read requested during a poll runs right after it instead of being dropped.
+      if (polling) { forceQueued ||= force; return; }
       polling = true;
       clearTimeout(timer);
       try {
@@ -182,6 +185,7 @@ export default function Workbench({ view, fixture, children, requestedProjectId,
         polling = false;
       }
       if (disposed) return;
+      if (forceQueued) { forceQueued = false; void poll(true); return; }
       const delay = pollDelay({ failures, active: jobsRunning.current, hidden: document.visibilityState === 'hidden' });
       setNextRetryAt(failures ? Date.now() + delay : null);
       timer = setTimeout(() => void poll(), delay);

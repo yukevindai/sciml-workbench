@@ -89,6 +89,12 @@ one card whose drafts survive a refresh. Earlier plan revisions, specialist
 assignments, tool actions and partial completion are shown as recorded. See the
 [A12 handoff](docs/tickets/A12.md).
 
+Local browser acceptance against the Compose stack (PostgreSQL, API, scientific
+worker, web) is in `frontend/tests/acceptance-a10.spec.ts`, run by
+`scripts/acceptance/run_a10.sh`. Agent runs there are advanced by a scripted
+test-only coordinator, and no model provider is called. Hosted acceptance was
+not run. See the [A10 handoff](docs/tickets/A10.md).
+
 1. **Projects:** create a project and describe its research question.
 2. **Dataset audit:** upload `examples/demo.csv`, then explicitly choose **Use bundled synthetic demo declarations** for this fixture. Ordinary uploads start with unknown source metadata and can be audited without a license declaration. Click **Run audit** using the prefilled configuration.
 3. **Split designer:** click **Generate partition**. SciSplit produces a 60/20/20 requested train/validation/test split by generated family; actual group-constrained counts are visualized.

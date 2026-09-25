@@ -66,6 +66,16 @@ export function ResearchRunPanel({ wb, runs, runId, truncated, historyError, onS
   const reported = detail?.run;
   useEffect(() => { if (reported) onChanged(reported); }, [reported, onChanged]);
 
+  // A published result can precede the workspace's artifact snapshot; read it now rather than at the idle cadence.
+  const missing = (reported?.result_artifact_ids ?? []).filter(id => !wb.artifacts.some(a => a.id === id)).join(' ');
+  const requested = useRef('');
+  const { refreshJobs } = wb;
+  useEffect(() => {
+    if (!missing || requested.current === missing) return;
+    requested.current = missing;
+    refreshJobs();
+  }, [missing, refreshJobs]);
+
   const { setDetail, refresh } = feed;
   const updated = useCallback((next: ResearchRun) => {
     if (next.id === runId) {
@@ -111,7 +121,7 @@ export function ResearchRunPanel({ wb, runs, runId, truncated, historyError, onS
       {picker}
       <div className="stack stack--tight">
         <p className="claim-statement">{run.objective}</p>
-        <div className="button-row"><Badge state={run.state} /><span className="field-hint">{run.mode === 'review_plan' ? 'Review plan' : 'Autopilot'} · accepted {time(run.created_at)}{run.finished_at ? ` · finished ${time(run.finished_at)}` : ''}</span></div>
+        <div className="button-row" role="group" aria-label="Run status"><Badge state={run.state} /><span className="field-hint">{run.mode === 'review_plan' ? 'Review plan' : 'Autopilot'} · accepted {time(run.created_at)}{run.finished_at ? ` · finished ${time(run.finished_at)}` : ''}</span></div>
         <p className="field-hint">{status?.description} Run status does not establish scientific validity.</p>
         <p className="meta-id">Run {run.id} · revision {run.control_revision}{run.continued_from_run_id ? ` · continues ${run.continued_from_run_id}` : ''}</p>
         <p className="field-hint" aria-live="polite">{TRANSPORT_LABEL[isTerminalRun(run) && feed.transport !== 'connecting' ? 'finished' : feed.transport]}</p>
