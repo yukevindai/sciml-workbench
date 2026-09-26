@@ -186,7 +186,11 @@ test('an API outage is survived without resubmission and events reconnect withou
   await page.getByLabel('Research run').selectOption(state.completed!.id);
   const card = page.locator(`#run-${state.completed!.id}`);
   const events = card.getByRole('list', { name: 'Run events' }).getByRole('listitem');
-  const count = await events.count();
+  const persisted = await json<{ sequence: number }[]>(page,
+    `projects/${state.a}/agent-runs/${state.completed!.id}/events?after=0&limit=500`);
+  const count = persisted.length;
+  expect(count, 'completed run has persisted events before the outage').toBeGreaterThan(0);
+  await expect(events).toHaveCount(count);
   const posts: string[] = [];
   page.on('request', request => { if (request.method() === 'POST') posts.push(request.url()); });
   compose(['stop', 'api']);
