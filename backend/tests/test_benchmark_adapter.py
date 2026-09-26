@@ -13,6 +13,7 @@ from workbench.contracts import BenchmarkInput
 from workbench.db import JobRow
 from workbench.worker import claim, process_job
 from test_intake import api
+from test_metadata import db, old_db  # noqa: F401 - transitive api fixtures
 from test_split_integrity import inputs, example
 
 
@@ -158,6 +159,8 @@ def test_durable_incompatible_units_failure_retains_no_invented_metrics(api):
     state, baseline = run("benchmark", {**example("benchmark"), "dataset_id": data_id, "split_id": part["id"],
         "accepted_warnings": {"incompatible_units": "An error cannot be waived as a warning"}})
     assert state == baseline["status"] == "failed"
-    assert "incompatible_units" in baseline["error"]
+    # E14 deliberately keeps raw adapter diagnostics out of persisted errors;
+    # the retained audit above carries the structured incompatible-units finding.
+    assert baseline["error"] == "Task could not complete. Inspect the job error code and retained inputs."
     assert baseline["result"] == {} and baseline["bundle_key"] is None
     assert client.get(f"/api/v1/projects/{pid}/artifacts/{data_id}/download").content == raw

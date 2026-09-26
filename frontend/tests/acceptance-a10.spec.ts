@@ -87,11 +87,14 @@ test('one request completes under Autopilot and the browser matches persisted re
   provision(state.a);   // The operator grants the new attachment; the product has no policy-write route.
   await page.reload();
   await expect(page.getByRole('list', { name: 'Inputs' })).toContainText('authorized by the saved policy');
+  await expect(page.getByRole('list', { name: 'Inputs' })).not.toContainText('not authorized');
+  await expect(page.getByText(/Autopilot policy revision \d+/)).toBeVisible();
 
   // Keyboard only: goal, then Run research.
   await page.getByLabel('Research goal').focus();
   await page.keyboard.type('Audit demo.csv for missing values and duplicate rows.');
   const run = page.getByRole('button', { name: 'Run research' });
+  await expect(run).toBeEnabled();
   for (let i = 0; i < 30 && !(await run.evaluate(el => el === document.activeElement)); i += 1) await page.keyboard.press('Tab');
   await expect(run).toBeFocused();
   const before = state.posts.length;

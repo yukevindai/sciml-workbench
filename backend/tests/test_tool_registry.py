@@ -17,13 +17,13 @@ from workbench.storage import LocalStore
 from workbench.tool_registry import ToolRegistry, DispatchContext, DESCRIPTORS
 from workbench.worker import process_job
 from workbench.job_metadata import claim_next
-from test_metadata import old_db, db
+from test_metadata import old_db, db, database_url
 from test_workflow import fixture
 
 
 @pytest.fixture
 def registry(db, tmp_path):
-    settings = Settings(_env_file=None, database_url=str(db.engine.url), storage_root=tmp_path / 'files',
+    settings = Settings(_env_file=None, database_url=database_url(db), storage_root=tmp_path / 'files',
                         api_token='a' * 48, efm_password='b' * 24)
     store = LocalStore(settings.storage_root)
     with db.session.begin() as s:

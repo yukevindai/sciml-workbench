@@ -15,6 +15,7 @@ from workbench.db import JobRow
 from workbench.submission import SubmissionScope
 from workbench.worker import claim, process_job
 from test_intake import api, attach
+from test_metadata import db, old_db  # noqa: F401 - transitive api fixtures
 
 FIXTURES = Path(__file__).parent / "fixtures/audit"
 

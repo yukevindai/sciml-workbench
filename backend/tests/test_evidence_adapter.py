@@ -14,6 +14,7 @@ from workbench.db import JobRow
 from workbench.evidence_integrity import EvidenceInputError, EvidenceIntegrityError, verify_evidence
 from workbench.worker import claim, process_job
 from test_intake import api, attach
+from test_metadata import db, old_db  # noqa: F401 - transitive api fixtures
 
 
 def pdf_fixture(kind):

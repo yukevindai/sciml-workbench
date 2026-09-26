@@ -20,6 +20,7 @@ from workbench.replay import replay
 from workbench.services import execute
 from workbench.storage import LocalStore
 from test_intake import api, attach
+from test_metadata import db, old_db  # noqa: F401 - transitive api fixtures
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -54,9 +55,18 @@ def test_seeded_adapter_replay_and_full_public_diagnostics(strategy, extra):
     config = {"strategy": strategy, "seed": 42, "validation_size": 0.2, **extra}
     original = deepcopy(config)
     first = adapters.run_split(raw, config)
-    assert first == adapters.run_split(raw, config)
+    repeated = adapters.run_split(raw, config)
     upstream = split(adapters.frame(raw), SplitConfig(**config))
-    assert first == (upstream.assignments(), upstream.to_dict())
+    for candidate in (repeated, (upstream.assignments(), upstream.to_dict())):
+        expected, observed = deepcopy(first), deepcopy(candidate)
+        if strategy == "cluster":
+            # Parallel K-means reduction can differ at machine precision.
+            # Only inertia is approximate; assignments and all other diagnostics
+            # (including labels and centers) must still match exactly.
+            expected_inertia = expected[1]["diagnostics"]["cluster_design"].pop("inertia")
+            observed_inertia = observed[1]["diagnostics"]["cluster_design"].pop("inertia")
+            assert observed_inertia == pytest.approx(expected_inertia, rel=1e-12, abs=1e-12)
+        assert expected == observed
     assert config == original
     assert len(first[0]) == 60 and set(first[0]) == {"train", "validation", "test"}
 
