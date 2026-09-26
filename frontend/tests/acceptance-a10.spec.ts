@@ -87,11 +87,14 @@ test('one request completes under Autopilot and the browser matches persisted re
   provision(state.a);   // The operator grants the new attachment; the product has no policy-write route.
   await page.reload();
   await expect(page.getByRole('list', { name: 'Inputs' })).toContainText('authorized by the saved policy');
+  await expect(page.getByRole('list', { name: 'Inputs' })).not.toContainText('not authorized');
+  await expect(page.getByText(/Autopilot policy revision \d+/)).toBeVisible();
 
   // Keyboard only: goal, then Run research.
   await page.getByLabel('Research goal').focus();
   await page.keyboard.type('Audit demo.csv for missing values and duplicate rows.');
   const run = page.getByRole('button', { name: 'Run research' });
+  await expect(run).toBeEnabled();
   for (let i = 0; i < 30 && !(await run.evaluate(el => el === document.activeElement)); i += 1) await page.keyboard.press('Tab');
   await expect(run).toBeFocused();
   const before = state.posts.length;
@@ -125,8 +128,13 @@ test('one request completes under Autopilot and the browser matches persisted re
 test('optional Review plan waits once, then completes after acceptance', async ({ page }) => {
   test.setTimeout(300_000);
   const { run, card } = await runRequest(page, `Audit demo.csv after I review the plan (${stamp}).`, { review: true });
-  expect(run.state).toBe('queued');
   await expect(card.getByText('Plan ready for your review')).toBeVisible({ timeout: 60_000 });
+  // The coordinator may already have planned by the time the history read
+  // finishes. Assert the durable review boundary, not a transient queued state.
+  const waiting = await json<{ run: Run; actions: { job_id: string | null }[] }>(page,
+    `projects/${state.a}/agent-runs/${run.id}`);
+  expect(waiting.run.state).toBe('waiting_for_input');
+  expect(waiting.actions.filter(action => action.job_id)).toHaveLength(0);
   await card.getByRole('button', { name: 'Accept plan revision 1' }).click();
   await expect(card.getByRole('group', { name: 'Run status' }).getByText('completed', { exact: true })).toBeVisible({ timeout: 180_000 });
 });
@@ -183,7 +191,11 @@ test('an API outage is survived without resubmission and events reconnect withou
   await page.getByLabel('Research run').selectOption(state.completed!.id);
   const card = page.locator(`#run-${state.completed!.id}`);
   const events = card.getByRole('list', { name: 'Run events' }).getByRole('listitem');
-  const count = await events.count();
+  const persisted = await json<{ sequence: number }[]>(page,
+    `projects/${state.a}/agent-runs/${state.completed!.id}/events?after=0&limit=500`);
+  const count = persisted.length;
+  expect(count, 'completed run has persisted events before the outage').toBeGreaterThan(0);
+  await expect(events).toHaveCount(count);
   const posts: string[] = [];
   page.on('request', request => { if (request.method() === 'POST') posts.push(request.url()); });
   compose(['stop', 'api']);

@@ -97,7 +97,7 @@
     "frontend/package.json": "aad65690bacff9d9f7c8a14073c95172ab0ed3c9b2f8254e2162f74d7f3e184e",
     "backend/Dockerfile": "cd55416d0e65fc8599229361bafc6a828f8ba8af80aa195d499ab1116b2569ae",
     "frontend/Dockerfile": "6c88c2688a4580dceb5db14d5de9925796fb87039393f41768e4d61ef0f7db86",
-    "compose.yaml": "bac0a84c45097c43675b4f729470f79b2c2349004f4f3e2b0ec1749ff3fe028d",
+    "compose.yaml": "4618873c881e057bd817138d2fa9d4adc47815b97fb44a435fe1c3fc0471a4eb",
     "backend/migrations/versions/0001_initial.py": "507f531e6da255527bb03d8e620ebe9fb8f7713bd074b15502c910fa3da55b4b",
     "backend/migrations/versions/0002_metadata_invariants.py": "f864f7eddebc59496181cf8e40c5da80cb2653fcb1c6937695567229c57973bf",
     "backend/migrations/versions/0003_research_materials.py": "0899c826194811c2dcf1c68c519d9cfd22794f1b97c66cb4dad12bb032d8e008",

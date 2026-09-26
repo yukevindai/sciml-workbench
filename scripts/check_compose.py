@@ -35,6 +35,13 @@ def check(document):
     assert services["agent-worker"]["profiles"] == ["agents"], "Agent process must be opt-in"
     assert services["agent-worker"]["command"] == ["python", "-m", "workbench.agent_worker"], "Agent process must be independent"
     assert services["agent-worker"]["restart"] == "no", "Unavailable agent runtime must not restart-loop"
+    for name in ("api", "agent-worker"):
+        for key in ("WB_AGENT_MODEL_BOUNDS", "WB_AGENT_MODEL_PRICES"):
+            try:
+                value = json.loads(services[name]["environment"][key])
+            except (ValueError, TypeError):
+                raise AssertionError(f"{name} {key} must resolve to a JSON object") from None
+            assert isinstance(value, dict), f"{name} {key} must resolve to a JSON object"
 
 
 def main():
