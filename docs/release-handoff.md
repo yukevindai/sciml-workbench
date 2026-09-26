@@ -3,8 +3,9 @@
 This is a reviewable release candidate, **not an accepted hosted or live-agent
 release**. D10 assembles the setup, operator, compatibility and reproduction
 material. A new operator's live one-request walkthrough, representative model
-quality, hosted private access/redeploy/restore, and a successful complete D09 CI
-run at the accepted revision remain open.
+quality, and hosted private access/redeploy/restore remain open. Complete D09 CI
+passed for candidate `33f7b0a` on September 26, 2026; see the
+[acceptance follow-up](release/acceptance-2026-09-26.md).
 
 ## Package and compatibility
 
@@ -131,10 +132,10 @@ become fresh release acceptance by being linked here.
 | Release gate | Current handoff state |
 |---|---|
 | Compatibility, real synthetic report and local recovery | See D10 measured evidence |
-| Complete D09 CI at release revision | Pending; GitHub CLI not authenticated during handoff |
+| Complete D09 CI at release revision | Passed for candidate `33f7b0a`; [both CI jobs](https://github.com/yukevindai/sciml-workbench/actions/runs/36248290301) succeeded |
 | Fresh human-operated live one-request demonstration | Not run; account/models/bounds/prices and operator required |
 | Live model quality and representative claim support | Not run; deterministic trajectories do not establish quality |
-| Hosted private access, HTTPS, redeploy recovery | Not revalidated; D06 historical failed access probe remains unresolved |
+| Hosted private access, HTTPS, redeploy recovery | September 26 anonymous checks still returned 200 for `/` and `/api/projects`; access gate failed, redeploy recovery not run |
 | Production/hosted coordinated restore | Not run; local synthetic restore is narrower evidence |
 
 Other boundaries: single trusted operator, no multi-user project membership;
