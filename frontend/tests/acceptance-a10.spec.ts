@@ -128,8 +128,13 @@ test('one request completes under Autopilot and the browser matches persisted re
 test('optional Review plan waits once, then completes after acceptance', async ({ page }) => {
   test.setTimeout(300_000);
   const { run, card } = await runRequest(page, `Audit demo.csv after I review the plan (${stamp}).`, { review: true });
-  expect(run.state).toBe('queued');
   await expect(card.getByText('Plan ready for your review')).toBeVisible({ timeout: 60_000 });
+  // The coordinator may already have planned by the time the history read
+  // finishes. Assert the durable review boundary, not a transient queued state.
+  const waiting = await json<{ run: Run; actions: { job_id: string | null }[] }>(page,
+    `projects/${state.a}/agent-runs/${run.id}`);
+  expect(waiting.run.state).toBe('waiting_for_input');
+  expect(waiting.actions.filter(action => action.job_id)).toHaveLength(0);
   await card.getByRole('button', { name: 'Accept plan revision 1' }).click();
   await expect(card.getByRole('group', { name: 'Run status' }).getByText('completed', { exact: true })).toBeVisible({ timeout: 180_000 });
 });
