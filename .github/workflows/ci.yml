@@ -3,6 +3,24 @@ on: [push, pull_request]
 permissions:
   contents: read
 jobs:
+  vercel-packaging:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - run: python -m pip install uv==0.10.11
+      - name: Resolve and install the Vercel root manifest
+        run: |
+          uv lock --check --python python3.12
+          uv sync --frozen --no-dev --no-editable --python python3.12
+          uv pip check --python .venv/bin/python
+      - name: Check installed science and queue subscriber discovery
+        run: |
+          .venv/bin/python scripts/check_scientific_surface.py
+          .venv/bin/python scripts/release_manifest.py --check
+          .venv/bin/python -c 'import queue_consumer; from workbench.api import create_app'
   integration:
     runs-on: ubuntu-latest
     timeout-minutes: 45

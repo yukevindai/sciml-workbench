@@ -1,4 +1,4 @@
-# Vercel backend project uses the repository root; same scientific pins as Compose.
+# Optional pip install path. Vercel uses root pyproject.toml and uv.lock instead.
 -c backend/constraints.txt
 fastapi
 ./backend

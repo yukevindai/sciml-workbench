@@ -14,3 +14,4 @@ data/
 outputs/
 playwright-report/
 test-results/
+backend/build/
