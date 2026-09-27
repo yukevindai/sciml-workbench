@@ -71,8 +71,8 @@ class Settings(BaseSettings):
         if self.deployment_mode == "vercel":
             if self.storage_backend != "postgres" or not self.storage_root.resolve().is_relative_to("/tmp"):
                 raise ConfigurationError("Vercel requires WB_STORAGE_BACKEND=postgres and a temporary WB_STORAGE_ROOT under /tmp.")
-            if self.job_timeout_seconds > 600 or self.max_upload_bytes > 4 * 1024 * 1024:
-                raise ConfigurationError("Vercel jobs must be <=600 seconds and uploads <=4 MiB.")
+            if self.job_timeout_seconds > 240 or self.max_upload_bytes > 4 * 1024 * 1024:
+                raise ConfigurationError("Vercel Hobby jobs must be <=240 seconds and uploads <=4 MiB.")
         validate_secret(self.api_token, "WB_API_TOKEN", 32)
         validate_secret(self.efm_password, "WB_EFM_PASSWORD", 12)
 

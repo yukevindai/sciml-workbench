@@ -2,15 +2,16 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": "fastapi",
   "functions": {
-    "app.py": {
-      "maxDuration": 800,
+    "*.py": {
+      "maxDuration": 300,
       "memory": 2048,
       "excludeFiles": "{frontend/**,backend/tests/**,docs/**,examples/**,.venv/**,outputs/**}"
     }
   },
   "crons": [
-    {"path": "/internal/cron/science", "schedule": "* * * * *"},
-    {"path": "/internal/cron/agent", "schedule": "* * * * *"},
-    {"path": "/internal/cron/recovery", "schedule": "* * * * *"}
+    {
+      "path": "/internal/cron/dispatch",
+      "schedule": "0 0 * * *"
+    }
   ]
 }

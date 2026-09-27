@@ -137,13 +137,24 @@ def create_app(settings=None):
                     return res
             request._body = bytes(body)
         res = await call_next(request)
+        if (settings.deployment_mode == 'vercel' and request.method == 'POST'
+                and request.url.path.startswith('/api/v1/') and 200 <= res.status_code < 300):
+            # Function-scoped dependencies commit before this dispatch. Await the
+            # durable send before returning; no post-response background work.
+            from .queue_runtime import wake
+            try:
+                await wake(settings, key=request.state.request_id)
+            except Exception:
+                res = error_response(request,
+                    'Work was saved, but scheduling is unavailable. Retry with the same idempotency key; saved jobs remain visible.',
+                    'DEPENDENCY_UNAVAILABLE', 503)
         res.headers["Cache-Control"] = "no-store"
         res.headers["X-Content-Type-Options"] = "nosniff"
         res.headers["X-Request-ID"] = request.state.request_id
         return res
 
     @app.get("/health")
-    def health(s=Depends(session)):
+    def health(s=Depends(session, scope="function")):
         s.execute(text("SELECT 1"))
         return {"status": "ok"}
 
@@ -159,11 +170,11 @@ def create_app(settings=None):
 
     @app.get("/api/v1/projects/{pid}/artifact-index", dependencies=protected, response_model=ArtifactPage)
     def artifact_index(pid: str, after: str | None = Query(default=None, max_length=2048),
-                       limit: int = Query(default=50, ge=1, le=100), kind: str | None = Query(default=None, max_length=40), s=Depends(session)):
+                       limit: int = Query(default=50, ge=1, le=100), kind: str | None = Query(default=None, max_length=40), s=Depends(session, scope="function")):
         return reads.artifact_index(s, ReadScope(pid), after=after, limit=limit, kind=kind)
 
     @app.get("/api/v1/projects/{pid}/evaluations/{protocol_id}", dependencies=protected, response_model=EvaluationStatusView)
-    def get_evaluation(pid: str, protocol_id: str, s=Depends(session)):
+    def get_evaluation(pid: str, protocol_id: str, s=Depends(session, scope="function")):
         from .evaluation import evaluation_status
         project(s, pid)
         return evaluation_status(s, ReadScope(pid), protocol_id)
@@ -171,15 +182,15 @@ def create_app(settings=None):
     @app.get("/api/v1/projects/{pid}/job-index", dependencies=protected, response_model=JobPage)
     def job_index(pid: str, after: str | None = Query(default=None, max_length=2048),
                   limit: int = Query(default=50, ge=1, le=100), kind: str | None = Query(default=None, max_length=40),
-                  order: Literal["asc", "desc"] = "asc", s=Depends(session)):
+                  order: Literal["asc", "desc"] = "asc", s=Depends(session, scope="function")):
         return reads.job_index(s, ReadScope(pid), after=after, limit=limit, kind=kind, order=order)
 
     @app.get("/api/v1/projects/{pid}/jobs/{jid}", dependencies=protected, response_model=JobDetail)
-    def get_job(pid: str, jid: str, s=Depends(session)):
+    def get_job(pid: str, jid: str, s=Depends(session, scope="function")):
         return reads.job(s, ReadScope(pid), jid)
 
     @app.get("/api/v1/projects", dependencies=protected, response_model=list[ProjectResponse])
-    def projects(s=Depends(session)):
+    def projects(s=Depends(session, scope="function")):
         return [
             {"id": p.id, "name": p.name, "description": p.description}
             for p in s.scalars(
@@ -188,14 +199,14 @@ def create_app(settings=None):
         ]
 
     @app.post("/api/v1/projects", dependencies=protected, status_code=201, response_model=ProjectResponse)
-    def create_project(payload: ProjectInput, s=Depends(session)):
+    def create_project(payload: ProjectInput, s=Depends(session, scope="function")):
         p = ProjectRow(**payload.model_dump())
         s.add(p)
         s.flush()
         return {"id": p.id, "name": p.name, "description": p.description}
 
     @app.get("/api/v1/projects/{pid}/artifacts", dependencies=protected, response_model=list[IntakeArtifact])
-    def artifacts(pid: str, s=Depends(session)):
+    def artifacts(pid: str, s=Depends(session, scope="function")):
         project(s, pid)
         resolver = ArtifactResolver(s, pid)
         values = [
@@ -213,41 +224,41 @@ def create_app(settings=None):
         return values
 
     @app.get("/api/v1/projects/{pid}/artifact-previews", dependencies=protected, response_model=list[ArtifactPreview])
-    def artifact_previews(pid: str, s=Depends(session)):
+    def artifact_previews(pid: str, s=Depends(session, scope="function")):
         values = reads.artifact_previews(s, ReadScope(pid))
         s.commit()  # Any recorded exposure must be durable before content leaves the server.
         return values
 
     @app.get("/api/v1/projects/{pid}/artifacts/{aid}", dependencies=protected, response_model=IntakeArtifact)
-    def get_artifact(pid: str, aid: str, s=Depends(session)):
+    def get_artifact(pid: str, aid: str, s=Depends(session, scope="function")):
         value = reads.artifact(s, ReadScope(pid), aid)
         s.commit()
         return value
 
     @app.get("/api/v1/projects/{pid}/reports/{rid}/summary", dependencies=protected, response_model=ReportSummary)
-    def report_summary(pid: str, rid: str, s=Depends(session)):
+    def report_summary(pid: str, rid: str, s=Depends(session, scope="function")):
         from .report_inspection import report_summary as summarize
         return summarize(s, store, ReadScope(pid), rid)
 
     # Evidence inspection reverifies retained bytes on every read and never extracts.
     @app.get("/api/v1/projects/{pid}/evidence/{aid}/pages/{page}", dependencies=protected, response_model=EvidencePageText)
-    def evidence_page(pid: str, aid: str, page: int = Path(ge=1, le=100_000), s=Depends(session)):
+    def evidence_page(pid: str, aid: str, page: int = Path(ge=1, le=100_000), s=Depends(session, scope="function")):
         from .references import page_text
         return page_text(s, store, ReadScope(pid), aid, page)
 
     @app.get("/api/v1/projects/{pid}/claim-sets/{cid}/claims/{claim_id}/source-references/{index}",
              dependencies=protected, response_model=EvidenceSpanView)
-    def claim_citation(pid: str, cid: str, claim_id: str, index: int = Path(ge=0, le=999), s=Depends(session)):
+    def claim_citation(pid: str, cid: str, claim_id: str, index: int = Path(ge=0, le=999), s=Depends(session, scope="function")):
         from .references import claim_source_span
         return claim_source_span(s, store, ReadScope(pid), cid, claim_id, index)
 
     @app.get("/api/v1/projects/{pid}/evidence-spans", dependencies=protected, response_model=list[EvidenceAnchor])
-    def evidence_spans(pid: str, s=Depends(session)):
+    def evidence_spans(pid: str, s=Depends(session, scope="function")):
         from .references import evidence_anchors
         return evidence_anchors(s, ReadScope(pid))
 
     @app.get("/api/v1/projects/{pid}/evidence-spans/{sid}", dependencies=protected, response_model=EvidenceSpanView)
-    def evidence_span(pid: str, sid: str, s=Depends(session)):
+    def evidence_span(pid: str, sid: str, s=Depends(session, scope="function")):
         from .references import registered_span_context
         return registered_span_context(s, store, ReadScope(pid), sid)
 
@@ -259,7 +270,7 @@ def create_app(settings=None):
         request: Request,
         x_filename: str = Header(default="dataset.csv"),
         x_source: str | None = Header(default=None),
-        s=Depends(session),
+        s=Depends(session, scope="function"),
     ):
         if x_source is None:
             return intake.dataset(s, store, settings, pid, await request.body(), x_filename)
@@ -280,7 +291,7 @@ def create_app(settings=None):
               status_code=201, response_model=MaterialResponse)
     async def attach(pid: str, request: Request, x_filename: str = Header(),
                      content_type: str = Header(), idempotency_key: str = Header(),
-                     x_source: str | None = Header(default=None), s=Depends(session)):
+                     x_source: str | None = Header(default=None), s=Depends(session, scope="function")):
         try:
             source = SourceDeclarations.model_validate_json(x_source) if x_source is not None else None
         except ValueError as exc:
@@ -291,7 +302,7 @@ def create_app(settings=None):
 
     @app.get("/api/v1/projects/{pid}/research-materials", dependencies=protected,
              response_model=list[MaterialResponse])
-    def materials(pid: str, s=Depends(session)):
+    def materials(pid: str, s=Depends(session, scope="function")):
         project(s, pid)
         return [material_json(intake.material(s, pid, value.id)) for value in s.scalars(select(MaterialRow).where(MaterialRow.project_id == pid))]
 
@@ -304,7 +315,7 @@ def create_app(settings=None):
         return Response(raw, media_type=value.media_type, headers=headers)
 
     @app.get("/api/v1/projects/{pid}/research-materials/{mid}/download", dependencies=protected)
-    def download_material(pid: str, mid: str, s=Depends(session)):
+    def download_material(pid: str, mid: str, s=Depends(session, scope="function")):
         value = reads.download(s, ReadScope(pid), mid, material=True)
         raw = store.get(value.key)
         s.commit()
@@ -370,7 +381,7 @@ def create_app(settings=None):
         return queue(pid, "report", {}, idempotency_key)
 
     @app.get("/api/v1/projects/{pid}/jobs", dependencies=protected, response_model=list[JobResponse], response_model_exclude_unset=True)
-    def jobs(pid: str, s=Depends(session)):
+    def jobs(pid: str, s=Depends(session, scope="function")):
         project(s, pid)
         return [
             job_json(j)
@@ -382,7 +393,7 @@ def create_app(settings=None):
         ]
 
     @app.get("/api/v1/projects/{pid}/artifacts/{aid}/download", dependencies=protected)
-    def download(pid: str, aid: str, representation: Literal["default", "original", "bundle"] = "default", s=Depends(session)):
+    def download(pid: str, aid: str, representation: Literal["default", "original", "bundle"] = "default", s=Depends(session, scope="function")):
         value = reads.download(s, ReadScope(pid), aid, representation=representation)
         raw = store.get(value.key)
         s.commit()

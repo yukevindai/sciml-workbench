@@ -1,5 +1,6 @@
 """Vercel boundaries and real PostgreSQL state across independent invocations."""
 import hashlib
+import asyncio
 import io
 import json
 import shutil
@@ -28,7 +29,7 @@ from test_workflow import create, upload, fixture
 def config(url='postgresql+psycopg://test:testing@localhost/disposable', **extra):
     return Settings(_env_file=None, database_url=url, api_token='a' * 48,
         efm_password='synthetic-test-password', storage_root='/tmp/vercel-test',
-        deployment_mode='vercel', storage_backend='postgres', job_timeout_seconds=600,
+        deployment_mode='vercel', storage_backend='postgres', job_timeout_seconds=240,
         max_upload_bytes=4 * 1024 * 1024, **extra)
 
 
@@ -43,7 +44,7 @@ def settings(db, tmp_path):
 
 def test_vercel_configuration_fails_closed():
     for changes in ({'storage_backend': 'local'}, {'storage_root': Path('/var/data')},
-                    {'storage_root': Path('/tmp/../var/data')}, {'job_timeout_seconds': 601},
+                    {'storage_root': Path('/tmp/../var/data')}, {'job_timeout_seconds': 241},
                     {'max_upload_bytes': 4194305}, {'database_url': 'sqlite://'}):
         with pytest.raises(ConfigurationError):
             config().model_copy(update=changes).validate_secrets()
@@ -147,6 +148,21 @@ def test_complete_mvp_across_ephemeral_invocations(settings, db, monkeypatch):
     monkeypatch.setenv('WB_AGENTS_ENABLED', '0')
     monkeypatch.setenv('CRON_SECRET', 'c' * 48)
     monkeypatch.delenv('VERCEL_ENV', raising=False)
+    from workbench import queue_runtime
+    messages = []
+    async def sent(topic, payload, **options):
+        messages.append((payload, str(len(messages)) + '-' + str(len(dispatched))))
+    dispatched = []
+    monkeypatch.setattr(queue_runtime, 'send', sent)
+    def drain():
+        for _ in range(100):
+            if not messages:
+                return
+            payload, identity = messages.pop(0)
+            dispatched.append(payload)
+            shutil.rmtree(settings.storage_root, ignore_errors=True)
+            asyncio.run(queue_runtime.consume(settings, payload, identity))
+        pytest.fail('Queue did not settle')
     bootstrap(settings)
     app = create_app(settings)
     serverless.install(app, settings)
@@ -160,8 +176,7 @@ def test_complete_mvp_across_ephemeral_invocations(settings, db, monkeypatch):
             assert response.status_code == 202, response.text
             # Remove every temporary byte between invocations.
             shutil.rmtree(settings.storage_root, ignore_errors=True)
-            result = client.get('/internal/cron/science', headers={'Authorization': 'Bearer ' + 'c' * 48})
-            assert result.json()['status'] == 'processed', result.text
+            drain()
             with db.session() as session:
                 job = session.get(JobRow, response.json()['id'])
                 assert job.state == expected and job.result_id, (job.error_code, job.error)
@@ -191,6 +206,7 @@ def test_complete_mvp_across_ephemeral_invocations(settings, db, monkeypatch):
             for name, digest in manifest['files'].items():
                 assert hashlib.sha256(archive.read(name)).hexdigest() == digest
         assert 'content-length' not in response.headers
+    assert {p['phase'] for p in dispatched} == {0, 1, 2}
     assert serverless.tick(settings, 'science') == {'status': 'idle'}
     assert serverless.tick(settings, 'agent') == {'status': 'disabled'}
 
@@ -198,7 +214,7 @@ def test_complete_mvp_across_ephemeral_invocations(settings, db, monkeypatch):
 def test_enabled_idle_agent_tick_does_not_contact_provider(settings, monkeypatch):
     import workbench.agent_runtime as runtime
     monkeypatch.setattr(serverless, 'load_settings', lambda *a: SimpleNamespace(
-        agents_enabled=True, agent_lease_seconds=180, require_runtime=lambda: None))
+        agents_enabled=True, agent_lease_seconds=180, provider_timeout_seconds=20, require_runtime=lambda: None))
     monkeypatch.setattr(runtime, 'coordinator', lambda *a: pytest.fail('Idle tick contacted provider'))
     assert serverless.tick(settings, 'agent') == {'status': 'idle'}
 

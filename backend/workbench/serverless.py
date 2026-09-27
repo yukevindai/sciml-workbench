@@ -2,7 +2,6 @@
 from contextlib import contextmanager
 import hmac
 import os
-import time
 from fastapi import Header
 from sqlalchemy import text
 from .config import AgentSettings, ConfigurationError, load_settings
@@ -50,30 +49,24 @@ def tick(settings, kind):
             from .agent_runtime import coordinator
             from .checkpoints import saver
             agents.require_runtime()
+            if agents.agent_lease_seconds > 180 or agents.provider_timeout_seconds > 20:
+                raise ConfigurationError('Vercel Hobby requires agent leases <=180 seconds and provider timeouts <=20 seconds.')
             scheduler = Scheduler(db, lease_seconds=agents.agent_lease_seconds)
             # Do not make model lookups on idle cron ticks.
             claim = scheduler.claim('vercel:' + uid())
             if not claim:
                 return {'status': 'idle'}
             step = coordinator(db, create_store(settings), settings, agents)
-            count = 0
-            started = time.monotonic()
             try:
                 with saver(settings.database_url) as checkpointer:
-                    while claim and count < 12:
-                        try:
-                            state = scheduler.advance(claim, checkpointer, step)
-                        except DomainError as exc:
-                            if exc.error_code != 'RUN_REVISION_CHANGED':
-                                raise
-                            break
-                        count += 1
-                        if state != 'queued' or time.monotonic() - started >= 180:
-                            break
-                        claim = scheduler.claim('vercel:' + uid())
+                    try:
+                        scheduler.advance(claim, checkpointer, step)
+                    except DomainError as exc:
+                        if exc.error_code != 'RUN_REVISION_CHANGED':
+                            raise
             finally:
                 step.provider.close()
-            return {'status': 'advanced', 'steps': count}
+            return {'status': 'advanced', 'steps': 1}
     finally:
         db.engine.dispose()
 
@@ -92,6 +85,12 @@ def install(app, settings):
         # Preview deployments must use isolated DBs and cannot advance production.
         if os.environ.get('VERCEL_ENV') == 'preview':
             raise DomainError('Scheduled execution is disabled on preview deployments', 403)
+
+    @app.get('/internal/cron/dispatch', include_in_schema=False)
+    async def dispatch(authorization: str = Header(default='')):
+        authenticate(authorization)
+        from .queue_runtime import wake
+        return {'status': 'dispatched' if await wake(settings) else 'disabled'}
 
     @app.get('/internal/cron/{kind}', include_in_schema=False)
     def run(kind: str, authorization: str = Header(default='')):

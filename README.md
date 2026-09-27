@@ -139,7 +139,7 @@ Start with the guide's narrow audit demonstration before expanding the permitted
 
 **Setup references:** [Runtime and configuration ownership](docs/runtime-setup.md) · [Vercel deployment and migration](docs/vercel-setup.md)
 
-**Hosting on Vercel:** deploy the Next.js frontend (`frontend/`) and FastAPI backend (repository root) as two projects from the same commit. The backend uses managed PostgreSQL for metadata, file bytes and Failure Memory snapshots, plus authenticated per-minute cron jobs for scientific work, recovery and optional agents. This configuration requires **Vercel Pro/Enterprise**, caps uploads at **4 MiB** and scientific jobs at **600 seconds**, and preserves the local Compose workflow. Start with the dedicated [backend](.env.vercel.example) and [frontend](frontend/.env.vercel.example) environment templates. Existing Render data requires the documented transfer before retiring those services.
+**Hosting on Vercel:** deploy the Next.js frontend (`frontend/`) and FastAPI backend (repository root) as two projects from the same commit. The backend uses managed PostgreSQL for metadata, file bytes and Failure Memory snapshots, plus durable Vercel Queues for scientific work, recovery and optional agents. This configuration supports **Vercel Hobby**, caps uploads at **4 MiB** and scientific jobs at **240 seconds**, and preserves the local Compose workflow. Start with the dedicated [backend](.env.vercel.example) and [frontend](frontend/.env.vercel.example) environment templates. Existing Render data requires the documented transfer before retiring those services.
 
 
 ## Try the scientific workflow
@@ -218,7 +218,7 @@ A **modular monolith** with separate processes for HTTP requests, scientific job
 
 The Next.js server proxy adds the backend API token server-side. Provider, PostgreSQL, and Failure Memory credentials are not supplied to the browser. Project policies, budgets, data exposure, and evaluation rules are enforced by application code around model proposals.
 
-The current access model is **one trusted operator**, with a password-protected web interface. It does not provide independent user accounts or per-user project isolation. For hosted use, follow the [Vercel runbook](docs/vercel-setup.md): two projects, authenticated server-to-server access, managed PostgreSQL, and bounded cron execution.
+The current access model is **one trusted operator**, with a password-protected web interface. It does not provide independent user accounts or per-user project isolation. For hosted use, follow the [Vercel runbook](docs/vercel-setup.md): two projects, authenticated server-to-server access, managed PostgreSQL, and bounded queue execution with daily catch-up.
 
 [Architecture](docs/architecture.md) · [Versioned schemas](contracts/v1/) · [Exposure controls](docs/agent-egress.md) · [Backup and restore](docs/backup-restore.md)
 

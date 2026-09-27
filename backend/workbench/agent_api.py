@@ -39,20 +39,20 @@ def router(service: RunService, session, protected, *, settings=None):
                        route_class=SafeAgentRoute)
 
     @routes.post('', response_model=ResearchRun, status_code=202)
-    def create(pid: str, body: RunInput, idempotency_key: str = Header(), s=Depends(session)):
+    def create(pid: str, body: RunInput, idempotency_key: str = Header(), s=Depends(session, scope="function")):
         return service.create(s, pid, body, idempotency_key)
 
     @routes.get('', response_model=list[ResearchRun])
     def history(pid: str, after: str = Query(default='', max_length=160),
-                limit: int = Query(default=50, ge=1, le=100), s=Depends(session)):
+                limit: int = Query(default=50, ge=1, le=100), s=Depends(session, scope="function")):
         return service.history(s, pid, after, limit)
 
     @routes.post('/{rid}/continue', response_model=ResearchRun, status_code=202)
-    def continue_run(pid: str, rid: str, body: RunInput, idempotency_key: str = Header(), s=Depends(session)):
+    def continue_run(pid: str, rid: str, body: RunInput, idempotency_key: str = Header(), s=Depends(session, scope="function")):
         return service.continue_from(s, pid, rid, body, idempotency_key)
 
     @routes.get('/{rid}', response_model=RunDetail)
-    def read(pid: str, rid: str, s=Depends(session)):
+    def read(pid: str, rid: str, s=Depends(session, scope="function")):
         row = service.get(s, pid, rid)
         plan = s.scalar(select(PlanRow).where(PlanRow.run_id == rid, PlanRow.revision == row.plan_revision))
         questions = [q.payload for q in s.scalars(select(QuestionRow).where(QuestionRow.run_id == rid).order_by(QuestionRow.id))]
@@ -78,19 +78,19 @@ def router(service: RunService, session, protected, *, settings=None):
                         if row.state == 'cancelled' else 'No stop control is active.'))
 
     @routes.post('/{rid}/amend', response_model=ResearchRun)
-    def amend(pid: str, rid: str, body: RunAmendmentInput, idempotency_key: str = Header(), s=Depends(session)):
+    def amend(pid: str, rid: str, body: RunAmendmentInput, idempotency_key: str = Header(), s=Depends(session, scope="function")):
         return service.mutate(s, pid, rid, 'amend', body, idempotency_key)
 
     @routes.post('/{rid}/review-plan', response_model=ResearchRun)
-    def review(pid: str, rid: str, body: PlanAcceptanceInput, idempotency_key: str = Header(), s=Depends(session)):
+    def review(pid: str, rid: str, body: PlanAcceptanceInput, idempotency_key: str = Header(), s=Depends(session, scope="function")):
         return service.mutate(s, pid, rid, 'review-plan', body, idempotency_key)
 
     @routes.post('/{rid}/questions/{qid}/answer', response_model=ResearchRun)
-    def answer(pid: str, rid: str, qid: str, body: QuestionAnswerInput, idempotency_key: str = Header(), s=Depends(session)):
+    def answer(pid: str, rid: str, qid: str, body: QuestionAnswerInput, idempotency_key: str = Header(), s=Depends(session, scope="function")):
         return service.mutate(s, pid, rid, 'answer', body, idempotency_key, qid)
 
     def control(operation):
-        def endpoint(pid: str, rid: str, body: RunControlInput, idempotency_key: str = Header(), s=Depends(session)):
+        def endpoint(pid: str, rid: str, body: RunControlInput, idempotency_key: str = Header(), s=Depends(session, scope="function")):
             return service.mutate(s, pid, rid, operation, body, idempotency_key)
         endpoint.__name__ = operation + '_agent_run'
         return endpoint
@@ -100,12 +100,12 @@ def router(service: RunService, session, protected, *, settings=None):
 
     @routes.get('/{rid}/events', response_model=list[RunEvent])
     def events(pid: str, rid: str, after: int = Query(default=0, ge=0),
-               limit: int = Query(default=100, ge=1, le=500), s=Depends(session)):
+               limit: int = Query(default=100, ge=1, le=500), s=Depends(session, scope="function")):
         return service.events(s, pid, rid, after, limit)
 
     @routes.get('/{rid}/stream', response_class=Response)
     def stream(pid: str, rid: str, after: int = Query(default=0, ge=0),
-               last_event_id: str | None = Header(default=None), s=Depends(session)):
+               last_event_id: str | None = Header(default=None), s=Depends(session, scope="function")):
         if last_event_id is not None:
             if not last_event_id.isascii() or not last_event_id.isdigit() or len(last_event_id) > 16:
                 raise DomainError('Invalid Last-Event-ID')
@@ -118,7 +118,7 @@ def router(service: RunService, session, protected, *, settings=None):
         return Response(data, media_type='text/event-stream', headers={'Cache-Control': 'no-store', 'X-Accel-Buffering': 'no'})
 
     @routes.get('/{rid}/result', response_model=RunResult)
-    def result(pid: str, rid: str, s=Depends(session)):
+    def result(pid: str, rid: str, s=Depends(session, scope="function")):
         row = service.get(s, pid, rid)
         if row.state not in TERMINAL:
             raise DomainError('Run has no terminal result yet', 409, 'RUN_REVISION_CHANGED')
@@ -128,7 +128,7 @@ def router(service: RunService, session, protected, *, settings=None):
     policy_routes = APIRouter(dependencies=protected, route_class=SafeAgentRoute)
 
     @policy_routes.get('/api/v1/projects/{pid}/execution-policy', response_model=ExecutionPolicySummary)
-    def execution_policy(pid: str, s=Depends(session)):
+    def execution_policy(pid: str, s=Depends(session, scope="function")):
         """Read-only summary for the request workspace. Policy writes stay operator-provisioned."""
         from .services import project
         project(s, pid)
