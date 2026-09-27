@@ -71,6 +71,7 @@ def test_busy_and_delivery_failure_require_redelivery(monkeypatch):
 
 
 def test_api_commit_precedes_dispatch_and_failure_is_explicit(settings, db, monkeypatch):
+    monkeypatch.setenv('CRON_SECRET', 'c' * 48)
     monkeypatch.delenv('VERCEL_ENV', raising=False)
     observed = []
     async def send(topic, payload, **options):
