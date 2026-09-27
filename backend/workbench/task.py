@@ -12,7 +12,7 @@ from .processes import ProcessInterrupted, ProcessTimedOut, run_bounded
 def compute(directory):
     from .execution import MAX_RESULT_BYTES, TaskResult, TaskSettings, Work
     from .services import execute, safe_error
-    from .storage import LocalStore
+    from .storage import create_store
 
     request = json.loads((directory / "input.json").read_bytes())
     work = Work.model_validate(request["work"])
@@ -24,7 +24,7 @@ def compute(directory):
             remote_id = FailureMemory(settings).resolve(SimpleNamespace(**work.project))
             result = TaskResult(external_project_id=remote_id)
         else:
-            value = execute(LocalStore(settings.storage_root), settings, work)
+            value = execute(create_store(settings), settings, work)
             receipt = None
             if work.kind == "failure":
                 value, receipt = value

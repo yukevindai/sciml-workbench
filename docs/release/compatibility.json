@@ -9,7 +9,7 @@
   },
   "node_major": "22",
   "postgres_major": "16",
-  "migration_head": "0011",
+  "migration_head": "0012",
   "migration_chain": {
     "0001": null,
     "0002": "0001",
@@ -21,7 +21,8 @@
     "0008": "0007",
     "0009": "0008",
     "0010": "0009",
-    "0011": "0010"
+    "0011": "0010",
+    "0012": "0011"
   },
   "scientific_sources": {
     "chemdata-auditor": "git+https://github.com/yukevindai/chemdata-auditor.git@eff3ed3c43ec71e9ceecabc1f04d1dfb5c91c116",
@@ -98,6 +99,9 @@
     "backend/Dockerfile": "cd55416d0e65fc8599229361bafc6a828f8ba8af80aa195d499ab1116b2569ae",
     "frontend/Dockerfile": "6c88c2688a4580dceb5db14d5de9925796fb87039393f41768e4d61ef0f7db86",
     "compose.yaml": "4618873c881e057bd817138d2fa9d4adc47815b97fb44a435fe1c3fc0471a4eb",
+    "vercel.json": "f02f92ea29abbc31a91a2c11c9840b02cd1534a9828e4f5e8b4c9b26a8e64d93",
+    "frontend/vercel.json": "4dffd260d2c373da8f55cad0bd1611122456ccce050773109fc45ad0697a3ed3",
+    "requirements.txt": "88491200e6fdad86640295347b8339bcbf6984d2bb6f967e8d76b2d6224cc496",
     "backend/migrations/versions/0001_initial.py": "507f531e6da255527bb03d8e620ebe9fb8f7713bd074b15502c910fa3da55b4b",
     "backend/migrations/versions/0002_metadata_invariants.py": "f864f7eddebc59496181cf8e40c5da80cb2653fcb1c6937695567229c57973bf",
     "backend/migrations/versions/0003_research_materials.py": "0899c826194811c2dcf1c68c519d9cfd22794f1b97c66cb4dad12bb032d8e008",
@@ -108,7 +112,8 @@
     "backend/migrations/versions/0008_budget_guards.py": "2606862f4e74a2f3fcb28315cea8da6234098af8cd3ce14a77d5c485713445cf",
     "backend/migrations/versions/0009_memory_guards.py": "fd2ebfacff1f38d77510a5e5ca31e6360f35e460e6594208d63d9abd9616edf7",
     "backend/migrations/versions/0010_agent_leases.py": "68ef20a9da9e9993622b30f988796f0c80fff307736ddb79c1c5b7dd1aa545de",
-    "backend/migrations/versions/0011_agent_finalization.py": "95a66998d9fed578239a198de2d7df41d398c4a3555666507c2f395a65fbd33b"
+    "backend/migrations/versions/0011_agent_finalization.py": "95a66998d9fed578239a198de2d7df41d398c4a3555666507c2f395a65fbd33b",
+    "backend/migrations/versions/0012_serverless_storage.py": "7df4c11d8156e8062cccab1e317b78902a42adca41a077fb2bc03dc5c0c21cb4"
   },
   "limitations": [
     "Source inventory, not installed-runtime or release acceptance.",

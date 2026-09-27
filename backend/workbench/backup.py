@@ -268,6 +268,8 @@ def main(argv=None):
             command.add_argument('--configuration-ref', required=True)
     args = parser.parse_args(argv)
     try:
+        if args.command != 'verify' and os.environ.get('WB_STORAGE_BACKEND') == 'postgres':
+            raise BackupError('PostgreSQL storage uses a complete managed-database backup; see docs/vercel-setup.md.')
         if args.command == 'verify':
             result = verify(args.bundle)
         else:

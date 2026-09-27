@@ -9,6 +9,11 @@ from .config import ConfigurationError, load_settings
 def main(settings=None):
     s = settings or load_settings()
     s.validate_secrets()
+    if s.storage_backend == "postgres":
+        from .connector_state import failure_workspace
+        with failure_workspace(s):
+            pass
+        return
     s.storage_root.mkdir(parents=True, exist_ok=True)
     database = s.storage_root / "failure-memory.sqlite"
     marker = s.storage_root / ".efm-provisioned"

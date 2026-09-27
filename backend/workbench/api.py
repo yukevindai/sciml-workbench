@@ -2,7 +2,7 @@ import hmac
 from typing import Literal
 from fastapi import Depends, FastAPI, Header, Path, Request, Query
 from fastapi.exceptions import RequestValidationError
-from fastapi.responses import JSONResponse, Response
+from fastapi.responses import JSONResponse, Response, StreamingResponse
 from starlette.concurrency import run_in_threadpool
 from sqlalchemy import select, text
 from .config import load_settings
@@ -21,7 +21,7 @@ from .schema_catalog import add_openapi_contracts
 from .db import ArtifactRow, Database, JobRow, ProjectRow
 from .submission import SubmissionScope, SubmissionService
 from .services import DomainError, project, upload_csv
-from .storage import LocalStore, StorageError, StorageIntegrityError
+from .storage import create_store, StorageError, StorageIntegrityError
 from .http_contracts import IntakeArtifact, IntakeDataset, MaterialResponse
 from .scientific_contracts import SourceDeclarations
 from . import intake
@@ -52,7 +52,7 @@ def create_app(settings=None):
         separate_input_output_schemas=False,
         responses={status: {"model": ErrorResponse} for status in (401, 403, 404, 409, 413, 422, 500, 503)},
     )
-    db, store = Database(settings.database_url), LocalStore(settings.storage_root)
+    db, store = Database(settings.database_url), create_store(settings)
     app.state.db, app.state.store = db, store
     submissions = SubmissionService(db, store, settings)
     app.state.submissions = submissions
@@ -295,13 +295,20 @@ def create_app(settings=None):
         project(s, pid)
         return [material_json(intake.material(s, pid, value.id)) for value in s.scalars(select(MaterialRow).where(MaterialRow.project_id == pid))]
 
+    def download_response(raw, value):
+        # Stream downloads through both function layers, preserving exact bytes.
+        headers = {"Content-Disposition": f'attachment; filename="{value.filename}"'}
+        if settings.deployment_mode == "vercel":
+            chunks = (raw[offset:offset + 65536] for offset in range(0, len(raw), 65536))
+            return StreamingResponse(chunks, media_type=value.media_type, headers=headers)
+        return Response(raw, media_type=value.media_type, headers=headers)
+
     @app.get("/api/v1/projects/{pid}/research-materials/{mid}/download", dependencies=protected)
     def download_material(pid: str, mid: str, s=Depends(session)):
         value = reads.download(s, ReadScope(pid), mid, material=True)
         raw = store.get(value.key)
         s.commit()
-        return Response(raw, media_type=value.media_type,
-                        headers={"Content-Disposition": f'attachment; filename="{value.filename}"'})
+        return download_response(raw, value)
 
     @app.post("/api/v1/projects/{pid}/research-materials/{mid}/ingest", dependencies=protected,
               status_code=202, response_model=JobResponse, response_model_exclude_unset=True)
@@ -379,13 +386,7 @@ def create_app(settings=None):
         value = reads.download(s, ReadScope(pid), aid, representation=representation)
         raw = store.get(value.key)
         s.commit()
-        return Response(
-            raw,
-            media_type=value.media_type,
-            headers={
-                "Content-Disposition": f'attachment; filename="{value.filename}"'
-            },
-        )
+        return download_response(raw, value)
 
     from .agent_runs import RunService
     from .agent_api import router as agent_router

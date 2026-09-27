@@ -33,7 +33,7 @@ class FailureMemory:
     def __init__(self, settings):
         from failure_memory.app import create_app
         self.settings = settings
-        self.app = create_app(settings.storage_root / "failure-memory.sqlite", "http://localhost", False)
+        self.app = None if getattr(settings, "storage_backend", "local") == "postgres" else create_app(settings.storage_root / "failure-memory.sqlite", "http://localhost", False)
 
     @asynccontextmanager
     async def session(self):
@@ -105,7 +105,16 @@ class FailureMemory:
     def save(self, project, external_id, record) -> FailureReceipt:
         return self._locked(self._save_async, project, external_id, record)
 
-    def _locked(self, operation, *args):
+    def _locked(self, operation, *args, **kwargs):
+        if getattr(self.settings, "storage_backend", "local") == "postgres":
+            from .connector_state import failure_workspace
+            from failure_memory.app import create_app
+            with failure_workspace(self.settings) as root:
+                self.app = create_app(root / "failure-memory.sqlite", "http://localhost", False)
+                try:
+                    return asyncio.run(operation(*args, **kwargs))
+                finally:
+                    self.app = None
         # Serialize provisioning/import in the supported single-host topology.
         with (self.settings.storage_root / ".failure-memory.lock").open("a+b") as lock:
             if os.name == "posix":
@@ -118,7 +127,7 @@ class FailureMemory:
                     lock.flush()
                 lock.seek(0)
                 msvcrt.locking(lock.fileno(), msvcrt.LK_LOCK, 1)
-            return asyncio.run(operation(*args))
+            return asyncio.run(operation(*args, **kwargs))
 
     async def _resolve(self, project):
         async with self.session() as client:
@@ -169,4 +178,4 @@ class FailureMemory:
 
     def search(self, project, query="", *, status=None, archived=False, limit=50) -> FailureSearchResult:
         """Caller must resolve an authorized workbench project before invoking."""
-        return asyncio.run(self.search_async(project, query, status=status, archived=archived, limit=limit))
+        return self._locked(self.search_async, project, query, status=status, archived=archived, limit=limit)

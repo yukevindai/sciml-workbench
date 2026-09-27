@@ -2,6 +2,7 @@ from sqlalchemy import (
     JSON,
     DateTime,
     BigInteger,
+    LargeBinary,
     CheckConstraint,
     ForeignKey,
     ForeignKeyConstraint,
@@ -19,6 +20,19 @@ from .request_identity import request_digest
 
 class Base(DeclarativeBase):
     pass
+
+
+class BlobRow(Base):
+    __tablename__ = "stored_blobs"
+    key: Mapped[str] = mapped_column(String(64), primary_key=True)
+    data: Mapped[bytes] = mapped_column(LargeBinary)
+
+
+class ConnectorStateRow(Base):
+    __tablename__ = "connector_states"
+    name: Mapped[str] = mapped_column(String(80), primary_key=True)
+    data: Mapped[bytes] = mapped_column(LargeBinary)
+    sha256: Mapped[str] = mapped_column(String(64))
 
 
 class ProjectRow(Base):
@@ -211,7 +225,10 @@ class ExposureRow(Base):
 
 class Database:
     def __init__(self, url):
-        self.engine = create_engine(url, pool_pre_ping=True)
+        import os
+        from sqlalchemy.pool import NullPool
+        options = {"poolclass": NullPool} if os.environ.get("WB_DEPLOYMENT_MODE") == "vercel" else {}
+        self.engine = create_engine(url, pool_pre_ping=True, **options)
         if self.engine.dialect.name == "sqlite":
             event.listen(self.engine, "connect", sqlite_foreign_keys)
         self.session = sessionmaker(self.engine, expire_on_commit=False)

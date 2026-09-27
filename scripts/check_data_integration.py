@@ -8,7 +8,7 @@ ROOT = Path(__file__).resolve().parents[1]
 SUITES = (
     "metadata", "intake", "artifacts", "submission", "reports", "publication",
     "external_operations", "projections", "agent_runs", "agent_scheduler",
-    "budgets", "recovery", "data_integration",
+    "budgets", "recovery", "data_integration", "serverless",
 )
 
 

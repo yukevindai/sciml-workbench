@@ -1,5 +1,8 @@
 # Coordinated backup and isolated restore (D07)
 
+> For Vercel hosting, use the [Vercel runbook](vercel-setup.md). The local disk/daemon procedures below describe Compose and native deployments.
+
+
 The supported procedure is an offline maintenance window on Linux with PostgreSQL
 16. Use the same reviewed application revision for capture and initial restore.
 The backend Docker image includes PostgreSQL 16 `pg_dump` and `pg_restore` clients;

@@ -16,7 +16,7 @@ from .contracts import uid
 from .db import Database, JobRow
 from .execution import MAX_RESULT_BYTES, TaskFailure, TaskResult
 from .publication import publish_result
-from .storage import LocalStore
+from .storage import create_store
 from .job_metadata import (JobClaim, StaleClaim, claim_is_current, claim_next, database_now,
                            fail_claim)
 from .processes import ProcessInterrupted, ProcessTimedOut, run_bounded
@@ -53,6 +53,9 @@ def task_environment(workspace):
     env = {key: value for key, value in os.environ.items() if key.upper() in allowed}
     if "PYTHONPATH" in env:
         env["PYTHONPATH"] = os.pathsep.join(str(Path(part or ".").resolve()) for part in env["PYTHONPATH"].split(os.pathsep))
+    # Vercel adds vendored dependencies to sys.path in its bootstrap. Child
+    # interpreters must inherit those import paths even after changing cwd.
+    env["PYTHONPATH"] = os.pathsep.join(dict.fromkeys(str(Path(part or ".").resolve()) for part in sys.path))
     env.update(TMPDIR=str(workspace / "scratch"), TEMP=str(workspace / "scratch"), TMP=str(workspace / "scratch"),
                PYTHONUNBUFFERED="1", PYTHONDONTWRITEBYTECODE="1")
     for key in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS"):
@@ -81,6 +84,8 @@ def run_task(settings, work, deadline, stopped):
         workspace = Path(directory)
         (workspace / "scratch").mkdir(mode=0o700)
         private = {"storage_root": str(settings.storage_root.resolve())}
+        if getattr(settings, "storage_backend", "local") == "postgres":
+            private.update(storage_backend="postgres", database_url=settings.database_url)
         if work.kind == "failure":
             private.update(efm_username=settings.efm_username, efm_password=settings.efm_password.get_secret_value())
         (workspace / "input.json").write_text(json.dumps({"work": work.model_dump(mode="json"), "settings": private}), encoding="utf-8")
@@ -137,8 +142,8 @@ def process_job(settings, claimed, *, db=None, stopped=lambda: False):
             raise ProcessTimedOut()
         if work.kind == "report" and result.artifact and not result.error:
             from .archive import reject_configured_secrets
-            reject_configured_secrets(LocalStore(settings.storage_root).get(result.artifact["blob_key"]), settings)
-        publish_result(db, claimed, work, result, store=LocalStore(settings.storage_root), stopped=stopped)
+            reject_configured_secrets(create_store(settings).get(result.artifact["blob_key"]), settings)
+        publish_result(db, claimed, work, result, store=create_store(settings), stopped=stopped)
     except StaleClaim:
         fail_claim(db, claimed, error="Claim expired before publication; retry explicitly.", error_code="JOB_TIMED_OUT")
     except ProcessTimedOut:

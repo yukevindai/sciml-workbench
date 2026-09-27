@@ -1,5 +1,8 @@
 # Runtime setup (D01)
 
+> For Vercel hosting, use the [Vercel runbook](vercel-setup.md). The local disk/daemon procedures below describe Compose and native deployments.
+
+
 The manual scientific workflow runs without model credentials. The optional [adaptive coordinator](agent-coordinator.md) integrates provider, policy, durable scheduling and run controls. It defaults to disabled and requires reviewed model bounds and trusted policies. Live account/model acceptance remains pending under [E02](tickets/E02.md).
 
 ## Supported environment
@@ -57,7 +60,7 @@ The Next.js server necessarily holds the existing proxy bearer token and web log
 
 Missing/invalid backend values name the relevant environment variables without echoing their values. API tokens require 32+ characters and Failure Memory passwords 12+; blank values and example placeholders are rejected. Row, upload and timeout limits must be positive. The database URL is required; there is no implicit development password fallback. SQLite is accepted only to support isolated tests and schema generation; the deployed runtime uses PostgreSQL.
 
-`WB_AGENTS_ENABLED=0` permits absent model IDs and keys. Opting in requires `anthropic`, both pinned model IDs, a private key and reviewed model bounds fitting the configured lease. Invalid configuration fails before model IO. Startup verifies model identities without generation; generation occurs only for admitted runs. Apply migration `0011` and PostgreSQL checkpoint setup through `python -m workbench.setup`. API startup does not create checkpoint tables.
+`WB_AGENTS_ENABLED=0` permits absent model IDs and keys. Opting in requires `anthropic`, both pinned model IDs, a private key and reviewed model bounds fitting the configured lease. Invalid configuration fails before model IO. Startup verifies model identities without generation; generation occurs only for admitted runs. Apply migration `0012` and PostgreSQL checkpoint setup through `python -m workbench.setup`. API startup does not create checkpoint tables.
 
 For an account availability check, configure `WB_COORDINATOR_MODEL`, `WB_SPECIALIST_MODEL` and `ANTHROPIC_API_KEY` server-side, leave agents disabled, then run `python -m workbench.model_provider`. This calls only the authenticated Models API and prints resolved model IDs and adapter/API versions. It does not generate text, execute tools, or prove structured generation works for that account. The adapter refuses generation until this lookup succeeds on its own instance. A live bounded structured-tool generation check is still required for E02 acceptance. No model ID or price is assumed by default.
 

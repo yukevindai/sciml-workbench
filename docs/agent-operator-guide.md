@@ -247,4 +247,4 @@ the reviewed bounds/prices/policy references, safe demo/evaluation evidence and 
 live provider quality, representative claim-support scoring, hosted private access,
 redeploy recovery and coordinated hosted restore. D06's historical failed anonymous
 access probe is not a statement about the current host; verify the accepted revision
-using the [Render runbook](render-setup.md) before any hosted acceptance claim.
+using the [Vercel runbook](vercel-setup.md) before any hosted acceptance claim.

@@ -15,6 +15,10 @@ async function proxy(request: NextRequest, { params }: { params: Promise<{ path:
   if (!token || (process.env.NODE_ENV === 'production' && (token.trim().length < 32 || token.startsWith('replace-with-'))))
     return Response.json({ error: 'Server API connection is not configured' }, { status: 503 });
   const headers = new Headers({ Authorization: `Bearer ${token}` });
+  // Server-only Vercel Deployment Protection bypass, never forwarded to the browser.
+  if (process.env.WB_VERCEL_PROTECTION_BYPASS) headers.set('x-vercel-protection-bypass', process.env.WB_VERCEL_PROTECTION_BYPASS);
+  const configuredLimit = Number(process.env.WB_MAX_UPLOAD_BYTES || 10 * 1024 * 1024);
+  const uploadLimit = Math.min(Number.isSafeInteger(configuredLimit) && configuredLimit > 0 ? configuredLimit : 10 * 1024 * 1024, process.env.VERCEL ? 4 * 1024 * 1024 : 10 * 1024 * 1024);
   for (const name of ['content-type', 'x-filename', 'x-source', 'x-title', 'idempotency-key', 'last-event-id']) {
     const value = request.headers.get(name); if (value) headers.set(name, value);
   }
@@ -25,7 +29,7 @@ async function proxy(request: NextRequest, { params }: { params: Promise<{ path:
       if (reader) while (true) {
         const { done, value } = await reader.read(); if (done) break;
         size += value.length;
-        if (size > 10 * 1024 * 1024) { await reader.cancel(); return Response.json({ error: 'Maximum upload is 10 MiB' }, { status: 413 }); }
+        if (size > uploadLimit) { await reader.cancel(); return Response.json({ error: `Maximum upload is ${Math.floor(uploadLimit / 1024 / 1024)} MiB` }, { status: 413 }); }
         chunks.push(value);
       }
       body = new Uint8Array(size); let offset = 0;

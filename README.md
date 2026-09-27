@@ -137,7 +137,10 @@ Research then provides **Run research**, optional plan review, activity, and run
 
 Start with the guide's narrow audit demonstration before expanding the permitted workflow. Model keys remain in backend configuration, never browser code, goal text, or uploaded files.
 
-**Setup references:** [Runtime and configuration ownership](docs/runtime-setup.md) · [Private Render deployment](docs/render-setup.md)
+**Setup references:** [Runtime and configuration ownership](docs/runtime-setup.md) · [Vercel deployment and migration](docs/vercel-setup.md)
+
+**Hosting on Vercel:** deploy the Next.js frontend (`frontend/`) and FastAPI backend (repository root) as two projects from the same commit. The backend uses managed PostgreSQL for metadata, file bytes and Failure Memory snapshots, plus authenticated per-minute cron jobs for scientific work, recovery and optional agents. This configuration requires **Vercel Pro/Enterprise**, caps uploads at **4 MiB** and scientific jobs at **600 seconds**, and preserves the local Compose workflow. Start with the dedicated [backend](.env.vercel.example) and [frontend](frontend/.env.vercel.example) environment templates. Existing Render data requires the documented transfer before retiring those services.
+
 
 ## Try the scientific workflow
 
@@ -210,12 +213,12 @@ A **modular monolith** with separate processes for HTTP requests, scientific job
 | Agent orchestration | Python coordinator, Anthropic provider adapter, conditional specialists, LangGraph persistence |
 | Durable metadata | PostgreSQL 16 for projects, artifacts, jobs, run state, ledgers, and checkpoints |
 | Scientific execution | Background workers invoking pinned public upstream APIs |
-| Artifact storage | Immutable content-addressed local files behind a small storage interface; future S3 support remains separate |
+| Artifact storage | Immutable content-addressed files locally; PostgreSQL blobs on Vercel; future S3 adapter remains separate |
 | Failure persistence | Upstream-owned SQLite accessed through supported Failure Memory interfaces |
 
 The Next.js server proxy adds the backend API token server-side. Provider, PostgreSQL, and Failure Memory credentials are not supplied to the browser. Project policies, budgets, data exposure, and evaluation rules are enforced by application code around model proposals.
 
-The current access model is **one trusted operator**, with a password-protected web interface. It does not provide independent user accounts or per-user project isolation. For hosted use, follow the private-backend [Render runbook](docs/render-setup.md).
+The current access model is **one trusted operator**, with a password-protected web interface. It does not provide independent user accounts or per-user project isolation. For hosted use, follow the [Vercel runbook](docs/vercel-setup.md): two projects, authenticated server-to-server access, managed PostgreSQL, and bounded cron execution.
 
 [Architecture](docs/architecture.md) · [Versioned schemas](contracts/v1/) · [Exposure controls](docs/agent-egress.md) · [Backup and restore](docs/backup-restore.md)
 
@@ -319,7 +322,7 @@ Historical test counts remain in their original evidence records. A passed test 
 | Install and configure | [Runtime setup](docs/runtime-setup.md) |
 | Run the agent workspace | [Agent operator guide](docs/agent-operator-guide.md) |
 | Understand decisions and recovery | [Coordinator runtime](docs/agent-coordinator.md) |
-| Deploy privately | [Render setup](docs/render-setup.md) |
+| Deploy privately | [Vercel setup and Render migration](docs/vercel-setup.md) |
 | Operate and troubleshoot | [Operations](docs/operations.md) · [Diagnostics](docs/diagnostics.md) |
 | Preserve and restore a workspace | [Backup and restore](docs/backup-restore.md) |
 | Verify and replay a report | [Report reproduction](docs/report-replay.md) |

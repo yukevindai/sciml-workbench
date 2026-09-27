@@ -75,3 +75,31 @@ test('production operator gate and server proxy enforce the private boundary', a
     Object.assign(process.env, original);
   }
 });
+
+test('Vercel proxy caps uploads and keeps protection bypass server-side', async () => {
+  try {
+    Object.assign(process.env, { NODE_ENV: 'production', VERCEL: '1', WB_LOGIN_USERNAME: 'operator',
+      WB_LOGIN_PASSWORD: 'a-private-password-for-tests', WB_PUBLIC_ORIGIN: 'https://private.example',
+      WB_API_TOKEN: 'private-backend-token-longer-than-32-characters', WB_API_URL: 'https://backend.example',
+      WB_MAX_UPLOAD_BYTES: String(10 * 1024 * 1024), WB_VERCEL_PROTECTION_BYPASS: 'server-only-bypass' });
+    let calls = 0;
+    globalThis.fetch = async (url, init) => {
+      calls++;
+      assert.equal(init.headers.get('x-vercel-protection-bypass'), 'server-only-bypass');
+      return new Response('ok', { headers: { 'x-vercel-protection-bypass': 'must-not-escape' } });
+    };
+    const response = await GET(request('/api/private', { authorization: auth,
+      'x-vercel-protection-bypass': 'attacker-value' }), params);
+    assert.equal(response.status, 200);
+    assert.equal(response.headers.get('x-vercel-protection-bypass'), null);
+    const oversized = new NextRequest('https://private.example/api/private', { method: 'POST',
+      headers: { authorization: auth, origin: 'https://private.example' },
+      body: new Uint8Array(4 * 1024 * 1024 + 1) });
+    assert.equal((await POST(oversized, params)).status, 413);
+    assert.equal(calls, 1);
+  } finally {
+    globalThis.fetch = originalFetch;
+    for (const key of Object.keys(process.env)) if (!(key in original)) delete process.env[key];
+    Object.assign(process.env, original);
+  }
+});
