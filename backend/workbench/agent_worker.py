@@ -39,7 +39,7 @@ def main():
     from threading import Event
     from .agent_runtime import coordinator
     from .db import Database
-    from .storage import LocalStore
+    from .storage import create_store
     from .model_provider import ProviderError
     db = step = None
     previous = {}
@@ -48,7 +48,7 @@ def main():
         agents.require_runtime()
         settings = load_settings()
         db = Database(settings.database_url)
-        step = coordinator(db, LocalStore(settings.storage_root), settings, agents)
+        step = coordinator(db, create_store(settings), settings, agents)
         stopping = Event()
         for sig in (signal.SIGTERM, signal.SIGINT):
             previous[sig] = signal.signal(sig, lambda *_: stopping.set())

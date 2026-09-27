@@ -25,6 +25,8 @@ class Work(BaseModel):
 class TaskSettings(BaseModel):
     model_config = ConfigDict(extra="forbid")
     storage_root: Path
+    storage_backend: Literal["local", "postgres"] = "local"
+    database_url: str | None = Field(default=None, repr=False)
     efm_username: str = "workbench"
     efm_password: SecretStr = SecretStr("")
 

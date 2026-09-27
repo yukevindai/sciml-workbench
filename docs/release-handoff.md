@@ -10,7 +10,7 @@ run at the accepted revision remain open.
 
 Use one Git checkout for frontend, backend, contracts and runtime. The generated
 [compatibility inventory](release/compatibility.json) records application 0.1.0,
-API 1.0.0, all 55 contract file hashes, database migration head 0011, Python 3.12,
+API 1.0.0, all 55 contract file hashes, database migration head 0012, Python 3.12,
 Node 22, PostgreSQL 16, exact scientific Git sources, dependency-lock hashes,
 LangGraph and checkpointer versions. API, artifact and archive versions are
 independent namespaces; equal version strings are not required across them.
@@ -148,3 +148,7 @@ evaluation, replay and backup guides for the full operational contracts.
 Handoff acceptance requires the reviewer to attach revision-specific results for
 the open gates or explicitly retain them as blockers. This document does not
 publish a release, deploy services or assert branch protection is configured.
+
+## Vercel migration candidate
+
+The [Vercel runbook](vercel-setup.md) replaces Render as the intended hosted topology. Migration 0012 adds durable blobs and opaque upstream snapshots; root and frontend Vercel configuration is included in the compatibility inventory. Existing scientific source pins and public artifact contracts are unchanged. The default configuration supports Vercel Hobby using a private queue subscriber and daily catch-up, with 240-second scientific deadlines. Automated tests cover durable queue continuations, commit-before-dispatch, authenticated cron boundaries, cross-invocation storage, upstream replay/rollback, offline transfer and the complete manual MVP on PostgreSQL. Live Vercel bundle/subprocess/streaming behavior, managed restore, cutover, and live-agent acceptance still require the operator checks in that runbook. No source commit implies that deployed Render data has been moved.

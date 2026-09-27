@@ -1,0 +1,4 @@
+# Vercel backend project uses the repository root; same scientific pins as Compose.
+-c backend/constraints.txt
+fastapi
+./backend

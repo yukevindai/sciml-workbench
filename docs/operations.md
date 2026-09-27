@@ -1,5 +1,8 @@
 # Operations
 
+> For Vercel hosting, use the [Vercel runbook](vercel-setup.md). The local disk/daemon procedures below describe Compose and native deployments.
+
+
 ## Starting and updating
 
 The [agent operator guide](agent-operator-guide.md) covers provider readiness,

@@ -1,5 +1,8 @@
 # Immutable local storage (D02)
 
+> For Vercel hosting, use the [Vercel runbook](vercel-setup.md). The local disk/daemon procedures below describe Compose and native deployments.
+
+
 `BlobStore` remains a two-method interface: `put(bytes) -> key` and `get(key) -> bytes`. Keys are lowercase SHA-256 digests of the exact bytes. There is no delete or rollback method. Original byte-order marks, line endings, quoting and binary content are preserved. User filenames remain display metadata and never select storage paths.
 
 ## Publication and reads

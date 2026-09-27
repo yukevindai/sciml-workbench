@@ -67,6 +67,7 @@ def inventory(root=ROOT):
              root / 'backend/constraints.txt', root / 'backend/pyproject.toml',
              root / 'frontend/package-lock.json', root / 'frontend/package.json',
              root / 'backend/Dockerfile', root / 'frontend/Dockerfile', root / 'compose.yaml',
+             root / 'vercel.json', root / 'frontend/vercel.json', root / 'requirements.txt', root / 'pyproject.toml',
              *sorted((root / 'backend/migrations/versions').glob('*.py'))]
     return {'format': 'workbench-release-compatibility/1', 'application_version': version,
         'api_version': api['info']['version'], 'python': python,

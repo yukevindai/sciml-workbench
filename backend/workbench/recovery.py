@@ -53,6 +53,7 @@ def discover(db):
             job = session.get(JobRow, jid)
             accepted = eligible(job, session.get(ExternalOperationRow, jid)) and not separately_managed(session, jid)
             session.add(RecoveryRow(job_id=jid, project_id=pid, policy=dict(POLICY),
+                due_at=database_now(session),
                 state="pending" if accepted else "exhausted",
                 history=[] if accepted else [{"event": "ineligible", "code": job.error_code}]))
 

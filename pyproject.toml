@@ -1,0 +1,4 @@
+# Vercel discovers this private queue consumer separately from the FastAPI app.
+# Python installation remains defined by requirements.txt and backend/pyproject.toml.
+[[tool.vercel.subscribers]]
+entrypoint = "queue_consumer"

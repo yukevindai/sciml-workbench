@@ -75,3 +75,13 @@ urllib3==2.8.0
 sniffio==1.3.1
 truststore==0.10.4
 zstandard==0.25.0
+
+# Vercel Queues adapter and resolved dependencies (Python 3.12).
+h2==4.4.1
+hpack==4.2.0
+hyperframe==6.1.0
+python-multipart==0.0.32
+vercel-headers==0.7.2
+vercel-internal-core==0.2.0
+vercel-oidc==0.9.0
+vercel-queue==0.9.0

@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import Literal
 from pydantic import Field, SecretStr, ValidationError, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from sqlalchemy.engine import make_url
@@ -20,6 +21,9 @@ class Settings(BaseSettings):
     )
     database_url: str = Field(repr=False)
     storage_root: Path = Path("./data")
+    storage_backend: Literal["local", "postgres"] = "local"
+    deployment_mode: Literal["local", "vercel"] = "local"
+    scheduler_enabled: bool = True
     api_token: SecretStr
     efm_username: str = "workbench"
     efm_password: SecretStr
@@ -30,7 +34,7 @@ class Settings(BaseSettings):
     @field_validator("database_url", mode="before")
     @classmethod
     def use_psycopg3(cls, value):
-        # Accept Render's internal connection URL without manual editing.
+        # Accept managed PostgreSQL connection URLs without manual driver editing.
         if isinstance(value, str):
             for prefix in ("postgres://", "postgresql://"):
                 if value.startswith(prefix):
@@ -62,6 +66,13 @@ class Settings(BaseSettings):
         return value
 
     def validate_secrets(self):
+        if self.storage_backend == "postgres" and not self.database_url.startswith("postgresql+psycopg://"):
+            raise ConfigurationError("PostgreSQL storage requires PostgreSQL metadata.")
+        if self.deployment_mode == "vercel":
+            if self.storage_backend != "postgres" or not self.storage_root.resolve().is_relative_to("/tmp"):
+                raise ConfigurationError("Vercel requires WB_STORAGE_BACKEND=postgres and a temporary WB_STORAGE_ROOT under /tmp.")
+            if self.job_timeout_seconds > 240 or self.max_upload_bytes > 4 * 1024 * 1024:
+                raise ConfigurationError("Vercel Hobby jobs must be <=240 seconds and uploads <=4 MiB.")
         validate_secret(self.api_token, "WB_API_TOKEN", 32)
         validate_secret(self.efm_password, "WB_EFM_PASSWORD", 12)
 

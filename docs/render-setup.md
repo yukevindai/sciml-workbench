@@ -1,5 +1,8 @@
 # Deploy a private workspace on Render
 
+> **Archived hosting procedure.** The project now targets [Vercel](vercel-setup.md). Retained for existing Render backup and cutover reference; do not use this to create a new deployment.
+
+
 Deploy a reviewed commit from the deployment branch (normally `main`) and record its SHA. The repository does not create Render resources automatically. This setup uses a shared browser password for one trusted operator; it does not provide separate researcher accounts or permissions.
 
 ## 1. Prepare three secrets

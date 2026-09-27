@@ -125,3 +125,10 @@ class LocalStore:
         if hashlib.sha256(raw).hexdigest() != key:
             raise StorageIntegrityError("Stored blob failed integrity verification.")
         return raw
+
+
+def create_store(settings):
+    if getattr(settings, "storage_backend", "local") == "postgres":
+        from .postgres_storage import PostgresStore
+        return PostgresStore(settings.database_url)
+    return LocalStore(settings.storage_root)
