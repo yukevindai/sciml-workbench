@@ -206,11 +206,13 @@ def reject_credentials(value):
 
 
 def reject_configured_secrets(raw, settings):
-    """Worker-side check: credentials are never sent into the compute process."""
+    """Parent-side check, including secrets omitted from compute process input."""
     from sqlalchemy.engine import make_url
     secrets = [getattr(settings, name).get_secret_value() for name in ("api_token", "efm_password")]
     if password := make_url(settings.database_url).password:
         secrets.append(password)
+    import os
+    secrets.extend(os.environ.get(name) for name in ('CRON_SECRET', 'WB_VERCEL_PROTECTION_BYPASS'))
     needles = [secret.encode() for secret in secrets if secret]
     files = zip_contents(io.BytesIO(raw))
     for body in files.values():

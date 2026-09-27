@@ -29,7 +29,8 @@ class SecretGuard:
         # Match BaseSettings' default .env source as well as the process env.
         # Explicit settings supplied by the caller remain in the inventory too.
         dotenv = dotenv_values('.env')
-        for name in ('ANTHROPIC_API_KEY', 'WB_API_TOKEN', 'WB_EFM_PASSWORD', 'WB_DATABASE_URL'):
+        for name in ('ANTHROPIC_API_KEY', 'WB_API_TOKEN', 'WB_EFM_PASSWORD', 'WB_DATABASE_URL',
+                     'CRON_SECRET', 'WB_VERCEL_PROTECTION_BYPASS'):
             values.append(os.environ.get(name, dotenv.get(name)))
         for value in tuple(values):
             if isinstance(value, str) and '://' in value:

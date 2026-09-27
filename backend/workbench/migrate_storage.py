@@ -6,6 +6,8 @@ Safe to repeat while ALL old and new writers remain stopped.
 import argparse
 import hashlib
 import json
+import shutil
+import tempfile
 from pathlib import Path
 from sqlalchemy import select, text
 from sqlalchemy.dialects.postgresql import insert
@@ -56,7 +58,17 @@ def migrate(settings, root, *, writers_stopped=False):
         # Preflight every source before publishing anything.
         for key in keys:
             source.get(key)
-        raw = snapshot(database)
+        # SQLite may checkpoint WAL on close. Snapshot a private copy so even
+        # that maintenance cannot change the operator's original backup files.
+        with tempfile.TemporaryDirectory(prefix='wb-transfer-') as temporary:
+            copied = Path(temporary) / database.name
+            shutil.copyfile(database, copied)
+            wal = database.with_name(database.name + '-wal')
+            if wal.exists():
+                if wal.is_symlink() or not wal.is_file():
+                    raise StorageIntegrityError('Source WAL must be a regular file.')
+                shutil.copyfile(wal, copied.with_name(copied.name + '-wal'))
+            raw = snapshot(copied)
         digest = hashlib.sha256(raw).hexdigest()
         with db.engine.begin() as conn:
             conn.execute(text("SET LOCAL lock_timeout = '10s'"))

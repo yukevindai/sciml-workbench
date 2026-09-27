@@ -6,6 +6,7 @@ import shutil
 import zipfile
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
+from types import SimpleNamespace
 import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
@@ -129,7 +130,9 @@ def test_offline_transfer_verifies_references_and_preserves_upstream(settings, d
     raw = b'old upload'
     key = LocalStore(root).put(raw)
     receipt = FailureMemory(local).save(project(), 'old-import', record())
+    before = {p.name: p.read_bytes() for p in root.iterdir() if p.is_file()}
     assert migrate(settings, root, writers_stopped=True)['blobs_verified'] == 1
+    assert {p.name: p.read_bytes() for p in root.iterdir() if p.is_file()} == before
     assert PostgresStore(settings.database_url).get(key) == raw
     # Replay transfer before any new writes; never replace differing live state.
     assert migrate(settings, root, writers_stopped=True)['blobs_verified'] == 1
@@ -151,7 +154,7 @@ def test_complete_mvp_across_ephemeral_invocations(settings, db, monkeypatch):
         client.headers['Authorization'] = 'Bearer ' + 'a' * 48
         pid = create(client)
         data = upload(client, pid)
-        def run(kind, payload=None):
+        def run(kind, payload=None, expected="succeeded"):
             response = client.post(f'/api/v1/projects/{pid}/{kind}', json=payload or {},
                 headers={'Idempotency-Key': f'{kind}-{len(ids)}'})
             assert response.status_code == 202, response.text
@@ -161,7 +164,7 @@ def test_complete_mvp_across_ephemeral_invocations(settings, db, monkeypatch):
             assert result.json()['status'] == 'processed', result.text
             with db.session() as session:
                 job = session.get(JobRow, response.json()['id'])
-                assert job.state == 'succeeded', (job.error_code, job.error)
+                assert job.state == expected and job.result_id, (job.error_code, job.error)
                 aid = job.result_id
             artifact = client.get(f'/api/v1/projects/{pid}/artifacts/{aid}').json()
             ids.append(aid)
@@ -171,7 +174,7 @@ def test_complete_mvp_across_ephemeral_invocations(settings, db, monkeypatch):
         split = run('split', {'dataset_id': data['id'], 'audit_id': audit['id'], 'config': fixture('split')})
         args = {**fixture('benchmark'), 'dataset_id': data['id'], 'split_id': split['id']}
         assert run('benchmark', args)['status'] == 'succeeded'
-        failed = run('benchmark', {**args, 'units': {}})
+        failed = run('benchmark', {**args, 'units': {}}, expected='failed')
         assert failed['status'] == 'failed'
         assert run('failure', {'benchmark_id': failed['id'], 'reason': 'Missing units',
             'uncertainty_notes': 'Synthetic only'})['external_record_id']
@@ -190,3 +193,25 @@ def test_complete_mvp_across_ephemeral_invocations(settings, db, monkeypatch):
         assert 'content-length' not in response.headers
     assert serverless.tick(settings, 'science') == {'status': 'idle'}
     assert serverless.tick(settings, 'agent') == {'status': 'disabled'}
+
+
+def test_enabled_idle_agent_tick_does_not_contact_provider(settings, monkeypatch):
+    import workbench.agent_runtime as runtime
+    monkeypatch.setattr(serverless, 'load_settings', lambda *a: SimpleNamespace(
+        agents_enabled=True, agent_lease_seconds=180, require_runtime=lambda: None))
+    monkeypatch.setattr(runtime, 'coordinator', lambda *a: pytest.fail('Idle tick contacted provider'))
+    assert serverless.tick(settings, 'agent') == {'status': 'idle'}
+
+
+def test_cron_secret_is_rejected_from_egress_and_archives(monkeypatch):
+    from workbench.archive import reject_configured_secrets
+    from workbench.egress import EgressDenied, SecretGuard
+    secret = 'private-cron-secret-that-must-stay-server-side'
+    monkeypatch.setenv('CRON_SECRET', secret)
+    with pytest.raises(EgressDenied):
+        SecretGuard().check({'source': secret})
+    data = io.BytesIO()
+    with zipfile.ZipFile(data, 'w') as archive:
+        archive.writestr('data.txt', secret)
+    with pytest.raises(ValueError, match='configured credential'):
+        reject_configured_secrets(data.getvalue(), config())

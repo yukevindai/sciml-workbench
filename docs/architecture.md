@@ -28,7 +28,7 @@ Long operations run in supervised worker child processes. Local deployments use 
 
 The job queue is backed directly by PostgreSQL; Redis/Celery is unnecessary for this MVP. Single-operator local defaults also keep file-based upstream Failure Memory within its supported small-team scope.
 
-Claiming, detached input preparation and fenced publication use short metadata transactions. Scientific computation holds no metadata connection and returns a bounded private result to the parent worker. A lightweight guardian enforces the remaining fixed deadline and watches for worker death. See the [D03 runtime contract](scientific-worker.md) for credential boundaries, process cleanup, external-write uncertainty and recovery limits. Agent scheduling remains a separate D11 implementation.
+Claiming, detached input preparation and fenced publication use short metadata transactions. Scientific computation holds no publication transaction and returns a bounded private result to the parent worker. Vercel holds a scheduler advisory-lock connection while a task runs and uses separate PostgreSQL storage connections for durable bytes. A lightweight guardian enforces the remaining fixed deadline and watches for worker death. See the [D03 runtime contract](scientific-worker.md) for credential boundaries, process cleanup, external-write uncertainty and recovery limits. Agent scheduling remains a separate D11 implementation.
 
 ## Files and S3 boundary
 
