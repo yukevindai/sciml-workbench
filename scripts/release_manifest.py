@@ -51,6 +51,11 @@ def inventory(root=ROOT):
             name, value = dependency.split('==')
             runtime[name] = value
     constraints = (root / 'backend/constraints.txt').read_text()
+    deployment = tomllib.loads((root / 'pyproject.toml').read_text())
+    expected_constraints = [line.strip() for line in constraints.splitlines()
+                            if line.strip() and not line.startswith('#')]
+    if deployment['tool']['uv']['constraint-dependencies'] != expected_constraints:
+        raise ValueError('Vercel constraints disagree with backend/constraints.txt; update pyproject.toml and uv.lock')
     for name, value in runtime.items():
         if f'{name}=={value}' not in constraints.splitlines():
             raise ValueError('Runtime constraint disagrees with project dependency')
@@ -67,7 +72,7 @@ def inventory(root=ROOT):
              root / 'backend/constraints.txt', root / 'backend/pyproject.toml',
              root / 'frontend/package-lock.json', root / 'frontend/package.json',
              root / 'backend/Dockerfile', root / 'frontend/Dockerfile', root / 'compose.yaml',
-             root / 'vercel.json', root / 'frontend/vercel.json', root / 'requirements.txt', root / 'pyproject.toml',
+             root / 'vercel.json', root / 'frontend/vercel.json', root / 'requirements.txt', root / 'pyproject.toml', root / 'uv.lock',
              *sorted((root / 'backend/migrations/versions').glob('*.py'))]
     return {'format': 'workbench-release-compatibility/1', 'application_version': version,
         'api_version': api['info']['version'], 'python': python,

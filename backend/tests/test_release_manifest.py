@@ -23,6 +23,7 @@ def checkout(tmp_path):
 @pytest.mark.parametrize('name,old,new', [
     ('frontend/package.json', '"version": "0.1.0"', '"version": "9.0.0"'),
     ('backend/constraints.txt', 'langgraph==1.2.11', 'langgraph==0.0.1'),
+    ('pyproject.toml', 'fastapi==0.141.1', 'fastapi==0.140.0'),
     ('.python-version', '3.12', '3.13'),
     ('frontend/Dockerfile', 'FROM node:22-alpine AS build', 'FROM node:20-alpine AS build'),
 ])

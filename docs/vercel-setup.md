@@ -55,11 +55,11 @@ Import `yukevindai/sciml-workbench` as, for example, `sciml-workbench-api`.
 | Framework preset | FastAPI |
 | Production branch | `main`, once this migration is merged |
 | Runtime | Python 3.12, Fluid Compute enabled |
-| Build/install/start overrides | Leave unset; use the framework and root `requirements.txt` |
+| Build/install/start overrides | Leave unset; use the framework, root `pyproject.toml` and committed `uv.lock` |
 | Environment | Root `.env.vercel.example` values, Production scope |
 | Region | Same region as the database |
 
-Do not configure `workbench.serve`, `workbench.worker`, or `workbench.agent_worker` as a persistent start command. `vercel.json` sets a 300-second function limit and one daily catch-up cron. Root `pyproject.toml` registers the private queue subscriber; it must remain in the backend project root. The pinned `vercel-queue` Python SDK uses Vercel OIDC automatically on deployed functions, so no queue API key is required. Never run setup during import, a build, or every cold start.
+Do not configure `workbench.serve`, `workbench.worker`, or `workbench.agent_worker` as a persistent start command. `vercel.json` sets a 300-second function limit and one daily catch-up cron. Root `pyproject.toml` declares the local backend dependency, mirrors its tested constraints and registers the private queue subscriber; it must remain in the backend project root. The pinned `vercel-queue` Python SDK uses Vercel OIDC automatically on deployed functions, so no queue API key is required. Never run setup during import, a build, or every cold start. Vercel prioritizes `pyproject.toml` over `requirements.txt`, so the root manifest must retain its `[project]` table. When dependencies change, update the root constraint list from `backend/constraints.txt`, run `uv lock` with Python 3.12, and commit `uv.lock`. The `vercel-packaging` CI job verifies this deployment installation path independently of the Compose/pip path.
 
 For the first deployment keep scheduling disabled, and do not direct users to the API. Run setup from a trusted Python 3.12 checkout with the backend variables in its root `.env`:
 
