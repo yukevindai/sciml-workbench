@@ -6,7 +6,7 @@ import { api } from './lib/api';
 import { parseArtifactPreviews, parseProjects } from './lib/decode';
 import { ARTIFACT_REFRESH, isActive, jobFingerprint, loadJobs, pollDelay } from './lib/jobs';
 import { submitOperation, type OperationKind } from './lib/submissions';
-import { deriveWorkflow, navItem, type View } from './lib/pipeline';
+import { deriveWorkflow, NAV_GROUPS, navItem, type View } from './lib/pipeline';
 import type { Workbench as WorkbenchModel } from './lib/context';
 import { kinds, type Artifact, type Job, type Project } from './lib/types';
 import { Sidebar, TopBar } from './components/shell';
@@ -14,6 +14,7 @@ import { JobActivity } from './components/jobs';
 import { Alert } from './components/ui';
 import type { ShellFixture } from './lib/shell-fixture';
 import { ResearchView } from './views/research';
+import { AskView } from './views/ask';
 
 import { ProjectsView } from './views/projects';
 import { AuditView } from './views/audit';
@@ -246,7 +247,8 @@ export default function Workbench({ view, fixture, children, requestedProjectId,
   }, [projects, projectId, artifacts, jobs, jobsTruncated, lastUpdated, busy, datasetId, splitId, runId, act, submit, refreshJobs, setProjectId, setDatasetId, fixture]);
 
   const item = navItem(view);
-  const needsProject = view !== 'projects' && view !== 'research' && !projectId;
+  const needsProject = view !== 'projects' && view !== 'research' && view !== 'ask' && !projectId;
+  const simple = view === 'ask';
   const loading = projectsLoading || projectLoading;
   const loadError = projectsError || projectError;
   const showViews = !projectsLoading && !projectsError && (!projectId || projectLoaded);
@@ -268,16 +270,17 @@ export default function Workbench({ view, fixture, children, requestedProjectId,
           loading={projectsLoading}
           preview={Boolean(fixture)}
           locked={busy}
+          simple={simple}
         />
 
-        <main className="page" id="main" tabIndex={-1}>
-          <div className="page-head">
+        <main className={`page${simple ? ' page--simple' : ''}`} id="main" tabIndex={-1}>
+          {!simple && <div className="page-head">
             <div className="page-head-text">
-              <span className="page-eyebrow">Scientific machine learning</span>
+              <span className="page-eyebrow">{NAV_GROUPS.find(group => group.views.includes(view))?.label ?? 'Workspace'}</span>
               <h1>{item?.title ?? 'Workbench'}</h1>
               <p className="page-lede">{item?.lede}</p>
             </div>
-          </div>
+          </div>}
 
           <div className="stack">
             {fixture && <Alert variant="warning" title="Development-only fixture preview">Synthetic sample data. No API requests or mutations run here. Navigation links leave the preview and open the live workspace.</Alert>}
@@ -309,6 +312,7 @@ export default function Workbench({ view, fixture, children, requestedProjectId,
             )}
 
             {showViews && <>
+              {view === 'ask' && <AskView key={projectId} wb={model} />}
               {view === 'research' && <ResearchView wb={model} />}
               {view === 'projects' && <ProjectsView wb={model} />}
               {view === 'dataset-audit' && <AuditView key={projectId} wb={model} requestedAuditId={projectId === requestedProjectId ? requestedAuditId : undefined} />}
@@ -319,15 +323,15 @@ export default function Workbench({ view, fixture, children, requestedProjectId,
               {view === 'provenance' && <ProvenanceView key={projectId} wb={model} requestedArtifactId={projectId === requestedProjectId ? requestedArtifactId : undefined} />}
               {view === 'report' && <ReportView key={projectId} wb={model} requestedReportId={projectId === requestedProjectId ? requestedReportId : undefined} />}
 
-              <JobActivity wb={model} />
+              {!simple && <JobActivity wb={model} />}
               {children}
             </>}
           </div>
 
-          <footer className="page-foot">
+          {!simple && <footer className="page-foot">
             <span className="page-foot-brand">SciML Workbench</span>
-            <span>Evidence → data → evaluation → learning</span>
-          </footer>
+            <span>Every result keeps a link to the files and steps it came from.</span>
+          </footer>}
         </main>
       </div>
     </div>

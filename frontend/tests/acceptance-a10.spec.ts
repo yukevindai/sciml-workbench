@@ -66,9 +66,12 @@ async function runRequest(page: Page, goal: string, { review = false } = {}) {
 }
 
 test('private access: anonymous requests are refused; health stays public', async ({ browser, baseURL }) => {
-  const anonymous = await browser.newContext({ baseURL, httpCredentials: undefined });
-  for (const path of ['/', '/research', '/api/projects', '/api/projects/x/agent-runs/y/events', '/api/projects/x/agent-runs/y/stream', '/api/projects/x/artifacts/y/download']) {
+  const anonymous = await browser.newContext({ baseURL, httpCredentials: undefined, extraHTTPHeaders: {} });
+  for (const path of ['/api/projects', '/api/projects/x/agent-runs/y/events', '/api/projects/x/agent-runs/y/stream', '/api/projects/x/artifacts/y/download']) {
     expect((await anonymous.request.get(path)).status(), path).toBe(401);
+  }
+  for (const path of ['/ask', '/research']) {
+    expect((await anonymous.request.get(path, { maxRedirects: 0 })).status(), path).toBe(303);
   }
   expect((await anonymous.request.post('/api/projects', { data: { name: 'x', description: '' } })).status()).toBe(401);
   const health = await anonymous.request.get('/healthz');

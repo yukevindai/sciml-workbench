@@ -21,23 +21,23 @@ async function mockWorkspace(page: Page, override?: (route: Route, path: string)
   });
 }
 
-test('research is the entry point and all eight manual views remain reachable', async ({ page }) => {
+test('the detailed request and all eight manual views remain reachable', async ({ page }) => {
   await mockWorkspace(page);
-  await page.goto('/');
-  await expect(page.getByRole('heading', { name: 'Research', exact: true })).toBeVisible();
+  await page.goto('/research');
+  await expect(page.getByRole('heading', { name: 'Detailed request', exact: true })).toBeVisible();
   await expect(page.getByLabel('Active project', { exact: true })).toHaveValue(project.id);
   await expect(page.getByLabel('Active dataset', { exact: true })).toHaveValue(dataset.id);
   await expect(page.getByText('Unresolved declarations:')).toBeVisible();
   await expect(page.getByRole('button', { name: 'Run research' })).toBeDisabled();
   await expect(page.getByRole('button', { name: /Pause|Resume|Cancel/ })).toHaveCount(0);
   const nav = page.getByRole('navigation', { name: 'Workbench sections' });
-  for (const label of ['Research', 'Projects', 'Dataset audit', 'Split designer', 'Benchmarks', 'Failure memory', 'Evidence', 'Provenance', 'Reports']) {
+  for (const label of ['Ask', 'Detailed request', 'Projects', 'Check data', 'Split data', 'Test models', 'Lessons learned', 'Papers & sources', 'History', 'Export']) {
     await expect(nav.getByRole('link', { name: label, exact: true })).toHaveCount(1);
   }
-  await nav.getByRole('link', { name: 'Evidence', exact: true }).click();
-  await expect(page.getByRole('heading', { name: 'Evidence', exact: true })).toBeVisible();
+  await nav.getByRole('link', { name: 'Papers & sources', exact: true }).click();
+  await expect(page.getByRole('heading', { name: 'Papers & sources', exact: true })).toBeVisible();
   await page.goBack();
-  await expect(page.getByRole('heading', { name: 'Research', exact: true })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Detailed request', exact: true })).toBeVisible();
 });
 
 test('loading does not masquerade as an empty workspace; errors can be retried', async ({ page }) => {
@@ -176,10 +176,10 @@ test('mobile navigation and skip link work by keyboard in both themes', async ({
   await expect(page.getByRole('link', { name: 'Skip to main content' })).toBeFocused();
   await page.keyboard.press('Enter');
   await expect(page.getByRole('main')).toBeFocused();
-  const audit = page.getByRole('navigation').getByRole('link', { name: 'Dataset audit', exact: true });
+  const audit = page.getByRole('navigation').getByRole('link', { name: 'Check data', exact: true });
   await audit.focus();
   await page.keyboard.press('Enter');
-  await expect(page.getByRole('heading', { name: 'Dataset audit', exact: true })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Check data', exact: true })).toBeVisible();
   await page.goto('/research');
   await expect(page.getByRole('heading', { name: project.name })).toBeVisible();
   for (const theme of ['dark', 'light']) {
