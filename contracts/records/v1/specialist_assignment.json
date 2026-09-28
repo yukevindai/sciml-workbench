@@ -152,6 +152,22 @@
       ],
       "default": null,
       "title": "Reviewed Snapshot Sha256"
+    },
+    "source_classes": {
+      "items": {
+        "enum": [
+          "schema",
+          "aggregates",
+          "operator",
+          "excerpt",
+          "raw"
+        ],
+        "type": "string"
+      },
+      "maxItems": 5,
+      "minItems": 1,
+      "title": "Source Classes",
+      "type": "array"
     }
   },
   "required": [

@@ -112,6 +112,18 @@ then appends one server-policy and one project-policy revision through the same
 - Exposure is `schema_aggregates` (column names and summary statistics). Raw rows and excerpts are never granted. `share_operator_messages` is on so the typed question reaches the model.
 - Tools are the default set, excluding `replay_science`. Scientific models are the installed baselines. Automatic failure recording is off, and report verification is on.
 - Limits: each request is capped at 40 model requests / 400k model tokens / 8 scientific attempts / 30 active minutes. Project-wide totals are 25× that and cumulative. `WB_AGENT_AUTO_SPEND_CEILING_USD` adds a monetary cap, which requires reviewed `WB_AGENT_MODEL_PRICES`.
+- Delegation is driven by these shared budgets: the coordinator can request more
+  specialists as results reveal useful work. The assignment allowance matches
+  the model-request allowance (40 per run), so the former independent limit of
+  four assignments no longer applies. Coordinator and specialist calls both
+  consume those 40 requests; this does not grant 40 additional specialist calls.
+  Up to two specialists run at once. Larger batches run in checkpointed waves,
+  one wave per worker advancement, including on Vercel. Token, time, project and
+  optional monetary limits may stop work before the request allowance is used.
+- Specialists remain scoped advisory calls in predefined roles. They cannot
+  execute tools or recursively delegate; the coordinator acts on their results.
+  Automatic policies refresh to these limits when Ask next submits a request.
+  Operator-created policies and existing runs retain their narrower limits.
 - An existing operator-installed server policy keeps its caps; only its ID scope is extended. An operator-installed project policy keeps its settings too; only its inputs are extended.
 
 Leave it at `0` to keep the reviewed, operator-only path below.

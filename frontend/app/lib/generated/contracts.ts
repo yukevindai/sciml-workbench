@@ -929,6 +929,11 @@ export type DeadlineAt1 = string;
 export type CompletionCriteria1 = string[];
 export type State9 = 'queued' | 'running' | 'waiting' | 'completed' | 'failed' | 'cancelled';
 export type ReviewedSnapshotSha2561 = string | null;
+/**
+ * @minItems 1
+ * @maxItems 5
+ */
+export type SourceClasses = ('schema' | 'aggregates' | 'operator' | 'excerpt' | 'raw')[];
 export type Contract7 = 'specialist_result';
 export type SchemaVersion22 = '1.0';
 export type AssignmentId2 = string;
@@ -2460,6 +2465,7 @@ export interface SpecialistAssignment {
   completion_criteria: CompletionCriteria1;
   state: State9;
   reviewed_snapshot_sha256?: ReviewedSnapshotSha2561;
+  source_classes?: SourceClasses;
 }
 export interface SpecialistResult {
   contract?: Contract7;

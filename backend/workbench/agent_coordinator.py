@@ -32,7 +32,7 @@ class Decision(ContractModel):
     questions: list[MaterialQuestion] = Field(default_factory=list, max_length=20)
     summary: Text
     assignment: AssignmentRequest | None = None
-    assignments: list[AssignmentRequest] = Field(default_factory=list, max_length=4)
+    assignments: list[AssignmentRequest] = Field(default_factory=list, max_length=40)
     claims: list[Claim] = Field(default_factory=list, max_length=100)
     export_report: bool = False
 
@@ -61,7 +61,11 @@ First return a plan. Revise it when the objective or actual results require it.
 Delegate only when a scoped data/evaluation, evidence, failure-memory or review
 objective adds useful independent work. Audit-only work ordinarily needs no
 specialist. Specialists cannot delegate or execute science. Independent assignments
-may be proposed together in assignments; they share the run's limits. Scientific
+may be proposed together in assignments; the scheduler runs them in waves within
+the concurrency limit. Create additional assignments as useful results reveal
+more work, within the shared model-request, token, time and spending budgets.
+Do not assume a four-specialist limit; obey the supplied resource limits.
+Finish when additional work is not useful or the remaining budget cannot cover it. Scientific
 review is entered only by finalization, never by an ad-hoc delegation.
 Use record_outcome only for an eligible linked execution failure when offered;
 its actor and observation come from trusted records. Use read_evidence_span for
@@ -164,6 +168,8 @@ class Coordinator:
         message_class = 'operator' if policy.share_operator_messages else 'raw'
         parts = [ContextPart(pid, 'schema', INSTRUCTIONS),
                  ContextPart(pid, message_class, run['objective'], tuple(scope['artifact_ids']), tuple(scope['material_ids']))]
+        parts.append(ContextPart(pid, 'schema', json.dumps({'resource_limits': policy.limits.model_dump(),
+            'usage': run.get('usage', {}), 'spend_ceiling_usd': policy.spend_ceiling_usd})))
         if snapshot['plan_dirty']:
             parts.append(ContextPart(pid, 'schema', 'The operator amended this run. Publish a revised plan before new work.'))
         with self.db.session() as s:
@@ -180,9 +186,11 @@ class Coordinator:
         for assignment in assignments:
             if assignment.result:
                 # Specialist prose inherits the conservative source classification.
-                parts.append(ContextPart(pid, 'raw', json.dumps(assignment.result),
+                classes = assignment.payload.get('source_classes', ['raw'])
+                rank = {'schema': 0, 'aggregates': 1, 'operator': 2, 'excerpt': 3, 'raw': 4}
+                parts.append(ContextPart(pid, max(classes, key=rank.__getitem__), json.dumps(assignment.result),
                     tuple(assignment.payload['allowed_artifact_ids']),
-                    tuple(assignment.payload['allowed_material_ids'])))
+                    tuple(assignment.payload['allowed_material_ids']), tuple(classes)))
         # Only bounded typed result projections, never raw job payloads or errors.
         for action in snapshot['actions'][-30:]:
             policy = AuthorityPolicy.model_validate(snapshot['policy'])
@@ -248,9 +256,18 @@ class Coordinator:
                 bounds=self.bounds, settings=self.settings, prices=self.prices, max_tokens=self.max_tokens)
             try:
                 policy = AuthorityPolicy.model_validate(snapshot['policy'])
-                if len(requests) > policy.limits.specialist_concurrency:
-                    raise DomainError('Assignment batch exceeds concurrency', 409, 'BUDGET_EXHAUSTED')
-                service.execute_batch(pid, rid, pending['key'], requests, self.context(snapshot))
+                width = policy.limits.specialist_concurrency
+                if not width:
+                    raise DomainError('Specialist concurrency is disabled', 409, 'BUDGET_EXHAUSTED')
+                offset = pending.get('assignment_offset', 0)
+                wave = requests[offset:offset + width]
+                service.execute_batch(pid, rid, pending['key'], wave, self.context(snapshot),
+                    offset=offset, total=len(requests))
+                offset += len(wave)
+                if offset < len(requests):
+                    # Checkpoint after each bounded wave, so Vercel can continue
+                    # in another invocation and completed calls are never repeated.
+                    return {**state, 'pending': {**pending, 'assignment_offset': offset}}, 'queued'
             except (ProviderError, ValueError):
                 return self.recovery_question(snapshot, runs)
             except DomainError as exc:

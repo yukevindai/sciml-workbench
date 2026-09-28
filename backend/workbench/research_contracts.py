@@ -194,6 +194,10 @@ class SpecialistAssignment(RuntimeRecord):
     completion_criteria: list[Text] = Field(min_length=1)
     state: Literal["queued", "running", "waiting", "completed", "failed", "cancelled"]
     reviewed_snapshot_sha256: Digest | None = None
+    # Persist trusted input provenance before dispatch. Legacy results default
+    # to raw so a later, narrower policy cannot accidentally expose them.
+    source_classes: list[Literal['schema', 'aggregates', 'operator', 'excerpt', 'raw']] = Field(
+        default_factory=lambda: ['raw'], min_length=1, max_length=5)
 
     @model_validator(mode="after")
     def reviewer_reads_only(self):

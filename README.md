@@ -131,6 +131,11 @@ docker compose --profile agents up --build -d --wait
 
 With `WB_AGENT_AUTO_POLICY=1`, the first question in a project grants the assistant access to that project's own uploads: column names and summary numbers only, never raw rows, within per-request and per-project limits. Sending the question is the consent to spend. See the [DeepSeek section of the operator guide](docs/agent-operator-guide.md#deepseek-quick-path).
 
+The coordinator assigns advisory specialists as needed within the shared request,
+token and time budgets, with two specialists running at once. Larger batches
+continue in checkpointed waves. Coordinator calls and specialist calls share the
+same 40-request default allowance; a configured monetary ceiling also applies.
+
 **Reviewed path:** leave `WB_AGENT_AUTO_POLICY=0` and follow the [agent operator guide](docs/agent-operator-guide.md) to install exact server/project policies with `workbench.operator_policy`. Then only the inputs you granted can be offered to the model. **Detailed request** (under Advanced tools) shows the saved policy, inputs and limits for each request.
 
 Start with the guide's narrow audit demonstration before expanding the permitted workflow. Model keys remain in backend configuration, never browser code, goal text, or uploaded files.

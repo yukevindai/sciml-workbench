@@ -14,9 +14,10 @@ export const MAX_PDF = 10 * 1024 * 1024;
 /** Policies the server grants automatically carry this ID (backend auto_policy.py). */
 export const AUTO_POLICY_ID = 'auto-project';
 /** Per-request allowance under an automatic policy; its project totals are larger and cumulative. */
+const MODEL_REQUESTS = 40;
 export const RUN_LIMITS: EffectivePolicy['limits'] = {
-  model_tokens: 400_000, model_requests: 40, tool_calls: 80, coordinator_iterations: 40,
-  specialist_assignments: 4, specialist_concurrency: 2, delegation_depth: 1, review_rounds: 1,
+  model_tokens: 400_000, model_requests: MODEL_REQUESTS, tool_calls: 80, coordinator_iterations: 40,
+  specialist_assignments: MODEL_REQUESTS, specialist_concurrency: 2, delegation_depth: 1, review_rounds: 1,
   scientific_attempts: 8, active_seconds: 1800, transient_retries: 4,
   finalization_model_tokens: 40_000, finalization_scientific_attempts: 0,
 };
@@ -80,14 +81,21 @@ async function permissions(projectId: string, items: ScopeItem[]): Promise<Effec
   if (!summary.agent_available) {
     throw new AskBlocked('The AI assistant isn’t switched on for this workspace yet. Ask the person who runs it to add a DeepSeek key, or use the advanced tools to work by hand.');
   }
-  if (!summary.policy || items.some(item => !authorized(item, summary.policy))) {
+  const needsAccess = !summary.policy || items.some(item => !authorized(item, summary.policy));
+  const refreshAutomaticLimits = summary.policy?.reference.policy_id === AUTO_POLICY_ID
+    && summary.policy.limits.specialist_assignments < summary.policy.limits.model_requests;
+  if (needsAccess || refreshAutomaticLimits) {
     try {
       summary = await api(`projects/${projectId}/execution-policy/auto`, parseExecutionPolicy, { method: 'POST' }, READ_TIMEOUT);
     } catch (e) {
-      if (e instanceof ApiError && e.status === 409) {
+      if (e instanceof ApiError && e.status === 409 && !needsAccess) {
+        // Automatic access may have been disabled since this policy was saved.
+        // Its existing grants and stricter limits still apply.
+      } else if (e instanceof ApiError && e.status === 409) {
         throw new AskBlocked('The assistant isn’t allowed to use these files yet. Ask the person who runs this workspace to turn on automatic access (WB_AGENT_AUTO_POLICY=1) or to grant access to them.');
+      } else {
+        throw e;
       }
-      throw e;
     }
   }
   if (!summary.policy || summary.project_id !== projectId) throw new AskBlocked('The assistant’s permissions for this project could not be read.');

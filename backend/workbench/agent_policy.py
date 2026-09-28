@@ -18,8 +18,9 @@ INSPECTION = frozenset({"inspect_project", "inspect_dataset", "list_artifacts", 
 
 
 def default_limits() -> ResourceLimits:
-    return ResourceLimits(model_tokens=32000, model_requests=24, tool_calls=60,
-        coordinator_iterations=24, specialist_assignments=4, specialist_concurrency=2,
+    model_requests = 24
+    return ResourceLimits(model_tokens=32000, model_requests=model_requests, tool_calls=60,
+        coordinator_iterations=24, specialist_assignments=model_requests, specialist_concurrency=2,
         delegation_depth=1, review_rounds=1, scientific_attempts=8, active_seconds=900,
         transient_retries=2, finalization_model_tokens=2000, finalization_scientific_attempts=0)
 

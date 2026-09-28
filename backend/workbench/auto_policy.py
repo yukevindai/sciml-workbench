@@ -25,11 +25,14 @@ SERVER_POLICY_ID = 'auto-server'
 PROJECT_POLICY_ID = 'auto-project'
 # Research runs spend from these per request (see RUN_LIMITS in the web client);
 # the project-wide totals below are cumulative across every run in the project.
-RUN_LIMITS = dict(model_tokens=400_000, model_requests=40, tool_calls=80, coordinator_iterations=40,
-                  specialist_assignments=4, specialist_concurrency=2, delegation_depth=1, review_rounds=1,
+MODEL_REQUESTS = 40
+RUN_LIMITS = dict(model_tokens=400_000, model_requests=MODEL_REQUESTS, tool_calls=80, coordinator_iterations=40,
+                  specialist_assignments=MODEL_REQUESTS, specialist_concurrency=2, delegation_depth=1, review_rounds=1,
                   scientific_attempts=8, active_seconds=1800, transient_retries=4,
                   finalization_model_tokens=40_000, finalization_scientific_attempts=0)
 PROJECT_SCALE = 25
+# Every assignment consumes a model request. Matching that budget removes a
+# separate head-count bottleneck while retaining compatible integer contracts.
 
 
 def project_limits() -> ResourceLimits:
@@ -72,6 +75,9 @@ def grant_project_inputs(session, pid: str, agents: AgentSettings) -> dict:
         server = old.model_copy(update={
             'revision': server_revision, 'project_ids': old.project_ids | {pid},
             'material_ids': old.material_ids | materials, 'artifact_ids': old.artifact_ids | datasets})
+        if old.policy_id == SERVER_POLICY_ID:
+            server = server.model_copy(update={'limits': old.limits.model_copy(update={
+                'specialist_assignments': old.limits.model_requests})})
         server = AuthorityPolicy.model_validate(server.model_dump())
         if server.model_dump(exclude={'revision'}) == old.model_dump(exclude={'revision'}):
             server = old

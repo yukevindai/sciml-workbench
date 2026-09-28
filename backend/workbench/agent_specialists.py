@@ -36,12 +36,12 @@ class SpecialistService:
         self.prices, self.max_tokens = prices, max_tokens
         self.budgets = BudgetService(runs)
 
-    def execute_batch(self, pid, rid, key, requests, context):
+    def execute_batch(self, pid, rid, key, requests, context, *, offset=0, total=None):
         from concurrent.futures import ThreadPoolExecutor
         assignments = []
         try:
-            for index, request in enumerate(requests):
-                assignment = self.create(pid, rid, key if len(requests) == 1 else f'{key}:{index}', request)
+            for index, request in enumerate(requests, start=offset):
+                assignment = self.create(pid, rid, key if (total or len(requests)) == 1 else f'{key}:{index}', request)
                 assignments.append(assignment)
             def execute_one(assignment):
                 sources = [part for part in context
@@ -140,9 +140,11 @@ class SpecialistService:
             task = ContextPart.derived(json.dumps({'role': assignment.role, 'objective': assignment.objective,
                 'completion_criteria': assignment.completion_criteria}), sources)
             context = [instructions, task, *sources]
+            assignment = assignment.model_copy(update={'source_classes': sorted({
+                kind for part in context for kind in (part.content_class, *part.source_classes)})})
             # Persist before IO: a crash cannot start a second model request.
             row.state = 'running'
-            row.payload = {**row.payload, 'state': 'running'}
+            row.payload = {**assignment.model_dump(mode='json'), 'state': 'running'}
             revision, token = run.control_revision, run.claim_token
         wrapper = BudgetedProvider(self.db, self.provider, bounds=self.bounds, prices=self.prices,
                                    backend_settings=self.settings, runs=self.runs)

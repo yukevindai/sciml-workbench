@@ -13,7 +13,8 @@ const both = { ...policy, policy: { ...policy.policy!, material_ids: fixture.mat
 
 type Post = { path: string; body: string | null };
 
-async function serve(page: Page, onPost: (post: Post) => { status: number; json: unknown } | undefined) {
+async function serve(page: Page, onPost: (post: Post) => { status: number; json: unknown } | undefined,
+  savedPolicy: unknown = fixture.policy) {
   const posts: Post[] = [];
   await page.route('**/api/**', async (route: Route) => {
     const request = route.request();
@@ -32,7 +33,7 @@ async function serve(page: Page, onPost: (post: Post) => { status: number; json:
       : path === `${base}/job-index` ? fixture.job_index
       : path === `${base}/artifact-previews` ? fixture.previews
       : path === `${base}/research-materials` ? fixture.materials
-      : path === `${base}/execution-policy` ? fixture.policy
+      : path === `${base}/execution-policy` ? savedPolicy
       : path === `${base}/agent-runs` ? []
       : /\/events$/.test(path) ? []
       : detail ? (fixture.details as Record<string, unknown>)[detail[1]]
@@ -96,4 +97,33 @@ test('a refused grant is explained in plain words and nothing is started', async
   await expect(page.getByRole('main').getByRole('alert')).toContainText('isn’t allowed to use these files yet');
   await expect(page.getByLabel('What would you like to find out?')).toHaveValue('Compare both spreadsheets.');
   expect(runPosts(posts)).toHaveLength(0);
+});
+
+test('existing automatic policies refresh and submit a shared specialist budget', async ({ page }) => {
+  const refreshed = { ...both, policy: { ...both.policy, limits: {
+    ...both.policy.limits, model_requests: 1000, specialist_assignments: 1000, specialist_concurrency: 2,
+  } } };
+  const posts = await serve(page, post => post.path === `${base}/execution-policy/auto`
+    ? { status: 200, json: refreshed }
+    : post.path === `${base}/agent-runs` ? { status: 202, json: fixture.accepted } : undefined, both);
+  await page.goto('/ask');
+  await page.getByLabel('What would you like to find out?').fill('Check independent aspects of both spreadsheets.');
+  await page.getByRole('button', { name: 'Send' }).click();
+  await expect(page.getByRole('article', { name: /Your request/ })).toBeVisible();
+  expect(posts.filter(post => post.path.endsWith('/execution-policy/auto'))).toHaveLength(1);
+  const body = JSON.parse(runPosts(posts)[0].body!);
+  expect(body.limits.specialist_assignments).toBe(body.limits.model_requests);
+  expect(body.limits.specialist_assignments).toBe(40);
+  expect(body.limits.specialist_concurrency).toBe(2);
+});
+
+test('an existing policy still works when automatic refresh has been disabled', async ({ page }) => {
+  const posts = await serve(page, post => post.path === `${base}/execution-policy/auto`
+    ? { status: 409, json: { error: 'Automatic access disabled' } }
+    : post.path === `${base}/agent-runs` ? { status: 202, json: fixture.accepted } : undefined, both);
+  await page.goto('/ask');
+  await page.getByLabel('What would you like to find out?').fill('Check the permitted files.');
+  await page.getByRole('button', { name: 'Send' }).click();
+  await expect(page.getByRole('article', { name: /Your request/ })).toBeVisible();
+  expect(JSON.parse(runPosts(posts)[0].body!).limits.specialist_assignments).toBe(4);
 });
