@@ -9,7 +9,7 @@ schema and aggregates, and model or source text never chooses the scope.
 """
 from typing import get_args
 
-from sqlalchemy import select
+from sqlalchemy import select, text
 
 from .agent_db import ProjectPolicyRow, ServerPolicyRow
 from .agent_policy import AuthorityPolicy
@@ -23,6 +23,8 @@ from .research_contracts import ResourceLimits
 
 SERVER_POLICY_ID = 'auto-server'
 PROJECT_POLICY_ID = 'auto-project'
+# Fixed advisory-lock key for automatic server-policy appends.
+SERVER_POLICY_LOCK = 0x5743_4155_544F
 # Research runs spend from these per request (see RUN_LIMITS in the web client);
 # the project-wide totals below are cumulative across every run in the project.
 RUN_LIMITS = dict(model_tokens=400_000, model_requests=40, tool_calls=80, coordinator_iterations=40,
@@ -56,6 +58,11 @@ def grant_project_inputs(session, pid: str, agents: AgentSettings) -> dict:
     if not agents.agent_auto_policy:
         raise DomainError('Automatic agent access is turned off on this server. An operator can turn it on with WB_AGENT_AUTO_POLICY=1.',
                           409, 'AGENT_UNAVAILABLE')
+    # The server policy is one global revision chain: serialize every automatic
+    # append so grants for different projects cannot compute the same revision.
+    # (SQLite already serializes writers once lock_project writes.)
+    if session.bind.dialect.name == 'postgresql':
+        session.execute(text('SELECT pg_advisory_xact_lock(:key)'), {'key': SERVER_POLICY_LOCK})
     lock_project(session, pid)
     materials = frozenset(session.scalars(select(MaterialRow.id).where(MaterialRow.project_id == pid)))
     datasets = frozenset(session.scalars(select(ArtifactRow.id).where(

@@ -60,3 +60,42 @@ def test_auto_grant_covers_only_own_uploads_and_is_idempotent(tmp_path, db, monk
         with app.state.db.session() as s:
             assert [r.revision for r in s.scalars(select(ServerPolicyRow).order_by(ServerPolicyRow.revision))] == [1, 2, 3]
             assert len(list(s.scalars(select(ProjectPolicyRow).where(ProjectPolicyRow.project_id == pid)))) == 2
+
+
+def test_concurrent_grants_for_different_projects_take_successive_server_revisions(db, monkeypatch):
+    """Both transactions reach install() together unless the server-wide lock serializes them."""
+    import threading
+    import pytest
+    from workbench import auto_policy
+    from workbench.config import AgentSettings
+    if db.engine.dialect.name != 'postgresql':
+        pytest.skip('SQLite serializes writers at lock_project already')
+    agents = AgentSettings(_env_file=None, agent_auto_policy=True, coordinator_model='deepseek-chat', specialist_model='deepseek-chat')
+    barrier = threading.Barrier(2, timeout=2)
+    original = auto_policy.install
+
+    def rendezvous(*args, **kwargs):
+        try:
+            barrier.wait()  # Only reachable by both at once when nothing serializes the reads.
+        except threading.BrokenBarrierError:
+            pass
+        return original(*args, **kwargs)
+
+    monkeypatch.setattr(auto_policy, 'install', rendezvous)
+    errors = []
+
+    def grant(pid):
+        try:
+            with db.session.begin() as s:
+                auto_policy.grant_project_inputs(s, pid, agents)
+        except Exception as exc:  # noqa: BLE001 - reported below
+            errors.append(repr(exc))
+
+    threads = [threading.Thread(target=grant, args=(pid,)) for pid in ('p', 'q')]
+    for thread in threads:
+        thread.start()
+    for thread in threads:
+        thread.join(30)
+    assert errors == []
+    with db.session() as s:
+        assert [r.revision for r in s.scalars(select(ServerPolicyRow).order_by(ServerPolicyRow.revision))] == [1, 2]

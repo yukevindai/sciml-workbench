@@ -125,7 +125,7 @@ class Finalizer:
                 issues.append('Unsupported or qualified claims removed')
             review = {'assignment_id': assignment_id, **result.model_dump(mode='json'),
                 'model': self.reviewer.model, 'model_revision': self.reviewer.provider.resolved_model(self.reviewer.model),
-                'adapter': ADAPTER_VERSION, 'prompt_version': 'independent-review/1.0'}
+                'adapter': getattr(self.reviewer.provider, 'adapter_version', ADAPTER_VERSION), 'prompt_version': 'independent-review/1.0'}
         except (ProviderError, DomainError, ValueError, StorageError) as exc:
             if isinstance(exc, DomainError) and exc.error_code == 'RUN_REVISION_CHANGED':
                 raise

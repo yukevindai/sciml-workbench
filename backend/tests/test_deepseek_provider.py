@@ -113,6 +113,8 @@ def test_missing_model_is_refused():
     lambda r: r.update(choices=[]),
     lambda r: r["usage"].update(completion_tokens=101),
     lambda r: r["choices"][0]["message"].update(tool_calls=[]),
+    # Output from any model other than the verified one is refused, never relabelled.
+    lambda r: r.update(model="deepseek-reasoner"),
 ])
 def test_malformed_responses_fail_closed(mutation):
     body = response()

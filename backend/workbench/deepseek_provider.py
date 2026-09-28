@@ -80,7 +80,9 @@ class DeepSeekProvider(AnthropicProvider):
 
     @staticmethod
     def _parse(value, tools, model, max_tokens):
-        if value["object"] != "chat.completion" or not isinstance(value["model"], str):
+        # Output and usage are attributed to the verified model only; any other
+        # identity (alias routing, a substituted model) is refused, not relabelled.
+        if value["object"] != "chat.completion" or value["model"] != model:
             raise ValueError()
         choices = value["choices"]
         if not isinstance(choices, list) or len(choices) != 1:
