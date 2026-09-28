@@ -1,18 +1,18 @@
 import Link from 'next/link';
 import {
   ArrowRight, ArrowUp, BookOpen, CheckCircle2, FileSpreadsheet, FlaskConical, History, Lightbulb,
-  MessageSquareText, Paperclip, PauseCircle, ShieldCheck, Sparkles, SplitSquareHorizontal, Upload,
+  MessageSquareText, Paperclip, PauseCircle, ShieldCheck, SplitSquareHorizontal, Upload,
 } from 'lucide-react';
 import { ThemeToggle } from './components/theme-toggle';
 
 export const metadata = {
   title: 'SciML Workbench · Ask your data questions in plain words',
-  description: 'Upload a spreadsheet or a paper, ask a question in everyday language, and an AI assistant does the checking, testing and write-up for you, keeping a record of every step.',
+  description: 'Upload a spreadsheet or a paper, ask a question in everyday language, and an AI assistant handles the analysis, testing and write-up for you, keeping a record of every step.',
 };
 
 const STEPS = [
   { icon: Upload, title: 'Add your files', body: 'Drop in a spreadsheet (CSV) or a research paper (PDF). Your original files are kept exactly as they are.' },
-  { icon: MessageSquareText, title: 'Ask in plain words', body: '“Check this data for mistakes” or “Which columns predict yield?” No code, no settings to learn.' },
+  { icon: MessageSquareText, title: 'Ask in plain words', body: '“Find gaps in this dataset” or “Which columns predict yield?” No code, no settings to learn.' },
   { icon: CheckCircle2, title: 'Get clear results', body: 'The assistant plans the work, runs each step and shows you what it found, with links to every result.' },
 ];
 
@@ -22,7 +22,7 @@ const FEATURES = [
   { icon: FlaskConical, title: 'Tries simple models', body: 'Builds and compares basic prediction models so you have a baseline to beat.' },
   { icon: BookOpen, title: 'Reads your papers', body: 'Pulls out the passages that matter and links each claim to its exact page.', wide: true },
   { icon: Lightbulb, title: 'Remembers what didn’t work', body: 'Notes failed attempts and why, so nobody repeats the same mistake.' },
-  { icon: History, title: 'Keeps a full record', body: 'Every step is saved. Export one file that lets anyone check or repeat your work.', wide: true },
+  { icon: History, title: 'Keeps a full record', body: 'Every step is saved. Export one file that lets anyone review or reproduce your work.', wide: true },
 ];
 
 const FAQ = [
@@ -30,7 +30,7 @@ const FAQ = [
   { q: 'Which AI does it use?', a: 'The assistant runs on DeepSeek. Your workspace owner sets it up once; you never need an API key yourself.' },
   { q: 'Is my raw data sent to the AI?', a: 'By default, no. The assistant sees column names and summary numbers, while the actual analysis runs on the workspace server.' },
   { q: 'Can I stop it?', a: 'Yes. You can pause, stop or change your request at any time, and it asks you when it needs information only you know.' },
-  { q: 'How do I know the results are right?', a: 'Every result links back to the exact files and steps that produced it, and a full record can be exported and re-checked.' },
+  { q: 'How do I know the results are right?', a: 'Every result links back to the exact files and steps that produced it. Export the full record to inspect the evidence yourself.' },
 ];
 
 export default function Landing() {
@@ -58,11 +58,10 @@ export default function Landing() {
         <section className="hero">
           <div className="hero-glow" aria-hidden="true" />
           <div className="hero-grid" aria-hidden="true" />
-          <p className="hero-pill"><Sparkles size={14} aria-hidden="true" /> New: an AI research assistant that does the busywork</p>
-          <h1 className="hero-title">Ask questions about your data.<br /><span className="hero-accent">Get answers you can check.</span></h1>
+          <h1 className="hero-title">Ask questions about your data.<br /><span className="hero-accent">Get answers you can verify.</span></h1>
           <p className="hero-lede">
             Upload a spreadsheet or a paper and say what you want to know in everyday words.
-            The assistant checks your data, tests simple models and explains what it found, saving every step along the way.
+            The assistant examines your data, tests simple models and explains what it found, saving every step along the way.
           </p>
           <div className="hero-cta">
             <Link href="/ask" className="button button--lg">Start asking <ArrowRight size={16} aria-hidden="true" /></Link>
@@ -71,14 +70,14 @@ export default function Landing() {
 
           <div className="hero-demo" aria-label="Example of asking a question">
             <div className="demo-prompt">
-              <p className="demo-text">Check my data for mistakes, then tell me which columns best predict yield.</p>
+              <p className="demo-text">Scan my data for mistakes, then tell me which columns best predict yield.</p>
               <div className="demo-bar">
                 <span className="chip"><Paperclip size={13} aria-hidden="true" /> reactions.csv</span>
                 <span className="demo-send" aria-hidden="true"><ArrowUp size={16} /></span>
               </div>
             </div>
             <ol className="demo-steps">
-              <li><CheckCircle2 size={15} aria-hidden="true" /> Checked 1,240 rows and found 3 duplicates</li>
+              <li><CheckCircle2 size={15} aria-hidden="true" /> Inspected 1,240 rows and found 3 duplicates</li>
               <li><CheckCircle2 size={15} aria-hidden="true" /> Set aside 20% of the data for a fair test</li>
               <li><CheckCircle2 size={15} aria-hidden="true" /> Compared two simple models and wrote a summary</li>
             </ol>
