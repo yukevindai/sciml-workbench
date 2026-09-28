@@ -212,7 +212,7 @@ def reject_configured_secrets(raw, settings):
     if password := make_url(settings.database_url).password:
         secrets.append(password)
     import os
-    secrets.extend(os.environ.get(name) for name in ('CRON_SECRET', 'WB_VERCEL_PROTECTION_BYPASS'))
+    secrets.extend(os.environ.get(name) for name in ('CRON_SECRET', 'WB_VERCEL_PROTECTION_BYPASS', 'ANTHROPIC_API_KEY', 'DEEPSEEK_API_KEY'))
     needles = [secret.encode() for secret in secrets if secret]
     files = zip_contents(io.BytesIO(raw))
     for body in files.values():

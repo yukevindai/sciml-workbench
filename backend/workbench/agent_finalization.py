@@ -30,8 +30,8 @@ def execution_versions(model, provider, prompt):
     for path in sorted(Path(__file__).parent.glob('*.py')):
         source.update(path.name.encode() + b'\0' + path.read_bytes())
     from .egress import SYSTEM_BOUNDARY
-    return ExecutionVersions(workbench_revision=software()['workbench'] + '+' + source.hexdigest(), provider='anthropic', model=model,
-        model_revision=provider.resolved_model(model), provider_sdk=ADAPTER_VERSION + ';httpx/' + version('httpx'),
+    return ExecutionVersions(workbench_revision=software()['workbench'] + '+' + source.hexdigest(), provider=getattr(provider, 'name', 'anthropic'), model=model,
+        model_revision=provider.resolved_model(model), provider_sdk=getattr(provider, 'adapter_version', ADAPTER_VERSION) + ';httpx/' + version('httpx'),
         runtime='langgraph/' + version('langgraph'), checkpointer='langgraph-checkpoint-postgres/' + version('langgraph-checkpoint-postgres'),
         prompt=request_digest('coordinator_prompt', [SYSTEM_BOUNDARY, prompt]), tool_catalog='1.0')
 

@@ -2,7 +2,7 @@
 # A10 local acceptance: Compose stack (PostgreSQL, API, scientific worker, web), scripted
 # coordinator (no model provider), then the real-stack browser spec. Needs Docker and an
 # env file with generated secrets, WB_AGENTS_ENABLED=1, pinned-format model IDs, bounds
-# and a placeholder ANTHROPIC_API_KEY that is never sent (no agent-worker is started).
+# and a placeholder DEEPSEEK_API_KEY that is never sent (no agent-worker is started).
 # Usage: scripts/acceptance/run_a10.sh <env-file> [playwright args]
 set -eu
 ROOT=$(cd "$(dirname "$0")/../.." && pwd)

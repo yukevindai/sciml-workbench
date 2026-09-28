@@ -14,7 +14,7 @@ def main():
         WB_LOGIN_PASSWORD='compose-test-private-workspace-password',
         WB_LOGIN_USERNAME='workbench', WB_AGENTS_ENABLED='1',
         WB_COORDINATOR_MODEL=models[0], WB_SPECIALIST_MODEL=models[1],
-        ANTHROPIC_API_KEY='a10-scripted-never-sent',
+        WB_MODEL_PROVIDER='deepseek', DEEPSEEK_API_KEY='a10-scripted-never-sent',
         WB_AGENT_MODEL_BOUNDS=json.dumps(bounds, separators=(',', ':')))
     path = Path(__file__).resolve().parents[2] / 'outputs/a10/ci.env'
     path.parent.mkdir(parents=True, exist_ok=True)

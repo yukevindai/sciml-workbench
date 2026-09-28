@@ -88,12 +88,22 @@ class AgentSettings(BaseSettings):
     coordinator_model: str = ""
     specialist_model: str = ""
     anthropic_api_key: SecretStr = Field(default=SecretStr(""), validation_alias="ANTHROPIC_API_KEY")
+    deepseek_api_key: SecretStr = Field(default=SecretStr(""), validation_alias="DEEPSEEK_API_KEY")
     provider_timeout_seconds: float = Field(default=20, gt=0, le=300)
     provider_max_response_bytes: int = Field(default=262144, ge=1024, le=2000000)
     agent_model_bounds: str = Field(default="{}", repr=False)
     agent_model_prices: str = Field(default="{}", repr=False)
     agent_lease_seconds: int = Field(default=180, ge=10, le=300)
     agent_max_output_tokens: int = Field(default=1024, ge=1)
+    # Opt-in: grant each project's own uploads to the agent automatically (see auto_policy).
+    agent_auto_policy: bool = False
+    agent_auto_spend_ceiling_usd: float | None = Field(default=None, ge=0)
+
+    @field_validator("agent_auto_spend_ceiling_usd", mode="before")
+    @classmethod
+    def blank_is_unset(cls, value):
+        # Compose interpolates an unset optional value as an empty string.
+        return None if isinstance(value, str) and not value.strip() else value
 
     def runtime_limits(self):
         import json
@@ -122,12 +132,15 @@ class AgentSettings(BaseSettings):
     def validate_provider(self):
         import re
 
-        if self.model_provider != "anthropic":
-            raise ConfigurationError("WB_MODEL_PROVIDER must be anthropic; other provider adapters are not implemented.")
+        if self.model_provider not in {"anthropic", "deepseek"}:
+            raise ConfigurationError("WB_MODEL_PROVIDER must be deepseek or anthropic; other provider adapters are not implemented.")
         for name in ("coordinator_model", "specialist_model"):
             if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]{0,159}", getattr(self, name)):
                 raise ConfigurationError(f"Set WB_{name.upper()} to a model ID available to your provider account.")
-        validate_secret(self.anthropic_api_key, "ANTHROPIC_API_KEY", 1)
+        if self.model_provider == "deepseek":
+            validate_secret(self.deepseek_api_key, "DEEPSEEK_API_KEY", 1)
+        else:
+            validate_secret(self.anthropic_api_key, "ANTHROPIC_API_KEY", 1)
 
     def require_runtime(self):
         self.validate_configuration()
@@ -141,7 +154,7 @@ def load_settings(settings_type=Settings):
         settings = settings_type()
     except ValidationError as exc:
         names = sorted({
-            str(error["loc"][0]) if str(error["loc"][0]) == "ANTHROPIC_API_KEY"
+            str(error["loc"][0]) if str(error["loc"][0]) in {"ANTHROPIC_API_KEY", "DEEPSEEK_API_KEY"}
             else "WB_" + str(error["loc"][0]).upper()
             for error in exc.errors(include_input=False)
         })
