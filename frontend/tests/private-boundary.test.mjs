@@ -33,13 +33,26 @@ test('production operator gate and server proxy enforce the private boundary', a
     Object.assign(process.env, { NODE_ENV: 'production', WB_REQUIRE_LOGIN: '0', WB_LOGIN_USERNAME: 'operator',
       WB_LOGIN_PASSWORD: 'a-private-password-for-tests', WB_PUBLIC_ORIGIN: 'https://private.example',
       WB_API_TOKEN: 'private-backend-token-longer-than-32-characters', WB_API_URL: 'http://backend:8000' });
-    for (const path of ['/', '/api/projects', '/api/projects/p/agent-runs/r/stream', '/api/projects/p/artifacts/a/download']) {
-      assert.equal(proxy(request(path)).status, 401);
+    for (const path of ['/api/projects', '/api/projects/p/agent-runs/r/stream', '/api/projects/p/artifacts/a/download']) {
+      const refused = proxy(request(path));
+      assert.equal(refused.status, 401);
+      // No challenge header: browsers never show their own sign-in pop-up.
+      assert.equal(refused.headers.get('www-authenticate'), null);
       assert.equal(proxy(request(path, { authorization: 'Bearer attacker' })).status, 401);
+      assert.equal(proxy(request(path, { cookie: 'wb_session=v1.9999999999.forged' })).status, 401);
     }
+    // Workspace pages send anonymous visitors to the sign-in page instead.
+    for (const path of ['/ask', '/research', '/dataset-audit']) {
+      const redirect = proxy(request(path + '?project=p'));
+      assert.equal(redirect.status, 303);
+      assert.equal(redirect.headers.get('location'), 'https://private.example/sign-in?next=' + encodeURIComponent(path + '?project=p'));
+    }
+    // The landing and sign-in pages are public.
+    for (const path of ['/', '/sign-in', '/auth/session']) assert.equal(proxy(request(path)).status, 200);
+    assert.equal(proxy(request('/ask', { authorization: auth })).status, 200);
     assert.deepEqual(await proxy(request('/healthz')).json(), { status: 'ok' });
     delete process.env.WB_LOGIN_PASSWORD;
-    assert.equal(proxy(request('/')).status, 503);
+    assert.equal(proxy(request('/ask')).status, 503);
     process.env.WB_LOGIN_PASSWORD = 'a-private-password-for-tests';
     let calls = 0;
     globalThis.fetch = async (url, init) => {
@@ -71,6 +84,45 @@ test('production operator gate and server proxy enforce the private boundary', a
     assert.equal(calls, 1);
   } finally {
     globalThis.fetch = originalFetch;
+    for (const key of Object.keys(process.env)) if (!(key in original)) delete process.env[key];
+    Object.assign(process.env, original);
+  }
+});
+
+test('sign-in issues a signed session cookie that the gate accepts', async () => {
+  const session = load('app/lib/session.ts');
+  const { POST: signIn } = load('app/auth/session/route.ts');
+  try {
+    Object.assign(process.env, { NODE_ENV: 'production', WB_LOGIN_USERNAME: 'operator',
+      WB_LOGIN_PASSWORD: 'a-private-password-for-tests', WB_PUBLIC_ORIGIN: 'https://private.example' });
+    const form = (fields, origin = 'https://private.example') => new NextRequest('https://private.example/auth/session', {
+      method: 'POST', headers: { origin, 'content-type': 'application/x-www-form-urlencoded' }, body: new URLSearchParams(fields).toString() });
+    assert.equal((await signIn(form({ username: 'operator', password: 'a-private-password-for-tests' }, 'https://evil.example'))).status, 403);
+    const wrong = await signIn(form({ username: 'operator', password: 'wrong-password', next: '/ask' }));
+    assert.equal(wrong.status, 303);
+    assert.match(wrong.headers.get('location'), /\/sign-in\?error=invalid/);
+    assert.equal(wrong.headers.get('set-cookie'), null);
+    const ok = await signIn(form({ username: 'operator', password: 'a-private-password-for-tests', next: '//evil.example' }));
+    assert.equal(ok.status, 303);
+    assert.equal(ok.headers.get('location'), 'https://private.example/ask');
+    const cookie = ok.headers.get('set-cookie');
+    assert.match(cookie, /wb_session=v1\.\d+\./);
+    assert.match(cookie, /HttpOnly/i);
+    assert.match(cookie, /Secure/i);
+    const value = cookie.split(';')[0].split('=')[1];
+    assert.equal(proxy(request('/ask', { cookie: `wb_session=${value}` })).status, 200);
+    assert.equal(proxy(request('/api/projects', { cookie: `wb_session=${value}` })).status, 200);
+    // A password change signs every session out; expired sessions are refused.
+    process.env.WB_LOGIN_PASSWORD = 'a-different-private-password';
+    assert.equal(proxy(request('/api/projects', { cookie: `wb_session=${value}` })).status, 401);
+    const login = session.configuredLogin();
+    const old = session.createSession(login, Date.now() - 8 * 24 * 3600 * 1000);
+    assert.equal(session.validSession(old, login), false);
+    assert.equal(session.validSession(session.createSession(login), login), true);
+    const out = await signIn(form({ intent: 'sign-out' }));
+    assert.equal(out.headers.get('location'), 'https://private.example/');
+    assert.match(out.headers.get('set-cookie'), /wb_session=;.*Max-Age=0/i);
+  } finally {
     for (const key of Object.keys(process.env)) if (!(key in original)) delete process.env[key];
     Object.assign(process.env, original);
   }

@@ -34,8 +34,9 @@ dataset IDs when the Research input selects both.
 
 ## 2. Resolve provider decisions before enabling agents
 
-Only the implemented Anthropic adapter is supported. There is no recommended or
-default model ID, current price, or inferred input-token bound in this guide.
+Two adapters are implemented: DeepSeek (`WB_MODEL_PROVIDER=deepseek`, the default in
+`.env.example`) and Anthropic. For DeepSeek, see the [quick path](#deepseek-quick-path).
+There is no current price or inferred input-token bound in this guide.
 Resolve each item below for the actual account and keep a dated private record.
 
 | Decision | Required evidence / gate |
@@ -75,6 +76,45 @@ a bounded account smoke check, not a research run. Save only returned model IDs,
 adapter versions, usage and status. If any decision remains unknown, keep agents
 disabled and use the manual workflow. Do not substitute a placeholder key or the
 A10 scripted coordinator for live acceptance.
+
+## DeepSeek quick path
+
+DeepSeek uses its OpenAI-compatible chat API at `https://api.deepseek.com`
+(adapter `deepseek-chat-completions/1.0`, in `backend/workbench/deepseek_provider.py`). The
+adapter lists `/models` to verify the configured IDs, sends tools as function
+definitions, and maps DeepSeek usage onto the existing accounting categories
+(`prompt_cache_miss_tokens` → `input_tokens`, `prompt_cache_hit_tokens` →
+`cache_read_input_tokens`, `completion_tokens` → `output_tokens`). Transport limits,
+secret scanning and malformed-response handling match the Anthropic adapter.
+
+```bash
+# .env (server only)
+WB_MODEL_PROVIDER=deepseek
+DEEPSEEK_API_KEY=sk-...
+WB_COORDINATOR_MODEL=deepseek-chat
+WB_SPECIALIST_MODEL=deepseek-chat
+# Review these numbers for your account; they must satisfy the checks in section 2.
+WB_AGENT_MODEL_BOUNDS='{"deepseek-chat":{"model":"deepseek-chat","revision":"your-review-date","source_reference":"your-review-note","max_request_bytes":100000,"input_tokens":64000,"max_output_tokens":1024,"max_active_seconds":120}}'
+WB_AGENTS_ENABLED=1
+WB_AGENT_AUTO_POLICY=1
+```
+
+Run `python -m workbench.model_provider` (and optionally `--smoke`) as in section 2.
+
+**Automatic access (`WB_AGENT_AUTO_POLICY=1`).** For a single trusted operator who
+wants the prompt-first **Ask** screen to work without the policy command below.
+When someone sends a question and the saved policy does not cover the project's files,
+the web client calls `POST /api/v1/projects/{id}/execution-policy/auto`. The server
+then appends one server-policy and one project-policy revision through the same
+`operator_policy.install` path, with these properties:
+
+- Scope is only that project's own uploads and their datasets. Nothing is copied from other projects.
+- Exposure is `schema_aggregates` (column names and summary statistics). Raw rows and excerpts are never granted. `share_operator_messages` is on so the typed question reaches the model.
+- Tools are the default set, excluding `replay_science`. Scientific models are the installed baselines. Automatic failure recording is off, and report verification is on.
+- Limits: each request is capped at 40 model requests / 400k model tokens / 8 scientific attempts / 30 active minutes. Project-wide totals are 25× that and cumulative. `WB_AGENT_AUTO_SPEND_CEILING_USD` adds a monetary cap, which requires reviewed `WB_AGENT_MODEL_PRICES`.
+- An existing operator-installed server policy keeps its caps; only its ID scope is extended. An operator-installed project policy keeps its settings too; only its inputs are extended.
+
+Leave it at `0` to keep the reviewed, operator-only path below.
 
 ## 3. Install one reviewed authority policy
 

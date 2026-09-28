@@ -30,7 +30,7 @@ Scientific ML involves more than fitting a model: checking source data, choosing
 The scientific methods stay in four independently usable upstream projects. The workbench adds the interface, durable execution, agent coordination, and reproducibility layer.
 
 > [!NOTE]
-> **Current release: 0.1.0 candidate.** Manual scientific tools work without a model API key. Agent execution is implemented but disabled until provider configuration and trusted policies are installed. The release handoff still records pending live-provider and hosted acceptance gates; see [release status](#release-status).
+> **Current release: 0.1.0 candidate.** Manual scientific tools work without a model API key. The AI assistant runs on **DeepSeek** (Anthropic is also supported) and stays off until a key and usage bounds are configured. The release handoff still records pending live-provider and hosted acceptance gates; see [release status](#release-status).
 
 ## What you can do
 
@@ -58,7 +58,7 @@ All four are installed as pinned dependencies and accessed through their public 
 
 ## Agent workflow
 
-**Autopilot** starts execution after **Run research**, within the installed policy and available budget. **Review plan** is an optional mode. Missing essential scientific information becomes a focused question; routine permitted steps do not require another approval.
+**Autopilot** starts execution when you send a question in **Ask** (or choose **Run research** in **Detailed request**), within the installed policy and available budget. **Review plan** is an optional mode. Missing essential scientific information becomes a focused question; routine permitted steps do not require another approval.
 
 ```mermaid
 flowchart TD
@@ -116,24 +116,22 @@ docker compose config --quiet
 docker compose up --build -d --wait
 ```
 
-Open **http://localhost:3000** and sign in with `WB_LOGIN_USERNAME` and `WB_LOGIN_PASSWORD` from `.env`.
+Open **http://localhost:3000** for the landing page, choose **Get started**, and sign in on the sign-in page with `WB_LOGIN_USERNAME` and `WB_LOGIN_PASSWORD` from `.env`. You land on **Ask**: one prompt box where you attach a CSV or PDF and type what you want to know. The hand-operated tools are under **Advanced tools** in the sidebar.
 
 Setup applies migrations and provisions the local Failure Memory service account. Only the web interface is published, bound to loopback; PostgreSQL, the API, and workers stay internal. The manual workflow needs **no model API key**.
 
 ### 2. Enable agents when configured
 
-Follow the [agent operator guide](docs/agent-operator-guide.md) to:
-
-1. Configure the server-side Anthropic adapter with account-available pinned coordinator/specialist model IDs.
-2. Verify the models and structured generation; install reviewed usage bounds and pricing where required.
-3. Install trusted server/project policies granting the exact inputs, tools, exposure, and budgets.
-4. Set `WB_AGENTS_ENABLED=1` and start the agent profile:
+**Quick path (DeepSeek with automatic access):** in `.env`, set `DEEPSEEK_API_KEY`, keep `WB_MODEL_PROVIDER=deepseek` and the `deepseek-chat` model IDs, set a reviewed `WB_AGENT_MODEL_BOUNDS` record, and set `WB_AGENTS_ENABLED=1` and `WB_AGENT_AUTO_POLICY=1`. Then:
 
 ```bash
+docker compose run --rm --no-deps api python -m workbench.model_provider   # checks the key and model IDs
 docker compose --profile agents up --build -d --wait
 ```
 
-Research then provides **Run research**, optional plan review, activity, and run controls. New uploads require explicit policy grants; uploading a file alone does not authorize model access. There is currently no public policy-editing UI.
+With `WB_AGENT_AUTO_POLICY=1`, the first question in a project grants the assistant access to that project's own uploads: column names and summary numbers only, never raw rows, within per-request and per-project limits. Sending the question is the consent to spend. See the [DeepSeek section of the operator guide](docs/agent-operator-guide.md#deepseek-quick-path).
+
+**Reviewed path:** leave `WB_AGENT_AUTO_POLICY=0` and follow the [agent operator guide](docs/agent-operator-guide.md) to install exact server/project policies with `workbench.operator_policy`. Then only the inputs you granted can be offered to the model. **Detailed request** (under Advanced tools) shows the saved policy, inputs and limits for each request.
 
 Start with the guide's narrow audit demonstration before expanding the permitted workflow. Model keys remain in backend configuration, never browser code, goal text, or uploaded files.
 
@@ -208,9 +206,9 @@ A **modular monolith** with separate processes for HTTP requests, scientific job
 
 | Layer | Implementation |
 |---|---|
-| Research interface | Next.js + TypeScript; Research workspace and eight scientific inspection views |
+| Research interface | Next.js + TypeScript; public landing page, sign-in page, prompt-first **Ask** home, detailed request and eight scientific inspection views |
 | Application API | FastAPI + Pydantic; versioned contracts and scoped operations |
-| Agent orchestration | Python coordinator, Anthropic provider adapter, conditional specialists, LangGraph persistence |
+| Agent orchestration | Python coordinator, DeepSeek (default) and Anthropic provider adapters, conditional specialists, LangGraph persistence |
 | Durable metadata | PostgreSQL 16 for projects, artifacts, jobs, run state, ledgers, and checkpoints |
 | Scientific execution | Background workers invoking pinned public upstream APIs |
 | Artifact storage | Immutable content-addressed files locally; PostgreSQL blobs on Vercel; future S3 adapter remains separate |
@@ -218,7 +216,7 @@ A **modular monolith** with separate processes for HTTP requests, scientific job
 
 The Next.js server proxy adds the backend API token server-side. Provider, PostgreSQL, and Failure Memory credentials are not supplied to the browser. Project policies, budgets, data exposure, and evaluation rules are enforced by application code around model proposals.
 
-The current access model is **one trusted operator**, with a password-protected web interface. It does not provide independent user accounts or per-user project isolation. For hosted use, follow the [Vercel runbook](docs/vercel-setup.md): two projects, authenticated server-to-server access, managed PostgreSQL, and bounded queue execution with daily catch-up.
+The current access model is **one trusted operator**, signing in through a form that sets a signed, HttpOnly session cookie (no browser pop-up; scripts may still send the same login as HTTP Basic). It does not provide independent user accounts or per-user project isolation. For hosted use, follow the [Vercel runbook](docs/vercel-setup.md): two projects, authenticated server-to-server access, managed PostgreSQL, and bounded queue execution with daily catch-up.
 
 [Architecture](docs/architecture.md) · [Versioned schemas](contracts/v1/) · [Exposure controls](docs/agent-egress.md) · [Backup and restore](docs/backup-restore.md)
 

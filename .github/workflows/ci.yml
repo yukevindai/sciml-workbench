@@ -138,7 +138,7 @@ jobs:
           docker compose run --rm setup
           docker compose up -d --wait
           set +e
-          docker compose run --rm --no-deps -e WB_AGENTS_ENABLED=1 -e WB_COORDINATOR_MODEL=ci-model -e WB_SPECIALIST_MODEL=ci-model -e ANTHROPIC_API_KEY=ci-only-canary agent-worker > /tmp/agent-startup.log 2>&1
+          docker compose run --rm --no-deps -e WB_AGENTS_ENABLED=1 -e WB_COORDINATOR_MODEL=ci-model -e WB_SPECIALIST_MODEL=ci-model -e DEEPSEEK_API_KEY=ci-only-canary agent-worker > /tmp/agent-startup.log 2>&1
           status=$?
           set -e
           test "$status" = "2"
@@ -146,8 +146,10 @@ jobs:
           ! grep -q 'ci-only-canary' /tmp/agent-startup.log
       - run: |
           curl --fail http://localhost:3000/healthz
-          test "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:3000/)" = "401"
-          curl --fail -u "workbench:$WB_LOGIN_PASSWORD" http://localhost:3000/
+          test "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:3000/)" = "200"
+          test "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:3000/ask)" = "303"
+          test "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:3000/api/projects)" = "401"
+          curl --fail -u "workbench:$WB_LOGIN_PASSWORD" http://localhost:3000/ask
       - name: Stop smoke stack before real-stack browser acceptance
         run: docker compose down -v
       - name: Prepare isolated scripted acceptance configuration

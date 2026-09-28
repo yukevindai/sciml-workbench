@@ -1,4 +1,4 @@
-"""Bounded Anthropic Messages adapter using the already pinned httpx transport.
+"""Bounded model adapters (Anthropic Messages; DeepSeek in deepseek_provider) using the already pinned httpx transport.
 
 No retries, tool execution, logging, telemetry, or raw response persistence here.
 E05 owns reservations/retries. E14 checks every serialized request and response.
@@ -78,6 +78,10 @@ class ModelProvider(Protocol):
 
 
 class AnthropicProvider:
+    name = "anthropic"
+    adapter_version = ADAPTER_VERSION
+    api_version = API_VERSION
+
     def __init__(self, settings: AgentSettings, *, transport: httpx.BaseTransport | None = None, backend_settings=None):
         settings.validate_provider()
         self.guard = SecretGuard(settings, backend_settings)
@@ -95,14 +99,15 @@ class AnthropicProvider:
     def resolved_model(self, model: str) -> str | None:
         return self._verified.get(model)
 
+    def _headers(self) -> dict[str, str]:
+        return {"x-api-key": self._key.get_secret_value(), "anthropic-version": API_VERSION,
+                "content-type": "application/json", "accept-encoding": "identity"}
+
     def _request(self, method: str, path: str, payload: dict | None = None) -> Any:
         sent = method == "POST"
         deadline = time.monotonic() + self._timeout_seconds
         try:
-            with self._client.stream(method, path, json=payload, headers={
-                "x-api-key": self._key.get_secret_value(), "anthropic-version": API_VERSION,
-                "content-type": "application/json", "accept-encoding": "identity",
-            }) as response:
+            with self._client.stream(method, path, json=payload, headers=self._headers()) as response:
                 if response.status_code != 200:
                     code = ("authentication_failed" if response.status_code in {401, 403} else
                             "rate_limited" if response.status_code == 429 else
@@ -222,6 +227,14 @@ class AnthropicProvider:
         return ModelResult(model=model, stop_reason=stop, text=tuple(texts), tool_calls=tuple(calls), usage=counts)
 
 
+def create_provider(settings: AgentSettings, *, transport: httpx.BaseTransport | None = None, backend_settings=None):
+    """The one trusted choice point: WB_MODEL_PROVIDER, never model or request input."""
+    if settings.model_provider == "deepseek":
+        from .deepseek_provider import DeepSeekProvider
+        return DeepSeekProvider(settings, transport=transport, backend_settings=backend_settings)
+    return AnthropicProvider(settings, transport=transport, backend_settings=backend_settings)
+
+
 def main():
     """Operator preflight; optional paid smoke check uses synthetic context only."""
     import argparse
@@ -233,9 +246,10 @@ def main():
     args = parser.parse_args()
     provider = None
     try:
-        provider = AnthropicProvider(load_settings(AgentSettings))
+        provider = create_provider(load_settings(AgentSettings))
         models = provider.verify_models()
-        print(json.dumps({"adapter": ADAPTER_VERSION, "api_version": API_VERSION, "models": models}))
+        print(json.dumps({"provider": provider.name, "adapter": provider.adapter_version,
+                          "api_version": provider.api_version, "models": models}))
         if args.smoke:
             class InspectInput(ContractModel):
                 project_id: str

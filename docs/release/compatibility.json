@@ -39,7 +39,7 @@
   "files_sha256_lf": {
     "contracts/catalog.json": "25efe0c70d50d96057e49d73e3df810865758412c609c84befd45019e2ebf631",
     "contracts/http-responses.json": "3c917638fa6c260f3a745e9417a38bce1e63fa5e27952549aa6f42cad6cb6054",
-    "contracts/openapi.json": "55435f4aeeb10f33378594bba646d79f1c1d0ada2a3e5403be4c2e60d633a788",
+    "contracts/openapi.json": "2aea2e75b49666819a42656ac8cb8dc2d757b9bda8c5d9e642d4241634851932",
     "contracts/records/v1/artifact_page.json": "ae6a631c4d5f56d6e252b89f6c38357a191caf328d89360d48cbdf26344f5099",
     "contracts/records/v1/artifact_summary.json": "85e05ea3ce39761c19f67c402c76fb4ec6237577ad0eeec551a61e3316a853b7",
     "contracts/records/v1/benchmark_preview.json": "90a2d2dbe96d0093fc371413cdc08ce05dd920a7a9af77f4c7d23177c6071478",
@@ -98,7 +98,7 @@
     "frontend/package.json": "aad65690bacff9d9f7c8a14073c95172ab0ed3c9b2f8254e2162f74d7f3e184e",
     "backend/Dockerfile": "cd55416d0e65fc8599229361bafc6a828f8ba8af80aa195d499ab1116b2569ae",
     "frontend/Dockerfile": "6c88c2688a4580dceb5db14d5de9925796fb87039393f41768e4d61ef0f7db86",
-    "compose.yaml": "4618873c881e057bd817138d2fa9d4adc47815b97fb44a435fe1c3fc0471a4eb",
+    "compose.yaml": "9dc1b38da9312a5a87b76da6dfd163e6bfb5bdd90b2bb57a0038a8893725b1d4",
     "vercel.json": "eff3ca455f04e31d2d673d9945ec0dcd3ce9e9d81c002a3361f6672b09fff2ec",
     "frontend/vercel.json": "4dffd260d2c373da8f55cad0bd1611122456ccce050773109fc45ad0697a3ed3",
     "requirements.txt": "0452893664bb84bb2e4f84b16ad10a216488b35fb8571d4371d6e2eb7a086def",

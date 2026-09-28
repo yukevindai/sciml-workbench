@@ -12,10 +12,10 @@ def admission():
 
 def coordinator(db, store, settings, agents, *, transport=None):
     from .agent_coordinator import Coordinator
-    from .model_provider import AnthropicProvider, ProviderError
+    from .model_provider import ProviderError, create_provider
     agents.require_runtime()
     bounds, prices = agents.runtime_limits()
-    provider = AnthropicProvider(agents, transport=transport, backend_settings=settings)
+    provider = create_provider(agents, transport=transport, backend_settings=settings)
     try:
         models = provider.verify_models()
         # Bounds and prices bind pinned identities, never a mutable alias.

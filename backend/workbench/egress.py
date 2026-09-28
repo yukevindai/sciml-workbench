@@ -23,13 +23,13 @@ class SecretGuard:
     def __init__(self, *settings, secrets=()):
         values = list(secrets)
         for config in settings:
-            for name in ('anthropic_api_key', 'api_token', 'efm_password', 'database_url'):
+            for name in ('anthropic_api_key', 'deepseek_api_key', 'api_token', 'efm_password', 'database_url'):
                 value = getattr(config, name, None)
                 values.append(value.get_secret_value() if hasattr(value, 'get_secret_value') else value)
         # Match BaseSettings' default .env source as well as the process env.
         # Explicit settings supplied by the caller remain in the inventory too.
         dotenv = dotenv_values('.env')
-        for name in ('ANTHROPIC_API_KEY', 'WB_API_TOKEN', 'WB_EFM_PASSWORD', 'WB_DATABASE_URL',
+        for name in ('ANTHROPIC_API_KEY', 'DEEPSEEK_API_KEY', 'WB_API_TOKEN', 'WB_EFM_PASSWORD', 'WB_DATABASE_URL',
                      'CRON_SECRET', 'WB_VERCEL_PROTECTION_BYPASS'):
             values.append(os.environ.get(name, dotenv.get(name)))
         for value in tuple(values):

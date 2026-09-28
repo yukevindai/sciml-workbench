@@ -158,6 +158,17 @@ def router(service: RunService, session, protected, *, settings=None):
             allow_reuse=effective.allow_reuse, automatic_failure_recording=effective.automatic_failure_recording,
             verify_reports=effective.verify_reports, share_operator_messages=effective.share_operator_messages))
 
+    @policy_routes.post('/api/v1/projects/{pid}/execution-policy/auto', response_model=ExecutionPolicySummary)
+    def automatic_policy(pid: str, s=Depends(session, scope="function")):
+        """Opt-in (WB_AGENT_AUTO_POLICY=1): grant this project's own uploads, then summarize."""
+        from .auto_policy import grant_project_inputs
+        from .config import AgentSettings, load_settings
+        from .services import project
+        project(s, pid)
+        service.admission()
+        grant_project_inputs(s, pid, load_settings(AgentSettings))
+        return execution_policy(pid, s)
+
     outer = APIRouter()
     outer.include_router(routes)
     outer.include_router(policy_routes)
