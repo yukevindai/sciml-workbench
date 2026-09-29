@@ -1,5 +1,9 @@
 # Personal AI lab group redesign
 
+The follow-up [living pixel lab update](design-living-pixel-lab.md) adds the
+full-height hero, persistent motion controls, and public content pages. The
+measurements below describe the original redesign revision.
+
 The landing page takes composition cues from the supplied Amoeba reference: restrained monochrome surfaces, prominent typography, dotted scientific artwork, generous spacing, and actual product previews. All artwork and copy are specific to SciML Workbench.
 
 ## Shared system

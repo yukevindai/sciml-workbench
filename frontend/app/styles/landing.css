@@ -11,7 +11,7 @@
 .landing-actions { display: flex; align-items: center; gap: 18px; }
 .landing .button { white-space: nowrap; }
 .landing .button--lg { min-height: 50px; padding: 12px 23px; }
-.hero { position: relative; isolation: isolate; min-height: min(760px, calc(100svh - 108px)); display: grid; place-items: center; overflow: hidden; margin: 0 16px; border: 1px solid var(--color-border-subtle); border-radius: 20px; text-align: center; }
+.hero { position: relative; isolation: isolate; min-height: calc(100dvh - 96px); display: grid; place-items: center; overflow: hidden; margin: 0 16px; border: 1px solid var(--color-border-subtle); border-radius: 20px; text-align: center; }
 .hero-art { object-fit: cover; z-index: -2; opacity: .65; }
 .hero-scrim { position: absolute; inset: 0; z-index: -1; background: radial-gradient(ellipse at center, var(--color-bg-canvas) 2%, transparent 80%); }
 :root[data-theme='light'] .hero-art { filter: invert(1); opacity: .5; }
@@ -112,7 +112,7 @@
   .landing-signin { display: none; }
   .landing-actions .button { min-height: 44px; padding: 8px 12px; font-size: 13px; }
   .landing-actions .button svg { display: none; }
-  .hero { margin: 0 12px; min-height: 560px; border-radius: 14px; }
+  .hero { margin: 0 12px; min-height: calc(100dvh - 80px); border-radius: 14px; }
   .hero-content { padding: 64px 20px; }
   .hero-title { font-size: clamp(3.1rem, 10vw, 5rem); }
   .hero-lede { font-size: 16px; max-width: 29ch; }
