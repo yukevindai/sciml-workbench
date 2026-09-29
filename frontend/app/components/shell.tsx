@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { FlaskConical, ChevronRight, ArrowUpRight, Loader2, LogOut, ShieldCheck } from 'lucide-react';
 import { NAV_GROUPS, navItem, type Stage, type View } from '../lib/pipeline';
 import type { DatasetArtifact, Project } from '../lib/types';
+import { MotionToggle } from './motion-preferences';
 import { ThemeToggle } from './theme-toggle';
 import { WorkspacePicker } from './workspace-picker';
 
@@ -69,7 +70,7 @@ export function Sidebar({ view, stages }: { view: string; stages: Stage[] }) {
         </nav>
       </div>
 
-      <div className="sidebar-foot">
+      <div className="sidebar-foot"><Link href="/docs" className="sidebar-home">Documentation <ArrowUpRight size={14} aria-hidden="true" /></Link><MotionToggle />
         <Link href="/" className="sidebar-home">About SciML Workbench <ArrowUpRight size={14} aria-hidden="true" /></Link>
       </div>
     </aside>

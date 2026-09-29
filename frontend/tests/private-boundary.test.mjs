@@ -48,11 +48,12 @@ test('production operator gate and server proxy enforce the private boundary', a
       assert.equal(redirect.headers.get('location'), 'https://private.example/sign-in?next=' + encodeURIComponent(path + '?project=p'));
     }
     // The landing and sign-in pages are public.
-    for (const path of ['/', '/sign-in', '/auth/session']) assert.equal(proxy(request(path)).status, 200);
+    for (const path of ['/', '/sign-in', '/auth/session', '/docs', '/docs/getting-started', '/blog', '/blog/a-better-first-question', '/changelog']) assert.equal(proxy(request(path)).status, 200);
     for (const path of ['/images/lab-orbitals.png', '/images/workspace-ask-dark.png', '/images/workspace-audit-light.png']) {
       assert.equal(proxy(request(path)).status, 200);
     }
     assert.equal(proxy(request('/images/private-research.png')).status, 303);
+    for (const path of ['/docs-private', '/blogger', '/changelog-private']) assert.equal(proxy(request(path)).status, 303);
     assert.equal(proxy(request('/ask', { authorization: auth })).status, 200);
     assert.deepEqual(await proxy(request('/healthz')).json(), { status: 'ok' });
     delete process.env.WB_LOGIN_PASSWORD;

@@ -34,7 +34,8 @@ test('the detailed request and all eight manual views remain reachable', async (
   await expect(page.getByLabel('Active dataset', { exact: true })).toHaveValue(dataset.id);
   await expect(page.getByText('Unresolved declarations:')).toBeVisible();
   await expect(page.getByRole('button', { name: 'Run research' })).toBeDisabled();
-  await expect(page.getByRole('button', { name: /Pause|Resume|Cancel/ })).toHaveCount(0);
+  // No run controls in the research view; the sidebar has an independent motion preference.
+  await expect(page.getByRole('main').getByRole('button', { name: /Pause|Resume|Cancel/ })).toHaveCount(0);
   const nav = page.getByRole('navigation', { name: 'Workbench sections' });
   for (const label of ['Ask', 'Detailed request', 'Projects', 'Check data', 'Split data', 'Test models', 'Lessons learned', 'Papers & sources', 'History', 'Export']) {
     await expect(nav.getByRole('link', { name: label, exact: true })).toHaveCount(1);

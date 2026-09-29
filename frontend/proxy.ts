@@ -10,7 +10,8 @@ const PUBLIC = new Set([
   ...['ask', 'research', 'audit'].flatMap(view =>
     ['dark', 'light'].map(theme => `/images/workspace-${view}-${theme}.png`)),
 ]);
-const isPublic = (path: string) => PUBLIC.has(path) || path.startsWith('/_next/') || path.startsWith('/icon');
+const PUBLIC_CONTENT = ['/docs', '/blog', '/changelog'];
+const isPublic = (path: string) => PUBLIC.has(path) || PUBLIC_CONTENT.some(root => path === root || path.startsWith(root + '/')) || path.startsWith('/_next/') || path.startsWith('/icon');
 
 export function proxy(request: NextRequest) {
   const path = request.nextUrl.pathname;

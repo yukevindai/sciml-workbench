@@ -2,6 +2,8 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, ArrowRight, FlaskConical } from 'lucide-react';
 import { safeNext } from '../lib/session';
+import { PixelScene } from '../components/pixel-scene';
+import { MotionToggle } from '../components/motion-preferences';
 import { ThemeToggle } from '../components/theme-toggle';
 
 export const metadata = { title: 'Sign in · SciML Workbench' };
@@ -16,9 +18,9 @@ export default async function SignIn({ searchParams }: { searchParams: Promise<R
   const error = typeof query.error === 'string' ? ERRORS[query.error] : undefined;
   return <div className="auth-page">
     <a className="skip-link" href="#sign-in-form">Skip to sign in</a>
-    <header className="auth-nav"><Link href="/" className="landing-brand" aria-label="SciML Workbench home"><span className="brand-mark" aria-hidden="true"><FlaskConical size={20} /></span>SciML Workbench</Link><ThemeToggle /></header>
+    <header className="auth-nav"><Link href="/" className="landing-brand" aria-label="SciML Workbench home"><span className="brand-mark" aria-hidden="true"><FlaskConical size={20} /></span>SciML Workbench</Link><div className="auth-nav-actions"><MotionToggle /><ThemeToggle /></div></header>
     <main className="auth-layout">
-      <section className="auth-story" aria-label="Your research workspace"><Image className="hero-art" src="/images/lab-orbitals.png" alt="" fill sizes="(max-width: 900px) 100vw, 55vw" priority /><div className="hero-scrim" aria-hidden="true" /><div><h2>Your personal<br />AI lab group</h2><p>A place for your questions, your evidence,<br />and whatever comes next.</p></div></section>
+      <section className="auth-story" aria-label="Your research workspace" data-pixel-interactive><Image className="hero-art" src="/images/lab-orbitals.png" alt="" fill sizes="(max-width: 900px) 100vw, 55vw" priority /><PixelScene className="hero-pixels" variant="orbit" /><div className="hero-scrim" aria-hidden="true" /><div><h2>Your personal<br />AI lab group</h2><p>A place for your questions, your evidence,<br />and whatever comes next.</p></div></section>
       <section className="auth-form-side">
         <div className="auth-card" id="sign-in-form" tabIndex={-1}>
           <Link href="/" className="auth-back"><ArrowLeft size={15} aria-hidden="true" />Back to home</Link>
@@ -30,7 +32,7 @@ export default async function SignIn({ searchParams }: { searchParams: Promise<R
             <div className="field"><label className="field-label" htmlFor="password">Password</label><input className="input" id="password" name="password" type="password" autoComplete="current-password" required aria-describedby={error ? 'sign-in-error' : undefined} aria-invalid={query.error === 'invalid' || undefined} /></div>
             <button type="submit" className="button button--lg button--block">Sign in<ArrowRight size={16} aria-hidden="true" /></button>
           </form>
-          <p className="field-hint">Don’t have a login? Ask the person who set up this workspace.</p>
+          <p className="field-hint">Don’t have a login? Ask the person who set up this workspace. <Link href="/docs/getting-started" className="text-link">Read the getting started guide</Link></p>
         </div>
       </section>
     </main>
