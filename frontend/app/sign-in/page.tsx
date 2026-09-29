@@ -20,7 +20,7 @@ export default async function SignIn({ searchParams }: { searchParams: Promise<R
     <a className="skip-link" href="#sign-in-form">Skip to sign in</a>
     <header className="auth-nav"><Link href="/" className="landing-brand" aria-label="SciML Workbench home"><span className="brand-mark" aria-hidden="true"><FlaskConical size={20} /></span>SciML Workbench</Link><div className="auth-nav-actions"><MotionToggle /><ThemeToggle /></div></header>
     <main className="auth-layout">
-      <section className="auth-story" aria-label="Your research workspace" data-pixel-interactive><Image className="hero-art" src="/images/lab-orbitals.png" alt="" fill sizes="(max-width: 900px) 100vw, 55vw" priority /><PixelScene className="hero-pixels" variant="orbit" /><div className="hero-scrim" aria-hidden="true" /><div><h2>Your personal<br />AI lab group</h2><p>A place for your questions, your evidence,<br />and whatever comes next.</p></div></section>
+      <section className="auth-story" aria-label="Your research workspace" data-pixel-interactive><Image className="hero-art" src="/images/lab-orbitals.png" alt="" fill sizes="(max-width: 900px) 100vw, 55vw" priority /><PixelScene className="hero-pixels" variant="helix" /><div className="hero-scrim" aria-hidden="true" /><div><h2>Your personal<br />AI lab group</h2><p>A place for your questions, your evidence,<br />and whatever comes next.</p></div></section>
       <section className="auth-form-side">
         <div className="auth-card" id="sign-in-form" tabIndex={-1}>
           <Link href="/" className="auth-back"><ArrowLeft size={15} aria-hidden="true" />Back to home</Link>

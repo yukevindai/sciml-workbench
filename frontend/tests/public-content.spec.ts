@@ -68,7 +68,12 @@ test('pixel artwork moves, can be paused, persists between pages, and respects r
   const pixels = () => scene.evaluate(pixelFingerprint);
   const first = await pixels();
   await expect.poll(pixels).not.toBe(first);
-  await page.locator('.hero-bottom').getByRole('button', { name: 'Pause animations' }).click();
+  // Motion controls live in sign-in/workspace settings, not the public hero or footer.
+  await expect(page.getByRole('button', { name: /animations/ })).toHaveCount(0);
+  await page.goto('/sign-in');
+  await page.getByRole('button', { name: 'Pause animations' }).click();
+  await page.getByRole('link', { name: 'Back to home' }).click();
+  await expect(page).toHaveURL(/\/$/);
   await expect(page.locator('html')).toHaveAttribute('data-motion', 'off');
   const frozen = await pixels();
   await page.waitForTimeout(160);
@@ -83,12 +88,12 @@ test('pixel artwork moves, can be paused, persists between pages, and respects r
   await expect(page).toHaveURL(/\/blog$/);
   await expect(page.locator('.blog-card')).toHaveCount(3);
   await expect(page.locator('html')).toHaveAttribute('data-motion', 'off');
-  const footer = page.getByRole('contentinfo');
-  await footer.getByRole('button', { name: 'Play animations' }).click();
+  await page.goto('/sign-in');
+  await page.getByRole('button', { name: 'Play animations' }).click();
   await expect(page.locator('html')).toHaveAttribute('data-motion', 'on');
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await expect(page.locator('html')).toHaveAttribute('data-motion', 'off');
-  await expect(footer.getByRole('button', { name: 'Reduced motion enabled' })).toBeDisabled();
+  await expect(page.getByRole('button', { name: 'Reduced motion enabled' })).toBeDisabled();
 });
 
 test('mobile navigation supports keyboard escape and public pages fit both themes', async ({ page }, info) => {
@@ -120,7 +125,7 @@ test('blog pixel scenes animate without shifting their cards', async ({ page }) 
   await expect(page.locator('html')).toHaveAttribute('data-motion', 'on');
   await page.getByRole('navigation', { name: 'Main navigation', exact: true }).getByRole('link', { name: 'Blog', exact: true }).click();
   await expect(page).toHaveURL(/\/blog$/);
-  for (const variant of ['network', 'wave', 'document']) {
+  for (const variant of ['bloom', 'wave', 'prism']) {
     const canvas = page.locator(`[data-pixel-scene="${variant}"]`);
     const frame = await canvas.evaluate(pixelFingerprint);
     await expect.poll(() => canvas.evaluate(pixelFingerprint)).not.toBe(frame);
@@ -134,4 +139,68 @@ test('blog pixel scenes animate without shifting their cards', async ({ page }) 
   expect(after!.height).toBe(before!.height);
   await card.click();
   await expect(page.locator('.article-body section')).toHaveCount(3);
+});
+
+for (const width of [375, 1440]) {
+  test(`header blends at top and floats on scroll at ${width}px`, async ({ page }, info) => {
+    await page.setViewportSize({ width, height: 900 });
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.goto('/');
+    const nav = page.locator('.landing-nav');
+    await expect(nav).toHaveAttribute('data-floating', 'false');
+    await expect(nav).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
+    const heroTop = await page.locator('.hero').evaluate(el => el.getBoundingClientRect().top + scrollY);
+    await page.screenshot({ path: info.outputPath(`hero-${width}.png`) });
+    await page.evaluate(() => window.scrollTo({ top: 240, behavior: 'instant' }));
+    await expect(nav).toHaveAttribute('data-floating', 'true');
+    await expect(nav).toBeInViewport();
+    expect(await page.locator('.hero').evaluate(el => el.getBoundingClientRect().top + scrollY)).toBe(heroTop);
+    await page.screenshot({ path: info.outputPath(`floating-${width}.png`) });
+    if (width === 375) {
+      await page.getByRole('button', { name: 'Open navigation' }).click();
+      await expect(page.getByRole('navigation', { name: 'Mobile navigation' })).toBeInViewport();
+      await page.keyboard.press('Escape');
+    }
+    await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
+    await expect(nav).toHaveAttribute('data-floating', 'false');
+    await page.getByRole('button', { name: 'Switch to light theme' }).click();
+    await expect(nav).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
+    await page.evaluate(() => window.scrollTo({ top: 240, behavior: 'instant' }));
+    await expect(nav).toHaveAttribute('data-floating', 'true');
+    await page.screenshot({ path: info.outputPath(`floating-light-${width}.png`) });
+  });
+}
+
+test('public copy, credits, numbered history and distinct pixel studies', async ({ page }, info) => {
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await page.goto('/');
+  await expect(page.getByText('Scroll to explore')).toHaveCount(0);
+  await expect(page.getByRole('button', { name: /animations/ })).toHaveCount(0);
+  const footer = page.getByRole('contentinfo');
+  await expect(footer).toContainText('Your personal AI lab group.');
+  await expect(footer).toContainText(`© ${new Date().getFullYear()} Feidy AI. All rights reserved.`);
+  await expect(footer).toContainText('Built by Kevin.');
+  const variants = await page.locator('canvas').evaluateAll(nodes => nodes.map(n => n.dataset.pixelScene));
+  expect(variants).toHaveLength(10);
+  expect(new Set(variants).size).toBe(10);
+  const checkScenes = async () => {
+    for (const canvas of await page.locator('canvas').all()) {
+      await canvas.scrollIntoViewIfNeeded();
+      const first = await canvas.evaluate(pixelFingerprint);
+      await expect.poll(() => canvas.evaluate(pixelFingerprint)).not.toBe(first);
+      await canvas.screenshot({ path: info.outputPath(`${await canvas.getAttribute('data-pixel-scene')}.png`) });
+    }
+  };
+  await checkScenes();
+  await footer.scrollIntoViewIfNeeded();
+  await page.screenshot({ path: info.outputPath('footer.png') });
+  for (const route of ['/docs', '/changelog', '/sign-in', '/blog/a-better-first-question', '/blog/a-score-needs-a-split', '/blog/keep-evidence-with-the-answer']) {
+    await page.goto(route);
+    await checkScenes();
+  }
+  await page.goto('/changelog');
+  await expect(page.locator('.release-meta p')).toHaveText(['0.1.3Latest', '0.1.2', '0.1.1', '0.1.0']);
+  await expect(page.getByText('Development update', { exact: true })).toHaveCount(0);
+  await page.screenshot({ path: info.outputPath('changelog.png'), fullPage: true });
 });

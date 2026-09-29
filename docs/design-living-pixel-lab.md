@@ -1,5 +1,7 @@
 # Living pixel lab — September 2026
 
+> Historical snapshot of the first motion update. See [public experience refinement](design-public-polish.md) for the current controls, artwork, header, and changelog numbering.
+
 This update follows the personal AI lab group redesign. The hero now fills the
 remaining first viewport below navigation, including tall desktop displays.
 The research strip begins below that viewport. The headline remains

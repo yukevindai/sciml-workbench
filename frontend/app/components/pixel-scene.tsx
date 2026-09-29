@@ -3,7 +3,8 @@
 import { useEffect, useRef } from 'react';
 import { useMotionPreference } from './motion-preferences';
 
-export type PixelVariant = 'orbit' | 'wave' | 'network' | 'document';
+import { drawPixelArt, type PixelVariant } from '../lib/pixel-art';
+export type { PixelVariant } from '../lib/pixel-art';
 
 /** Original procedural artwork. No images, remote scripts, or WebGL context.
  * Animation is capped at 30fps and suspended offscreen/in background tabs.
@@ -28,56 +29,7 @@ export function PixelScene({ variant = 'orbit', className = '' }: { variant?: Pi
     const draw = () => {
       ctx.clearRect(0, 0, width, height);
       ctx.fillStyle = ink;
-      const scale = Math.min(width / 430, height / 270);
-      const cx = width / 2 + px * 12, cy = height / 2 + py * 10;
-      // Low-contrast grid grounds every illustration in the same visual language.
-      const gap = width > 700 ? 13 : 11;
-      for (let y = 7; y < height; y += gap) for (let x = 7; x < width; x += gap) dot(x, y, .065, 1.2);
-      if (variant === 'orbit') {
-        const angle = time * .11 + px * .12;
-        const size = Math.min(width * .48, height * .65);
-        for (let ring = 0; ring < 3; ring++) {
-          const tilt = ring * Math.PI / 3 + .35;
-          for (let band = -5; band <= 5; band++) for (let i = 0; i < 160; i++) {
-            const a = i / 160 * Math.PI * 2;
-            const r = size * (1 + band * .012);
-            const x = Math.cos(a) * r, y = Math.sin(a) * r * .38;
-            const rx = x * Math.cos(tilt + angle) - y * Math.sin(tilt + angle);
-            const ry = x * Math.sin(tilt + angle) + y * Math.cos(tilt + angle);
-            const light = .13 + .55 * Math.pow((Math.sin(a + time * .5 + ring) + 1) / 2, 3);
-            dot(cx + rx, cy + ry, light * (1 - Math.abs(band) / 8), width > 700 ? 2.5 : 1.8);
-          }
-        }
-      } else if (variant === 'wave') {
-        for (let row = 0; row < 19; row++) for (let col = 0; col < 65; col++) {
-          const x = (col - 32) * 5.3;
-          const y = (row - 9) * 6 + Math.sin(col * .14 + time * .8 + row * .13) * 23;
-          dot(cx + x * scale, cy + y * scale, .2 + .6 * (1 + Math.sin(col * .13 - time + row * .15)) / 2, 1.7 * scale);
-        }
-      } else if (variant === 'network') {
-        const nodes = [[0, 0], [-120, -66], [120, -66], [-120, 66], [120, 66]];
-        nodes.slice(1).forEach(([x, y], n) => {
-          for (let i = 0; i < 36; i++) {
-            const k = i / 36;
-            const signal = (time * .22 + n * .23) % 1;
-            dot(cx + x * k * scale, cy + y * k * scale, Math.abs(k - signal) < .12 ? .9 : .2, 2 * scale);
-          }
-        });
-        nodes.forEach(([x, y], n) => {
-          for (let yy = -15; yy <= 15; yy += 4) for (let xx = -15; xx <= 15; xx += 4) {
-            const edge = Math.max(Math.abs(xx), Math.abs(yy)) > 10;
-            dot(cx + (x + xx) * scale, cy + (y + yy) * scale, edge ? .8 : .15 + .2 * Math.sin(time + n), 2 * scale);
-          }
-        });
-      } else {
-        for (let row = 0; row < 37; row++) for (let col = 0; col < 29; col++) {
-          const border = row === 0 || row === 36 || col === 0 || col === 28;
-          const line = row > 7 && row < 30 && row % 5 < 2 && col > 5 && col < 23 - (row % 3) * 3;
-          if (!border && !line) continue;
-          const scan = (time * 7) % 42;
-          dot(cx + (col - 14) * 5 * scale, cy + (row - 18) * 5 * scale, Math.abs(row - scan) < 3 ? .95 : border ? .45 : .35, 2 * scale);
-        }
-      }
+      drawPixelArt(variant, dot, width, height, time, px, py);
       ctx.globalAlpha = 1;
     };
     const tick = (now: number) => {

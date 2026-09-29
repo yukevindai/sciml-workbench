@@ -4,7 +4,6 @@ import { ArrowRight, ArrowUpRight, BookOpen, FileCheck2, FlaskConical, History, 
 import { PublicNav } from './components/public-nav';
 import { PublicFooter } from './components/public-shell';
 import { PixelScene, type PixelVariant } from './components/pixel-scene';
-import { MotionToggle } from './components/motion-preferences';
 import { Reveal } from './components/reveal';
 import { BlogCard } from './components/blog-card';
 import { posts } from './lib/public-content';
@@ -44,7 +43,6 @@ export default function Landing() {
           <p className="hero-lede">Explore your data. Follow the evidence. Move your research forward.</p>
           <div className="hero-cta"><Link href="/ask" className="button button--lg">Get started <ArrowRight size={17} aria-hidden="true" /></Link><a href="#how" className="button button--lg button--secondary">Explore the workspace</a></div>
         </div>
-        <div className="hero-bottom"><a href="#how" className="hero-scroll">Scroll to explore <span aria-hidden="true">↓</span></a><MotionToggle /></div>
       </section>
 
       <div className="research-strip" aria-label="Research capabilities"><span>One workspace for the whole investigation</span><div><span>Data</span><span>Experiments</span><span>Evidence</span><span>Review</span></div></div>
@@ -59,7 +57,7 @@ export default function Landing() {
         <h2 id="features-title" className="section-title">The careful parts of research.<br /><span>Connected.</span></h2>
         <Reveal><div className="capabilities">
           {CAPABILITIES.map(({ title, body, link, label }, index) => <article className="capability" key={title}>
-            <div className="capability-art" data-pixel-interactive><PixelScene variant={(['wave', 'orbit', 'document', 'network'] as PixelVariant[])[index]} /></div>
+            <div className="capability-art" data-pixel-interactive><PixelScene variant={(['audit', 'split', 'evidence', 'memory'] as PixelVariant[])[index]} /></div>
             <h3>{title}</h3><p>{body}</p><Link href={link} className="text-link">{label}<ArrowUpRight size={15} aria-hidden="true" /></Link>
           </article>)}
         </div></Reveal>
@@ -86,7 +84,7 @@ export default function Landing() {
         <div className="faq">{FAQ.map(({ q, a }) => <details key={q} className="faq-item"><summary>{q}<span className="faq-plus" aria-hidden="true">+</span></summary><p>{a}</p></details>)}</div>
       </section>
 
-      <section className="landing-cta" aria-labelledby="cta-title" data-pixel-interactive><PixelScene className="cta-pixels" variant="wave" /><FlaskConical size={32} strokeWidth={1.3} aria-hidden="true" /><h2 id="cta-title">Your next question<br />starts here.</h2><p>Your data. Your direction. Your personal AI lab group.</p><Link href="/ask" className="button button--lg">Get started<ArrowRight size={17} aria-hidden="true" /></Link></section>
+      <section className="landing-cta" aria-labelledby="cta-title" data-pixel-interactive><PixelScene className="cta-pixels" variant="ripple" /><FlaskConical size={32} strokeWidth={1.3} aria-hidden="true" /><h2 id="cta-title">Your next question<br />starts here.</h2><p>Your data. Your direction. Your personal AI lab group.</p><Link href="/ask" className="button button--lg">Get started<ArrowRight size={17} aria-hidden="true" /></Link></section>
     </main>
     <PublicFooter />
   </div>;
