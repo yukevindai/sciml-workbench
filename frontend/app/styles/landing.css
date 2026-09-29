@@ -1,7 +1,12 @@
 /* Amoeba-inspired composition, original artwork and SciML's shared UI tokens.
    The same theme persists across marketing, authentication and the workspace. */
 .landing { background: var(--color-bg-canvas); }
-.landing-nav { position: sticky; top: 12px; z-index: 30; display: flex; align-items: center; justify-content: space-between; gap: 24px; max-width: 1240px; min-height: 72px; margin: 12px auto; padding: 12px 20px; border: 1px solid var(--color-border-subtle); border-radius: 16px; background: color-mix(in srgb, var(--color-bg-canvas) 95%, transparent); backdrop-filter: blur(16px); }
+/* A stable wrapper keeps the hero in place while the header contracts. */
+.nav-scroll-marker { position: absolute; top: 0; left: 0; width: 1px; height: 64px; pointer-events: none; }
+.public-nav-wrap { position: sticky; top: 0; z-index: 30; height: 96px; padding-block: 12px; pointer-events: none; }
+.landing-nav { position: relative; display: flex; align-items: center; justify-content: space-between; gap: 24px; width: calc(100% - 48px); max-width: 1440px; min-height: 72px; margin: 0 auto; padding: 12px 20px; border: 1px solid transparent; border-radius: 0; background: transparent; pointer-events: auto; transition: max-width 360ms var(--ease-out), border-radius 360ms var(--ease-out), border-color 260ms, background-color 260ms, box-shadow 260ms; }
+.landing-nav[data-floating='true'] { max-width: 1080px; border-color: var(--color-border-subtle); border-radius: 16px; background: color-mix(in srgb, var(--color-bg-canvas) 96%, transparent); backdrop-filter: blur(16px); box-shadow: var(--shadow-md); }
+
 .landing-brand { display: inline-flex; align-items: center; gap: 10px; flex-shrink: 0; font-size: 17px; font-weight: 600; letter-spacing: -.035em; }
 .landing-brand:hover { text-decoration: none; }
 .landing .brand-mark, .auth-page .brand-mark { background: transparent; color: var(--color-text-primary); border: 1px solid var(--color-border); }
@@ -71,7 +76,10 @@
 .landing-cta > svg { margin-bottom: 8px; }
 .landing-cta h2 { font-size: clamp(2.6rem, 5vw, 4.8rem); font-weight: 400; letter-spacing: -.055em; line-height: 1.08; }
 .landing-cta p { color: var(--color-text-secondary); font-size: 16px; }
-.landing-foot { display: flex; justify-content: space-between; align-items: flex-start; gap: 40px; max-width: 1120px; padding: 52px 0; margin: auto; }
+.landing-foot { display: grid; gap: 56px; max-width: 1120px; padding: 52px 0; margin: auto; }
+.footer-main { display: flex; justify-content: space-between; align-items: flex-start; gap: 32px; }
+.footer-credit { display: flex; justify-content: space-between; gap: 24px; }
+.landing-foot .footer-credit p { margin: 0; }
 .landing-foot p { margin-top: 14px; color: var(--color-text-tertiary); font-size: 13px; }
 .landing-foot nav { display: flex; flex-wrap: wrap; gap: 28px; color: var(--color-text-secondary); }
 .landing-foot nav a { display: inline-flex; gap: 5px; align-items: center; min-height: 44px; }
@@ -96,7 +104,6 @@
 :root[data-theme='light'] .auth-story .hero-art { filter: invert(1); }
 
 @media (max-width: 1280px) {
-  .landing-nav { margin-inline: 24px; }
   .landing-section, .research-strip, .landing-foot { margin-inline: 48px; }
   .landing-links { gap: 18px; }
 }
@@ -106,7 +113,9 @@
   .auth-story { padding: 36px; }
 }
 @media (max-width: 768px) {
-  .landing-nav { top: 8px; margin: 8px 12px; padding: 10px 12px; min-height: 64px; gap: 8px; border-radius: 12px; }
+  .public-nav-wrap { height: 80px; padding-block: 8px; }
+  .landing-nav { width: calc(100% - 24px); padding: 9px 12px; min-height: 64px; gap: 8px; }
+  .landing-nav[data-floating='true'] { border-radius: 12px; }
   .landing-brand { font-size: 15px; gap: 8px; }
   .landing-actions { gap: 8px; }
   .landing-signin { display: none; }
@@ -132,7 +141,8 @@
   .capability h3 { font-size: 22px; }
   .principles { padding-block: 40px; }
   .landing-cta { padding: 64px 24px; }
-  .landing-foot { flex-direction: column; padding-block: 36px; gap: 24px; }
+  .landing-foot { padding-block: 36px; gap: 40px; }
+  .footer-main, .footer-credit { flex-direction: column; gap: 20px; }
   .landing-foot nav { gap: 22px; font-size: 13px; }
   .auth-nav { padding: 16px 24px; min-height: 72px; }
   .auth-layout { grid-template-columns: 1fr; padding: 0 16px 24px; }
@@ -147,5 +157,5 @@
   .hero-cta { flex-direction: column; align-items: center; }
   .hero-cta .button { min-width: 220px; }
 }
-@media (prefers-reduced-transparency: reduce) { .landing-nav { background: var(--color-bg-canvas); backdrop-filter: none; } }
+@media (prefers-reduced-transparency: reduce) { .landing-nav[data-floating='true'] { background: var(--color-bg-canvas); backdrop-filter: none; } }
 @media (prefers-reduced-motion: reduce) { .hero-content { animation: none; } }
