@@ -74,14 +74,21 @@ test('pixel artwork moves, can be paused, persists between pages, and respects r
   await page.waitForTimeout(160);
   expect(await pixels()).toBe(frozen);
   await page.getByRole('navigation', { name: 'Main navigation', exact: true }).getByRole('link', { name: 'Blog', exact: true }).click();
+  // The shared motion attribute is already off on the landing page. Wait for
+  // client navigation to finish before reloading, or reload can cancel it.
+  await expect(page).toHaveURL(/\/blog$/);
+  await expect(page.locator('.blog-card')).toHaveCount(3);
   await expect(page.locator('html')).toHaveAttribute('data-motion', 'off');
   await page.reload();
+  await expect(page).toHaveURL(/\/blog$/);
+  await expect(page.locator('.blog-card')).toHaveCount(3);
   await expect(page.locator('html')).toHaveAttribute('data-motion', 'off');
-  await page.getByRole('button', { name: 'Play animations' }).click();
+  const footer = page.getByRole('contentinfo');
+  await footer.getByRole('button', { name: 'Play animations' }).click();
   await expect(page.locator('html')).toHaveAttribute('data-motion', 'on');
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await expect(page.locator('html')).toHaveAttribute('data-motion', 'off');
-  await expect(page.getByRole('button', { name: 'Reduced motion enabled' })).toBeDisabled();
+  await expect(footer.getByRole('button', { name: 'Reduced motion enabled' })).toBeDisabled();
 });
 
 test('mobile navigation supports keyboard escape and public pages fit both themes', async ({ page }, info) => {
