@@ -22,6 +22,10 @@ async function mockWorkspace(page: Page, override?: (route: Route, path: string)
   });
 }
 
+test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem('sciml-theme', 'light'));
+});
+
 test('the detailed request and all eight manual views remain reachable', async ({ page }) => {
   await mockWorkspace(page);
   await page.goto('/research');

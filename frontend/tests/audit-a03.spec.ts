@@ -47,6 +47,10 @@ async function workspace(page: Page, artifacts: Artifact[] = [dataset, audit, se
   });
 }
 
+test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem('sciml-theme', 'light'));
+});
+
 test('direct audit links choose the owning project and dataset and show real upstream findings', async ({ page }) => {
   await workspace(page);
   await page.addInitScript(() => { localStorage.setItem('sciml-project', 'other-project'); localStorage.setItem('sciml-dataset:audit-project', 'dataset-b'); });

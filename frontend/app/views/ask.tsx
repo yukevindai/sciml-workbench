@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useCallback, useEffect, useState } from 'react';
-import { ArrowLeft, Clock, Plus, Wrench } from 'lucide-react';
+import { ArrowLeft, Clock, FlaskConical, Plus, Wrench } from 'lucide-react';
 import type { Workbench } from '../lib/context';
 import type { ExecutionPolicySummary, MaterialResponse, ResearchRun } from '../lib/generated/http';
 import { api } from '../lib/api';
@@ -140,7 +140,10 @@ export function AskView({ wb }: { wb: Workbench }) {
 
   return <div className="ask">
     <div className="ask-hero">
+      <span className="ask-emblem" aria-hidden="true"><FlaskConical size={26} strokeWidth={1.5} /></span>
+      <p className="ask-kicker">Your personal AI lab group</p>
       <h1 className="ask-title">What would you like to find out?</h1>
+      <p className="ask-lede">Bring your data, papers, and questions. We’ll work through the next step together.</p>
     </div>
     {notice}
     {error && <Alert variant="error" role="alert">{error}</Alert>}

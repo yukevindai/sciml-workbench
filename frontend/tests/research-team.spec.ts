@@ -95,21 +95,24 @@ test('project and request pickers support search, keyboard selection and creatio
   await expect(project).toContainText('New project');
 });
 
-test('headline rotates, can pause, and respects reduced motion on mobile', async ({ page }, testInfo) => {
-  await page.goto('/');
-  const word = page.locator('.rotating-word-text');
-  const first = await word.textContent();
-  await expect.poll(() => word.textContent()).not.toBe(first);
-  await page.getByRole('button', { name: /Pause changing headline word/ }).click();
-  const paused = await word.textContent();
-  await page.waitForTimeout(2800);
-  await expect(word).toHaveText(paused!);
-  await page.emulateMedia({ reducedMotion: 'reduce', colorScheme: 'dark' });
+test('the lab-group landing is stable, responsive, and keyboard navigable', async ({ page }, testInfo) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.setViewportSize({ width: 375, height: 812 });
-  await page.reload();
-  await expect(word).toHaveText('trust.');
-  await page.waitForTimeout(2800);
-  await expect(word).toHaveText('trust.');
+  await page.goto('/');
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Your personal AI lab group');
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
   await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await page.getByRole('tab', { name: 'Ask a question' }).focus();
+  await page.keyboard.press('ArrowRight');
+  await expect(page.getByRole('tab', { name: 'Guide the research' })).toHaveAttribute('aria-selected', 'true');
+  await expect(page.getByRole('tabpanel')).toContainText('Define the objective');
+  await page.getByRole('button', { name: 'Switch to light theme' }).click();
+  await page.getByRole('link', { name: 'Sign in', exact: true }).click();
+  await expect(page).toHaveURL(/sign-in/);
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
+  await expect(page.getByLabel('Username', { exact: true })).toBeVisible();
+  await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await page.getByRole('link', { name: 'Back to home' }).click();
+  await page.getByRole('button', { name: 'Switch to dark theme' }).click();
   await page.screenshot({ path: testInfo.outputPath('landing-mobile-dark.png'), fullPage: true });
 });

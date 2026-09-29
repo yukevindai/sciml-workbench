@@ -192,3 +192,19 @@
   .page-head { flex-direction: column; gap: var(--space-5); }
   h1 { font-size: var(--text-xl); }
 }
+
+/* Shared lab-group identity: quiet chrome, generous working area. */
+.brand-mark { border: 1px solid var(--color-border); background: var(--color-bg-surface); color: var(--color-text-primary); }
+.brand-sub { text-transform: none; letter-spacing: 0; font-size: 11px; line-height: 1.4; }
+.sidebar { padding-top: 24px; gap: 32px; }
+.sidebar-home { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 12px 8px; color: var(--color-text-tertiary); font-size: 12px; }
+.nav-item { min-height: 44px; border: 1px solid transparent; }
+.nav-item[aria-current='page'] { border-color: var(--color-border); }
+.topbar { min-height: 72px; }
+.page-head h1 { font-weight: 500; letter-spacing: -.04em; font-size: clamp(26px, 2.6vw, 34px); }
+.page-head { margin-bottom: 32px; }
+@media (max-width: 900px) { .sidebar { padding: 10px 16px; gap: 16px; } }
+@media (max-width: 560px) {
+  .topbar { align-items: flex-start; }
+  .topbar-right { margin-left: auto; }
+}

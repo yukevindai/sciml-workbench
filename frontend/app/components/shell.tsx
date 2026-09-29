@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Beaker, ChevronRight, Loader2, LogOut, ShieldCheck } from 'lucide-react';
+import { FlaskConical, ChevronRight, ArrowUpRight, Loader2, LogOut, ShieldCheck } from 'lucide-react';
 import { NAV_GROUPS, navItem, type Stage, type View } from '../lib/pipeline';
 import type { DatasetArtifact, Project } from '../lib/types';
 import { ThemeToggle } from './theme-toggle';
@@ -15,10 +15,10 @@ export function Sidebar({ view, stages }: { view: string; stages: Stage[] }) {
   return (
     <aside className="sidebar">
       <Link href="/ask" className="brand" aria-label="SciML Workbench home">
-        <span className="brand-mark" aria-hidden="true"><Beaker size={19} /></span>
+        <span className="brand-mark" aria-hidden="true"><FlaskConical size={19} /></span>
         <span className="brand-text">
           <span className="brand-name">SciML Workbench</span>
-          <span className="brand-sub">Your research team</span>
+          <span className="brand-sub">Your personal AI lab group</span>
         </span>
       </Link>
 
@@ -70,7 +70,7 @@ export function Sidebar({ view, stages }: { view: string; stages: Stage[] }) {
       </div>
 
       <div className="sidebar-foot">
-        <span className="sidebar-version">MVP · v0.1.0</span>
+        <Link href="/" className="sidebar-home">About SciML Workbench <ArrowUpRight size={14} aria-hidden="true" /></Link>
       </div>
     </aside>
   );

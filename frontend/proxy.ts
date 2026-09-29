@@ -3,7 +3,13 @@ import { configuredLogin, loginRequired, SESSION_COOKIE, validBasic, validSessio
 
 // Public without signing in: the landing page, the sign-in page and its form
 // handler, liveness, and the static assets those pages need.
-const PUBLIC = new Set(['/', '/sign-in', '/auth/session', '/favicon.ico', '/robots.txt']);
+const PUBLIC = new Set([
+  '/', '/sign-in', '/auth/session', '/favicon.ico', '/robots.txt',
+  // Bundled marketing assets only. Uploaded research files stay behind /api/.
+  '/images/lab-orbitals.png',
+  ...['ask', 'research', 'audit'].flatMap(view =>
+    ['dark', 'light'].map(theme => `/images/workspace-${view}-${theme}.png`)),
+]);
 const isPublic = (path: string) => PUBLIC.has(path) || path.startsWith('/_next/') || path.startsWith('/icon');
 
 export function proxy(request: NextRequest) {

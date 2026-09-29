@@ -42,6 +42,10 @@ async function workspace(page: Page, artifacts: Artifact[] = [dataset, audit, ne
 }
 const link = `/split-designer?project=${project.id}&split=${split.id}#split-${split.id}`;
 
+test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem('sciml-theme', 'light'));
+});
+
 test('direct split inspection retains exact audit lineage, exclusions and real diagnostics with accessible counts', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await workspace(page);
