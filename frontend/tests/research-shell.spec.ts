@@ -1,3 +1,4 @@
+import { selectPicker } from './picker';
 import { expect, test, type Page, type Route } from '@playwright/test';
 import { jobPage } from './job-page';
 import { shellFixture } from '../app/dev/research-shell/fixtures';
@@ -25,7 +26,7 @@ test('the detailed request and all eight manual views remain reachable', async (
   await mockWorkspace(page);
   await page.goto('/research');
   await expect(page.getByRole('heading', { name: 'Detailed request', exact: true })).toBeVisible();
-  await expect(page.getByLabel('Active project', { exact: true })).toHaveValue(project.id);
+  await expect(page.getByLabel('Active project', { exact: true })).toHaveAttribute('value', project.id);
   await expect(page.getByLabel('Active dataset', { exact: true })).toHaveValue(dataset.id);
   await expect(page.getByText('Unresolved declarations:')).toBeVisible();
   await expect(page.getByRole('button', { name: 'Run research' })).toBeDisabled();
@@ -94,7 +95,7 @@ test('late project responses cannot replace a newly selected project', async ({ 
   await page.goto('/research');
   await expect.poll(() => started).toBe(true);
   await expect(page.getByRole('status')).toHaveText('Loading project data…');
-  await page.getByLabel('Active project', { exact: true }).selectOption(second.id);
+  await selectPicker(page, 'Active project', second.id);
   await expect(page.getByRole('heading', { name: second.name })).toBeVisible();
   const lateResponse = page.waitForResponse(response => response.url().endsWith(`/projects/${project.id}/artifact-previews`));
   release();
@@ -102,7 +103,7 @@ test('late project responses cannot replace a newly selected project', async ({ 
   await expect(page.getByLabel('Active dataset', { exact: true })).toBeDisabled();
   await expect(page.getByText(dataset.filename, { exact: true })).toHaveCount(0);
   await page.reload();
-  await expect(page.getByLabel('Active project', { exact: true })).toHaveValue(second.id);
+  await expect(page.getByLabel('Active project', { exact: true })).toHaveAttribute('value', second.id);
   await expect(page.getByRole('heading', { name: 'No dataset attached' })).toBeVisible();
 });
 
@@ -119,7 +120,7 @@ test('dataset selection survives navigation and refresh and is scoped by project
   await expect(page.getByLabel('Active dataset', { exact: true })).toHaveValue(dataset.id);
   await page.reload();
   await expect(page.getByLabel('Active dataset', { exact: true })).toHaveValue(dataset.id);
-  await page.getByLabel('Active project', { exact: true }).selectOption(second.id);
+  await selectPicker(page, 'Active project', second.id);
   await expect(page.getByLabel('Active dataset', { exact: true })).toHaveValue('');
 });
 

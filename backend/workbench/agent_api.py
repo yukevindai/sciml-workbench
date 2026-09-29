@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, Header, Query
 from fastapi.responses import Response
 from fastapi.routing import APIRoute
 from sqlalchemy import select
-from .agent_db import PlanRow, QuestionRow, ProjectPolicyRow, ActionRow, AssignmentRow
+from .agent_db import PlanRow, QuestionRow, ProjectPolicyRow, ActionRow, AssignmentRow, EventRow
 from .agent_runs import RunService, TERMINAL
 from .agent_http_contracts import RunDetail, RunResult, ExecutionPolicySummary
 from .agent_policy import intersect_policy
@@ -67,11 +67,24 @@ def router(service: RunService, session, protected, *, settings=None):
                 assignment_id=a.assignment_id, job_id=outcome.get('job_id'),
                 artifact_ids=[i for i in outcome.get('artifact_ids', []) if isinstance(i, str)],
                 error_code=code if code in ErrorCode.__args__ else None))
-        assignments = [dict(id=a.id, role=a.payload['role'], objective=a.payload['objective'],
-            plan_revision=a.payload['plan_revision'], state=a.state, created_at=a.payload['created_at'],
-            deadline_at=a.payload['deadline_at']) for a in s.scalars(select(AssignmentRow).where(AssignmentRow.run_id == rid))]
+        assignments = []
+        for a in s.scalars(select(AssignmentRow).where(AssignmentRow.run_id == rid)):
+            result = a.result or {}
+            assignments.append(dict(id=a.id, role=a.payload['role'], objective=a.payload['objective'],
+                plan_revision=a.payload['plan_revision'], state=a.state, created_at=a.payload['created_at'],
+                deadline_at=a.payload['deadline_at'],
+                findings=([f['statement'] for f in result.get('findings', [])]
+                    + [f"{v['status'].replace('_', ' ')}: {v['explanation']}"[:4000] for v in result.get('verdicts', [])]),
+                uncertainty=result.get('uncertainty') or result.get('residual_uncertainty'),
+                recommended_actions=result.get('recommended_actions', []),
+                unresolved_issues=result.get('unresolved_issues', [])))
+        answer = None
+        if row.state == 'completed' and not row.plan_revision and not row.payload['result_artifact_ids']:
+            event = s.scalar(select(EventRow).where(EventRow.run_id == rid).order_by(EventRow.sequence.desc()).limit(1))
+            if event and event.payload['event_type'] == 'result_published':
+                answer = event.payload.get('summary')
         return dict(run=service.projected_payload(s, row), plan=plan.payload if plan else None, questions=questions,
-                    earlier_plans=earlier, actions=actions, assignments=assignments,
+                    earlier_plans=earlier, actions=actions, assignments=assignments, answer=answer,
                     control_effect=('New dispatch is fenced; accepted jobs drain under their fixed deadlines.'
                         if row.state == 'paused' else
                         'Owned jobs are fenced and shared jobs detached; prior external effects may have settled.'

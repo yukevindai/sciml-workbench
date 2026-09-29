@@ -5,6 +5,7 @@ import { Beaker, ChevronRight, Loader2, LogOut, ShieldCheck } from 'lucide-react
 import { NAV_GROUPS, navItem, type Stage, type View } from '../lib/pipeline';
 import type { DatasetArtifact, Project } from '../lib/types';
 import { ThemeToggle } from './theme-toggle';
+import { WorkspacePicker } from './workspace-picker';
 
 /* ---------------------------------- sidebar ------------------------------ */
 
@@ -17,7 +18,7 @@ export function Sidebar({ view, stages }: { view: string; stages: Stage[] }) {
         <span className="brand-mark" aria-hidden="true"><Beaker size={19} /></span>
         <span className="brand-text">
           <span className="brand-name">SciML Workbench</span>
-          <span className="brand-sub">Research assistant</span>
+          <span className="brand-sub">Your research team</span>
         </span>
       </Link>
 
@@ -69,10 +70,6 @@ export function Sidebar({ view, stages }: { view: string; stages: Stage[] }) {
       </div>
 
       <div className="sidebar-foot">
-        <div className="sidebar-note">
-          <strong><ShieldCheck size={14} aria-hidden="true" />Nothing is hidden</strong>
-          <p>Every result links back to the files and steps that produced it, so you can always check the work.</p>
-        </div>
         <span className="sidebar-version">MVP · v0.1.0</span>
       </div>
     </aside>
@@ -100,20 +97,11 @@ export function TopBar({
     <header className="topbar">
       <div className="topbar-left">
         <div className="project-switcher">
-          <label className="field-label" htmlFor="active-project">Project</label>
-          <select
-            id="active-project"
-            className="select"
-            aria-label="Active project"
-            value={projectId}
-            disabled={loading || preview || locked || !projects.length}
-            onChange={event => onProjectChange(event.target.value)}
-          >
-            <option value="" disabled>{loading ? 'Loading projects…' : simple ? 'New project' : 'No project selected'}</option>
-            {projects.map(project => (
-              <option key={project.id} value={project.id}>{project.name}</option>
-            ))}
-          </select>
+          <WorkspacePicker label="Active project" value={projectId}
+            options={projects.map(project => ({ value: project.id, label: project.name }))}
+            onChange={onProjectChange} disabled={loading || preview || locked}
+            placeholder={loading ? 'Loading projects…' : 'New project'}
+            onCreate={simple ? () => onProjectChange('') : undefined} />
         </div>
         {!simple && <div className="project-switcher">
           <label className="field-label" htmlFor="active-dataset">Active dataset</label>
@@ -127,7 +115,7 @@ export function TopBar({
       </div>
 
       <div className="topbar-right">
-        <span className={`activity-pill ${busyJobs ? 'activity-pill--busy' : ''}`.trim()}>
+        {(busyJobs > 0 || preview) && <span className={`activity-pill ${busyJobs ? 'activity-pill--busy' : ''}`.trim()}>
           {busyJobs ? (
             <>
               <Loader2 size={13} className="spin" aria-hidden="true" />
@@ -136,10 +124,10 @@ export function TopBar({
           ) : (
             <>
               <ShieldCheck size={13} aria-hidden="true" />
-              <span>{preview ? 'Development preview' : 'Private workspace'}</span>
+              <span>Development preview</span>
             </>
           )}
-        </span>
+        </span>}
         <ThemeToggle />
         {!preview && <form method="post" action="/auth/session">
           <input type="hidden" name="intent" value="sign-out" />

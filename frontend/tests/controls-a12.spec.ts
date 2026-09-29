@@ -92,7 +92,7 @@ async function open(page: Page, s: Server, runId: string) {
   await page.addInitScript(([pid, rid]) => localStorage.setItem(`sciml-run:${pid}`, rid), [project.id, runId]);
   await serve(page, s);
   await page.goto('/research');
-  await expect(page.getByLabel('Research run')).toHaveValue(runId);
+  await expect(page.getByLabel('Research run')).toHaveAttribute('value', runId);
   return page.locator(`#run-${runId}`);
 }
 
@@ -103,10 +103,8 @@ test('events stream over SSE, reconnect from the last sequence, and replays neve
   const expected = events[ids.asking];
   await expect(current.getByText(/^Live: events arrive over the activity stream/)).toBeVisible();
   await expect.poll(() => s.streams.filter(entry => entry.runId === ids.asking).length, { timeout: 15_000 }).toBeGreaterThanOrEqual(3);
-  const list = current.getByRole('list', { name: 'Run events' });
-  await expect(list.getByRole('listitem')).toHaveCount(expected.length);
-  const sequences = await list.locator('.run-event-seq').allTextContents();
-  expect(sequences).toEqual(expected.map(e => `#${e.sequence}`));
+  await expect(current.getByText('Research team', { exact: true })).toBeVisible();
+  await expect(current.getByText('State changed', { exact: true })).toHaveCount(0);
   // Each reconnect asks for events after the last one received.
   const reconnects = s.streams.filter(entry => entry.runId === ids.asking).slice(1);
   expect(reconnects.every(entry => entry.url === `?after=${expected.at(-1)!.sequence}`)).toBe(true);
@@ -122,7 +120,7 @@ test('a refused stream falls back to polling by sequence', async ({ page }) => {
   const s = server(ids.asking, { stream: () => null });
   const current = await open(page, s, ids.asking);
   await expect(current.getByText(/^Polling: the activity stream is unavailable/)).toBeVisible();
-  await expect(current.getByRole('list', { name: 'Run events' }).getByRole('listitem')).toHaveCount(events[ids.asking].length);
+  await expect(current.getByText('Research team', { exact: true })).toBeVisible();
   await expect.poll(() => s.reads.filter(read => read.includes(`${ids.asking}/events`)).length, { timeout: 10_000 }).toBeGreaterThan(1);
   const cursors = s.reads.filter(read => read.includes(`${ids.asking}/events`)).map(read => Number(new URLSearchParams(read.split('?')[1]).get('after')));
   expect(cursors[0]).toBe(0);
@@ -222,12 +220,12 @@ test('partial completion, plan revisions, specialists and tool actions are shown
   await expect(current.getByRole('heading', { name: 'Plan · revision 2' })).toBeVisible();
   await current.getByText('Earlier plan revisions (1)').click();
   await expect(current.getByText('Start with an audit before choosing a split.')).toBeVisible();
-  const specialists = current.getByRole('region', { name: 'Specialist activity' });
-  await expect(specialists).toContainText('Data evaluation');
+  await current.getByText('Research team', { exact: true }).click();
+  const specialists = current.locator('.agent-card--specialist');
+  await expect(specialists).toContainText('Data analyst');
   await expect(specialists).toContainText('Check whether any column identifies independent formulations.');
-  await expect(current.getByRole('list', { name: 'Run events' })).toContainText('Tool action · run audit');
-  await current.getByText('Tool actions (1)').click();
-  await expect(current).toContainText('Tool arguments are recorded for provenance but are not shown here.');
+  await expect(current.locator('.agent-tools')).toContainText('Checked the data for problems');
+  await expect(current.locator('.agent-tools li')).toHaveCount(1);
   await expect(current.getByText(/^The run has finished/)).toBeVisible();
   await expect(current.getByRole('button', { name: /Pause|Resume|Cancel run/ })).toHaveCount(0);
   // A finished run is drained once and not streamed.
@@ -239,7 +237,7 @@ test('specialist activity is conditional and the question card fits a phone', as
   await page.setViewportSize({ width: 375, height: 900 });
   const current = await open(page, s, ids.asking);
   await expect(current.locator('.clarification')).toBeVisible();
-  await expect(current.getByRole('region', { name: 'Specialist activity' })).toHaveCount(0);
+  await expect(current.locator('.agent-card--specialist')).toHaveCount(0);
   await current.getByRole('radio', { name: /S\/m/ }).first().focus();
   await page.keyboard.press('Tab');
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);

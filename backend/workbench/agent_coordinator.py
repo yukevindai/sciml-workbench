@@ -27,7 +27,7 @@ from .scientific_contracts import Claim
 
 
 class Decision(ContractModel):
-    kind: Literal['plan', 'question', 'delegate', 'finish']
+    kind: Literal['answer', 'plan', 'question', 'delegate', 'finish']
     steps: list[ResearchStep] = Field(default_factory=list, max_length=120)
     questions: list[MaterialQuestion] = Field(default_factory=list, max_length=20)
     summary: Text
@@ -49,7 +49,15 @@ class Decision(ContractModel):
         return self
 
 
-INSTRUCTIONS = """Choose the next useful action from actual results and the accepted
+class OpeningDecision(ContractModel):
+    """The first turn needs no delegation, claims or report schema."""
+    kind: Literal['answer', 'plan', 'question']
+    summary: Text
+    steps: list[ResearchStep] = Field(default_factory=list, max_length=120)
+    questions: list[MaterialQuestion] = Field(default_factory=list, max_length=20)
+
+
+GUIDANCE = """Choose the next useful action from actual results and the accepted
 objective. Audit-only objectives must not train. Inspect declared inputs first.
 For scientific work: audit, inspect findings, choose an admissible split, seal
 predeclared candidates before training and inspect selection results. Request a
@@ -57,7 +65,13 @@ report through a finish decision with export_report=true and typed claims, so
 review and execution capture precede export. Do not infer target, units or source declarations as
 facts. Ask one consolidated set of material questions after independent useful
 work; routine defaults need no approval. Do not repeat unchanged rejected science.
-First return a plan. Revise it when the objective or actual results require it.
+For a general question with no attached inputs, no conversation context, and no
+requested investigation, you may return kind=answer with a concise helpful answer
+in summary. State relevant uncertainty; never invent searches, experiments or
+citations. Do not use answer for work requiring tools, current evidence, attached
+data, or a review-plan request. Otherwise first return a plan. Revise it when the
+objective or actual results require it. Keep plans proportionate to the request.
+Summaries explain the approach and useful decisions for the user, not private reasoning.
 Delegate only when a scoped data/evaluation, evidence, failure-memory or review
 objective adds useful independent work. Audit-only work ordinarily needs no
 specialist. Specialists cannot delegate or execute science. Independent assignments
@@ -72,7 +86,9 @@ its actor and observation come from trusted records. Use read_evidence_span for
 exact citations only when authorized. Never invent source or metric references.
 Use at most one offered tool per turn. When not calling a tool, return exactly one
 JSON decision matching this schema (no markdown, narrative, or hidden reasoning):
-""" + json.dumps(Decision.model_json_schema())
+"""
+INSTRUCTIONS = GUIDANCE + json.dumps(Decision.model_json_schema())
+OPENING_INSTRUCTIONS = GUIDANCE + json.dumps(OpeningDecision.model_json_schema())
 
 
 class Coordinator:
@@ -82,7 +98,7 @@ class Coordinator:
         self.bounds, self.prices, self.max_tokens = bounds, prices, max_tokens
         self.specialist_model = specialist_model or model
         from .agent_finalization import execution_versions
-        self.versions = execution_versions(model, provider, INSTRUCTIONS)
+        self.versions = execution_versions(model, provider, INSTRUCTIONS + OPENING_INSTRUCTIONS)
 
     def __call__(self, snapshot, previous, runs):
         pid, rid = snapshot['run']['project_id'], snapshot['run']['id']
@@ -133,7 +149,8 @@ class Coordinator:
             response = wrapper.complete(project_id=pid, run_id=rid, request_id=request_id,
                 expected_revision=run['control_revision'], claim_token=snapshot['claim_token'],
                 model=self.model, context=context,
-                tools=[tool for tool in registry.definitions(policy) if tool.name != 'build_report'],
+                tools=([tool for tool in registry.definitions(policy) if tool.name != 'build_report']
+                    if run['plan_revision'] and not snapshot['plan_dirty'] else []),
                 max_tokens=self.max_tokens)
             if response.tool_calls:
                 if len(response.tool_calls) != 1 or not run['plan_revision'] or snapshot['plan_dirty']:
@@ -141,6 +158,8 @@ class Coordinator:
                 proposal = {'tool': response.tool_calls[0]['name'], 'arguments': response.tool_calls[0]['input']}
             else:
                 decision = Decision.model_validate_json(''.join(response.text))
+                if decision.kind == 'answer' and not self.can_answer(snapshot):
+                    raise ValueError('Direct answers require a new, unscoped general question')
                 if decision.kind == 'plan':
                     ResearchPlan(id='validation', project_id=pid, created_at=now(), run_id=rid,
                         revision=run['plan_revision'] + 1, steps=decision.steps, rationale_summary=decision.summary)
@@ -158,6 +177,16 @@ class Coordinator:
         return {'accepted_requests': sorted(accepted | {request_id}),
                 'pending': {'revision': run['control_revision'], 'key': request_id, **proposal}}, 'queued'
 
+    @staticmethod
+    def can_answer(snapshot):
+        run = snapshot['run']
+        scope = run['inputs']
+        return (run['mode'] == 'autopilot' and not run['plan_revision']
+            and not snapshot['plan_dirty'] and not run['open_question_ids']
+            and not run.get('continued_from_run_id')
+            and not scope['artifact_ids'] and not scope['material_ids']
+            and not scope.get('conversation_id') and not snapshot['actions'])
+
     def context(self, snapshot):
         run = snapshot['run']
         pid, rid = run['project_id'], run['id']
@@ -166,10 +195,12 @@ class Coordinator:
         scope = run['inputs']
         policy = AuthorityPolicy.model_validate(snapshot['policy'])
         message_class = 'operator' if policy.share_operator_messages else 'raw'
-        parts = [ContextPart(pid, 'schema', INSTRUCTIONS),
+        instructions = INSTRUCTIONS if run['plan_revision'] and not snapshot['plan_dirty'] else OPENING_INSTRUCTIONS
+        parts = [ContextPart(pid, 'schema', instructions),
                  ContextPart(pid, message_class, run['objective'], tuple(scope['artifact_ids']), tuple(scope['material_ids']))]
         parts.append(ContextPart(pid, 'schema', json.dumps({'resource_limits': policy.limits.model_dump(),
-            'usage': run.get('usage', {}), 'spend_ceiling_usd': policy.spend_ceiling_usd})))
+            'usage': run.get('usage', {}), 'spend_ceiling_usd': policy.spend_ceiling_usd,
+            'direct_answer_allowed': self.can_answer(snapshot), 'mode': run['mode']})))
         if snapshot['plan_dirty']:
             parts.append(ContextPart(pid, 'schema', 'The operator amended this run. Publish a revised plan before new work.'))
         with self.db.session() as s:
@@ -244,6 +275,20 @@ class Coordinator:
                 cleared['last_rejection'] = result.model_dump(mode='json')
             return cleared, 'waiting_for_job' if result.status == 'submitted' else 'queued'
         decision = Decision.model_validate(pending['decision'])
+        if decision.kind == 'answer':
+            if not self.can_answer(snapshot):
+                return self.recovery_question(snapshot, runs)
+            from .egress import SecretGuard, EgressDenied
+            try:
+                SecretGuard(self.settings).check(decision.summary)
+            except EgressDenied:
+                return self.recovery_question(snapshot, runs)
+            with self.db.session.begin() as s:
+                # The answer is durably published after its proposal checkpoint,
+                # with the same revision and lease checks as scientific results.
+                runs.finish(s, pid, rid, run['control_revision'], state='completed',
+                    artifact_ids=[], summary=decision.summary)
+            return {}, 'completed'
         if decision.kind == 'delegate':
             requests = decision.assignments or [decision.assignment]
             if any(request.role == 'scientific_reviewer' for request in requests):

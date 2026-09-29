@@ -12,6 +12,7 @@ from workbench.api import create_app
 from workbench.db import ProjectRow
 from test_metadata import db, old_db, database_url
 from test_serverless import settings, config
+from test_tool_registry import registry
 
 
 def test_hobby_deployment_configuration():
@@ -34,6 +35,7 @@ def test_queue_disabled_or_preview_never_dispatches(monkeypatch):
 
 def test_continuations_are_awaited_deduplicated_and_stop_at_idle(monkeypatch):
     monkeypatch.delenv('VERCEL_ENV', raising=False)
+    monkeypatch.setattr(runtime, 'has_ready_work', lambda settings: False)
     sent, steps = [], []
     async def send(topic, payload, **options):
         sent.append((topic, payload, options))
@@ -53,6 +55,9 @@ def test_continuations_are_awaited_deduplicated_and_stop_at_idle(monkeypatch):
     monkeypatch.setattr(runtime, 'has_work', lambda settings: True)
     asyncio.run(runtime.consume(config(), {'version': 1, 'phase': 2}, 'last'))
     assert sent[-1][1]['phase'] == 0 and sent[-1][2]['delay'] == 5
+    monkeypatch.setattr(runtime, 'has_ready_work', lambda settings: True)
+    asyncio.run(runtime.consume(config(), {'version': 1, 'phase': 2}, 'ready'))
+    assert sent[-1][1]['phase'] == 0 and sent[-1][2]['delay'] == 0
 
 
 def test_busy_and_delivery_failure_require_redelivery(monkeypatch):
@@ -95,3 +100,16 @@ def test_api_commit_precedes_dispatch_and_failure_is_explicit(settings, db, monk
 def test_idle_storage_has_no_work(settings, monkeypatch):
     monkeypatch.setenv('WB_AGENTS_ENABLED', '0')
     assert not runtime.has_work(settings)
+
+
+def test_only_queued_enabled_agents_skip_the_idle_backoff(registry, monkeypatch):
+    from workbench.agent_db import RunRow
+    tool, ctx, _, _ = registry
+    monkeypatch.setenv('WB_AGENTS_ENABLED', '0')
+    assert not runtime.has_ready_work(tool.settings)
+    monkeypatch.setenv('WB_AGENTS_ENABLED', '1')
+    assert runtime.has_ready_work(tool.settings)
+    with tool.db.session.begin() as s:
+        row = s.get(RunRow, ctx.run_id)
+        tool.runs.save(row, {**row.payload, 'state': 'paused'})
+    assert not runtime.has_ready_work(tool.settings)

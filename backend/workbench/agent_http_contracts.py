@@ -30,6 +30,10 @@ class RunAssignmentView(ContractModel):
     state: Literal["queued", "running", "waiting", "completed", "failed", "cancelled"]
     created_at: AwareDatetime
     deadline_at: AwareDatetime
+    findings: list[Text] = Field(default_factory=list)
+    uncertainty: Text | None = None
+    recommended_actions: list[Text] = Field(default_factory=list)
+    unresolved_issues: list[Text] = Field(default_factory=list)
 
 
 class RunDetail(ContractModel):
@@ -41,6 +45,7 @@ class RunDetail(ContractModel):
     earlier_plans: list[ResearchPlan] = Field(default_factory=list, max_length=20)
     actions: list[RunActionView] = Field(default_factory=list)
     assignments: list[RunAssignmentView] = Field(default_factory=list)
+    answer: Text | None = None
 
 
 class RunResult(ContractModel):

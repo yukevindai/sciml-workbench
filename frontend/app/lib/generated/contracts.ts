@@ -709,7 +709,12 @@ export type PlanRevision2 = number;
 export type State5 = 'queued' | 'running' | 'waiting' | 'completed' | 'failed' | 'cancelled';
 export type CreatedAt16 = string;
 export type DeadlineAt = string;
+export type Findings = string[];
+export type Uncertainty20 = string | null;
+export type RecommendedActions = string[];
+export type UnresolvedIssues = string[];
 export type Assignments1 = RunAssignmentView[];
+export type Answer = string | null;
 export type RunId5 = string;
 export type State6 =
   | 'queued'
@@ -937,11 +942,11 @@ export type SourceClasses = ('schema' | 'aggregates' | 'operator' | 'excerpt' | 
 export type Contract7 = 'specialist_result';
 export type SchemaVersion22 = '1.0';
 export type AssignmentId2 = string;
-export type Findings = Claim[];
+export type Findings1 = Claim[];
 export type SupportingArtifactIds = string[];
-export type Uncertainty20 = string;
-export type UnresolvedIssues = string[];
-export type RecommendedActions = string[];
+export type Uncertainty21 = string;
+export type UnresolvedIssues1 = string[];
+export type RecommendedActions1 = string[];
 export type ExpectedRunRevision3 = number;
 export type ExpectedQuestionRevision = number;
 export type Contract8 = 'tool_request';
@@ -2121,6 +2126,7 @@ export interface RunDetail {
   earlier_plans?: EarlierPlans;
   actions?: Actions1;
   assignments?: Assignments1;
+  answer?: Answer;
 }
 export interface ResearchRun {
   schema_version?: SchemaVersion16;
@@ -2202,6 +2208,10 @@ export interface RunAssignmentView {
   state: State5;
   created_at: CreatedAt16;
   deadline_at: DeadlineAt;
+  findings?: Findings;
+  uncertainty?: Uncertainty20;
+  recommended_actions?: RecommendedActions;
+  unresolved_issues?: UnresolvedIssues;
 }
 export interface RunResult {
   run_id: RunId5;
@@ -2471,11 +2481,11 @@ export interface SpecialistResult {
   contract?: Contract7;
   schema_version?: SchemaVersion22;
   assignment_id: AssignmentId2;
-  findings: Findings;
+  findings: Findings1;
   supporting_artifact_ids: SupportingArtifactIds;
-  uncertainty: Uncertainty20;
-  unresolved_issues: UnresolvedIssues;
-  recommended_actions: RecommendedActions;
+  uncertainty: Uncertainty21;
+  unresolved_issues: UnresolvedIssues1;
+  recommended_actions: RecommendedActions1;
 }
 export interface QuestionAnswerInput {
   expected_run_revision: ExpectedRunRevision3;

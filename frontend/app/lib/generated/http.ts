@@ -993,7 +993,12 @@ export type PlanRevision2 = number;
 export type State11 = 'queued' | 'running' | 'waiting' | 'completed' | 'failed' | 'cancelled';
 export type CreatedAt22 = string;
 export type DeadlineAt1 = string;
+export type Findings = string[];
+export type Uncertainty20 = string | null;
+export type RecommendedActions = string[];
+export type UnresolvedIssues = string[];
 export type Assignments1 = RunAssignmentView[];
+export type Answer = string | null;
 export type RunId8 = string;
 export type State12 =
   | 'queued'
@@ -2079,6 +2084,7 @@ export interface RunDetail {
   earlier_plans: EarlierPlans;
   actions: Actions1;
   assignments: Assignments1;
+  answer: Answer;
 }
 export interface ResearchQuestion {
   schema_version: SchemaVersion21;
@@ -2139,6 +2145,10 @@ export interface RunAssignmentView {
   state: State11;
   created_at: CreatedAt22;
   deadline_at: DeadlineAt1;
+  findings: Findings;
+  uncertainty: Uncertainty20;
+  recommended_actions: RecommendedActions;
+  unresolved_issues: UnresolvedIssues;
 }
 export interface RunResult {
   run_id: RunId8;

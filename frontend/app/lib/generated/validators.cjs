@@ -43014,9 +43014,9 @@ return errors === 0;
 validate231.evaluated = {"items":true,"dynamicProps":false,"dynamicItems":false};
 
 exports.validateRunDetail = validate233;
-const schema193 = {"additionalProperties":false,"properties":{"run":{"$ref":"#/$defs/ResearchRun"},"plan":{"anyOf":[{"$ref":"#/$defs/ResearchPlan"},{"type":"null"}]},"questions":{"items":{"$ref":"#/$defs/ResearchQuestion"},"title":"Questions","type":"array"},"control_effect":{"maxLength":4000,"minLength":1,"title":"Control Effect","type":"string"},"earlier_plans":{"items":{"$ref":"#/$defs/ResearchPlan"},"maxItems":20,"title":"Earlier Plans","type":"array"},"actions":{"items":{"$ref":"#/$defs/RunActionView"},"title":"Actions","type":"array"},"assignments":{"items":{"$ref":"#/$defs/RunAssignmentView"},"title":"Assignments","type":"array"}},"required":["run","plan","questions","control_effect","earlier_plans","actions","assignments"],"title":"RunDetail","type":"object"};
+const schema193 = {"additionalProperties":false,"properties":{"run":{"$ref":"#/$defs/ResearchRun"},"plan":{"anyOf":[{"$ref":"#/$defs/ResearchPlan"},{"type":"null"}]},"questions":{"items":{"$ref":"#/$defs/ResearchQuestion"},"title":"Questions","type":"array"},"control_effect":{"maxLength":4000,"minLength":1,"title":"Control Effect","type":"string"},"earlier_plans":{"items":{"$ref":"#/$defs/ResearchPlan"},"maxItems":20,"title":"Earlier Plans","type":"array"},"actions":{"items":{"$ref":"#/$defs/RunActionView"},"title":"Actions","type":"array"},"assignments":{"items":{"$ref":"#/$defs/RunAssignmentView"},"title":"Assignments","type":"array"},"answer":{"anyOf":[{"maxLength":4000,"minLength":1,"type":"string"},{"type":"null"}],"default":null,"title":"Answer"}},"required":["run","plan","questions","control_effect","earlier_plans","actions","assignments","answer"],"title":"RunDetail","type":"object"};
 const schema198 = {"additionalProperties":false,"description":"One recorded tool attempt: identity, state and outputs only, never its arguments.","properties":{"id":{"maxLength":160,"minLength":1,"title":"Id","type":"string"},"tool":{"maxLength":160,"minLength":1,"title":"Tool","type":"string"},"attempt":{"maximum":9007199254740991,"minimum":1,"title":"Attempt","type":"integer"},"state":{"enum":["prepared","submitted","completed","failed","unknown","cancelled"],"title":"State","type":"string"},"assignment_id":{"anyOf":[{"maxLength":160,"minLength":1,"type":"string"},{"type":"null"}],"title":"Assignment Id"},"job_id":{"anyOf":[{"maxLength":160,"minLength":1,"type":"string"},{"type":"null"}],"title":"Job Id"},"artifact_ids":{"items":{"maxLength":160,"minLength":1,"type":"string"},"title":"Artifact Ids","type":"array"},"error_code":{"anyOf":[{"enum":["UNAUTHORIZED","ORIGIN_REJECTED","PROJECT_NOT_FOUND","ARTIFACT_NOT_FOUND","JOB_NOT_FOUND","IDEMPOTENCY_CONFLICT","PROJECT_BUSY","VALIDATION_FAILED","LINEAGE_MISMATCH","UPLOAD_TOO_LARGE","STORAGE_UNAVAILABLE","DEPENDENCY_UNAVAILABLE","INTERNAL_ERROR","ADMISSION_REJECTED","JOB_TIMED_OUT","WORKER_INTERRUPTED","INTEGRITY_FAILED","EXTERNAL_OUTCOME_UNKNOWN","AGENT_UNAVAILABLE","POLICY_DENIED","DATA_EXPOSURE_DENIED","RUN_REVISION_CHANGED","QUESTION_STALE","BUDGET_EXHAUSTED","PROVIDER_UNAVAILABLE","TOOL_SCHEMA_INVALID","UNSUPPORTED_CAPABILITY","REFERENCE_INVALID","TEST_PROTOCOL_SEALED","RUN_CANCELLED"],"type":"string"},{"type":"null"}],"title":"Error Code"}},"required":["id","tool","attempt","state","assignment_id","job_id","artifact_ids","error_code"],"title":"RunActionView","type":"object"};
-const schema199 = {"additionalProperties":false,"description":"A specialist assignment as scoped by the coordinator; results stay advisory.","properties":{"id":{"maxLength":160,"minLength":1,"title":"Id","type":"string"},"role":{"enum":["data_evaluation","evidence","failure_memory","scientific_reviewer"],"title":"Role","type":"string"},"objective":{"maxLength":4000,"minLength":1,"title":"Objective","type":"string"},"plan_revision":{"maximum":9007199254740991,"minimum":1,"title":"Plan Revision","type":"integer"},"state":{"enum":["queued","running","waiting","completed","failed","cancelled"],"title":"State","type":"string"},"created_at":{"format":"date-time","title":"Created At","type":"string"},"deadline_at":{"format":"date-time","title":"Deadline At","type":"string"}},"required":["id","role","objective","plan_revision","state","created_at","deadline_at"],"title":"RunAssignmentView","type":"object"};
+const schema199 = {"additionalProperties":false,"description":"A specialist assignment as scoped by the coordinator; results stay advisory.","properties":{"id":{"maxLength":160,"minLength":1,"title":"Id","type":"string"},"role":{"enum":["data_evaluation","evidence","failure_memory","scientific_reviewer"],"title":"Role","type":"string"},"objective":{"maxLength":4000,"minLength":1,"title":"Objective","type":"string"},"plan_revision":{"maximum":9007199254740991,"minimum":1,"title":"Plan Revision","type":"integer"},"state":{"enum":["queued","running","waiting","completed","failed","cancelled"],"title":"State","type":"string"},"created_at":{"format":"date-time","title":"Created At","type":"string"},"deadline_at":{"format":"date-time","title":"Deadline At","type":"string"},"findings":{"items":{"maxLength":4000,"minLength":1,"type":"string"},"title":"Findings","type":"array"},"uncertainty":{"anyOf":[{"maxLength":4000,"minLength":1,"type":"string"},{"type":"null"}],"default":null,"title":"Uncertainty"},"recommended_actions":{"items":{"maxLength":4000,"minLength":1,"type":"string"},"title":"Recommended Actions","type":"array"},"unresolved_issues":{"items":{"maxLength":4000,"minLength":1,"type":"string"},"title":"Unresolved Issues","type":"array"}},"required":["id","role","objective","plan_revision","state","created_at","deadline_at","findings","uncertainty","recommended_actions","unresolved_issues"],"title":"RunAssignmentView","type":"object"};
 const schema194 = {"additionalProperties":false,"properties":{"schema_version":{"const":"1.0","default":"1.0","title":"Schema Version","type":"string"},"id":{"maxLength":160,"minLength":1,"title":"Id","type":"string"},"project_id":{"maxLength":160,"minLength":1,"title":"Project Id","type":"string"},"created_at":{"format":"date-time","title":"Created At","type":"string"},"contract":{"const":"research_question","default":"research_question","title":"Contract","type":"string"},"run_id":{"maxLength":160,"minLength":1,"title":"Run Id","type":"string"},"revision":{"maximum":9007199254740991,"minimum":1,"title":"Revision","type":"integer"},"run_revision":{"maximum":9007199254740991,"minimum":1,"title":"Run Revision","type":"integer"},"questions":{"items":{"$ref":"#/$defs/MaterialQuestion"},"maxItems":20,"minItems":1,"title":"Questions","type":"array"},"status":{"enum":["open","answered","superseded","expired","cancelled"],"title":"Status","type":"string"},"expires_at":{"anyOf":[{"format":"date-time","type":"string"},{"type":"null"}],"default":null,"title":"Expires At"},"answer_message_id":{"anyOf":[{"maxLength":160,"minLength":1,"type":"string"},{"type":"null"}],"default":null,"title":"Answer Message Id"}},"required":["schema_version","id","project_id","created_at","contract","run_id","revision","run_revision","questions","status","expires_at","answer_message_id"],"title":"ResearchQuestion","type":"object"};
 const schema195 = {"additionalProperties":false,"properties":{"id":{"maxLength":160,"minLength":1,"title":"Id","type":"string"},"field":{"maxLength":160,"minLength":1,"title":"Field","type":"string"},"prompt":{"maxLength":4000,"minLength":1,"title":"Prompt","type":"string"},"blocked_step_ids":{"items":{"maxLength":160,"minLength":1,"type":"string"},"minItems":1,"title":"Blocked Step Ids","type":"array"},"options":{"items":{"$ref":"#/$defs/QuestionOption"},"title":"Options","type":"array"},"evidence":{"items":{"discriminator":{"mapping":{"available":"#/$defs/AvailableEvidenceReference","unavailable":"#/$defs/UnavailableEvidenceReference"},"propertyName":"availability"},"oneOf":[{"$ref":"#/$defs/AvailableEvidenceReference"},{"$ref":"#/$defs/UnavailableEvidenceReference"}]},"title":"Evidence","type":"array"}},"required":["id","field","prompt","blocked_step_ids","options","evidence"],"title":"MaterialQuestion","type":"object"};
 const schema196 = {"additionalProperties":false,"properties":{"id":{"maxLength":160,"minLength":1,"title":"Id","type":"string"},"label":{"maxLength":4000,"minLength":1,"title":"Label","type":"string"},"consequence":{"maxLength":4000,"minLength":1,"title":"Consequence","type":"string"}},"required":["id","label","consequence"],"title":"QuestionOption","type":"object"};
@@ -44148,14 +44148,14 @@ evaluated0.items = undefined;
 if(errors === 0){
 if(data && typeof data == "object" && !Array.isArray(data)){
 let missing0;
-if((((((((data.run === undefined) && (missing0 = "run")) || ((data.plan === undefined) && (missing0 = "plan"))) || ((data.questions === undefined) && (missing0 = "questions"))) || ((data.control_effect === undefined) && (missing0 = "control_effect"))) || ((data.earlier_plans === undefined) && (missing0 = "earlier_plans"))) || ((data.actions === undefined) && (missing0 = "actions"))) || ((data.assignments === undefined) && (missing0 = "assignments"))){
+if(((((((((data.run === undefined) && (missing0 = "run")) || ((data.plan === undefined) && (missing0 = "plan"))) || ((data.questions === undefined) && (missing0 = "questions"))) || ((data.control_effect === undefined) && (missing0 = "control_effect"))) || ((data.earlier_plans === undefined) && (missing0 = "earlier_plans"))) || ((data.actions === undefined) && (missing0 = "actions"))) || ((data.assignments === undefined) && (missing0 = "assignments"))) || ((data.answer === undefined) && (missing0 = "answer"))){
 validate233.errors = [{instancePath,schemaPath:"#/required",keyword:"required",params:{missingProperty: missing0},message:"must have required property '"+missing0+"'"}];
 return false;
 }
 else {
 const _errs1 = errors;
 for(const key0 in data){
-if(!(((((((key0 === "run") || (key0 === "plan")) || (key0 === "questions")) || (key0 === "control_effect")) || (key0 === "earlier_plans")) || (key0 === "actions")) || (key0 === "assignments"))){
+if(!((((((((key0 === "run") || (key0 === "plan")) || (key0 === "questions")) || (key0 === "control_effect")) || (key0 === "earlier_plans")) || (key0 === "actions")) || (key0 === "assignments")) || (key0 === "answer"))){
 validate233.errors = [{instancePath,schemaPath:"#/additionalProperties",keyword:"additionalProperties",params:{additionalProperty: key0},message:"must NOT have additional properties"}];
 return false;
 break;
@@ -44779,14 +44779,14 @@ const _errs55 = errors;
 if(errors === _errs55){
 if(data19 && typeof data19 == "object" && !Array.isArray(data19)){
 let missing2;
-if((((((((data19.id === undefined) && (missing2 = "id")) || ((data19.role === undefined) && (missing2 = "role"))) || ((data19.objective === undefined) && (missing2 = "objective"))) || ((data19.plan_revision === undefined) && (missing2 = "plan_revision"))) || ((data19.state === undefined) && (missing2 = "state"))) || ((data19.created_at === undefined) && (missing2 = "created_at"))) || ((data19.deadline_at === undefined) && (missing2 = "deadline_at"))){
+if((((((((((((data19.id === undefined) && (missing2 = "id")) || ((data19.role === undefined) && (missing2 = "role"))) || ((data19.objective === undefined) && (missing2 = "objective"))) || ((data19.plan_revision === undefined) && (missing2 = "plan_revision"))) || ((data19.state === undefined) && (missing2 = "state"))) || ((data19.created_at === undefined) && (missing2 = "created_at"))) || ((data19.deadline_at === undefined) && (missing2 = "deadline_at"))) || ((data19.findings === undefined) && (missing2 = "findings"))) || ((data19.uncertainty === undefined) && (missing2 = "uncertainty"))) || ((data19.recommended_actions === undefined) && (missing2 = "recommended_actions"))) || ((data19.unresolved_issues === undefined) && (missing2 = "unresolved_issues"))){
 validate233.errors = [{instancePath:instancePath+"/assignments/" + i4,schemaPath:"#/$defs/RunAssignmentView/required",keyword:"required",params:{missingProperty: missing2},message:"must have required property '"+missing2+"'"}];
 return false;
 }
 else {
 const _errs57 = errors;
 for(const key2 in data19){
-if(!(((((((key2 === "id") || (key2 === "role")) || (key2 === "objective")) || (key2 === "plan_revision")) || (key2 === "state")) || (key2 === "created_at")) || (key2 === "deadline_at"))){
+if(!(func17.call(schema199.properties, key2))){
 validate233.errors = [{instancePath:instancePath+"/assignments/" + i4,schemaPath:"#/$defs/RunAssignmentView/additionalProperties",keyword:"additionalProperties",params:{additionalProperty: key2},message:"must NOT have additional properties"}];
 return false;
 break;
@@ -44953,6 +44953,231 @@ var valid13 = _errs70 === errors;
 else {
 var valid13 = true;
 }
+if(valid13){
+if(data19.findings !== undefined){
+let data27 = data19.findings;
+const _errs72 = errors;
+if(errors === _errs72){
+if(Array.isArray(data27)){
+var valid14 = true;
+const len5 = data27.length;
+for(let i5=0; i5<len5; i5++){
+let data28 = data27[i5];
+const _errs74 = errors;
+if(errors === _errs74){
+if(typeof data28 === "string"){
+if(func1(data28) > 4000){
+validate233.errors = [{instancePath:instancePath+"/assignments/" + i4+"/findings/" + i5,schemaPath:"#/$defs/RunAssignmentView/properties/findings/items/maxLength",keyword:"maxLength",params:{limit: 4000},message:"must NOT have more than 4000 characters"}];
+return false;
+}
+else {
+if(func1(data28) < 1){
+validate233.errors = [{instancePath:instancePath+"/assignments/" + i4+"/findings/" + i5,schemaPath:"#/$defs/RunAssignmentView/properties/findings/items/minLength",keyword:"minLength",params:{limit: 1},message:"must NOT have fewer than 1 characters"}];
+return false;
+}
+}
+}
+else {
+validate233.errors = [{instancePath:instancePath+"/assignments/" + i4+"/findings/" + i5,schemaPath:"#/$defs/RunAssignmentView/properties/findings/items/type",keyword:"type",params:{type: "string"},message:"must be string"}];
+return false;
+}
+}
+var valid14 = _errs74 === errors;
+if(!valid14){
+break;
+}
+}
+}
+else {
+validate233.errors = [{instancePath:instancePath+"/assignments/" + i4+"/findings",schemaPath:"#/$defs/RunAssignmentView/properties/findings/type",keyword:"type",params:{type: "array"},message:"must be array"}];
+return false;
+}
+}
+var valid13 = _errs72 === errors;
+}
+else {
+var valid13 = true;
+}
+if(valid13){
+if(data19.uncertainty !== undefined){
+let data29 = data19.uncertainty;
+const _errs76 = errors;
+const _errs77 = errors;
+let valid15 = false;
+const _errs78 = errors;
+if(errors === _errs78){
+if(typeof data29 === "string"){
+if(func1(data29) > 4000){
+const err16 = {instancePath:instancePath+"/assignments/" + i4+"/uncertainty",schemaPath:"#/$defs/RunAssignmentView/properties/uncertainty/anyOf/0/maxLength",keyword:"maxLength",params:{limit: 4000},message:"must NOT have more than 4000 characters"};
+if(vErrors === null){
+vErrors = [err16];
+}
+else {
+vErrors.push(err16);
+}
+errors++;
+}
+else {
+if(func1(data29) < 1){
+const err17 = {instancePath:instancePath+"/assignments/" + i4+"/uncertainty",schemaPath:"#/$defs/RunAssignmentView/properties/uncertainty/anyOf/0/minLength",keyword:"minLength",params:{limit: 1},message:"must NOT have fewer than 1 characters"};
+if(vErrors === null){
+vErrors = [err17];
+}
+else {
+vErrors.push(err17);
+}
+errors++;
+}
+}
+}
+else {
+const err18 = {instancePath:instancePath+"/assignments/" + i4+"/uncertainty",schemaPath:"#/$defs/RunAssignmentView/properties/uncertainty/anyOf/0/type",keyword:"type",params:{type: "string"},message:"must be string"};
+if(vErrors === null){
+vErrors = [err18];
+}
+else {
+vErrors.push(err18);
+}
+errors++;
+}
+}
+var _valid4 = _errs78 === errors;
+valid15 = valid15 || _valid4;
+const _errs80 = errors;
+if(data29 !== null){
+const err19 = {instancePath:instancePath+"/assignments/" + i4+"/uncertainty",schemaPath:"#/$defs/RunAssignmentView/properties/uncertainty/anyOf/1/type",keyword:"type",params:{type: "null"},message:"must be null"};
+if(vErrors === null){
+vErrors = [err19];
+}
+else {
+vErrors.push(err19);
+}
+errors++;
+}
+var _valid4 = _errs80 === errors;
+valid15 = valid15 || _valid4;
+if(!valid15){
+const err20 = {instancePath:instancePath+"/assignments/" + i4+"/uncertainty",schemaPath:"#/$defs/RunAssignmentView/properties/uncertainty/anyOf",keyword:"anyOf",params:{},message:"must match a schema in anyOf"};
+if(vErrors === null){
+vErrors = [err20];
+}
+else {
+vErrors.push(err20);
+}
+errors++;
+validate233.errors = vErrors;
+return false;
+}
+else {
+errors = _errs77;
+if(vErrors !== null){
+if(_errs77){
+vErrors.length = _errs77;
+}
+else {
+vErrors = null;
+}
+}
+}
+var valid13 = _errs76 === errors;
+}
+else {
+var valid13 = true;
+}
+if(valid13){
+if(data19.recommended_actions !== undefined){
+let data30 = data19.recommended_actions;
+const _errs82 = errors;
+if(errors === _errs82){
+if(Array.isArray(data30)){
+var valid16 = true;
+const len6 = data30.length;
+for(let i6=0; i6<len6; i6++){
+let data31 = data30[i6];
+const _errs84 = errors;
+if(errors === _errs84){
+if(typeof data31 === "string"){
+if(func1(data31) > 4000){
+validate233.errors = [{instancePath:instancePath+"/assignments/" + i4+"/recommended_actions/" + i6,schemaPath:"#/$defs/RunAssignmentView/properties/recommended_actions/items/maxLength",keyword:"maxLength",params:{limit: 4000},message:"must NOT have more than 4000 characters"}];
+return false;
+}
+else {
+if(func1(data31) < 1){
+validate233.errors = [{instancePath:instancePath+"/assignments/" + i4+"/recommended_actions/" + i6,schemaPath:"#/$defs/RunAssignmentView/properties/recommended_actions/items/minLength",keyword:"minLength",params:{limit: 1},message:"must NOT have fewer than 1 characters"}];
+return false;
+}
+}
+}
+else {
+validate233.errors = [{instancePath:instancePath+"/assignments/" + i4+"/recommended_actions/" + i6,schemaPath:"#/$defs/RunAssignmentView/properties/recommended_actions/items/type",keyword:"type",params:{type: "string"},message:"must be string"}];
+return false;
+}
+}
+var valid16 = _errs84 === errors;
+if(!valid16){
+break;
+}
+}
+}
+else {
+validate233.errors = [{instancePath:instancePath+"/assignments/" + i4+"/recommended_actions",schemaPath:"#/$defs/RunAssignmentView/properties/recommended_actions/type",keyword:"type",params:{type: "array"},message:"must be array"}];
+return false;
+}
+}
+var valid13 = _errs82 === errors;
+}
+else {
+var valid13 = true;
+}
+if(valid13){
+if(data19.unresolved_issues !== undefined){
+let data32 = data19.unresolved_issues;
+const _errs86 = errors;
+if(errors === _errs86){
+if(Array.isArray(data32)){
+var valid17 = true;
+const len7 = data32.length;
+for(let i7=0; i7<len7; i7++){
+let data33 = data32[i7];
+const _errs88 = errors;
+if(errors === _errs88){
+if(typeof data33 === "string"){
+if(func1(data33) > 4000){
+validate233.errors = [{instancePath:instancePath+"/assignments/" + i4+"/unresolved_issues/" + i7,schemaPath:"#/$defs/RunAssignmentView/properties/unresolved_issues/items/maxLength",keyword:"maxLength",params:{limit: 4000},message:"must NOT have more than 4000 characters"}];
+return false;
+}
+else {
+if(func1(data33) < 1){
+validate233.errors = [{instancePath:instancePath+"/assignments/" + i4+"/unresolved_issues/" + i7,schemaPath:"#/$defs/RunAssignmentView/properties/unresolved_issues/items/minLength",keyword:"minLength",params:{limit: 1},message:"must NOT have fewer than 1 characters"}];
+return false;
+}
+}
+}
+else {
+validate233.errors = [{instancePath:instancePath+"/assignments/" + i4+"/unresolved_issues/" + i7,schemaPath:"#/$defs/RunAssignmentView/properties/unresolved_issues/items/type",keyword:"type",params:{type: "string"},message:"must be string"}];
+return false;
+}
+}
+var valid17 = _errs88 === errors;
+if(!valid17){
+break;
+}
+}
+}
+else {
+validate233.errors = [{instancePath:instancePath+"/assignments/" + i4+"/unresolved_issues",schemaPath:"#/$defs/RunAssignmentView/properties/unresolved_issues/type",keyword:"type",params:{type: "array"},message:"must be array"}];
+return false;
+}
+}
+var valid13 = _errs86 === errors;
+}
+else {
+var valid13 = true;
+}
+}
+}
+}
+}
 }
 }
 }
@@ -44982,6 +45207,93 @@ var valid0 = _errs52 === errors;
 }
 else {
 var valid0 = true;
+}
+if(valid0){
+if(data.answer !== undefined){
+let data34 = data.answer;
+const _errs90 = errors;
+const _errs91 = errors;
+let valid18 = false;
+const _errs92 = errors;
+if(errors === _errs92){
+if(typeof data34 === "string"){
+if(func1(data34) > 4000){
+const err21 = {instancePath:instancePath+"/answer",schemaPath:"#/properties/answer/anyOf/0/maxLength",keyword:"maxLength",params:{limit: 4000},message:"must NOT have more than 4000 characters"};
+if(vErrors === null){
+vErrors = [err21];
+}
+else {
+vErrors.push(err21);
+}
+errors++;
+}
+else {
+if(func1(data34) < 1){
+const err22 = {instancePath:instancePath+"/answer",schemaPath:"#/properties/answer/anyOf/0/minLength",keyword:"minLength",params:{limit: 1},message:"must NOT have fewer than 1 characters"};
+if(vErrors === null){
+vErrors = [err22];
+}
+else {
+vErrors.push(err22);
+}
+errors++;
+}
+}
+}
+else {
+const err23 = {instancePath:instancePath+"/answer",schemaPath:"#/properties/answer/anyOf/0/type",keyword:"type",params:{type: "string"},message:"must be string"};
+if(vErrors === null){
+vErrors = [err23];
+}
+else {
+vErrors.push(err23);
+}
+errors++;
+}
+}
+var _valid5 = _errs92 === errors;
+valid18 = valid18 || _valid5;
+const _errs94 = errors;
+if(data34 !== null){
+const err24 = {instancePath:instancePath+"/answer",schemaPath:"#/properties/answer/anyOf/1/type",keyword:"type",params:{type: "null"},message:"must be null"};
+if(vErrors === null){
+vErrors = [err24];
+}
+else {
+vErrors.push(err24);
+}
+errors++;
+}
+var _valid5 = _errs94 === errors;
+valid18 = valid18 || _valid5;
+if(!valid18){
+const err25 = {instancePath:instancePath+"/answer",schemaPath:"#/properties/answer/anyOf",keyword:"anyOf",params:{},message:"must match a schema in anyOf"};
+if(vErrors === null){
+vErrors = [err25];
+}
+else {
+vErrors.push(err25);
+}
+errors++;
+validate233.errors = vErrors;
+return false;
+}
+else {
+errors = _errs91;
+if(vErrors !== null){
+if(_errs91){
+vErrors.length = _errs91;
+}
+else {
+vErrors = null;
+}
+}
+}
+var valid0 = _errs90 === errors;
+}
+else {
+var valid0 = true;
+}
 }
 }
 }

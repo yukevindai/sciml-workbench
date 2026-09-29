@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { CheckCircle2, ChevronRight, Circle, CircleAlert, CircleDot, ExternalLink, Loader2, Pause, Play, Sparkles, Square, User } from 'lucide-react';
 import { api, ApiError } from '../lib/api';
-import { PHASE, RESULT_LABEL, STEP_LABEL, TOOL_LABEL } from '../lib/ask';
+import { PHASE, RESULT_LABEL, STEP_LABEL } from '../lib/ask';
 import { parseResearchRun } from '../lib/decode';
 import type { Workbench } from '../lib/context';
 import type { ResearchRun } from '../lib/generated/http';
@@ -13,7 +13,7 @@ import { useRunFeed } from '../lib/run-feed';
 import { awaitingPlanReview, isTerminalRun } from '../lib/runs';
 import { controlsFor, RunQuestions, type Control } from './run-controls';
 import { ResearchRunPanel } from './research-run';
-import { Disclosure } from './ui';
+import { AgentActivity } from './agent-activity';
 
 const STEP_ICON = { done: CheckCircle2, active: CircleDot, todo: Circle, problem: CircleAlert } as const;
 function stepTone(status: string): keyof typeof STEP_ICON {
@@ -88,8 +88,6 @@ export function AskRun({ wb, run: listed, runs, onChanged, onSelect }: {
   const working = phase.tone === 'working';
   const controls = controlsFor(run);
   const results = run.result_artifact_ids.map(id => wb.artifacts.find(value => value.id === id) ?? { id, kind: undefined });
-  const actions = new Map((detail?.actions ?? []).map(action => [action.id, action]));
-  const activity = events.filter(event => event.summary || event.action_id).slice(-12);
   // A CSV upload is both a file and its dataset, so count files when there are any.
   const files = run.inputs.material_ids.length || run.inputs.artifact_ids.length;
 
@@ -129,6 +127,11 @@ export function AskRun({ wb, run: listed, runs, onChanged, onSelect }: {
 
           {detail && <div className="reply-questions"><RunQuestions wb={wb} run={run} detail={detail} onUpdated={updated} /></div>}
 
+          {detail?.answer && <section className="reply-section" aria-label="Answer">
+            <p className="reply-answer">{detail.answer}</p>
+            <p className="field-hint">General knowledge ? no project analysis or source search performed</p>
+          </section>}
+
           {plan && <section className="reply-section" aria-labelledby={`plan-${run.id}`}>
             <h3 id={`plan-${run.id}`}>The plan</h3>
             {plan.rationale_summary && <p className="reply-text">{plan.rationale_summary}</p>}
@@ -167,16 +170,7 @@ export function AskRun({ wb, run: listed, runs, onChanged, onSelect }: {
             })}</ul>
           </section>}
 
-          {activity.length > 0 && <Disclosure summary={`What the assistant did (${activity.length} step${activity.length === 1 ? '' : 's'})`}>
-            <ol className="activity">{activity.map(event => {
-              const action = event.action_id ? actions.get(event.action_id) : undefined;
-              return <li key={event.sequence}>
-                <strong>{action ? TOOL_LABEL[action.tool] ?? action.tool.replaceAll('_', ' ') : 'Update'}</strong>
-                {event.summary && <span> · {event.summary}</span>}
-                <span className="activity-time">{new Date(event.created_at).toLocaleTimeString()}</span>
-              </li>;
-            })}</ol>
-          </Disclosure>}
+          <AgentActivity run={run} detail={detail} events={events} />
 
           {(controls.length > 0 || controlError) && <div className="reply-controls">
             {controls.includes('pause') && <button type="button" className="button button--sm button--secondary" disabled={Boolean(pending)} onClick={() => void control('pause')}>

@@ -12,6 +12,7 @@ import { chooseRun, loadRunHistory, rememberedRun, rememberRun } from '../lib/ru
 import { AskComposer, type Draft } from '../components/ask-composer';
 import { AskRun } from '../components/ask-run';
 import { Alert } from '../components/ui';
+import { WorkspacePicker } from '../components/workspace-picker';
 
 /* A message that must survive the remount when a first request creates its project. */
 let carried: { projectId: string; error: string; prompt: string } | null = null;
@@ -123,12 +124,10 @@ export function AskView({ wb }: { wb: Workbench }) {
         <button type="button" className="button button--ghost button--sm" onClick={() => select('')}>
           <ArrowLeft size={15} aria-hidden="true" /> New request
         </button>
-        {runs.length > 1 && <label className="ask-history">
-          <span className="visually-hidden">Earlier requests</span>
-          <select className="select" value={current.id} onChange={event => select(event.target.value)}>
-            {runs.map(run => <option key={run.id} value={run.id}>{PHASE[run.state].label} · {run.objective.slice(0, 70)}{run.objective.length > 70 ? '…' : ''}</option>)}
-          </select>
-        </label>}
+        {runs.length > 1 && <div className="ask-history">
+          <WorkspacePicker label="Earlier requests" value={current.id} onChange={select}
+            options={runs.map(run => ({ value: run.id, label: run.objective, detail: `${PHASE[run.state].label} · ${when(run.created_at)}` }))} />
+        </div>}
       </div>
       <AskRun key={current.id} wb={wb} run={current} runs={runs} onChanged={changed} onSelect={select} />
       <div className="ask-dock">
@@ -142,7 +141,6 @@ export function AskView({ wb }: { wb: Workbench }) {
   return <div className="ask">
     <div className="ask-hero">
       <h1 className="ask-title">What would you like to find out?</h1>
-      <p className="ask-lede">Add a spreadsheet or a paper and ask in your own words. The assistant plans the work, runs it and shows you every step.</p>
     </div>
     {notice}
     {error && <Alert variant="error" role="alert">{error}</Alert>}

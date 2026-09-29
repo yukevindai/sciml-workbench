@@ -114,9 +114,8 @@ test('saved policy, input authority and one Run research click start Autopilot w
   const current = page.locator(`#run-${ids.completed_run}`);
   await expect(current.getByText('completed', { exact: true }).first()).toBeVisible();
   await expect(current.getByText('Run the declared ChemData audit checks')).toBeVisible();
-  const activity = current.getByRole('list', { name: 'Run events' });
-  await expect(activity.getByRole('listitem')).toHaveCount(events[ids.completed_run].length);
-  await expect(activity.getByRole('listitem').last()).toContainText('Result published');
+  await current.getByText('Research team', { exact: true }).click();
+  await expect(current.locator('.agent-tools')).toContainText('Checked the data for problems');
   await expect(current.getByRole('link', { name: `Open Audit ${ids.audit.slice(0, 8)}` })).toHaveAttribute('href', new RegExp(`audit=${ids.audit}`));
   await expect(current.getByRole('link', { name: new RegExp(`audit job ${ids.job.slice(0, 8)}`) })).toHaveAttribute('href', `#job-${ids.job}`);
   await expect(current.getByRole('button', { name: /Accept plan/ })).toHaveCount(0);
@@ -151,8 +150,8 @@ test('a running session survives reload without resubmission, and a lost respons
   // After a reload the remembered run is read again from history; nothing is posted.
   s.runs = runs;
   await page.reload();
-  await expect(page.getByLabel('Research run')).toHaveValue(ids.completed_run);
-  await expect(page.locator(`#run-${ids.completed_run}`).getByRole('list', { name: 'Run events' }).getByRole('listitem')).toHaveCount(events[ids.completed_run].length);
+  await expect(page.getByLabel('Research run')).toHaveAttribute('value', ids.completed_run);
+  await expect(page.locator(`#run-${ids.completed_run}`).getByText('Research team', { exact: true })).toBeVisible();
   expect(s.posts).toHaveLength(2);
 });
 
@@ -161,14 +160,14 @@ test('an unfinished run is found from server history in a fresh browser and poll
   await serve(page, s);
   await page.goto('/research');
   // No remembered run in this browser: the unfinished review run is chosen over the finished one.
-  await expect(page.getByLabel('Research run')).toHaveValue(ids.review_run);
+  await expect(page.getByLabel('Research run')).toHaveAttribute('value', ids.review_run);
   const current = page.locator(`#run-${ids.review_run}`);
   await expect(current.getByText('waiting for input', { exact: true }).first()).toBeVisible();
   await expect.poll(() => s.reads.filter(read => read.startsWith(`${base}/agent-runs/${ids.review_run}/events`)).length, { timeout: 10_000 }).toBeGreaterThan(1);
   const cursors = s.reads.filter(read => read.includes(`${ids.review_run}/events`)).map(read => Number(new URLSearchParams(read.split('?')[1]).get('after')));
   expect(cursors[0]).toBe(0);
   expect(cursors.at(-1)).toBe(events[ids.review_run].at(-1)!.sequence);
-  await expect(current.getByRole('list', { name: 'Run events' }).getByRole('listitem')).toHaveCount(events[ids.review_run].length);
+  await expect(current.getByText('Research team', { exact: true })).toBeVisible();
 });
 
 test('optional Review plan sends the mode and accepts exactly the reviewed revision', async ({ page }) => {

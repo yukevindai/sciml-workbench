@@ -20,12 +20,14 @@ class ScriptedProvider:
     def __init__(self, responses):
         self.responses = iter(responses)
         self.contexts = []
+        self.requests = []
 
     def resolved_model(self, model):
         return model
 
     def complete(self, **kwargs):
         self.contexts.append(kwargs['context'])
+        self.requests.append(kwargs)
         value = next(self.responses)
         if isinstance(value, Exception):
             raise value
@@ -41,13 +43,14 @@ def setup(registry, responses):
         for cls in (ServerPolicyRow, ProjectPolicyRow):
             row = s.scalar(select(cls))
             values = {'revision': 2, 'payload': {**row.payload, 'revision': 2,
-                'exposure': 'raw_project_content', 'content_classes': ['schema', 'aggregates', 'raw']}}
+                'exposure': 'raw_project_content', 'content_classes': ['schema', 'aggregates', 'raw'],
+                'share_operator_messages': True}}
             if cls is ProjectPolicyRow:
                 values['project_id'] = 'p'
             s.add(cls(**values))
         row = s.get(RunRow, ctx.run_id)
         row.policy = {**row.policy, 'exposure': 'raw_project_content',
-                      'content_classes': ['schema', 'aggregates', 'raw']}
+                      'content_classes': ['schema', 'aggregates', 'raw'], 'share_operator_messages': True}
     provider = ScriptedProvider(responses)
     bound = ModelBound(model='model', revision='fixture', source_reference='fixture',
         max_request_bytes=64000, input_tokens=100, max_output_tokens=1024, max_active_seconds=5)
@@ -86,6 +89,53 @@ def test_plan_precedes_real_submission_and_reconciles_failure(registry):
     with tool.db.session() as s:
         assert s.scalar(select(ActionRow)).state == 'failed'
         assert len(s.scalars(select(JobRow)).all()) == 1
+
+
+def test_general_question_uses_one_model_call_and_publishes_answer(registry):
+    from workbench.agent_db import EventRow, AssignmentRow
+    from workbench.api import create_app
+    from fastapi.testclient import TestClient
+    tool, ctx, _, _ = registry
+    with tool.db.session.begin() as s:
+        row = s.get(RunRow, ctx.run_id)
+        tool.runs.save(row, {**row.payload, 'objective': 'Can graphene be used to make socks?',
+            'inputs': {'artifact_ids': [], 'material_ids': [], 'conversation_id': None, 'message_cutoff': None}})
+    answer = 'Graphene can be incorporated into textile coatings. Durability and comfort depend on the material and construction.'
+    step, scheduler, saver, provider = setup(registry, [{'kind': 'answer', 'summary': answer}])
+    assert advance(scheduler, saver, step) == 'queued'
+    assert advance(scheduler, saver, step) == 'completed'
+    assert len(provider.contexts) == 1
+    assert provider.requests[0]['tools'] == []
+    assert '"title": "OpeningDecision"' in provider.contexts[0][0].text
+    assert '"title": "Claim"' not in provider.contexts[0][0].text
+    with tool.db.session() as s:
+        assert not s.scalar(select(ActionRow))
+        assert not s.scalar(select(AssignmentRow))
+        assert not s.scalar(select(JobRow))
+        events = list(s.scalars(select(EventRow).where(EventRow.run_id == ctx.run_id).order_by(EventRow.sequence)))
+        assert events[-1].payload['summary'] == answer
+        assert tool.runs.projected_payload(s, s.get(RunRow, ctx.run_id))['usage']['model_requests'] == 1
+    with TestClient(create_app(tool.settings)) as client:
+        response = client.get(f'/api/v1/projects/p/agent-runs/{ctx.run_id}',
+            headers={'Authorization': 'Bearer ' + 'a' * 48})
+        assert response.status_code == 200
+        assert response.json()['answer'] == answer
+
+
+def test_attached_inputs_cannot_bypass_scientific_work_with_direct_answer(registry):
+    step, scheduler, saver, provider = setup(registry, [{'kind': 'answer', 'summary': 'An unchecked result'}])
+    assert advance(scheduler, saver, step) == 'waiting_for_input'
+    assert scheduler.claim('next') is None
+
+
+def test_review_plan_request_cannot_take_direct_answer_path(registry):
+    tool, ctx, _, _ = registry
+    with tool.db.session.begin() as s:
+        row = s.get(RunRow, ctx.run_id)
+        tool.runs.save(row, {**row.payload, 'mode': 'review_plan',
+            'inputs': {'artifact_ids': [], 'material_ids': [], 'conversation_id': None, 'message_cutoff': None}})
+    step, scheduler, saver, provider = setup(registry, [{'kind': 'answer', 'summary': 'An unchecked result'}])
+    assert advance(scheduler, saver, step) == 'waiting_for_input'
 
 
 def test_lost_response_does_not_repeat_provider(registry):
@@ -178,6 +228,18 @@ def test_delegation_is_conditional_scoped_and_charged(registry):
         allocations = list(s.scalars(select(ReservationRow).where(ReservationRow.assignment_id == assignment.id)))
         assert len(allocations) == 2
         assert {r.payload['state'] for r in allocations} == {'released', 'settled'}
+    from workbench.api import create_app
+    from fastapi.testclient import TestClient
+    with TestClient(create_app(tool.settings)) as client:
+        response = client.get(f'/api/v1/projects/p/agent-runs/{ctx.run_id}',
+            headers={'Authorization': 'Bearer ' + 'a' * 48})
+        assert response.status_code == 200
+        projected = response.json()['assignments'][0]
+        assert projected['uncertainty'] == 'Only aggregate schema was inspected'
+        assert projected['findings'] == []
+        assert projected['recommended_actions'] == []
+        assert 'source_classes' not in projected
+        assert 'budget_allocation_id' not in projected
 
 
 def test_terminal_continuation_gets_new_identity(registry):

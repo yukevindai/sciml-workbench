@@ -129,11 +129,11 @@ type Phase = { label: string; tone: 'working' | 'waiting' | 'done' | 'problem' |
 
 export const PHASE: Record<ResearchRun['state'], Phase> = {
   queued: { label: 'Getting started', tone: 'working', detail: 'Your request is in line and will start in a moment.' },
-  running: { label: 'Working on it', tone: 'working', detail: 'The assistant is planning and running the steps.' },
+  running: { label: 'Working on it', tone: 'working', detail: 'Your research team is working on the request.' },
   waiting_for_job: { label: 'Crunching numbers', tone: 'working', detail: 'A calculation is running. This can take a few minutes.' },
   waiting_for_input: { label: 'Needs your input', tone: 'waiting', detail: 'The assistant has a question or a plan for you to look at.' },
   paused: { label: 'Paused', tone: 'waiting', detail: 'Nothing new will start until you resume.' },
-  completed: { label: 'Done', tone: 'done', detail: 'Here is what the assistant did. Open any result to see the details.' },
+  completed: { label: 'Done', tone: 'done', detail: 'Your response and saved results are ready.' },
   partially_completed: { label: 'Partly done', tone: 'problem', detail: 'Some steps finished, but not everything you asked for.' },
   failed: { label: 'Something went wrong', tone: 'problem', detail: 'The request stopped early. Anything it finished is still listed below.' },
   cancelled: { label: 'Stopped', tone: 'stopped', detail: 'You stopped this request. Finished results are still available.' },

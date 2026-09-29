@@ -1,3 +1,4 @@
+import { selectPicker } from './picker';
 import { expect, test, type Page, type Route } from '@playwright/test';
 import { jobPage } from './job-page';
 import path from 'node:path';
@@ -46,7 +47,7 @@ test('project validation retains the name and research question through a reject
   await expect(page.getByLabel('Project name', { exact: true })).toHaveValue('My study');
   await expect(page.getByLabel('Research question', { exact: true })).toHaveValue('My question');
   await page.getByRole('button', { name: 'Create project', exact: true }).click();
-  await expect(page.getByLabel('Active project', { exact: true })).toHaveValue('created');
+  await expect(page.getByLabel('Active project', { exact: true })).toHaveAttribute('value', 'created');
   await expect(page.getByRole('link', { name: 'Attach a source PDF', exact: true })).toBeVisible();
 });
 
@@ -90,7 +91,7 @@ test('a demo filename is insufficient and project changes clear attachment decla
   await page.getByLabel('CSV file').setInputFiles(path.resolve(__dirname, '../../examples/demo.csv'));
   await demo.click();
   await expect(page.getByLabel('Kind of data', { exact: true })).toHaveValue('synthetic');
-  await page.getByLabel('Active project', { exact: true }).selectOption(other.id);
+  await selectPicker(page, 'Active project', other.id);
   await expect(page.getByLabel('Citation', { exact: true })).toHaveValue('');
   expect(await page.getByLabel('CSV file').evaluate((input: HTMLInputElement) => input.files?.length)).toBe(0);
 });

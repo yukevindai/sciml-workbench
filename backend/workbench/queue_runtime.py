@@ -46,6 +46,20 @@ def has_work(settings):
         db.engine.dispose()
 
 
+def has_ready_work(settings):
+    """Do not impose the idle backoff on immediately runnable work."""
+    db = Database(settings.database_url)
+    try:
+        with db.session() as session:
+            if session.scalar(select(JobRow.id).where(JobRow.state == 'queued').limit(1)):
+                return True
+            agents = load_settings(AgentSettings)
+            return bool(agents.agents_enabled and session.scalar(select(RunRow.id).where(
+                RunRow.state == 'queued').limit(1)))
+    finally:
+        db.engine.dispose()
+
+
 async def consume(settings, payload, message_id):
     if not enabled(settings):
         return
@@ -65,5 +79,6 @@ async def consume(settings, payload, message_id):
     # Await durable continuation before acknowledgement. Redelivery after a
     # lost acknowledgement reuses this key; job claims prevent duplicate effects.
     key = hashlib.sha256(('next:' + message_id).encode()).hexdigest()
+    delay = 5 if following == 0 and not await run_in_threadpool(has_ready_work, settings) else 0
     await send(TOPIC, {'version': 1, 'phase': following}, retention=86400,
-               delay=5 if following == 0 else 0, idempotency_key=key)
+               delay=delay, idempotency_key=key)

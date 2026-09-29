@@ -428,7 +428,7 @@ class RunService:
         value['usage'] = BudgetService(self).snapshot(s, row.project_id, row.id).model_dump(mode='json')
         return value
 
-    def finish(self, s, pid, rid, expected_revision, *, state, artifact_ids, stop_reason=None):
+    def finish(self, s, pid, rid, expected_revision, *, state, artifact_ids, stop_reason=None, summary=None):
         """Trusted finalization commits validated references and its event atomically."""
         row = self.get(s, pid, rid, lock=True)
         self.assert_dispatch(s, row)
@@ -451,6 +451,6 @@ class RunService:
             result_artifact_ids=artifact_ids, control_revision=row.control_revision + 1)
         self.save(row, value)
         row.claim_token += 1
-        self.event(s, row, 'result_published', artifact_ids=artifact_ids)
+        self.event(s, row, 'result_published', artifact_ids=artifact_ids, summary=summary)
         s.flush()
         return row.payload

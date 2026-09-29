@@ -51,7 +51,7 @@ test('direct audit links choose the owning project and dataset and show real ups
   await workspace(page);
   await page.addInitScript(() => { localStorage.setItem('sciml-project', 'other-project'); localStorage.setItem('sciml-dataset:audit-project', 'dataset-b'); });
   await page.goto(`/dataset-audit?project=${project.id}&audit=${audit.id}#audit-${audit.id}`);
-  await expect(page.getByLabel('Active project', { exact: true })).toHaveValue(project.id);
+  await expect(page.getByLabel('Active project', { exact: true })).toHaveAttribute('value', project.id);
   await expect(page.getByLabel('Active dataset', { exact: true })).toHaveValue(dataset.id);
   const panel = page.locator(`#audit-${audit.id}`);
   await expect(panel).toBeFocused();
@@ -187,7 +187,7 @@ test('unavailable project and audit links do not silently select unrelated resul
   await workspace(page);
   await page.goto('/dataset-audit?project=missing&audit=agent-audit');
   await expect(page.getByRole('main').getByRole('alert')).toContainText('Requested project unavailable');
-  await expect(page.getByLabel('Active project', { exact: true })).toHaveValue('');
+  await expect(page.getByLabel('Active project', { exact: true })).toHaveAttribute('value', '');
   await page.goto(`/dataset-audit?project=${project.id}&audit=missing`);
   await expect(page.getByText('Requested audit unavailable', { exact: true })).toBeVisible();
   const response = await page.goto('/dataset-audit?audit=agent-audit');

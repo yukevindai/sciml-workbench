@@ -1011,6 +1011,47 @@
           "format": "date-time",
           "title": "Deadline At",
           "type": "string"
+        },
+        "findings": {
+          "items": {
+            "maxLength": 4000,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Findings",
+          "type": "array"
+        },
+        "uncertainty": {
+          "anyOf": [
+            {
+              "maxLength": 4000,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Uncertainty"
+        },
+        "recommended_actions": {
+          "items": {
+            "maxLength": 4000,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Recommended Actions",
+          "type": "array"
+        },
+        "unresolved_issues": {
+          "items": {
+            "maxLength": 4000,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Unresolved Issues",
+          "type": "array"
         }
       },
       "required": [
@@ -1266,6 +1307,20 @@
       },
       "title": "Assignments",
       "type": "array"
+    },
+    "answer": {
+      "anyOf": [
+        {
+          "maxLength": 4000,
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Answer"
     }
   },
   "required": [

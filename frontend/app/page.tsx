@@ -4,10 +4,11 @@ import {
   MessageSquareText, Paperclip, PauseCircle, ShieldCheck, SplitSquareHorizontal, Upload,
 } from 'lucide-react';
 import { ThemeToggle } from './components/theme-toggle';
+import { RotatingWord } from './components/rotating-word';
 
 export const metadata = {
-  title: 'SciML Workbench · Ask your data questions in plain words',
-  description: 'Upload a spreadsheet or a paper, ask a question in everyday language, and an AI assistant handles the analysis, testing and write-up for you, keeping a record of every step.',
+  title: 'SciML Workbench · Your private research team',
+  description: 'Your private research team. Experiments, evidence, review, writing.',
 };
 
 const STEPS = [
@@ -58,10 +59,9 @@ export default function Landing() {
         <section className="hero">
           <div className="hero-glow" aria-hidden="true" />
           <div className="hero-grid" aria-hidden="true" />
-          <h1 className="hero-title">Ask questions about your data.<br /><span className="hero-accent">Get answers you can verify.</span></h1>
+          <h1 className="hero-title">Ask questions about your data.<br /><span className="hero-accent">Get answers you can <RotatingWord /></span></h1>
           <p className="hero-lede">
-            Upload a spreadsheet or a paper and say what you want to know in everyday words.
-            The assistant examines your data, tests simple models and explains what it found, saving every step along the way.
+            Your private research team. Experiments, evidence, review, writing.
           </p>
           <div className="hero-cta">
             <Link href="/ask" className="button button--lg">Start asking <ArrowRight size={16} aria-hidden="true" /></Link>

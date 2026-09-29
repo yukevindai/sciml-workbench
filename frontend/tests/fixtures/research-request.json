@@ -344,7 +344,8 @@
           "error_code": null
         }
       ],
-      "assignments": []
+      "assignments": [],
+      "answer": null
     },
     "e47c5c46-5b80-4313-baa2-6c80fd4cd35a": {
       "run": {
@@ -457,7 +458,8 @@
       "control_effect": "No stop control is active.",
       "earlier_plans": [],
       "actions": [],
-      "assignments": []
+      "assignments": [],
+      "answer": null
     }
   },
   "events": {

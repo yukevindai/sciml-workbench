@@ -53,6 +53,25 @@ changing the original run or accounting.
 
 ## Scientific execution and clarification
 
+New Autopilot questions without attached inputs or conversation context can return
+a concise general-knowledge answer in one model request. The opening turn receives
+a smaller decision schema and no tool catalog. The coordinator may choose a plan
+instead when investigation is needed. Attached-input, continuation, amended, and
+Review plan requests cannot use the direct-answer path. Answers are checkpointed,
+credential-filtered and published atomically as a result event, exposed as
+`RunDetail.answer`. They are labeled as general knowledge, not reviewed scientific
+claims or project analysis. Normal policy, budget, revision and lease checks apply.
+
+The research team disclosure shows the orchestrator's approach, each specialist's
+assignment, advisory findings, uncertainty, open issues and recommendations, plus
+one row per tool attempt. Internal bookkeeping events and repeated summaries are
+filtered from the interface. Private model reasoning is neither requested nor
+exposed. Raw runtime state stays outside the operator projection.
+
+The hosted queue retains its five-second backoff while waiting for work, but
+continues immediately when a queued job or agent run is ready. This removes idle
+delay between proposal and execution without changing durable delivery or claims.
+
 One bounded proposal is checkpointed before its effect. Backend action keys,
 current policy, revisions and leases govern dispatch; provider IDs confer no
 authority. Every advance reconciles jobs and external receipts. Plans and

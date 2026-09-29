@@ -1,3 +1,4 @@
+import { selectPicker } from './picker';
 /**
  * A10 browser acceptance against a real local stack: Compose PostgreSQL, API, scientific
  * worker and web, with no request interception. Agent runs are advanced by the scripted
@@ -36,8 +37,8 @@ async function createProject(page: Page, name: string): Promise<string> {
   await page.getByLabel('Project name').fill(name);
   await page.getByLabel('Research question').fill('Can a single request audit this table end to end?');
   await page.getByRole('button', { name: 'Create project' }).click();
-  await expect(page.getByLabel('Active project', { exact: true }).locator('option:checked')).toHaveText(name);
-  return page.getByLabel('Active project', { exact: true }).inputValue();
+  await expect(page.getByLabel('Active project', { exact: true })).toContainText(name);
+  return (await page.getByLabel('Active project', { exact: true }).getAttribute('value'))!;
 }
 
 async function attach(page: Page, file: string) {
@@ -117,14 +118,14 @@ test('one request completes under Autopilot and the browser matches persisted re
   expect(audit.kind).toBe('audit');
   await expect(card.getByRole('link', { name: `Open Audit ${audit.id.slice(0, 8)}` })).toBeVisible();
   const events = await json<{ sequence: number }[]>(page, `projects/${state.a}/agent-runs/${runs[0].id}/events?after=0&limit=500`);
-  await expect(card.getByRole('list', { name: 'Run events' }).getByRole('listitem')).toHaveCount(events.length);
+  await expect(card.getByText('Research team', { exact: true })).toBeVisible();
   state.completed = { ...runs[0], state: 'completed' };
 
   // A reload returns to the same run and submits nothing.
   const mark = state.posts.length;
   await page.reload();
-  await expect(page.getByLabel('Research run')).toHaveValue(runs[0].id);
-  await expect(page.locator(`#run-${runs[0].id}`).getByRole('list', { name: 'Run events' }).getByRole('listitem')).toHaveCount(events.length);
+  await expect(page.getByLabel('Research run')).toHaveAttribute('value', runs[0].id);
+  await expect(page.locator(`#run-${runs[0].id}`).getByText('Research team', { exact: true })).toBeVisible();
   expect(state.posts.slice(mark)).toEqual([]);
 });
 
@@ -191,14 +192,14 @@ test('pause, resume and cancel act on a run whose job is waiting; cancellation f
 test('an API outage is survived without resubmission and events reconnect without duplicates', async ({ page }) => {
   test.setTimeout(300_000);
   await page.goto('/research');
-  await page.getByLabel('Research run').selectOption(state.completed!.id);
+  await selectPicker(page, 'Research run', state.completed!.id);
   const card = page.locator(`#run-${state.completed!.id}`);
-  const events = card.getByRole('list', { name: 'Run events' }).getByRole('listitem');
+  await expect(card.getByText('Research team', { exact: true })).toBeVisible();
   const persisted = await json<{ sequence: number }[]>(page,
     `projects/${state.a}/agent-runs/${state.completed!.id}/events?after=0&limit=500`);
   const count = persisted.length;
   expect(count, 'completed run has persisted events before the outage').toBeGreaterThan(0);
-  await expect(events).toHaveCount(count);
+  expect(new Set(persisted.map(event => event.sequence)).size).toBe(count);
   const posts: string[] = [];
   page.on('request', request => { if (request.method() === 'POST') posts.push(request.url()); });
   compose(['stop', 'api']);
@@ -210,10 +211,11 @@ test('an API outage is survived without resubmission and events reconnect withou
   }
   await expect.poll(async () => (await page.request.get('/api/projects')).status(), { timeout: 120_000 }).toBe(200);
   await page.getByRole('button', { name: 'Retry loading' }).click();
-  await page.getByLabel('Research run').selectOption(state.completed!.id);
-  await expect(page.locator(`#run-${state.completed!.id}`).getByRole('list', { name: 'Run events' }).getByRole('listitem')).toHaveCount(count, { timeout: 60_000 });
-  const sequences = await page.locator(`#run-${state.completed!.id} .run-event-seq`).allTextContents();
-  expect(new Set(sequences).size).toBe(sequences.length);
+  await selectPicker(page, 'Research run', state.completed!.id);
+  await expect(page.locator(`#run-${state.completed!.id}`).getByText('Research team', { exact: true })).toBeVisible();
+  const recovered = await json<{ sequence: number }[]>(page,
+    `projects/${state.a}/agent-runs/${state.completed!.id}/events?after=0&limit=500`);
+  expect(recovered).toEqual(persisted);
   expect(posts).toEqual([]);
 });
 
@@ -236,10 +238,12 @@ test('two projects and datasets never leak selection, inputs or runs', async ({ 
   // B's attachment is not authorized by A's grants.
   await expect(page.getByRole('list', { name: 'Before you can run' })).toContainText(`does not authorize: membranes-${stamp}.csv`);
 
-  await page.getByLabel('Active project', { exact: true }).selectOption(state.a!);
+  await selectPicker(page, 'Active project', state.a!);
   await expect(page.getByLabel('Research run')).toBeVisible();
   const aRuns = await json<Run[]>(page, `projects/${state.a}/agent-runs?limit=100`);
-  expect(await page.getByLabel('Research run').locator('option').count()).toBe(aRuns.length);
+  await page.getByLabel('Research run').click();
+  await expect(page.locator('.picker-option')).toHaveCount(aRuns.length);
+  await page.keyboard.press('Escape');
   await expect(page.getByRole('list', { name: 'Inputs' })).not.toContainText('membranes');
   const bRuns = await json<Run[]>(page, `projects/${state.b}/agent-runs?limit=100`);
   expect(bRuns).toEqual([]);
@@ -248,7 +252,7 @@ test('two projects and datasets never leak selection, inputs or runs', async ({ 
 test('a manual project export downloads and verifies against its recorded digest', async ({ page }) => {
   test.setTimeout(300_000);
   await page.goto('/report');
-  await page.getByLabel('Active project', { exact: true }).selectOption(state.a!);
+  await selectPicker(page, 'Active project', state.a!);
   await page.getByRole('button', { name: 'Export project' }).click();
   const inspect = page.getByRole('link', { name: 'Inspect archive' }).first();
   await expect(inspect).toBeVisible({ timeout: 180_000 });
