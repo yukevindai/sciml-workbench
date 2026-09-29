@@ -55,6 +55,10 @@ async function workspace(page: Page, artifacts: Artifact[] = previews, override?
 }
 const link = `/benchmark?project=${project.id}&benchmark=${ridgeId}#benchmark-${ridgeId}`;
 
+test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem('sciml-theme', 'light'));
+});
+
 test('direct benchmark link shows protocol context and validation while test output stays withheld until an explicit reveal', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   const seen = await workspace(page);

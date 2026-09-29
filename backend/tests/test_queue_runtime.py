@@ -105,6 +105,11 @@ def test_idle_storage_has_no_work(settings, monkeypatch):
 def test_only_queued_enabled_agents_skip_the_idle_backoff(registry, monkeypatch):
     from workbench.agent_db import RunRow
     tool, ctx, _, _ = registry
+    # Exercise real configuration validation without relying on operator settings.
+    monkeypatch.setenv('WB_MODEL_PROVIDER', 'anthropic')
+    monkeypatch.setenv('WB_COORDINATOR_MODEL', 'model')
+    monkeypatch.setenv('WB_SPECIALIST_MODEL', 'model')
+    monkeypatch.setenv('ANTHROPIC_API_KEY', 'synthetic-test-key')
     monkeypatch.setenv('WB_AGENTS_ENABLED', '0')
     assert not runtime.has_ready_work(tool.settings)
     monkeypatch.setenv('WB_AGENTS_ENABLED', '1')

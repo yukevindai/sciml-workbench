@@ -212,3 +212,9 @@
 .kv-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr) auto; gap: var(--space-4); align-items: start; }
 .kv-row + .kv-row { margin-top: var(--space-4); }
 @media (max-width: 640px) { .kv-row { grid-template-columns: minmax(0, 1fr) auto; } .kv-row .kv-value { grid-column: 1 / -1; } }
+
+/* Consistent tactile controls across public and private surfaces. */
+.button { transition: background-color 180ms, border-color 180ms, color 180ms, transform 180ms; }
+.button:active:not(:disabled) { transform: translateY(1px); }
+.icon-button { width: 44px; height: 44px; }
+@media (max-width: 640px) { .button, .input, .select { min-height: 44px; } }

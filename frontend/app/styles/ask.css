@@ -179,3 +179,28 @@
 .activity li { font-size: var(--text-sm); color: var(--color-text-secondary); }
 .activity strong { color: var(--color-text-primary); font-weight: var(--weight-semibold); }
 .activity-time { margin-left: var(--space-4); font-size: var(--text-xs); color: var(--color-text-tertiary); }
+
+/* Calm prompt-first entry, visually continuous with the public site. */
+.page--simple { max-width: 59rem; padding-top: clamp(40px, 9vh, 100px); }
+.ask { gap: 28px; }
+.ask-hero { gap: 16px; margin-bottom: 10px; }
+.ask-emblem { display: grid; place-items: center; width: 56px; height: 56px; border: 1px solid var(--color-border); border-radius: 16px; background: var(--color-bg-surface); margin-bottom: 4px; }
+.ask-kicker { font-size: 13px; color: var(--color-text-tertiary); }
+.ask-title { font-weight: 400; font-size: clamp(28px, 3.4vw, 43px); letter-spacing: -.045em; line-height: 1.15; }
+.ask-lede { max-width: 46ch; font-size: 15px; }
+.composer { padding: 20px; border-color: var(--color-border-strong); box-shadow: var(--shadow-sm); }
+.composer-input { min-height: 100px; }
+.composer--compact .composer-input { min-height: 40px; }
+.composer-send { width: 44px; height: 44px; border-radius: 10px; }
+.suggestion { border-radius: 8px; min-height: 44px; background: transparent; font-size: 13px; }
+.recent-item { min-height: 60px; }
+.nav-group--advanced > summary { min-height: 44px; }
+@media (max-width: 640px) {
+  .page--simple { padding-top: 36px; }
+  .ask-title { max-width: 17ch; }
+  .ask-lede { font-size: 14px; }
+  .composer { padding: 14px; }
+  .composer-toggle { min-height: 44px; }
+  .suggestions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .suggestion { padding: 12px; text-align: left; line-height: 1.5; }
+}

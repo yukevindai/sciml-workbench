@@ -25,6 +25,10 @@ async function workspace(page: Page, override: (route: Route, pathname: string) 
   });
 }
 
+test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem('sciml-theme', 'light'));
+});
+
 test('project validation retains the name and research question through a rejected request', async ({ page }) => {
   let submissions = 0;
   await workspace(page, async (route, pathname) => {

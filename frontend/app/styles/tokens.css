@@ -5,21 +5,22 @@
    Ramps are generated in OKLCH (constant hue, perceptual lightness steps,
    chroma as a proportion of each hue's own sRGB maximum) and written here as
    sRGB hex to match the notation used throughout this project.
-   Every foreground/background pair below was measured against WCAG 2.1 AA.
+   Neutral interaction colors connect the landing page and workspace.
+   Status and partition colors remain distinct from the monochrome controls.
    ========================================================================== */
 
 :root {
-  /* ---- primitives: neutral (hue 160, near-achromatic) ---- */
-  --n-0: #fdfefd;  --n-1: #f9fbf9;  --n-2: #f2f5f4;  --n-3: #eaeeec;
-  --n-4: #dee2e0;  --n-5: #cdd2cf;  --n-6: #b3b9b5;  --n-7: #8d9490;
-  --n-8: #6a726e;  --n-9: #4c534f;  --n-10: #313733; --n-11: #1a201c;
-  --n-12: #0b0f0d; --n-tertiary: #626a65; --n-boundary: #878e8a;
+  /* ---- primitives: neutral (achromatic) ---- */
+  --n-0: #ffffff;  --n-1: #fafafa;  --n-2: #f5f5f5;  --n-3: #ededee;
+  --n-4: #e1e1e3;  --n-5: #d1d1d4;  --n-6: #b7b7bc;  --n-7: #929298;
+  --n-8: #707077;  --n-9: #505057;  --n-10: #343439; --n-11: #1b1b1f;
+  --n-12: #0b0b0c; --n-tertiary: #66666d; --n-boundary: #8b8b92;
 
   /* ---- primitives: neutral, dark theme (widened dark end) ---- */
-  --dn-canvas: #0a0d0b;  --dn-surface: #131714; --dn-subtle: #1e2320;
-  --dn-inset: #060706;   --dn-line: #272c29;    --dn-line-mid: #363c39;
-  --dn-boundary: #5f6561;
-  --dn-text-1: #eef1ef;  --dn-text-2: #b7bcb9;  --dn-text-3: #8e9490;
+  --dn-canvas: #0b0b0c;  --dn-surface: #121214; --dn-subtle: #1d1d20;
+  --dn-inset: #080809;   --dn-line: #27272b;    --dn-line-mid: #38383f;
+  --dn-boundary: #66666e;
+  --dn-text-1: #f4f4f5;  --dn-text-2: #b9b9c0;  --dn-text-3: #94949e;
 
   /* ---- primitives: accent, hue 162 ---- */
   --a-1: #eefaf4; --a-2: #ddf5e8; --a-3: #c2ebd5; --a-4: #a2debf;
@@ -37,8 +38,8 @@
   --i-dk-text: #7ab7f0; --i-dk-bg: #1a2835; --i-dk-border: #2a3f54;
 
   /* ---- primitives: partition categories ----
-     A categorical set held away from the accent hue, so green keeps its single
-     meaning of "interactive". Lightness separates them for colour-vision
+     A categorical set held away from the accent hue, independent of the monochrome
+     interactive palette. Lightness separates them for colour-vision
      deficiency; counts and labels never depend on hue alone. */
   --p-train: #3079b7; --p-validation: #8d52db; --p-test: #a86313; --p-excluded: #6e7772;
   --p-dk-train: #408bcd; --p-dk-validation: #b59ce3; --p-dk-test: #f3993e; --p-dk-excluded: #6e7772;
@@ -107,14 +108,14 @@
   --color-text-tertiary: var(--n-tertiary);
   --color-text-on-solid: #ffffff;
 
-  --color-accent-text: var(--a-9);
-  --color-accent-solid: var(--a-8);
-  --color-accent-solid-hover: var(--a-9);
-  --color-accent-bg: var(--a-1);
-  --color-accent-bg-hover: var(--a-2);
-  --color-accent-border: var(--a-3);
+  --color-accent-text: #29292f;
+  --color-accent-solid: #202024;
+  --color-accent-solid-hover: #3b3b42;
+  --color-accent-bg: #ececef;
+  --color-accent-bg-hover: #e0e0e5;
+  --color-accent-border: #c6c6cf;
   --color-accent-on-solid: #ffffff;
-  --color-focus-ring: var(--a-7);
+  --color-focus-ring: #555560;
 
   --color-danger-text: var(--d-9);
   --color-danger-bg: var(--d-1);
@@ -143,7 +144,7 @@
 
 /* ======================= semantic tokens: dark =======================
    Not a mechanical inversion: vividness is reduced, the dark end widened,
-   and every pair re-measured. A single switching mechanism (data-theme,
+   with independently chosen status colors. A single switching mechanism (data-theme,
    always written explicitly by the boot script) sets every token. */
 :root[data-theme='dark'] {
   color-scheme: dark;
@@ -163,14 +164,14 @@
   --color-text-tertiary: var(--dn-text-3);
   --color-text-on-solid: var(--dn-inset);
 
-  --color-accent-text: var(--a-dk-text);
-  --color-accent-solid: var(--a-dk-solid);
-  --color-accent-solid-hover: var(--a-dk-solid-hover);
-  --color-accent-bg: var(--a-dk-bg);
-  --color-accent-bg-hover: var(--a-dk-border);
-  --color-accent-border: var(--a-dk-border);
+  --color-accent-text: #ededf0;
+  --color-accent-solid: #f0f0f2;
+  --color-accent-solid-hover: #d7d7dd;
+  --color-accent-bg: #232327;
+  --color-accent-bg-hover: #303035;
+  --color-accent-border: #414149;
   --color-accent-on-solid: var(--dn-inset);
-  --color-focus-ring: var(--a-dk-ring);
+  --color-focus-ring: #b4b4c1;
 
   --color-danger-text: var(--d-dk-text);
   --color-danger-bg: var(--d-dk-bg);

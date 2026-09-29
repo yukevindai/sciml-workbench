@@ -3,22 +3,7 @@
 import { useEffect, useState } from 'react';
 import { Moon, Sun } from 'lucide-react';
 
-export const THEME_STORAGE_KEY = 'sciml-theme';
-
-/** Runs before first paint so the correct theme is already applied and the
- *  page never flashes. Keeps one switching mechanism: the boot script always
- *  writes an explicit data-theme, and every token is defined against it. */
-export const themeBootScript = `
-(function () {
-  try {
-    var stored = localStorage.getItem('${THEME_STORAGE_KEY}');
-    var system = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-    document.documentElement.dataset.theme = stored === 'light' || stored === 'dark' ? stored : system;
-  } catch (e) {
-    document.documentElement.dataset.theme = 'light';
-  }
-})();
-`;
+import { THEME_STORAGE_KEY } from '../lib/theme';
 
 type Theme = 'light' | 'dark';
 
@@ -37,7 +22,7 @@ export function ThemeToggle() {
   const [theme, setTheme] = useState<Theme | null>(null);
 
   useEffect(() => {
-    setTheme((document.documentElement.dataset.theme as Theme) || 'light');
+    setTheme((document.documentElement.dataset.theme as Theme) || 'dark');
   }, []);
 
   const next: Theme = theme === 'dark' ? 'light' : 'dark';
