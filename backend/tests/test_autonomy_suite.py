@@ -79,7 +79,9 @@ def test_frozen_audit(registry, case, variant, attempt, record_property):
             provider.responses = iter(responses)
             original_complete = provider.complete
             def complete(**kwargs):
-                if kwargs['tools']:
+                # The coordinator's opening decision also has no tools. Route
+                # scripted responses by the requested schema, not tool presence.
+                if '"title": "SpecialistResult"' not in kwargs['context'][0].text:
                     return original_complete(**kwargs)
                 with tool.db.session() as s:
                     assignment = s.scalar(select(AssignmentRow).where(AssignmentRow.run_id == ctx.run_id))
