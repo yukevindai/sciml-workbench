@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server';
 import { proxy as operatorGate } from '../../../proxy';
+import { publicOrigin as configuredPublicOrigin } from '../../lib/public-origin';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 async function proxy(request: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
@@ -7,7 +8,7 @@ async function proxy(request: NextRequest, { params }: { params: Promise<{ path:
   if (gate.status !== 200) return gate;
   const { path } = await params;
   if (path.some(p => !/^[a-zA-Z0-9_-]+$/.test(p))) return Response.json({ error: 'Invalid route' }, { status: 400 });
-  const publicOrigin = process.env.WB_PUBLIC_ORIGIN || (process.env.NODE_ENV !== 'production' ? 'http://localhost:3000' : undefined);
+  const publicOrigin = configuredPublicOrigin();
   if (!publicOrigin) return Response.json({ error: 'Public origin is not configured' }, { status: 503 });
   if ((request.method !== 'GET' || request.headers.has('origin')) && request.headers.get('origin') !== publicOrigin)
     return Response.json({ error: 'Cross-origin request rejected' }, { status: 403 });

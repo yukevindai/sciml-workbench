@@ -1,4 +1,5 @@
 import { createHash, createHmac, timingSafeEqual } from 'node:crypto';
+import { publicOrigin } from './public-origin';
 
 /* Server-only. A signed, expiring session cookie replaces the browser's HTTP
    Basic pop-up. The signing key is derived from the configured web login, so
@@ -52,7 +53,7 @@ export function validBasic(header: string | null, login: Login) {
 export function cookieOptions() {
   return {
     httpOnly: true, sameSite: 'lax' as const, path: '/', maxAge: SESSION_SECONDS,
-    secure: process.env.NODE_ENV === 'production' && !(process.env.WB_PUBLIC_ORIGIN || '').startsWith('http://'),
+    secure: process.env.NODE_ENV === 'production' && !publicOrigin()?.startsWith('http://'),
   };
 }
 

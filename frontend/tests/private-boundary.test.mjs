@@ -28,6 +28,55 @@ const auth = 'Basic ' + Buffer.from('operator:a-private-password-for-tests').toS
 const request = (path, headers = {}, method = 'GET') => new NextRequest('https://private.example' + path, { method, headers });
 const params = { params: Promise.resolve({ path: ['projects', 'p', 'agent-runs', 'r', 'stream'] }) };
 
+test('login and API accept equivalent configured origins without trusting other sites', async () => {
+  const { POST: signIn } = load('app/auth/session/route.ts');
+  try {
+    Object.assign(process.env, { NODE_ENV: 'production', WB_LOGIN_USERNAME: 'operator',
+      WB_LOGIN_PASSWORD: 'a-private-password-for-tests', WB_API_TOKEN: 'private-backend-token-longer-than-32-characters' });
+    globalThis.fetch = async () => new Response('{}');
+    for (const configured of ['https://private.example/', '  https://private.example/\n', 'https://PRIVATE.example:443']) {
+      process.env.WB_PUBLIC_ORIGIN = configured;
+      const form = new NextRequest('https://private.example/auth/session', {
+        method: 'POST', headers: { origin: 'https://private.example', 'content-type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({ username: 'operator', password: 'a-private-password-for-tests', next: '/ask' }).toString(),
+      });
+      const response = await signIn(form);
+      assert.equal(response.status, 303);
+      assert.equal(response.headers.get('location'), 'https://private.example/ask');
+      assert.match(response.headers.get('set-cookie'), /; HttpOnly/i);
+      assert.match(response.headers.get('set-cookie'), /; Secure/i);
+      assert.equal((await POST(request('/api/private', { authorization: auth, origin: 'https://private.example' }, 'POST'), params)).status, 200);
+      for (const origin of ['https://evil.example', 'https://private.example.evil.example', 'http://private.example', 'null']) {
+        assert.equal((await signIn(request('/auth/session', { origin, host: 'private.example', 'x-forwarded-host': 'private.example' }, 'POST'))).status, 403);
+        assert.equal((await POST(request('/api/private', { authorization: auth, origin }, 'POST'), params)).status, 403);
+      }
+    }
+  } finally {
+    globalThis.fetch = originalFetch;
+    for (const key of Object.keys(process.env)) if (!(key in original)) delete process.env[key];
+    Object.assign(process.env, original);
+  }
+});
+
+test('missing or invalid production origin is a setup error and fails closed', async () => {
+  const { POST: signIn } = load('app/auth/session/route.ts');
+  try {
+    Object.assign(process.env, { NODE_ENV: 'production', WB_LOGIN_USERNAME: 'operator', WB_LOGIN_PASSWORD: 'a-private-password-for-tests' });
+    for (const origin of [undefined, '', ' ', 'not-a-url', 'https://private.example/ask', 'https://user:pass@private.example', 'https://private.example?x=1', 'https://private.example#x', 'ftp://private.example']) {
+      if (origin === undefined) delete process.env.WB_PUBLIC_ORIGIN;
+      else process.env.WB_PUBLIC_ORIGIN = origin;
+      const response = await signIn(request('/auth/session', { origin: 'https://private.example' }, 'POST'));
+      assert.equal(response.status, 503);
+      assert.equal(response.headers.get('set-cookie'), null);
+      assert.match((await response.json()).error, /WB_PUBLIC_ORIGIN/);
+      assert.equal((await GET(request('/api/private', { authorization: auth }), params)).status, 503);
+    }
+  } finally {
+    for (const key of Object.keys(process.env)) if (!(key in original)) delete process.env[key];
+    Object.assign(process.env, original);
+  }
+});
+
 test('production operator gate and server proxy enforce the private boundary', async () => {
   try {
     Object.assign(process.env, { NODE_ENV: 'production', WB_REQUIRE_LOGIN: '0', WB_LOGIN_USERNAME: 'operator',

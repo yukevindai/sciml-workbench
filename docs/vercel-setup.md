@@ -98,6 +98,8 @@ Keep the frontend's monorepo option to include source files outside its root ena
 
 The compact **Admin** control on the right of the public navigation opens the operator login form. Set `WB_LOGIN_USERNAME` (for example, `kevin`) and `WB_LOGIN_PASSWORD` (at least 16 characters) in the **frontend project's** Vercel environment settings, then redeploy. The form uses the same signed, expiring session as `/sign-in`; it grants access to the existing operator workspace, not a separate user-role system. Credentials must stay in server environment variables, never in source code or `NEXT_PUBLIC_` variables.
 
+If sign-in returns **Cross-origin request rejected**, it has not checked your password yet. Set `WB_PUBLIC_ORIGIN` in the frontend project to the exact origin in your browser's address bar (for example, `https://your-frontend.vercel.app`), then redeploy that environment. Do not use the backend URL, `/sign-in`, `/ask`, or a different preview domain. Custom domains and deployment preview URLs are different origins. Surrounding whitespace, a root trailing slash, hostname case and default ports are normalized; other sites are still rejected. A missing or invalid origin produces a configuration error instead.
+
 Use a stable backend production domain, not a temporary preview URL. Deploy frontend and backend from the same commit. Disable any ignored-build rule that would skip one project after shared contracts/backend changes; confirm the Git SHA in both deployment pages after every release. Git integration triggers separate builds, so this is not an atomic rollout. Use a maintenance window for incompatible changes.
 
 ## 4. Limits and agent setup

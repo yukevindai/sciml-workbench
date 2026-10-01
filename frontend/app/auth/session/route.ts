@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { configuredLogin, cookieOptions, createSession, equal, loginRequired, safeNext, SESSION_COOKIE } from '../../lib/session';
+import { publicOrigin } from '../../lib/public-origin';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 function redirect(request: NextRequest, path: string) {
-  const origin = process.env.WB_PUBLIC_ORIGIN || request.nextUrl.origin;
+  const origin = publicOrigin(request.nextUrl.origin)!;
   const response = NextResponse.redirect(new URL(path, origin), 303);
   response.headers.set('Cache-Control', 'no-store');
   return response;
@@ -13,8 +14,11 @@ function redirect(request: NextRequest, path: string) {
 
 /** Sign in (form fields username, password, next) or sign out (intent=sign-out). */
 export async function POST(request: NextRequest) {
-  const expected = process.env.WB_PUBLIC_ORIGIN || (process.env.NODE_ENV !== 'production' ? request.nextUrl.origin : undefined);
-  if (!expected || request.headers.get('origin') !== expected) {
+  const expected = publicOrigin(request.nextUrl.origin);
+  if (!expected) {
+    return NextResponse.json({ error: 'The workspace address is not configured. Set WB_PUBLIC_ORIGIN to the frontend site origin and redeploy.' }, { status: 503 });
+  }
+  if (request.headers.get('origin') !== expected) {
     return NextResponse.json({ error: 'Cross-origin request rejected' }, { status: 403 });
   }
   let form: FormData;
