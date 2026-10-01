@@ -200,6 +200,9 @@ class Finalizer:
                     step.completion_criteria = [self._safe_text(v) for v in step.completion_criteria]
             actions = list(s.scalars(select(ActionRow).where(ActionRow.run_id == rid).order_by(ActionRow.id)))
             want_export = row.candidate['export'] and not export_failed
+            if want_export and run.original_request.get('agent_roster') and 'build_report' not in policy.allowed_tools:
+                issues.append('Report export is not enabled for the assigned agents')
+                want_export = False
             if (not set(run.payload['inputs']['artifact_ids']) <= policy.artifact_ids
                     or not set(run.payload['inputs']['material_ids']) <= policy.material_ids):
                 want_export = False

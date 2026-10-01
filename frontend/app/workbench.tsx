@@ -14,6 +14,7 @@ import { JobActivity } from './components/jobs';
 import { Alert } from './components/ui';
 import type { ShellFixture } from './lib/shell-fixture';
 import { ResearchView } from './views/research';
+import { AgentMarketView } from './views/agent-market';
 import { AskView } from './views/ask';
 
 import { ProjectsView } from './views/projects';
@@ -247,7 +248,7 @@ export default function Workbench({ view, fixture, children, requestedProjectId,
   }, [projects, projectId, artifacts, jobs, jobsTruncated, lastUpdated, busy, datasetId, splitId, runId, act, submit, refreshJobs, setProjectId, setDatasetId, fixture]);
 
   const item = navItem(view);
-  const needsProject = view !== 'projects' && view !== 'research' && view !== 'ask' && !projectId;
+  const needsProject = view !== 'agent-market' && view !== 'projects' && view !== 'research' && view !== 'ask' && !projectId;
   const simple = view === 'ask';
   const loading = projectsLoading || projectLoading;
   const loadError = projectsError || projectError;
@@ -314,7 +315,8 @@ export default function Workbench({ view, fixture, children, requestedProjectId,
             {showViews && <>
               {view === 'ask' && <AskView key={projectId} wb={model} />}
               {view === 'research' && <ResearchView wb={model} />}
-              {view === 'projects' && <ProjectsView wb={model} />}
+              {view === 'projects' && <ProjectsView key={projectId} wb={model} />}
+              {view === 'agent-market' && <AgentMarketView wb={model} />}
               {view === 'dataset-audit' && <AuditView key={projectId} wb={model} requestedAuditId={projectId === requestedProjectId ? requestedAuditId : undefined} />}
               {view === 'split-designer' && <SplitView wb={model} requestedSplitId={projectId === requestedProjectId ? requestedSplitId : undefined} />}
               {view === 'benchmark' && <BenchmarkView key={projectId} wb={model} requestedBenchmarkId={projectId === requestedProjectId ? requestedBenchmarkId : undefined} />}

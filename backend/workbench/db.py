@@ -272,3 +272,5 @@ def install_metadata_guards(metadata, connection, **kwargs):
 
 # Register application ledgers on the same metadata for migrations and test DBs.
 from . import agent_db  # noqa: E402,F401
+
+from . import market_db  # noqa: E402,F401

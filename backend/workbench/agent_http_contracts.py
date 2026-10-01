@@ -22,6 +22,7 @@ class RunActionView(ContractModel):
 
 
 class RunAssignmentView(ContractModel):
+    agent_name: str | None = None
     """A specialist assignment as scoped by the coordinator; results stay advisory."""
     id: Identifier
     role: Literal["data_evaluation", "evidence", "failure_memory", "scientific_reviewer"]

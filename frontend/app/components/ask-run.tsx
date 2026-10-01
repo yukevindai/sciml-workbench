@@ -109,6 +109,7 @@ export function AskRun({ wb, run: listed, runs, onChanged, onSelect }: {
         <span className="avatar avatar--you" aria-hidden="true"><User size={15} /></span>
         <div className="bubble">
           <p>{run.objective}</p>
+          {run.agent_roster && <p className="bubble-meta">Assigned to {run.agent_roster.name} · {run.agent_roster.selection.exclusive ? 'Selected agents only' : 'Built-in assistance allowed'}</p>}
           {files > 0 && <p className="bubble-meta">{files} file{files === 1 ? '' : 's'} attached</p>}
         </div>
       </div>

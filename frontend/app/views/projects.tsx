@@ -1,5 +1,8 @@
 'use client';
 
+import { AgentSelector } from '../components/agent-selection';
+import type { AgentSelection } from '../lib/agent-market';
+
 import { useState } from 'react';
 import Link from 'next/link';
 import { Activity, Database, FlaskConical, Plus, ShieldCheck } from 'lucide-react';
@@ -10,6 +13,7 @@ import { Field, Panel, Tile } from '../components/ui';
 import { NextAction, PipelineRail } from '../components/workflow';
 
 export function ProjectsView({ wb }: { wb: Workbench }) {
+  const [agentSelection, setAgentSelection] = useState<AgentSelection | null>(null);
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [nameError, setNameError] = useState('');
@@ -104,6 +108,7 @@ export function ProjectsView({ wb }: { wb: Workbench }) {
 
       {wb.activeProject && (
         <Panel title="Active project" headingLevel={2}>
+          <AgentSelector projectOnly projectId={wb.projectId} value={agentSelection} onChange={setAgentSelection} disabled={wb.busy} preview={wb.preview} />
           <div className="stack stack--tight">
             <h3>{wb.activeProject.name}</h3>
             <p className="prose">

@@ -404,4 +404,6 @@ def create_app(settings=None):
     from .agent_runtime import admission
     app.state.runs = RunService(admission=admission)
     app.include_router(agent_router(app.state.runs, session, protected, settings=settings))
+    from .market_api import router as market_router
+    app.include_router(market_router(session, protected, settings))
     return app

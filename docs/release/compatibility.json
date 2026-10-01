@@ -9,7 +9,7 @@
   },
   "node_major": "22",
   "postgres_major": "16",
-  "migration_head": "0012",
+  "migration_head": "0013",
   "migration_chain": {
     "0001": null,
     "0002": "0001",
@@ -22,7 +22,8 @@
     "0009": "0008",
     "0010": "0009",
     "0011": "0010",
-    "0012": "0011"
+    "0012": "0011",
+    "0013": "0012"
   },
   "scientific_sources": {
     "chemdata-auditor": "git+https://github.com/yukevindai/chemdata-auditor.git@eff3ed3c43ec71e9ceecabc1f04d1dfb5c91c116",
@@ -37,9 +38,9 @@
   ],
   "schema_files": 55,
   "files_sha256_lf": {
-    "contracts/catalog.json": "02143a5afefb1c18ec9b8126a6177bdde4cb8ebdddfd5e7154007afa69140d23",
-    "contracts/http-responses.json": "8a67319cbcc6bf4bbcae9fc6bb8e7ecbab200f8b207981be2b5103321d685701",
-    "contracts/openapi.json": "2b74f4037393c7770fe3d0a56df6323cbe4e88f99b64fd17c4dab96f04cf13c9",
+    "contracts/catalog.json": "615708f03647aec38da635b907c65a5eff042244e286eafffed7763d52e6849a",
+    "contracts/http-responses.json": "490fc4e264cb3e43b8c2b12cff2128de0fa75c6e3cdf198b99bfa924f8b5e762",
+    "contracts/openapi.json": "9040ec094113e298398150b7b2faee61d8073d43d43327fe1d8f2a78bb82f1c2",
     "contracts/records/v1/artifact_page.json": "ae6a631c4d5f56d6e252b89f6c38357a191caf328d89360d48cbdf26344f5099",
     "contracts/records/v1/artifact_summary.json": "85e05ea3ce39761c19f67c402c76fb4ec6237577ad0eeec551a61e3316a853b7",
     "contracts/records/v1/benchmark_preview.json": "90a2d2dbe96d0093fc371413cdc08ce05dd920a7a9af77f4c7d23177c6071478",
@@ -65,15 +66,15 @@
     "contracts/records/v1/report_summary.json": "36e4cefc95ef309a61e40860a412aceef8ea51b69b34b5e1d0ac5755ed1475e4",
     "contracts/records/v1/research_plan.json": "1caab94c77ec3430d51fb42134173add89df33a48dfe7e4f506888d1cfe82d6e",
     "contracts/records/v1/research_question.json": "d83270422b9c946a71d4af6a9e49fcba468feae0257509c73bf8a8c4c91954cd",
-    "contracts/records/v1/research_run.json": "7409fba9f44d8a020ae73ead758bc89b2377967d3dd29b04c1b46ab98978d25f",
+    "contracts/records/v1/research_run.json": "e35ca82becf812dabe1ad4288eaca432f94eb3de464bb9e23ff7f125b2bb60e5",
     "contracts/records/v1/resource_limits.json": "c6a8014d0810e438554aec59b4abc513ef5072fd80a90b8621810d3241473ade",
     "contracts/records/v1/run_amendment_input.json": "bfd98ae374051a9bd130562ea4d35339b804a362faef502e88752acf7867b1b3",
     "contracts/records/v1/run_control_input.json": "2d54e11c241a9f0dbfea8939691a612c6c38f3786af6dd0b4ea55cfba7ce9398",
-    "contracts/records/v1/run_detail.json": "c1a855c92363b7ed72d40c793aa6899ba9620a85de461207d08755f1c40a14ff",
+    "contracts/records/v1/run_detail.json": "04c86b0756c4201e4bb2018a6feef5f1b193ff79a852f287e8d875cff571d575",
     "contracts/records/v1/run_event.json": "7956604b919691055f3d3a7f18996314b4d330e3e74a6e67396f4be2af435fde",
-    "contracts/records/v1/run_input.json": "ccdedfb29df0bb31ab21a55b739c4889418e4ede3b171f74b8182e5475cc4f2a",
+    "contracts/records/v1/run_input.json": "539a6df181a05e9c7816e152484bc29f70bff689c7ad6c6311a3e296db17116f",
     "contracts/records/v1/run_result.json": "90847edd95f50dfb5d973eb04a5987faa153d1e69192feddb84a1dd3439f8884",
-    "contracts/records/v1/specialist_assignment.json": "84f06738e4b180425077645b2551f14f39836846f805b9b0f20050e42d42589e",
+    "contracts/records/v1/specialist_assignment.json": "0ce6fe4e88482f6e22378e98bd55f7b362336ec8ce2c1b36ad97378a74c09317",
     "contracts/records/v1/specialist_result.json": "7073f4302fe3fe0903a955cef3644fa0ae86139763aac9d674aebb7020f18dfc",
     "contracts/records/v1/tool_descriptor.json": "b1ed3e720d50b5e0e7bc8d69ffa0e0d29f625511fd5d6027477448fbd127f7e8",
     "contracts/records/v1/tool_request.json": "903a2e192c960459cb9173887a7ce8c24adbc6e2fe076891cc4ac71684af8f9b",
@@ -115,7 +116,8 @@
     "backend/migrations/versions/0009_memory_guards.py": "fd2ebfacff1f38d77510a5e5ca31e6360f35e460e6594208d63d9abd9616edf7",
     "backend/migrations/versions/0010_agent_leases.py": "68ef20a9da9e9993622b30f988796f0c80fff307736ddb79c1c5b7dd1aa545de",
     "backend/migrations/versions/0011_agent_finalization.py": "95a66998d9fed578239a198de2d7df41d398c4a3555666507c2f395a65fbd33b",
-    "backend/migrations/versions/0012_serverless_storage.py": "7df4c11d8156e8062cccab1e317b78902a42adca41a077fb2bc03dc5c0c21cb4"
+    "backend/migrations/versions/0012_serverless_storage.py": "7df4c11d8156e8062cccab1e317b78902a42adca41a077fb2bc03dc5c0c21cb4",
+    "backend/migrations/versions/0013_agent_market.py": "ee171258be64febdc4db182566fbc698a2374099ebfaa46b2a83bf9726d85da2"
   },
   "limitations": [
     "Source inventory, not installed-runtime or release acceptance.",

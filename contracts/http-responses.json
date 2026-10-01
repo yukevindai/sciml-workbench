@@ -368,6 +368,302 @@
       "title": "AgentExecutionRecord",
       "type": "object"
     },
+    "AgentMarket": {
+      "additionalProperties": false,
+      "properties": {
+        "agents": {
+          "items": {
+            "$ref": "#/$defs/AgentProfile"
+          },
+          "title": "Agents",
+          "type": "array"
+        },
+        "teams": {
+          "items": {
+            "$ref": "#/$defs/AgentTeam"
+          },
+          "title": "Teams",
+          "type": "array"
+        },
+        "tools": {
+          "items": {
+            "$ref": "#/$defs/MarketTool"
+          },
+          "title": "Tools",
+          "type": "array"
+        },
+        "skills": {
+          "items": {
+            "$ref": "#/$defs/MarketSkill"
+          },
+          "title": "Skills",
+          "type": "array"
+        }
+      },
+      "required": [
+        "agents",
+        "teams",
+        "tools",
+        "skills"
+      ],
+      "title": "AgentMarket",
+      "type": "object"
+    },
+    "AgentProfile": {
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "maxLength": 80,
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        },
+        "role": {
+          "maxLength": 80,
+          "minLength": 1,
+          "title": "Role",
+          "type": "string"
+        },
+        "description": {
+          "default": "",
+          "maxLength": 500,
+          "title": "Description",
+          "type": "string"
+        },
+        "instructions": {
+          "default": "",
+          "maxLength": 4000,
+          "title": "Instructions",
+          "type": "string"
+        },
+        "skills": {
+          "items": {
+            "enum": [
+              "planning",
+              "data_evaluation",
+              "evidence",
+              "failure_memory",
+              "scientific_reviewer"
+            ],
+            "type": "string"
+          },
+          "maxItems": 5,
+          "minItems": 1,
+          "title": "Skills",
+          "type": "array"
+        },
+        "tools": {
+          "items": {
+            "enum": [
+              "inspect_project",
+              "inspect_dataset",
+              "list_artifacts",
+              "read_artifact",
+              "read_job",
+              "run_audit",
+              "generate_split",
+              "seal_evaluation",
+              "run_baseline",
+              "read_evaluation",
+              "ingest_evidence",
+              "search_evidence",
+              "read_evidence_span",
+              "search_failures",
+              "read_failure",
+              "record_outcome",
+              "reconcile_outcome",
+              "validate_claims",
+              "build_report",
+              "verify_report",
+              "replay_science",
+              "read_memory"
+            ],
+            "type": "string"
+          },
+          "maxItems": 30,
+          "title": "Tools",
+          "type": "array"
+        },
+        "id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "revision": {
+          "default": 1,
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "title": "Revision",
+          "type": "integer"
+        },
+        "built_in": {
+          "default": false,
+          "title": "Built In",
+          "type": "boolean"
+        },
+        "archived": {
+          "default": false,
+          "title": "Archived",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "name",
+        "role",
+        "description",
+        "instructions",
+        "skills",
+        "tools",
+        "id",
+        "revision",
+        "built_in",
+        "archived"
+      ],
+      "title": "AgentProfile",
+      "type": "object"
+    },
+    "AgentRoster": {
+      "additionalProperties": false,
+      "properties": {
+        "selection": {
+          "$ref": "#/$defs/AgentSelection"
+        },
+        "name": {
+          "maxLength": 80,
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        },
+        "lead_agent_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Lead Agent Id",
+          "type": "string"
+        },
+        "agents": {
+          "items": {
+            "$ref": "#/$defs/AgentProfile"
+          },
+          "maxItems": 13,
+          "minItems": 1,
+          "title": "Agents",
+          "type": "array"
+        }
+      },
+      "required": [
+        "selection",
+        "name",
+        "lead_agent_id",
+        "agents"
+      ],
+      "title": "AgentRoster",
+      "type": "object"
+    },
+    "AgentSelection": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "default": "automatic",
+          "enum": [
+            "automatic",
+            "agent",
+            "team"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "id": {
+          "anyOf": [
+            {
+              "maxLength": 160,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Id"
+        },
+        "exclusive": {
+          "default": true,
+          "title": "Exclusive",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "kind",
+        "id",
+        "exclusive"
+      ],
+      "title": "AgentSelection",
+      "type": "object"
+    },
+    "AgentTeam": {
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "maxLength": 80,
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        },
+        "description": {
+          "default": "",
+          "maxLength": 500,
+          "title": "Description",
+          "type": "string"
+        },
+        "agent_ids": {
+          "items": {
+            "maxLength": 160,
+            "minLength": 1,
+            "type": "string"
+          },
+          "maxItems": 8,
+          "minItems": 1,
+          "title": "Agent Ids",
+          "type": "array"
+        },
+        "lead_agent_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Lead Agent Id",
+          "type": "string"
+        },
+        "id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "revision": {
+          "default": 1,
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "title": "Revision",
+          "type": "integer"
+        },
+        "archived": {
+          "default": false,
+          "title": "Archived",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "name",
+        "description",
+        "agent_ids",
+        "lead_agent_id",
+        "id",
+        "revision",
+        "archived"
+      ],
+      "title": "AgentTeam",
+      "type": "object"
+    },
     "ArtifactPage": {
       "additionalProperties": false,
       "properties": {
@@ -4210,6 +4506,80 @@
       "title": "LegacyJobResponse",
       "type": "object"
     },
+    "MarketSkill": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "enum": [
+            "planning",
+            "data_evaluation",
+            "evidence",
+            "failure_memory",
+            "scientific_reviewer"
+          ],
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "description": {
+          "title": "Description",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "description"
+      ],
+      "title": "MarketSkill",
+      "type": "object"
+    },
+    "MarketTool": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "enum": [
+            "inspect_project",
+            "inspect_dataset",
+            "list_artifacts",
+            "read_artifact",
+            "read_job",
+            "run_audit",
+            "generate_split",
+            "seal_evaluation",
+            "run_baseline",
+            "read_evaluation",
+            "ingest_evidence",
+            "search_evidence",
+            "read_evidence_span",
+            "search_failures",
+            "read_failure",
+            "record_outcome",
+            "reconcile_outcome",
+            "validate_claims",
+            "build_report",
+            "verify_report",
+            "replay_science",
+            "read_memory"
+          ],
+          "title": "Id",
+          "type": "string"
+        },
+        "description": {
+          "title": "Description",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "description"
+      ],
+      "title": "MarketTool",
+      "type": "object"
+    },
     "MaterialQuestion": {
       "additionalProperties": false,
       "properties": {
@@ -4418,6 +4788,26 @@
         "sha256"
       ],
       "title": "PolicyReference",
+      "type": "object"
+    },
+    "ProjectAgentSelection": {
+      "additionalProperties": false,
+      "properties": {
+        "project_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Project Id",
+          "type": "string"
+        },
+        "selection": {
+          "$ref": "#/$defs/AgentSelection"
+        }
+      },
+      "required": [
+        "project_id",
+        "selection"
+      ],
+      "title": "ProjectAgentSelection",
       "type": "object"
     },
     "ProjectResponse": {
@@ -5476,6 +5866,17 @@
           "title": "Created At",
           "type": "string"
         },
+        "agent_roster": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/AgentRoster"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
         "contract": {
           "const": "research_run",
           "default": "research_run",
@@ -5600,6 +6001,7 @@
         "id",
         "project_id",
         "created_at",
+        "agent_roster",
         "contract",
         "objective",
         "inputs",
@@ -5958,8 +6360,19 @@
     },
     "RunAssignmentView": {
       "additionalProperties": false,
-      "description": "A specialist assignment as scoped by the coordinator; results stay advisory.",
       "properties": {
+        "agent_name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Agent Name"
+        },
         "id": {
           "maxLength": 160,
           "minLength": 1,
@@ -6053,6 +6466,7 @@
         }
       },
       "required": [
+        "agent_name",
         "id",
         "role",
         "objective",
@@ -7890,6 +8304,18 @@
   "$id": "https://sciml-workbench.local/contracts/http-responses.json",
   "title": "HttpResponse",
   "anyOf": [
+    {
+      "$ref": "#/$defs/AgentMarket"
+    },
+    {
+      "$ref": "#/$defs/AgentProfile"
+    },
+    {
+      "$ref": "#/$defs/AgentTeam"
+    },
+    {
+      "$ref": "#/$defs/ProjectAgentSelection"
+    },
     {
       "$ref": "#/$defs/EvaluationStatusView"
     },

@@ -1,4 +1,5 @@
 import {
+  validateAgentMarket, validateAgentProfile, validateAgentTeam, validateProjectAgentSelection,
   validateArtifactPreviews, validateArtifactsResponse, validateEvaluationStatusView, validateEvidenceAnchors, validateEvidencePageText, validateEvidenceSpanView, validateIntakeArtifact, validateMaterialResponse, validateLegacyJobResponse,
   validateJobPage, validateJobsResponse, validateReportSummary, validateProjectResponse, validateProjectsResponse, validateResearchRuns,
   validateResearchRun, validateRunDetail, validateRunEvents, validateExecutionPolicySummary,
@@ -42,3 +43,8 @@ export const parseMaterials = (value: unknown) => {
   if (!Array.isArray(value)) throw new Error('The server returned an invalid attachment list.');
   return value.map(parseMaterial);
 };
+
+export const parseAgentMarket = decoder(validateAgentMarket);
+export const parseAgentProfile = decoder(validateAgentProfile);
+export const parseAgentTeam = decoder(validateAgentTeam);
+export const parseProjectAgentSelection = decoder(validateProjectAgentSelection);

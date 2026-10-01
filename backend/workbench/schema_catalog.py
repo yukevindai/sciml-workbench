@@ -14,6 +14,8 @@ from .read_contracts import ArtifactPreview, BenchmarkPreview, EvaluationStatusV
 from .read_contracts import EvidenceAnchor, EvidencePageText, EvidenceSpanView, ReportSummary
 from .agent_http_contracts import RunDetail, RunResult, ExecutionPolicySummary
 
+from .market_contracts import AgentMarket, AgentProfile, AgentTeam, ProjectAgentSelection
+
 BASE_URI = "https://sciml-workbench.local/contracts"
 RECORD_TYPES = {
     "run_detail": RunDetail,
@@ -72,6 +74,10 @@ CATALOG_TYPES = {
 }
 
 HTTP_RESPONSE_TYPES = {
+    "AgentMarket": AgentMarket,
+    "AgentProfile": AgentProfile,
+    "AgentTeam": AgentTeam,
+    "ProjectAgentSelection": ProjectAgentSelection,
     "EvaluationStatusView": EvaluationStatusView,
     "EvaluationView": EvaluationView,
     "ProjectResponse": ProjectResponse,

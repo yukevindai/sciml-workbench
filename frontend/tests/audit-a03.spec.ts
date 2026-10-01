@@ -21,7 +21,7 @@ const audit: AuditArtifact = { id: 'agent-audit', kind: 'audit', schema_version:
   created_at: '2026-09-23T12:00:00Z', parents: [dataset.id], software: {}, dataset_id: dataset.id,
   config: { numeric_columns: ['x'], bounds: { x: [0, 10] }, provenance_columns: ['source'] }, result: reports.problematic };
 const run: ResearchRun = {
-  id: 'research-run', project_id: project.id, contract: 'research_run', schema_version: '1.0', created_at: audit.created_at,
+  id: 'research-run', project_id: project.id, contract: 'research_run', agent_roster: null, schema_version: '1.0', created_at: audit.created_at,
   objective: 'Inspect the problematic data', inputs: { material_ids: [], artifact_ids: [dataset.id], conversation_id: null, message_cutoff: null },
   policy: { policy_id: 'policy', revision: 1, sha256: 'a'.repeat(64) }, mode: 'autopilot', state: 'completed', control_revision: 1, plan_revision: 1,
   limits: { model_tokens: 10000, model_requests: 10, tool_calls: 10, coordinator_iterations: 10, specialist_assignments: 2,

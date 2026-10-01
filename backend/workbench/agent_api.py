@@ -71,6 +71,7 @@ def router(service: RunService, session, protected, *, settings=None):
         for a in s.scalars(select(AssignmentRow).where(AssignmentRow.run_id == rid)):
             result = a.result or {}
             assignments.append(dict(id=a.id, role=a.payload['role'], objective=a.payload['objective'],
+                agent_name=(a.payload.get('agent_profile') or {}).get('name'),
                 plan_revision=a.payload['plan_revision'], state=a.state, created_at=a.payload['created_at'],
                 deadline_at=a.payload['deadline_at'],
                 findings=([f['statement'] for f in result.get('findings', [])]

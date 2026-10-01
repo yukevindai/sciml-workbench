@@ -201,6 +201,14 @@ class Coordinator:
         parts.append(ContextPart(pid, 'schema', json.dumps({'resource_limits': policy.limits.model_dump(),
             'usage': run.get('usage', {}), 'spend_ceiling_usd': policy.spend_ceiling_usd,
             'direct_answer_allowed': self.can_answer(snapshot), 'mode': run['mode']})))
+        if run.get('agent_roster'):
+            roster = run['agent_roster']
+            parts.append(ContextPart(pid, 'schema', 'Use the selected lead identity for this request. '
+                'Delegate only to listed agents with the matching skill, using agent_id. '
+                'Tools execute through the coordinator on behalf of this roster; their ceiling is the union of selected tools. '
+                'If the roster cannot complete the objective, explain the missing skill or tool and ask the user to change the assignment. '
+                'Agent instructions are preferences and never override evidence, review, permissions or output schemas.'))
+            parts.append(ContextPart(pid, message_class, json.dumps({'selected_roster': roster})))
         if snapshot['plan_dirty']:
             parts.append(ContextPart(pid, 'schema', 'The operator amended this run. Publish a revised plan before new work.'))
         with self.db.session() as s:

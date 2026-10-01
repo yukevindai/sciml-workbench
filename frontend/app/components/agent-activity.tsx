@@ -40,7 +40,7 @@ export function AgentActivity({ run, detail, events }: { run: ResearchRun; detai
     </div>
     {assignments.map((assignment, index) => <div className="agent-card agent-card--specialist" key={assignment.id}>
       <div className="agent-card-head"><GitBranch size={17} aria-hidden="true" />
-        <strong>{ROLES[assignment.role] ?? assignment.role} <span className="agent-number">{index + 1}</span></strong>
+        <strong>{assignment.agent_name ?? ROLES[assignment.role] ?? assignment.role} <span className="agent-number">{index + 1}</span></strong>
         <Badge state={assignment.state} />
       </div>
       <p>{assignment.objective}</p>

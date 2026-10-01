@@ -1,5 +1,186 @@
 {
   "$defs": {
+    "AgentProfile": {
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "maxLength": 80,
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        },
+        "role": {
+          "maxLength": 80,
+          "minLength": 1,
+          "title": "Role",
+          "type": "string"
+        },
+        "description": {
+          "default": "",
+          "maxLength": 500,
+          "title": "Description",
+          "type": "string"
+        },
+        "instructions": {
+          "default": "",
+          "maxLength": 4000,
+          "title": "Instructions",
+          "type": "string"
+        },
+        "skills": {
+          "items": {
+            "enum": [
+              "planning",
+              "data_evaluation",
+              "evidence",
+              "failure_memory",
+              "scientific_reviewer"
+            ],
+            "type": "string"
+          },
+          "maxItems": 5,
+          "minItems": 1,
+          "title": "Skills",
+          "type": "array"
+        },
+        "tools": {
+          "items": {
+            "enum": [
+              "inspect_project",
+              "inspect_dataset",
+              "list_artifacts",
+              "read_artifact",
+              "read_job",
+              "run_audit",
+              "generate_split",
+              "seal_evaluation",
+              "run_baseline",
+              "read_evaluation",
+              "ingest_evidence",
+              "search_evidence",
+              "read_evidence_span",
+              "search_failures",
+              "read_failure",
+              "record_outcome",
+              "reconcile_outcome",
+              "validate_claims",
+              "build_report",
+              "verify_report",
+              "replay_science",
+              "read_memory"
+            ],
+            "type": "string"
+          },
+          "maxItems": 30,
+          "title": "Tools",
+          "type": "array"
+        },
+        "id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "revision": {
+          "default": 1,
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "title": "Revision",
+          "type": "integer"
+        },
+        "built_in": {
+          "default": false,
+          "title": "Built In",
+          "type": "boolean"
+        },
+        "archived": {
+          "default": false,
+          "title": "Archived",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "name",
+        "role",
+        "skills",
+        "id"
+      ],
+      "title": "AgentProfile",
+      "type": "object"
+    },
+    "AgentRoster": {
+      "additionalProperties": false,
+      "properties": {
+        "selection": {
+          "$ref": "#/$defs/AgentSelection"
+        },
+        "name": {
+          "maxLength": 80,
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        },
+        "lead_agent_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Lead Agent Id",
+          "type": "string"
+        },
+        "agents": {
+          "items": {
+            "$ref": "#/$defs/AgentProfile"
+          },
+          "maxItems": 13,
+          "minItems": 1,
+          "title": "Agents",
+          "type": "array"
+        }
+      },
+      "required": [
+        "selection",
+        "name",
+        "lead_agent_id",
+        "agents"
+      ],
+      "title": "AgentRoster",
+      "type": "object"
+    },
+    "AgentSelection": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "default": "automatic",
+          "enum": [
+            "automatic",
+            "agent",
+            "team"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "id": {
+          "anyOf": [
+            {
+              "maxLength": 160,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Id"
+        },
+        "exclusive": {
+          "default": true,
+          "title": "Exclusive",
+          "type": "boolean"
+        }
+      },
+      "title": "AgentSelection",
+      "type": "object"
+    },
     "AvailableEvidenceReference": {
       "additionalProperties": false,
       "properties": {
@@ -506,6 +687,17 @@
           "title": "Created At",
           "type": "string"
         },
+        "agent_roster": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/AgentRoster"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
         "contract": {
           "const": "research_run",
           "default": "research_run",
@@ -960,8 +1152,19 @@
     },
     "RunAssignmentView": {
       "additionalProperties": false,
-      "description": "A specialist assignment as scoped by the coordinator; results stay advisory.",
       "properties": {
+        "agent_name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Agent Name"
+        },
         "id": {
           "maxLength": 160,
           "minLength": 1,

@@ -1,5 +1,9 @@
 /* Generated from Pydantic JSON schemas. Do not edit; run npm run contracts:generate. */
-import type { ProjectResponse, ProjectsResponse, LegacyJobResponse, JobsResponse, LegacyArtifact, IntakeArtifact, MaterialResponse, ArtifactsResponse, ArtifactPreviews, EvidencePageText, EvidenceSpanView, EvidenceAnchors, ReportSummary, Capabilities, JobDetail, JobPage, ArtifactPage, EvaluationStatusView, EvaluationView, ResearchRun, ResearchRuns, RunDetail, RunResult, RunEvents, ExecutionPolicySummary } from './http';
+import type { AgentMarket, AgentProfile, AgentTeam, ProjectAgentSelection, ProjectResponse, ProjectsResponse, LegacyJobResponse, JobsResponse, LegacyArtifact, IntakeArtifact, MaterialResponse, ArtifactsResponse, ArtifactPreviews, EvidencePageText, EvidenceSpanView, EvidenceAnchors, ReportSummary, Capabilities, JobDetail, JobPage, ArtifactPage, EvaluationStatusView, EvaluationView, ResearchRun, ResearchRuns, RunDetail, RunResult, RunEvents, ExecutionPolicySummary } from './http';
+export function validateAgentMarket(value: unknown): value is AgentMarket;
+export function validateAgentProfile(value: unknown): value is AgentProfile;
+export function validateAgentTeam(value: unknown): value is AgentTeam;
+export function validateProjectAgentSelection(value: unknown): value is ProjectAgentSelection;
 export function validateProjectResponse(value: unknown): value is ProjectResponse;
 export function validateProjectsResponse(value: unknown): value is ProjectsResponse;
 export function validateLegacyJobResponse(value: unknown): value is LegacyJobResponse;
