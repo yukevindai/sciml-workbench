@@ -156,7 +156,8 @@
       ],
       "continued_from_run_id": null,
       "finished_at": "2026-09-24T23:59:42.090835Z",
-      "stop_reason": null
+      "stop_reason": null,
+      "agent_roster": null
     },
     {
       "schema_version": "1.0",
@@ -216,7 +217,8 @@
       "result_artifact_ids": [],
       "continued_from_run_id": null,
       "finished_at": null,
-      "stop_reason": null
+      "stop_reason": null,
+      "agent_roster": null
     }
   ],
   "details": {
@@ -281,7 +283,8 @@
         ],
         "continued_from_run_id": null,
         "finished_at": "2026-09-24T23:59:42.090835Z",
-        "stop_reason": null
+        "stop_reason": null,
+        "agent_roster": null
       },
       "plan": {
         "schema_version": "1.0",
@@ -406,7 +409,8 @@
         "result_artifact_ids": [],
         "continued_from_run_id": null,
         "finished_at": null,
-        "stop_reason": null
+        "stop_reason": null,
+        "agent_roster": null
       },
       "plan": {
         "schema_version": "1.0",
@@ -1426,7 +1430,8 @@
     "result_artifact_ids": [],
     "continued_from_run_id": null,
     "finished_at": null,
-    "stop_reason": null
+    "stop_reason": null,
+    "agent_roster": null
   },
   "review_accepted": {
     "schema_version": "1.0",
@@ -1486,6 +1491,7 @@
     "result_artifact_ids": [],
     "continued_from_run_id": null,
     "finished_at": null,
-    "stop_reason": null
+    "stop_reason": null,
+    "agent_roster": null
   }
 }

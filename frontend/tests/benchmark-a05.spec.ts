@@ -22,7 +22,7 @@ const otherData: DatasetArtifact = { ...dataset, id: 'other-data', filename: 'ot
 // Formatted upstream test values from the real pinned run; none may render before reveal.
 const TEST_VALUES = ['0.1334', '0.1505', '0.8782'];
 const run: ResearchRun = {
-  id: 'benchmark-agent', project_id: project.id, contract: 'research_run', schema_version: '1.0', created_at: ridge.created_at,
+  id: 'benchmark-agent', project_id: project.id, contract: 'research_run', agent_roster: null, schema_version: '1.0', created_at: ridge.created_at,
   objective: 'Compare predeclared baselines', inputs: { material_ids: [], artifact_ids: [dataset.id], conversation_id: null, message_cutoff: null },
   policy: { policy_id: 'policy', revision: 1, sha256: 'a'.repeat(64) }, mode: 'autopilot', state: 'completed', control_revision: 1, plan_revision: 1,
   limits: { model_tokens: 10000, model_requests: 10, tool_calls: 10, coordinator_iterations: 10, specialist_assignments: 2,

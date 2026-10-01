@@ -1,15 +1,15 @@
 import {
-  Activity, BookOpen, FileCheck, GitBranch, Layers, Lightbulb, MessageSquareText, ShieldCheck, Boxes, SlidersHorizontal,
+  Bot, Activity, BookOpen, FileCheck, GitBranch, Layers, Lightbulb, MessageSquareText, ShieldCheck, Boxes, SlidersHorizontal,
   type LucideIcon,
 } from 'lucide-react';
 import { kinds, type Artifact } from './types';
 
 export type View =
-  | 'ask' | 'research' | 'projects' | 'evidence' | 'dataset-audit' | 'split-designer'
+  | 'agent-market' | 'ask' | 'research' | 'projects' | 'evidence' | 'dataset-audit' | 'split-designer'
   | 'benchmark' | 'failure-memory' | 'provenance' | 'report';
 
 export const VIEWS: View[] = [
-  'ask', 'research', 'projects', 'evidence', 'dataset-audit', 'split-designer',
+  'agent-market', 'ask', 'research', 'projects', 'evidence', 'dataset-audit', 'split-designer',
   'benchmark', 'failure-memory', 'provenance', 'report',
 ];
 
@@ -28,6 +28,7 @@ export type NavItem = {
 };
 
 export const NAV: NavItem[] = [
+  { view: 'agent-market', label: 'Agent market', icon: Bot, title: 'Agent market', lede: 'Customize agents and build reusable teams for the way you research.' },
   {
     view: 'ask', label: 'Ask', icon: MessageSquareText,
     title: 'Ask',
@@ -81,7 +82,7 @@ export const NAV: NavItem[] = [
 ];
 
 export const NAV_GROUPS: { label: string; views: View[]; advanced?: boolean }[] = [
-  { label: 'Workspace', views: ['ask', 'projects'] },
+  { label: 'Workspace', views: ['ask', 'agent-market', 'projects'] },
   { label: 'Advanced tools', views: ['research', 'dataset-audit', 'split-designer', 'benchmark', 'failure-memory', 'evidence', 'provenance', 'report'], advanced: true },
 ];
 

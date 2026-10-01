@@ -21,6 +21,7 @@ from .request_identity import request_digest
 
 
 class AssignmentRequest(ContractModel):
+    agent_id: Identifier | None = None
     role: Literal['data_evaluation', 'evidence', 'failure_memory', 'scientific_reviewer']
     objective: Text
     artifact_ids: list[Identifier] = Field(default_factory=list, max_length=100)
@@ -77,10 +78,13 @@ class SpecialistService:
         with self.db.session.begin() as s:
             run = self.runs.get(s, pid, rid, lock=True)
             self.runs.assert_dispatch(s, run)
+            from .agent_market import specialist_profile
+            profile = specialist_profile(run.original_request.get('agent_roster'), request.role, request.agent_id)
             old = s.get(AssignmentRow, ident)
             if old:
                 scope = SpecialistAssignment.model_validate(old.payload)
                 if (scope.objective != request.objective or scope.role != request.role
+                        or scope.agent_profile != profile
                         or scope.allowed_artifact_ids != request.artifact_ids
                         or scope.allowed_material_ids != request.material_ids
                         or scope.completion_criteria != request.completion_criteria
@@ -93,7 +97,7 @@ class SpecialistService:
                 raise DomainError('Assignment exceeds run scope', 403, 'POLICY_DENIED')
             stamp = now()
             assignment = SpecialistAssignment(id=ident, project_id=pid, run_id=rid, created_at=stamp,
-                plan_revision=run.plan_revision, role=request.role, objective=request.objective,
+                plan_revision=run.plan_revision, role=request.role, objective=request.objective, agent_profile=profile,
                 allowed_artifact_ids=request.artifact_ids, allowed_material_ids=request.material_ids,
                 allowed_tools=[], budget_allocation_id='allocation:' + ident,
                 deadline_at=stamp + timedelta(minutes=5), completion_criteria=request.completion_criteria,
@@ -140,6 +144,9 @@ class SpecialistService:
             task = ContextPart.derived(json.dumps({'role': assignment.role, 'objective': assignment.objective,
                 'completion_criteria': assignment.completion_criteria}), sources)
             context = [instructions, task, *sources]
+            if assignment.agent_profile:
+                from .agent_market import profile_context
+                context.append(profile_context(pid, assignment.agent_profile, policy))
             assignment = assignment.model_copy(update={'source_classes': sorted({
                 kind for part in context for kind in (part.content_class, *part.source_classes)})})
             # Persist before IO: a crash cannot start a second model request.

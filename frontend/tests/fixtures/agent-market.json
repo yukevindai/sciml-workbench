@@ -1,0 +1,240 @@
+{
+  "agents": [
+    {
+      "name": "Principal Investigator",
+      "role": "PI",
+      "description": "Plan the work, coordinate specialists and synthesize grounded results.",
+      "instructions": "",
+      "skills": [
+        "planning"
+      ],
+      "tools": [
+        "inspect_project",
+        "inspect_dataset",
+        "list_artifacts",
+        "read_artifact",
+        "read_job",
+        "read_memory",
+        "read_failure",
+        "search_failures",
+        "run_audit",
+        "generate_split",
+        "seal_evaluation",
+        "run_baseline",
+        "read_evaluation",
+        "ingest_evidence",
+        "read_evidence_span",
+        "record_outcome",
+        "build_report"
+      ],
+      "id": "default-pi",
+      "revision": 1,
+      "built_in": true,
+      "archived": false
+    },
+    {
+      "name": "Data Specialist",
+      "role": "Specialist",
+      "description": "Focus on data integrity, independence and fair model evaluation.",
+      "instructions": "",
+      "skills": [
+        "data_evaluation"
+      ],
+      "tools": [
+        "inspect_project",
+        "inspect_dataset",
+        "list_artifacts",
+        "read_artifact",
+        "read_job",
+        "read_memory",
+        "read_failure",
+        "search_failures",
+        "read_evaluation",
+        "read_evidence_span",
+        "run_audit",
+        "generate_split",
+        "seal_evaluation",
+        "run_baseline"
+      ],
+      "id": "default-data",
+      "revision": 1,
+      "built_in": true,
+      "archived": false
+    },
+    {
+      "name": "Researcher",
+      "role": "Researcher",
+      "description": "Investigate the supplied papers and preserve exact evidence and uncertainty.",
+      "instructions": "",
+      "skills": [
+        "evidence"
+      ],
+      "tools": [
+        "inspect_project",
+        "inspect_dataset",
+        "list_artifacts",
+        "read_artifact",
+        "read_job",
+        "read_memory",
+        "read_failure",
+        "search_failures",
+        "read_evaluation",
+        "read_evidence_span",
+        "ingest_evidence"
+      ],
+      "id": "default-researcher",
+      "revision": 1,
+      "built_in": true,
+      "archived": false
+    },
+    {
+      "name": "Experiment Analyst",
+      "role": "Specialist",
+      "description": "Use prior experiment outcomes to identify useful next steps.",
+      "instructions": "",
+      "skills": [
+        "failure_memory"
+      ],
+      "tools": [
+        "inspect_project",
+        "inspect_dataset",
+        "list_artifacts",
+        "read_artifact",
+        "read_job",
+        "read_memory",
+        "read_failure",
+        "search_failures",
+        "read_evaluation",
+        "read_evidence_span",
+        "record_outcome"
+      ],
+      "id": "default-memory",
+      "revision": 1,
+      "built_in": true,
+      "archived": false
+    },
+    {
+      "name": "Scientific Reviewer",
+      "role": "Reviewer",
+      "description": "Independently verify each claim against retained evidence.",
+      "instructions": "",
+      "skills": [
+        "scientific_reviewer"
+      ],
+      "tools": [
+        "inspect_project",
+        "inspect_dataset",
+        "list_artifacts",
+        "read_artifact",
+        "read_job",
+        "read_memory",
+        "read_failure",
+        "search_failures",
+        "read_evaluation",
+        "read_evidence_span"
+      ],
+      "id": "default-reviewer",
+      "revision": 1,
+      "built_in": true,
+      "archived": false
+    }
+  ],
+  "teams": [],
+  "tools": [
+    {
+      "id": "inspect_project",
+      "description": "Inspect scoped project counts and available operations."
+    },
+    {
+      "id": "inspect_dataset",
+      "description": "Inspect dataset schema and declaration status; no rows or source text."
+    },
+    {
+      "id": "list_artifacts",
+      "description": "Page through authorized artifact identities."
+    },
+    {
+      "id": "read_artifact",
+      "description": "Read an aggregate projection; raw payloads and test outputs stay quarantined."
+    },
+    {
+      "id": "read_job",
+      "description": "Read a linked job status without resubmitting it."
+    },
+    {
+      "id": "read_memory",
+      "description": "Read categorical confirmed preferences and provisional lessons; no saved prose."
+    },
+    {
+      "id": "read_failure",
+      "description": "Read an authorized retained failure snapshot with assessments quarantined."
+    },
+    {
+      "id": "search_failures",
+      "description": "Page through authorized retained failure snapshots, not live upstream prose."
+    },
+    {
+      "id": "run_audit",
+      "description": "Submit a ChemData Auditor job."
+    },
+    {
+      "id": "generate_split",
+      "description": "Submit a SciSplit job with an immutable audit parent."
+    },
+    {
+      "id": "seal_evaluation",
+      "description": "Seal exact predeclared benchmark candidates."
+    },
+    {
+      "id": "run_baseline",
+      "description": "Submit one sealed ChemE baseline candidate."
+    },
+    {
+      "id": "read_evaluation",
+      "description": "Read sealed comparison status without releasing test results."
+    },
+    {
+      "id": "ingest_evidence",
+      "description": "Submit text-layer PDF ingestion for an authorized attachment."
+    },
+    {
+      "id": "read_evidence_span",
+      "description": "Read at most 4000 characters at exact page offsets with a verified citation."
+    },
+    {
+      "id": "record_outcome",
+      "description": "Record an eligible objective execution failure from a linked benchmark job; actor and observation come from trusted records."
+    },
+    {
+      "id": "build_report",
+      "description": "Freeze authorized run artifacts and submit report construction."
+    }
+  ],
+  "skills": [
+    {
+      "id": "planning",
+      "name": "Research planning",
+      "description": "Break questions into a useful research plan and synthesize results."
+    },
+    {
+      "id": "data_evaluation",
+      "name": "Data & evaluation",
+      "description": "Check data quality, leakage, splits and model comparisons."
+    },
+    {
+      "id": "evidence",
+      "name": "Literature research",
+      "description": "Interpret papers and ground findings in retained sources."
+    },
+    {
+      "id": "failure_memory",
+      "name": "Experiment memory",
+      "description": "Learn from recorded failures and previous experiments."
+    },
+    {
+      "id": "scientific_reviewer",
+      "name": "Scientific review",
+      "description": "Independently check exact claims and their supporting evidence."
+    }
+  ]
+}

@@ -1,5 +1,41 @@
 {
   "$defs": {
+    "AgentSelection": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "default": "automatic",
+          "enum": [
+            "automatic",
+            "agent",
+            "team"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "id": {
+          "anyOf": [
+            {
+              "maxLength": 160,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Id"
+        },
+        "exclusive": {
+          "default": true,
+          "title": "Exclusive",
+          "type": "boolean"
+        }
+      },
+      "title": "AgentSelection",
+      "type": "object"
+    },
     "InputScope": {
       "additionalProperties": false,
       "properties": {
@@ -161,6 +197,17 @@
   },
   "additionalProperties": false,
   "properties": {
+    "agent_selection": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/AgentSelection"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
     "objective": {
       "maxLength": 4000,
       "minLength": 1,

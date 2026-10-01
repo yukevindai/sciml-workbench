@@ -1,3 +1,4 @@
+import type { AgentSelection } from './generated/http';
 import { api, ApiError } from './api';
 import { parseExecutionPolicy, parseMaterial, parseMaterials, parseProject } from './decode';
 import type { EffectivePolicy, ExecutionPolicySummary, MaterialResponse, ResearchRun } from './generated/http';
@@ -112,15 +113,15 @@ function perRun(policy: EffectivePolicy): EffectivePolicy {
 }
 
 /** Uploads new files, makes sure the assistant may use them and the chosen earlier files, then starts it. */
-export async function ask({ projectId, prompt, files, earlier, reviewPlan }: {
-  projectId: string; prompt: string; files: File[]; earlier: MaterialResponse[]; reviewPlan: boolean;
+export async function ask({ projectId, prompt, files, earlier, reviewPlan, agentSelection }: {
+  projectId: string; prompt: string; files: File[]; earlier: MaterialResponse[]; reviewPlan: boolean; agentSelection?: AgentSelection | null;
 }): Promise<ResearchRun> {
   const uploaded: MaterialResponse[] = [];
   for (const file of files) uploaded.push(await uploadFile(projectId, file));
   const materials = [...new Map([...earlier, ...uploaded].map(m => [m.id, m])).values()];
   const items = scopeItems(materials, []);
   const policy = perRun(await permissions(projectId, items));
-  return submitRun(projectId, runInput(prompt, items, policy, reviewPlan ? 'review_plan' : 'autopilot'));
+  return submitRun(projectId, { ...runInput(prompt, items, policy, reviewPlan ? 'review_plan' : 'autopilot'), agent_selection: agentSelection });
 }
 
 /* ------------------------------ plain words ------------------------------ */

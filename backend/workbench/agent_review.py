@@ -127,6 +127,12 @@ class IndependentReviewer:
             from .agent_finalization import execution_versions, retain_versions
             retain_versions(s, run, execution_versions(self.model, self.provider, REVIEW_INSTRUCTIONS))
             policy = self.runs.effective_policy(s, run)
+            from .agent_market import specialist_profile
+            profile = specialist_profile(run.original_request.get('agent_roster'), 'scientific_reviewer')
+            if profile:
+                required = {'read_artifact'} | ({'read_evidence_span'} if any(c.source_references for c in claims) else set())
+                if not required <= set(profile.tools) & policy.allowed_tools:
+                    raise DomainError('The assigned reviewer lacks the tools required for grounded review', 403, 'POLICY_DENIED')
             from .artifacts import ArtifactResolver
             ids |= {a.id for a in ArtifactResolver(s, pid, policy.artifact_ids).closure(ids)}
             from .db import EvaluationJobRow, JobRow
@@ -167,6 +173,9 @@ class IndependentReviewer:
         context = [ContextPart(pid, 'schema', REVIEW_INSTRUCTIONS),
             ContextPart(pid, 'raw', json.dumps({'candidate_sha256': digest, 'answer': candidate_answer(claims),
                 'claims': [c.model_dump(mode='json') for c in claims], 'verified_source_spans': excerpts}), tuple(sorted(ids)))]
+        if assignment.agent_profile:
+            from .agent_market import profile_context
+            context.append(profile_context(pid, assignment.agent_profile, policy))
         wrapper = BudgetedProvider(self.db, self.provider, bounds=self.bounds, prices=self.prices,
                                    backend_settings=self.settings, runs=self.runs)
         response = wrapper.complete(project_id=pid, run_id=rid, request_id='review:' + assignment.id,

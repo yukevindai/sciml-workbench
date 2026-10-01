@@ -19,7 +19,7 @@ const newerSplit = { ...split, id: 'newer-split', audit_id: newerAudit.id, paren
 const job = { id: 'split-job', project_id: project.id, kind: 'split', state: 'succeeded', result_id: split.id,
   error: null, created_at: split.created_at, started_at: split.created_at, finished_at: split.created_at };
 const run: ResearchRun = {
-  id: 'split-agent', project_id: project.id, contract: 'research_run', schema_version: '1.0', created_at: split.created_at,
+  id: 'split-agent', project_id: project.id, contract: 'research_run', agent_roster: null, schema_version: '1.0', created_at: split.created_at,
   objective: 'Design a temporal holdout', inputs: { material_ids: [], artifact_ids: [dataset.id], conversation_id: null, message_cutoff: null },
   policy: { policy_id: 'policy', revision: 1, sha256: 'a'.repeat(64) }, mode: 'autopilot', state: 'completed', control_revision: 1, plan_revision: 1,
   limits: { model_tokens: 10000, model_requests: 10, tool_calls: 10, coordinator_iterations: 10, specialist_assignments: 2,

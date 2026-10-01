@@ -1,6 +1,10 @@
 /* Generated from Pydantic JSON schemas. Do not edit; run npm run contracts:generate. */
 
 export type HttpResponse =
+  | AgentMarket
+  | AgentProfile
+  | AgentTeam
+  | ProjectAgentSelection
   | EvaluationStatusView
   | EvaluationView
   | ProjectResponse
@@ -26,6 +30,92 @@ export type HttpResponse =
   | RunResult
   | RunEvents
   | ExecutionPolicySummary;
+export type Name = string;
+export type Role = string;
+export type Description = string;
+export type Instructions = string;
+/**
+ * @minItems 1
+ * @maxItems 5
+ */
+export type Skills = ('planning' | 'data_evaluation' | 'evidence' | 'failure_memory' | 'scientific_reviewer')[];
+/**
+ * @maxItems 30
+ */
+export type Tools = (
+  | 'inspect_project'
+  | 'inspect_dataset'
+  | 'list_artifacts'
+  | 'read_artifact'
+  | 'read_job'
+  | 'run_audit'
+  | 'generate_split'
+  | 'seal_evaluation'
+  | 'run_baseline'
+  | 'read_evaluation'
+  | 'ingest_evidence'
+  | 'search_evidence'
+  | 'read_evidence_span'
+  | 'search_failures'
+  | 'read_failure'
+  | 'record_outcome'
+  | 'reconcile_outcome'
+  | 'validate_claims'
+  | 'build_report'
+  | 'verify_report'
+  | 'replay_science'
+  | 'read_memory'
+)[];
+export type Id = string;
+export type Revision = number;
+export type BuiltIn = boolean;
+export type Archived = boolean;
+export type Agents = AgentProfile[];
+export type Name1 = string;
+export type Description1 = string;
+/**
+ * @minItems 1
+ * @maxItems 8
+ */
+export type AgentIds = string[];
+export type LeadAgentId = string;
+export type Id1 = string;
+export type Revision1 = number;
+export type Archived1 = boolean;
+export type Teams = AgentTeam[];
+export type Id2 =
+  | 'inspect_project'
+  | 'inspect_dataset'
+  | 'list_artifacts'
+  | 'read_artifact'
+  | 'read_job'
+  | 'run_audit'
+  | 'generate_split'
+  | 'seal_evaluation'
+  | 'run_baseline'
+  | 'read_evaluation'
+  | 'ingest_evidence'
+  | 'search_evidence'
+  | 'read_evidence_span'
+  | 'search_failures'
+  | 'read_failure'
+  | 'record_outcome'
+  | 'reconcile_outcome'
+  | 'validate_claims'
+  | 'build_report'
+  | 'verify_report'
+  | 'replay_science'
+  | 'read_memory';
+export type Description2 = string;
+export type Tools1 = MarketTool[];
+export type Id3 = 'planning' | 'data_evaluation' | 'evidence' | 'failure_memory' | 'scientific_reviewer';
+export type Name2 = string;
+export type Description3 = string;
+export type Skills1 = MarketSkill[];
+export type ProjectId = string;
+export type Kind = 'automatic' | 'agent' | 'team';
+export type Id4 = string | null;
+export type Exclusive = boolean;
 export type ProtocolId = string;
 export type State = 'sealed' | 'released';
 export type Exploratory = boolean;
@@ -39,13 +129,13 @@ export type Status = 'succeeded' | 'failed';
 export type Model = 'mean' | 'ridge';
 export type Seed = number;
 export type TestVisible = boolean;
-export type Id = string;
-export type Name = string;
-export type Description = string;
+export type Id5 = string;
+export type Name3 = string;
+export type Description4 = string;
 export type ProjectsResponse = ProjectResponse[];
-export type Id1 = string;
-export type ProjectId = string;
-export type Kind = 'audit' | 'split' | 'benchmark' | 'evidence' | 'failure' | 'report';
+export type Id6 = string;
+export type ProjectId1 = string;
+export type Kind1 = 'audit' | 'split' | 'benchmark' | 'evidence' | 'failure' | 'report';
 export type State1 = 'queued' | 'running' | 'succeeded' | 'failed';
 export type ResultId = string | null;
 export type Error = string | null;
@@ -55,11 +145,11 @@ export type FinishedAt = string | null;
 export type JobsResponse = LegacyJobResponse[];
 export type LegacyArtifact = Dataset | Audit | Split | Benchmark | Evidence | Failure | Provenance | Report;
 export type SchemaVersion = '1.0';
-export type Id2 = string;
-export type ProjectId1 = string;
+export type Id7 = string;
+export type ProjectId2 = string;
 export type CreatedAt1 = string;
 export type Parents = string[];
-export type Kind1 = 'dataset';
+export type Kind2 = 'dataset';
 export type Filename = string;
 export type BlobKey = string;
 export type Sha256 = string;
@@ -71,27 +161,27 @@ export type License = string;
 export type DataKind = 'empirical' | 'synthetic';
 export type Transformations = string;
 export type SchemaVersion1 = '1.0';
-export type Id3 = string;
-export type ProjectId2 = string;
+export type Id8 = string;
+export type ProjectId3 = string;
 export type CreatedAt2 = string;
 export type Parents1 = string[];
-export type Kind2 = 'audit';
+export type Kind3 = 'audit';
 export type DatasetId = string;
 export type SchemaVersion2 = '1.0';
-export type Id4 = string;
-export type ProjectId3 = string;
+export type Id9 = string;
+export type ProjectId4 = string;
 export type CreatedAt3 = string;
 export type Parents2 = string[];
-export type Kind3 = 'split';
+export type Kind4 = 'split';
 export type DatasetId1 = string;
 export type AuditId = string;
 export type Assignments = ('train' | 'validation' | 'test' | 'excluded')[];
 export type SchemaVersion3 = '1.0';
-export type Id5 = string;
-export type ProjectId4 = string;
+export type Id10 = string;
+export type ProjectId5 = string;
 export type CreatedAt4 = string;
 export type Parents3 = string[];
-export type Kind4 = 'benchmark';
+export type Kind5 = 'benchmark';
 export type DatasetId2 = string;
 export type SplitId = string;
 export type Model1 = 'mean' | 'ridge';
@@ -100,49 +190,49 @@ export type Status1 = 'succeeded' | 'failed';
 export type Error1 = string | null;
 export type BundleKey = string | null;
 export type SchemaVersion4 = '1.0';
-export type Id6 = string;
-export type ProjectId5 = string;
+export type Id11 = string;
+export type ProjectId6 = string;
 export type CreatedAt5 = string;
 export type Parents4 = string[];
-export type Kind5 = 'evidence';
+export type Kind6 = 'evidence';
 export type Title = string;
 export type PdfKey = string;
 export type Sha2561 = string;
 export type BundleKey1 = string;
 export type SchemaVersion5 = '1.0';
-export type Id7 = string;
-export type ProjectId6 = string;
+export type Id12 = string;
+export type ProjectId7 = string;
 export type CreatedAt6 = string;
 export type Parents5 = string[];
-export type Kind6 = 'failure';
+export type Kind7 = 'failure';
 export type BenchmarkId = string;
 export type ExternalProjectId = string;
 export type ExternalRecordId = string;
 export type Reason = string;
 export type SchemaVersion6 = '1.0';
-export type Id8 = string;
-export type ProjectId7 = string;
+export type Id13 = string;
+export type ProjectId8 = string;
 export type CreatedAt7 = string;
 export type Parents6 = string[];
-export type Kind7 = 'provenance';
+export type Kind8 = 'provenance';
 export type Activity = string;
 export type Inputs = string[];
 export type Outputs = string[];
 export type SchemaVersion7 = '1.0';
-export type Id9 = string;
-export type ProjectId8 = string;
+export type Id14 = string;
+export type ProjectId9 = string;
 export type CreatedAt8 = string;
 export type Parents7 = string[];
-export type Kind8 = 'report';
+export type Kind9 = 'report';
 export type BlobKey1 = string;
 export type Sha2562 = string;
 export type ArtifactIds = string[];
 export type SchemaVersion8 = '2.0';
-export type Id10 = string;
-export type ProjectId9 = string;
+export type Id15 = string;
+export type ProjectId10 = string;
 export type CreatedAt9 = string;
 export type Parents8 = string[];
-export type Kind9 = 'dataset';
+export type Kind10 = 'dataset';
 export type Filename1 = string;
 export type BlobKey2 = string;
 export type Sha2563 = string;
@@ -159,8 +249,8 @@ export type Declaration_AnnotatedStr__StringConstraints__ =
   | InferredDeclarationAnnotatedStrStringConstraints;
 export type Origin = 'unknown';
 export type Value = null;
-export type Kind10 = 'user_message' | 'operator_assertion' | 'source_span' | 'artifact';
-export type Id11 = string;
+export type Kind11 = 'user_message' | 'operator_assertion' | 'source_span' | 'artifact';
+export type Id16 = string;
 export type SupportingReferences = DeclarationReference[];
 export type Uncertainty = string | null;
 export type Origin1 = 'user_supplied';
@@ -301,7 +391,7 @@ export type Declaration_IndependentUnit_ =
   | SourceDeclarationIndependentUnit
   | InferredDeclarationIndependentUnit;
 export type Origin16 = 'user_supplied';
-export type Name1 = string;
+export type Name4 = string;
 /**
  * @minItems 1
  */
@@ -330,19 +420,19 @@ export type UnresolvedFields = (
   'citation' | 'url' | 'license' | 'data_kind' | 'transformations' | 'units' | 'target' | 'independent_unit'
 )[];
 export type SchemaVersion9 = '2.0';
-export type Id12 = string;
-export type ProjectId10 = string;
+export type Id17 = string;
+export type ProjectId11 = string;
 export type CreatedAt10 = string;
 export type Parents9 = string[];
-export type Kind11 = 'failure';
+export type Kind12 = 'failure';
 export type BenchmarkId1 = string;
 export type SourceJobId = string;
 export type Reason1 = string;
 export type UncertaintyNotes = string;
 export type Actor = HumanActor | AgentActor;
-export type Kind12 = 'human';
+export type Kind13 = 'human';
 export type OperatorSessionReference = string;
-export type Kind13 = 'agent';
+export type Kind14 = 'agent';
 export type RunId = string;
 export type AssignmentId = string | null;
 export type ActionId = string;
@@ -350,14 +440,14 @@ export type Provider = string;
 export type Model2 = string;
 export type PromptVersion = string;
 export type PolicyId = string;
-export type Revision = number;
+export type Revision2 = number;
 export type Sha2564 = string;
 export type PolicyRuleId = string;
 export type Observation = ExecutionFailure | CriterionFailure | ResearcherAssessment;
-export type Kind14 = 'execution_failure';
+export type Kind15 = 'execution_failure';
 export type ErrorCode = 'ADMISSION_REJECTED' | 'JOB_TIMED_OUT' | 'WORKER_INTERRUPTED' | 'INTEGRITY_FAILED';
 export type ObservedError = string;
-export type Kind15 = 'criterion_missed';
+export type Kind16 = 'criterion_missed';
 export type ProtocolId2 = string;
 export type ProtocolRevision = number;
 export type CriterionId = string;
@@ -368,7 +458,7 @@ export type Value16 = number;
 export type Units = string | null;
 export type SuccessComparison = 'lt' | 'lte' | 'gt' | 'gte';
 export type Threshold = number;
-export type Kind16 = 'researcher_assessment';
+export type Kind17 = 'researcher_assessment';
 export type Statement = string;
 export type CausalHypotheses = string[];
 export type Connector = 'sciml-workbench';
@@ -379,12 +469,12 @@ export type ExternalProjectId1 = string;
 export type ExternalRecordId1 = string;
 export type JsonValue = unknown;
 export type SchemaVersion10 = '1.0';
-export type Id13 = string;
-export type ProjectId11 = string;
+export type Id18 = string;
+export type ProjectId12 = string;
 export type CreatedAt11 = string;
 export type Parents10 = string[];
-export type Kind17 = 'evaluation_protocol';
-export type Revision1 = number;
+export type Kind18 = 'evaluation_protocol';
+export type Revision3 = number;
 export type DatasetId3 = string;
 export type DatasetSha256 = string;
 export type SplitId1 = string;
@@ -396,7 +486,7 @@ export type Target = string;
  */
 export type Features = string[];
 export type Preprocessing = string;
-export type Id14 = string;
+export type Id19 = string;
 export type Model3 = 'mean' | 'ridge';
 export type Seed2 = number;
 export type ConfigurationSha2561 = string;
@@ -406,7 +496,7 @@ export type ConfigurationSha2561 = string;
 export type Candidates = EvaluationCandidate[];
 export type PrimaryMetric = string;
 export type SelectionRule = 'validation' | 'predeclared_comparison';
-export type Id15 = string;
+export type Id20 = string;
 export type Metric = string;
 export type Partition1 = 'validation' | 'test';
 export type Comparison = 'lt' | 'lte' | 'gt' | 'gte';
@@ -418,14 +508,14 @@ export type SelectedCandidateId = string | null;
 export type ExposureStatus1 = 'unexposed' | 'exposed' | 'unknown';
 export type ExposureEventIds1 = string[];
 export type SchemaVersion11 = '1.0';
-export type Id16 = string;
-export type ProjectId12 = string;
+export type Id21 = string;
+export type ProjectId13 = string;
 export type CreatedAt12 = string;
 export type Parents11 = string[];
-export type Kind18 = 'claim_set';
+export type Kind19 = 'claim_set';
 export type RunId1 = string;
-export type Revision2 = number;
-export type Id17 = string;
+export type Revision4 = number;
+export type Id22 = string;
 export type Statement1 = string;
 export type Classification = 'computed_result' | 'source_supported' | 'interpretation' | 'hypothesis';
 export type Contract = 'evidence_reference';
@@ -435,7 +525,7 @@ export type SourceArtifactId = string;
 export type SourceSha256 = string;
 export type RepresentationSha256 = string;
 export type ExtractionVersion = string;
-export type Kind19 = 'text_span';
+export type Kind20 = 'text_span';
 export type Unit = 'unicode_codepoint';
 export type Start = number;
 export type End = number;
@@ -459,11 +549,11 @@ export type Explanation = string | null;
  */
 export type Claims = Claim[];
 export type SchemaVersion13 = '1.0';
-export type Id18 = string;
-export type ProjectId13 = string;
+export type Id23 = string;
+export type ProjectId14 = string;
 export type CreatedAt13 = string;
 export type Parents12 = string[];
-export type Kind20 = 'agent_execution';
+export type Kind21 = 'agent_execution';
 export type RunId2 = string;
 export type Objective = string;
 export type MaterialIds = string[];
@@ -471,13 +561,13 @@ export type ArtifactIds1 = string[];
 export type ConversationId = string | null;
 export type MessageCutoff = number | null;
 export type SchemaVersion14 = '1.0';
-export type Id19 = string;
-export type ProjectId14 = string;
+export type Id24 = string;
+export type ProjectId15 = string;
 export type CreatedAt14 = string;
 export type Contract1 = 'research_plan';
 export type RunId3 = string;
-export type Revision3 = number;
-export type Id20 = string;
+export type Revision5 = number;
+export type Id25 = string;
 export type Objective1 = string;
 export type DependsOn = string[];
 export type AllowedInputIds = string[];
@@ -498,7 +588,7 @@ export type PlanRevisions = ResearchPlan[];
 export type ActionId1 = string;
 export type PlanRevision = number;
 export type Summary = string;
-export type Id21 = string;
+export type Id26 = string;
 export type Contract2 = string;
 export type SchemaVersion15 = string;
 export type Sha2565 = string;
@@ -610,10 +700,10 @@ export type IntakeArtifact =
   | EvaluationProtocol
   | ClaimSet
   | AgentExecutionRecord;
-export type Kind21 = 'benchmark_preview';
+export type Kind22 = 'benchmark_preview';
 export type SchemaVersion16 = '1.0';
-export type Id22 = string;
-export type ProjectId15 = string;
+export type Id27 = string;
+export type ProjectId16 = string;
 export type CreatedAt15 = string;
 export type Parents13 = string[];
 export type DatasetId4 = string;
@@ -626,7 +716,7 @@ export type ProtocolIds = string[];
 export type ValidationMetrics = {
   [k: string]: number;
 } | null;
-export type Name2 = string | null;
+export type Name5 = string | null;
 export type Seed4 = number | null;
 export type Parameters1 = {
   [k: string]: JsonValue;
@@ -665,7 +755,7 @@ export type Text1 = string;
 export type Before = string;
 export type After = string;
 export type RepresentationLength = number;
-export type Id23 = string;
+export type Id28 = string;
 export type SourceArtifactId2 = string;
 export type CreatedAt16 = string;
 export type EvidenceAnchors = EvidenceAnchor[];
@@ -679,26 +769,26 @@ export type Reason3 = string | null;
 export type ScientificReplay = 'not_run';
 export type ManifestVersion = ('1.0' | '2.0') | null;
 export type CapturedAt1 = string | null;
-export type Kind22 = 'project' | 'run';
+export type Kind23 = 'project' | 'run';
 export type RunId4 = string | null;
-export type Revision4 = number | null;
+export type Revision6 = number | null;
 export type ExecutionCutoff = number | null;
 export type ExportStatusAtCutoff = 'pending' | null;
 export type FileCount = number;
-export type Id24 = string;
-export type Kind23 = string;
+export type Id29 = string;
+export type Kind24 = string;
 export type SchemaVersion17 = string;
 export type CreatedAt17 = string;
 export type Label = string;
 export type Parents14 = string[];
 export type Inputs1 = ReportInput[];
-export type Id25 = string;
-export type Kind24 = string;
+export type Id30 = string;
+export type Kind25 = string;
 export type State5 = 'succeeded' | 'failed';
 export type ResultId1 = string | null;
 export type ErrorCode1 = string | null;
 export type Jobs = ReportJob[];
-export type Id26 = string;
+export type Id31 = string;
 export type Filename2 = string;
 export type MediaType = 'text/csv' | 'application/pdf';
 export type Sha2567 = string;
@@ -727,8 +817,8 @@ export type ClaimSetId = string | null;
 export type ReviewStatus = string | null;
 export type RuntimeVersionCount = number;
 export type Gaps = string[];
-export type Id27 = string;
-export type ProjectId16 = string;
+export type Id32 = string;
+export type ProjectId17 = string;
 export type Filename3 = string;
 export type MediaType1 = 'text/csv' | 'application/pdf';
 export type Sha2568 = string;
@@ -760,9 +850,9 @@ export type FailureSearch = 'project_scoped_lexical';
  * @maxItems 20
  */
 export type Limitations1 = string[];
-export type Id28 = string;
-export type ProjectId17 = string;
-export type Kind25 =
+export type Id33 = string;
+export type ProjectId18 = string;
+export type Kind26 =
   'audit' | 'split' | 'benchmark' | 'evidence' | 'failure' | 'report' | 'report_verify' | 'scientific_replay';
 export type State6 = 'queued' | 'running' | 'succeeded' | 'failed';
 export type ResultId2 = string | null;
@@ -869,9 +959,9 @@ export type LastErrorCode =
  */
 export type Items = JobDetail[];
 export type NextCursor = string | null;
-export type Id29 = string;
-export type ProjectId18 = string;
-export type Kind26 = string;
+export type Id34 = string;
+export type ProjectId19 = string;
+export type Kind27 = string;
 export type SchemaVersion19 = string;
 export type CreatedAt19 = string;
 /**
@@ -880,9 +970,16 @@ export type CreatedAt19 = string;
 export type Items1 = ArtifactSummary[];
 export type NextCursor1 = string | null;
 export type SchemaVersion20 = '1.0';
-export type Id30 = string;
-export type ProjectId19 = string;
+export type Id35 = string;
+export type ProjectId20 = string;
 export type CreatedAt20 = string;
+export type Name6 = string;
+export type LeadAgentId1 = string;
+/**
+ * @minItems 1
+ * @maxItems 13
+ */
+export type Agents1 = AgentProfile[];
 export type Contract3 = 'research_run';
 export type Objective3 = string;
 export type Mode = 'autopilot' | 'review_plan';
@@ -905,21 +1002,21 @@ export type FinishedAt2 = string | null;
 export type StopReason = string | null;
 export type ResearchRuns = ResearchRun[];
 export type SchemaVersion21 = '1.0';
-export type Id31 = string;
-export type ProjectId20 = string;
+export type Id36 = string;
+export type ProjectId21 = string;
 export type CreatedAt21 = string;
 export type Contract4 = 'research_question';
 export type RunId7 = string;
-export type Revision5 = number;
+export type Revision7 = number;
 export type RunRevision = number;
-export type Id32 = string;
+export type Id37 = string;
 export type Field = string;
 export type Prompt1 = string;
 /**
  * @minItems 1
  */
 export type BlockedStepIds = string[];
-export type Id33 = string;
+export type Id38 = string;
 export type Label1 = string;
 export type Consequence = string;
 export type Options = QuestionOption[];
@@ -944,7 +1041,7 @@ export type ControlEffect = string;
  * @maxItems 20
  */
 export type EarlierPlans = ResearchPlan[];
-export type Id34 = string;
+export type Id39 = string;
 export type Tool1 = string;
 export type Attempt = number;
 export type State10 = 'prepared' | 'submitted' | 'completed' | 'failed' | 'unknown' | 'cancelled';
@@ -986,8 +1083,9 @@ export type ErrorCode3 =
     )
   | null;
 export type Actions1 = RunActionView[];
-export type Id35 = string;
-export type Role = 'data_evaluation' | 'evidence' | 'failure_memory' | 'scientific_reviewer';
+export type AgentName = string | null;
+export type Id40 = string;
+export type Role1 = 'data_evaluation' | 'evidence' | 'failure_memory' | 'scientific_reviewer';
 export type Objective4 = string;
 export type PlanRevision2 = number;
 export type State11 = 'queued' | 'running' | 'waiting' | 'completed' | 'failed' | 'cancelled';
@@ -1041,7 +1139,7 @@ export type QuestionId = string | null;
 export type ArtifactIds5 = string[];
 export type Summary1 = string | null;
 export type RunEvents = RunEvent[];
-export type ProjectId21 = string;
+export type ProjectId22 = string;
 export type ProjectPolicyRevision = number;
 export type Exposure = 'schema_aggregates' | 'selected_excerpts' | 'raw_project_content';
 export type AllowedTools = (
@@ -1078,6 +1176,51 @@ export type ShareOperatorMessages = boolean;
 export type AgentAvailable = boolean;
 export type UnavailableReason = string | null;
 
+export interface AgentMarket {
+  agents: Agents;
+  teams: Teams;
+  tools: Tools1;
+  skills: Skills1;
+}
+export interface AgentProfile {
+  name: Name;
+  role: Role;
+  description: Description;
+  instructions: Instructions;
+  skills: Skills;
+  tools: Tools;
+  id: Id;
+  revision: Revision;
+  built_in: BuiltIn;
+  archived: Archived;
+}
+export interface AgentTeam {
+  name: Name1;
+  description: Description1;
+  agent_ids: AgentIds;
+  lead_agent_id: LeadAgentId;
+  id: Id1;
+  revision: Revision1;
+  archived: Archived1;
+}
+export interface MarketTool {
+  id: Id2;
+  description: Description2;
+}
+export interface MarketSkill {
+  id: Id3;
+  name: Name2;
+  description: Description3;
+}
+export interface ProjectAgentSelection {
+  project_id: ProjectId;
+  selection: AgentSelection;
+}
+export interface AgentSelection {
+  kind: Kind;
+  id: Id4;
+  exclusive: Exclusive;
+}
 export interface EvaluationStatusView {
   protocol_id: ProtocolId;
   state: State;
@@ -1103,14 +1246,14 @@ export interface Metrics {
   };
 }
 export interface ProjectResponse {
-  id: Id;
-  name: Name;
-  description: Description;
+  id: Id5;
+  name: Name3;
+  description: Description4;
 }
 export interface LegacyJobResponse {
-  id: Id1;
-  project_id: ProjectId;
-  kind: Kind;
+  id: Id6;
+  project_id: ProjectId1;
+  kind: Kind1;
   state: State1;
   result_id: ResultId;
   error: Error;
@@ -1120,12 +1263,12 @@ export interface LegacyJobResponse {
 }
 export interface Dataset {
   schema_version: SchemaVersion;
-  id: Id2;
-  project_id: ProjectId1;
+  id: Id7;
+  project_id: ProjectId2;
   created_at: CreatedAt1;
   parents: Parents;
   software: Software;
-  kind: Kind1;
+  kind: Kind2;
   filename: Filename;
   blob_key: BlobKey;
   sha256: Sha256;
@@ -1145,12 +1288,12 @@ export interface Source {
 }
 export interface Audit {
   schema_version: SchemaVersion1;
-  id: Id3;
-  project_id: ProjectId2;
+  id: Id8;
+  project_id: ProjectId3;
   created_at: CreatedAt2;
   parents: Parents1;
   software: Software1;
-  kind: Kind2;
+  kind: Kind3;
   dataset_id: DatasetId;
   config: Config;
   result: Result;
@@ -1166,12 +1309,12 @@ export interface Result {
 }
 export interface Split {
   schema_version: SchemaVersion2;
-  id: Id4;
-  project_id: ProjectId3;
+  id: Id9;
+  project_id: ProjectId4;
   created_at: CreatedAt3;
   parents: Parents2;
   software: Software2;
-  kind: Kind3;
+  kind: Kind4;
   dataset_id: DatasetId1;
   audit_id: AuditId;
   config: Config1;
@@ -1189,12 +1332,12 @@ export interface Result1 {
 }
 export interface Benchmark {
   schema_version: SchemaVersion3;
-  id: Id5;
-  project_id: ProjectId4;
+  id: Id10;
+  project_id: ProjectId5;
   created_at: CreatedAt4;
   parents: Parents3;
   software: Software3;
-  kind: Kind4;
+  kind: Kind5;
   dataset_id: DatasetId2;
   split_id: SplitId;
   model: Model1;
@@ -1216,12 +1359,12 @@ export interface Config2 {
 }
 export interface Evidence {
   schema_version: SchemaVersion4;
-  id: Id6;
-  project_id: ProjectId5;
+  id: Id11;
+  project_id: ProjectId6;
   created_at: CreatedAt5;
   parents: Parents4;
   software: Software4;
-  kind: Kind5;
+  kind: Kind6;
   title: Title;
   pdf_key: PdfKey;
   sha256: Sha2561;
@@ -1236,12 +1379,12 @@ export interface Result3 {
 }
 export interface Failure {
   schema_version: SchemaVersion5;
-  id: Id7;
-  project_id: ProjectId6;
+  id: Id12;
+  project_id: ProjectId7;
   created_at: CreatedAt6;
   parents: Parents5;
   software: Software5;
-  kind: Kind6;
+  kind: Kind7;
   benchmark_id: BenchmarkId;
   external_project_id: ExternalProjectId;
   external_record_id: ExternalRecordId;
@@ -1256,12 +1399,12 @@ export interface Record {
 }
 export interface Provenance {
   schema_version: SchemaVersion6;
-  id: Id8;
-  project_id: ProjectId7;
+  id: Id13;
+  project_id: ProjectId8;
   created_at: CreatedAt7;
   parents: Parents6;
   software: Software6;
-  kind: Kind7;
+  kind: Kind8;
   activity: Activity;
   inputs: Inputs;
   outputs: Outputs;
@@ -1275,12 +1418,12 @@ export interface Parameters {
 }
 export interface Report {
   schema_version: SchemaVersion7;
-  id: Id9;
-  project_id: ProjectId8;
+  id: Id14;
+  project_id: ProjectId9;
   created_at: CreatedAt8;
   parents: Parents7;
   software: Software7;
-  kind: Kind8;
+  kind: Kind9;
   blob_key: BlobKey1;
   sha256: Sha2562;
   artifact_ids: ArtifactIds;
@@ -1290,12 +1433,12 @@ export interface Software7 {
 }
 export interface DatasetV2 {
   schema_version: SchemaVersion8;
-  id: Id10;
-  project_id: ProjectId9;
+  id: Id15;
+  project_id: ProjectId10;
   created_at: CreatedAt9;
   parents: Parents8;
   software: Software8;
-  kind: Kind9;
+  kind: Kind10;
   filename: Filename1;
   blob_key: BlobKey2;
   sha256: Sha2563;
@@ -1324,8 +1467,8 @@ export interface UnknownDeclaration {
   uncertainty: Uncertainty;
 }
 export interface DeclarationReference {
-  kind: Kind10;
-  id: Id11;
+  kind: Kind11;
+  id: Id16;
 }
 export interface UserDeclarationAnnotatedStrStringConstraints {
   origin: Origin1;
@@ -1455,7 +1598,7 @@ export interface UserDeclarationIndependentUnit {
   uncertainty: Uncertainty16;
 }
 export interface IndependentUnit {
-  name: Name1;
+  name: Name4;
   group_columns: GroupColumns;
   rationale: Rationale5;
 }
@@ -1475,12 +1618,12 @@ export interface InferredDeclarationIndependentUnit {
 }
 export interface FailureV2 {
   schema_version: SchemaVersion9;
-  id: Id12;
-  project_id: ProjectId10;
+  id: Id17;
+  project_id: ProjectId11;
   created_at: CreatedAt10;
   parents: Parents9;
   software: Software9;
-  kind: Kind11;
+  kind: Kind12;
   benchmark_id: BenchmarkId1;
   source_job_id: SourceJobId;
   reason: Reason1;
@@ -1494,11 +1637,11 @@ export interface Software9 {
   [k: string]: string;
 }
 export interface HumanActor {
-  kind: Kind12;
+  kind: Kind13;
   operator_session_reference: OperatorSessionReference;
 }
 export interface AgentActor {
-  kind: Kind13;
+  kind: Kind14;
   run_id: RunId;
   assignment_id: AssignmentId;
   action_id: ActionId;
@@ -1510,16 +1653,16 @@ export interface AgentActor {
 }
 export interface PolicyReference {
   policy_id: PolicyId;
-  revision: Revision;
+  revision: Revision2;
   sha256: Sha2564;
 }
 export interface ExecutionFailure {
-  kind: Kind14;
+  kind: Kind15;
   error_code: ErrorCode;
   observed_error: ObservedError;
 }
 export interface CriterionFailure {
-  kind: Kind15;
+  kind: Kind16;
   protocol_id: ProtocolId2;
   protocol_revision: ProtocolRevision;
   criterion_id: CriterionId;
@@ -1535,7 +1678,7 @@ export interface MetricReference {
   units: Units;
 }
 export interface ResearcherAssessment {
-  kind: Kind16;
+  kind: Kind17;
   statement: Statement;
 }
 export interface FailureReceipt {
@@ -1552,13 +1695,13 @@ export interface Record1 {
 }
 export interface EvaluationProtocol {
   schema_version: SchemaVersion10;
-  id: Id13;
-  project_id: ProjectId11;
+  id: Id18;
+  project_id: ProjectId12;
   created_at: CreatedAt11;
   parents: Parents10;
   software: Software10;
-  kind: Kind17;
-  revision: Revision1;
+  kind: Kind18;
+  revision: Revision3;
   dataset_id: DatasetId3;
   dataset_sha256: DatasetSha256;
   split_id: SplitId1;
@@ -1583,13 +1726,13 @@ export interface Software10 {
   [k: string]: string;
 }
 export interface EvaluationCandidate {
-  id: Id14;
+  id: Id19;
   model: Model3;
   seed: Seed2;
   configuration_sha256: ConfigurationSha2561;
 }
 export interface SuccessCriterion {
-  id: Id15;
+  id: Id20;
   metric: Metric;
   partition: Partition1;
   comparison: Comparison;
@@ -1598,21 +1741,21 @@ export interface SuccessCriterion {
 }
 export interface ClaimSet {
   schema_version: SchemaVersion11;
-  id: Id16;
-  project_id: ProjectId12;
+  id: Id21;
+  project_id: ProjectId13;
   created_at: CreatedAt12;
   parents: Parents11;
   software: Software11;
-  kind: Kind18;
+  kind: Kind19;
   run_id: RunId1;
-  revision: Revision2;
+  revision: Revision4;
   claims: Claims;
 }
 export interface Software11 {
   [k: string]: string;
 }
 export interface Claim {
-  id: Id17;
+  id: Id22;
   statement: Statement1;
   classification: Classification;
   source_references: SourceReferences;
@@ -1637,7 +1780,7 @@ export interface AvailableEvidenceReference {
   page: Page;
 }
 export interface TextSpan {
-  kind: Kind19;
+  kind: Kind20;
   unit: Unit;
   start: Start;
   end: End;
@@ -1655,12 +1798,12 @@ export interface SemanticReview {
 }
 export interface AgentExecutionRecord {
   schema_version: SchemaVersion13;
-  id: Id18;
-  project_id: ProjectId13;
+  id: Id23;
+  project_id: ProjectId14;
   created_at: CreatedAt13;
   parents: Parents12;
   software: Software12;
-  kind: Kind20;
+  kind: Kind21;
   run_id: RunId2;
   objective: Objective;
   inputs: InputScope;
@@ -1688,17 +1831,17 @@ export interface InputScope {
 }
 export interface ResearchPlan {
   schema_version: SchemaVersion14;
-  id: Id19;
-  project_id: ProjectId14;
+  id: Id24;
+  project_id: ProjectId15;
   created_at: CreatedAt14;
   contract: Contract1;
   run_id: RunId3;
-  revision: Revision3;
+  revision: Revision5;
   steps: Steps;
   rationale_summary: RationaleSummary;
 }
 export interface ResearchStep {
-  id: Id20;
+  id: Id25;
   objective: Objective1;
   depends_on: DependsOn;
   allowed_input_ids: AllowedInputIds;
@@ -1714,7 +1857,7 @@ export interface DecisionSummary {
   input_references: InputReferences;
 }
 export interface ContractReference {
-  id: Id21;
+  id: Id26;
   contract: Contract2;
   schema_version: SchemaVersion15;
   sha256: Sha2565;
@@ -1788,10 +1931,10 @@ export interface ExecutionVersions {
  * remains the explicit, exposure-recording reveal path.
  */
 export interface BenchmarkPreview {
-  kind: Kind21;
+  kind: Kind22;
   schema_version: SchemaVersion16;
-  id: Id22;
-  project_id: ProjectId15;
+  id: Id27;
+  project_id: ProjectId16;
   created_at: CreatedAt15;
   parents: Parents13;
   software: Software13;
@@ -1817,7 +1960,7 @@ export interface Config3 {
   [k: string]: JsonValue;
 }
 export interface BenchmarkMethodPreview {
-  name: Name2;
+  name: Name5;
   seed: Seed4;
   parameters: Parameters1;
   validation_search: ValidationSearch;
@@ -1859,7 +2002,7 @@ export interface EvidenceSpanView {
  * Immutable named anchor; text is read and reverified separately.
  */
 export interface EvidenceAnchor {
-  id: Id23;
+  id: Id28;
   source_artifact_id: SourceArtifactId2;
   reference: AvailableEvidenceReference;
   created_at: CreatedAt16;
@@ -1896,9 +2039,9 @@ export interface ReportVerification {
   reason: Reason3;
 }
 export interface ReportScope {
-  kind: Kind22;
+  kind: Kind23;
   run_id: RunId4;
-  revision: Revision4;
+  revision: Revision6;
   execution_cutoff: ExecutionCutoff;
   export_status_at_cutoff: ExportStatusAtCutoff;
 }
@@ -1906,22 +2049,22 @@ export interface ReportScope {
  * Identity of one frozen archived artifact; scientific values are not projected.
  */
 export interface ReportInput {
-  id: Id24;
-  kind: Kind23;
+  id: Id29;
+  kind: Kind24;
   schema_version: SchemaVersion17;
   created_at: CreatedAt17;
   label: Label;
   parents: Parents14;
 }
 export interface ReportJob {
-  id: Id25;
-  kind: Kind24;
+  id: Id30;
+  kind: Kind25;
   state: State5;
   result_id: ResultId1;
   error_code: ErrorCode1;
 }
 export interface ReportMaterial {
-  id: Id26;
+  id: Id31;
   filename: Filename2;
   media_type: MediaType;
   sha256: Sha2567;
@@ -1951,8 +2094,8 @@ export interface ReportFinalization {
   gaps: Gaps;
 }
 export interface MaterialResponse {
-  id: Id27;
-  project_id: ProjectId16;
+  id: Id32;
+  project_id: ProjectId17;
   filename: Filename3;
   media_type: MediaType1;
   sha256: Sha2568;
@@ -1991,9 +2134,9 @@ export interface CapabilityLimits {
   max_detail_bytes: MaxDetailBytes;
 }
 export interface JobDetail {
-  id: Id28;
-  project_id: ProjectId17;
-  kind: Kind25;
+  id: Id33;
+  project_id: ProjectId18;
+  kind: Kind26;
   state: State6;
   result_id: ResultId2;
   error: Error3;
@@ -2049,17 +2192,18 @@ export interface ArtifactPage {
   next_cursor: NextCursor1;
 }
 export interface ArtifactSummary {
-  id: Id29;
-  project_id: ProjectId18;
-  kind: Kind26;
+  id: Id34;
+  project_id: ProjectId19;
+  kind: Kind27;
   schema_version: SchemaVersion19;
   created_at: CreatedAt19;
 }
 export interface ResearchRun {
   schema_version: SchemaVersion20;
-  id: Id30;
-  project_id: ProjectId19;
+  id: Id35;
+  project_id: ProjectId20;
   created_at: CreatedAt20;
+  agent_roster: AgentRoster | null;
   contract: Contract3;
   objective: Objective3;
   inputs: InputScope;
@@ -2076,6 +2220,12 @@ export interface ResearchRun {
   finished_at: FinishedAt2;
   stop_reason: StopReason;
 }
+export interface AgentRoster {
+  selection: AgentSelection;
+  name: Name6;
+  lead_agent_id: LeadAgentId1;
+  agents: Agents1;
+}
 export interface RunDetail {
   run: ResearchRun;
   plan: ResearchPlan | null;
@@ -2088,12 +2238,12 @@ export interface RunDetail {
 }
 export interface ResearchQuestion {
   schema_version: SchemaVersion21;
-  id: Id31;
-  project_id: ProjectId20;
+  id: Id36;
+  project_id: ProjectId21;
   created_at: CreatedAt21;
   contract: Contract4;
   run_id: RunId7;
-  revision: Revision5;
+  revision: Revision7;
   run_revision: RunRevision;
   questions: Questions1;
   status: Status9;
@@ -2101,7 +2251,7 @@ export interface ResearchQuestion {
   answer_message_id: AnswerMessageId;
 }
 export interface MaterialQuestion {
-  id: Id32;
+  id: Id37;
   field: Field;
   prompt: Prompt1;
   blocked_step_ids: BlockedStepIds;
@@ -2109,7 +2259,7 @@ export interface MaterialQuestion {
   evidence: Evidence1;
 }
 export interface QuestionOption {
-  id: Id33;
+  id: Id38;
   label: Label1;
   consequence: Consequence;
 }
@@ -2125,7 +2275,7 @@ export interface UnavailableEvidenceReference {
  * One recorded tool attempt: identity, state and outputs only, never its arguments.
  */
 export interface RunActionView {
-  id: Id34;
+  id: Id39;
   tool: Tool1;
   attempt: Attempt;
   state: State10;
@@ -2134,12 +2284,10 @@ export interface RunActionView {
   artifact_ids: ArtifactIds3;
   error_code: ErrorCode3;
 }
-/**
- * A specialist assignment as scoped by the coordinator; results stay advisory.
- */
 export interface RunAssignmentView {
-  id: Id35;
-  role: Role;
+  agent_name: AgentName;
+  id: Id40;
+  role: Role1;
   objective: Objective4;
   plan_revision: PlanRevision2;
   state: State11;
@@ -2171,7 +2319,7 @@ export interface RunEvent {
   summary: Summary1;
 }
 export interface ExecutionPolicySummary {
-  project_id: ProjectId21;
+  project_id: ProjectId22;
   policy: EffectivePolicy | null;
   agent_available: AgentAvailable;
   unavailable_reason: UnavailableReason;

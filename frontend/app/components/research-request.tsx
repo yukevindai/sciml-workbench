@@ -2,6 +2,8 @@
 
 import { useCallback, useEffect, useRef, useState, type DragEvent } from 'react';
 import { Paperclip, Play } from 'lucide-react';
+import { AgentSelector } from './agent-selection';
+import type { AgentSelection } from '../lib/agent-market';
 import { api } from '../lib/api';
 import { parseExecutionPolicy, parseMaterial, parseMaterials } from '../lib/decode';
 import type { Workbench } from '../lib/context';
@@ -36,6 +38,8 @@ function usePendingRun(projectId: string): PendingRun | null {
 
 /** Goal composer, attachments, input scope and the saved-policy summary. Run research is the one consent to spend. */
 export function ResearchRequest({ wb, onRun }: { wb: Workbench; onRun: (run: ResearchRun) => void }) {
+  const [agentSelection, setAgentSelection] = useState<AgentSelection | null>(null);
+  useEffect(() => { setAgentSelection(null); }, [wb.projectId]);
   const [objective, setObjective] = useState('');
   const [reviewPlan, setReviewPlan] = useState(false);
   const [summary, setSummary] = useState<ExecutionPolicySummary | null>(null);
@@ -143,7 +147,7 @@ export function ResearchRequest({ wb, onRun }: { wb: Workbench; onRun: (run: Res
   const run = () => {
     if (blockers.length || !policy) return;
     void wb.act(async () => {
-      const created = await submitRun(wb.projectId, runInput(objective, chosen, policy, reviewPlan ? 'review_plan' : 'autopilot'));
+      const created = await submitRun(wb.projectId, { ...runInput(objective, chosen, policy, reviewPlan ? 'review_plan' : 'autopilot'), agent_selection: agentSelection });
       onRun(created);
       wb.setNotice(reviewPlan
         ? 'Research accepted. It will pause once for your review after planning.'
@@ -151,7 +155,8 @@ export function ResearchRequest({ wb, onRun }: { wb: Workbench; onRun: (run: Res
     });
   };
 
-  return <Panel title="Ask a research question" description="Describe the goal, attach or choose inputs, and choose Run research. The coordinator works within the saved project policy; you do not choose an agent, model or every scientific parameter.">
+  return <Panel title="Ask a research question" description="Describe the goal, attach or choose inputs, and choose Run research. The coordinator works within the saved project policy; choose an agent or team and let it work through the scientific steps.">
+    <AgentSelector projectId={wb.projectId} value={agentSelection} onChange={setAgentSelection} disabled={wb.busy} preview={wb.preview} />
     <div className="stack">
       <Field label="Research goal" hint="Include any criterion you want applied, for example a predeclared metric threshold or the columns that identify independent samples.">
         {props => <textarea className="textarea" rows={4} maxLength={4000} value={objective} disabled={wb.preview}

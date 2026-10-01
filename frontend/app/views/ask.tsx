@@ -1,6 +1,8 @@
 'use client';
 
 import Link from 'next/link';
+import { AgentSelector } from '../components/agent-selection';
+import type { AgentSelection } from '../lib/agent-market';
 import { useCallback, useEffect, useState } from 'react';
 import { ArrowLeft, Clock, FlaskConical, Plus, Wrench } from 'lucide-react';
 import type { Workbench } from '../lib/context';
@@ -30,6 +32,12 @@ function when(value: string) {
 
 /** The default workspace: one prompt box, then a conversation-style view of each request. */
 export function AskView({ wb }: { wb: Workbench }) {
+  const [agentSelection, setAgentSelection] = useState<AgentSelection | null>(null);
+  useEffect(() => {
+    const query = new URLSearchParams(window.location.search);
+    const agent = query.get('agent'), team = query.get('team');
+    if (agent || team) setAgentSelection({ kind: team ? 'team' : 'agent', id: (team || agent)!, exclusive: true });
+  }, []);
   const [runs, setRuns] = useState<ResearchRun[]>([]);
   const [runId, setRunId] = useState('');
   const [historyError, setHistoryError] = useState('');
@@ -93,7 +101,7 @@ export function AskView({ wb }: { wb: Workbench }) {
         target = project.id; created = true;
         wb.setProjects(list => [...list.filter(p => p.id !== project.id), project]);
       }
-      const run = await ask({ projectId: target, prompt: draft.prompt, files: draft.files, earlier: draft.earlier, reviewPlan: draft.reviewPlan });
+      const run = await ask({ projectId: target, prompt: draft.prompt, files: draft.files, earlier: draft.earlier, reviewPlan: draft.reviewPlan, agentSelection });
       rememberRun(target, run.id);
       if (created) { wb.setProjectId(target); return true; }
       changed(run); select(run.id);
@@ -132,6 +140,7 @@ export function AskView({ wb }: { wb: Workbench }) {
       <AskRun key={current.id} wb={wb} run={current} runs={runs} onChanged={changed} onSelect={select} />
       <div className="ask-dock">
         {error && <Alert variant="error" role="alert">{error}</Alert>}
+        <AgentSelector projectId={pid} value={agentSelection} onChange={setAgentSelection} disabled={sending} preview={wb.preview} />
         <AskComposer compact onSend={send} busy={sending} disabled={wb.preview} projectFiles={files}
           placeholder="Ask a follow-up, or start something new…" />
       </div>
@@ -147,6 +156,7 @@ export function AskView({ wb }: { wb: Workbench }) {
     </div>
     {notice}
     {error && <Alert variant="error" role="alert">{error}</Alert>}
+    <AgentSelector projectId={pid} value={agentSelection} onChange={setAgentSelection} disabled={sending} preview={wb.preview} />
     <AskComposer onSend={send} busy={sending} disabled={wb.preview} projectFiles={files} initial={suggestion} />
     <div className="suggestions" role="group" aria-label="Ideas to get started">
       {SUGGESTIONS.map(item => <button key={item.label} type="button" className="suggestion" disabled={sending || wb.preview}

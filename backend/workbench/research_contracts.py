@@ -9,6 +9,7 @@ from .contract_core import (
     Identifier, PolicyReference, Revision, RunState, Text, ToolName,
 )
 from .scientific_contracts import ArtifactEnvelope, Claim, EvidenceReference
+from .market_contracts import AgentSelection, AgentRoster, AgentProfile
 
 
 class RuntimeRecord(ContractModel):
@@ -123,6 +124,7 @@ class ResearchPlan(RuntimeRecord):
 
 
 class RunInput(ContractModel):
+    agent_selection: AgentSelection | None = None
     objective: Text
     inputs: InputScope
     policy_revision: Revision
@@ -131,6 +133,7 @@ class RunInput(ContractModel):
 
 
 class ResearchRun(RuntimeRecord):
+    agent_roster: AgentRoster | None = None
     contract: Literal["research_run"] = "research_run"
     objective: Text
     inputs: InputScope
@@ -181,6 +184,7 @@ class RunAmendmentInput(RunControlInput):
 
 
 class SpecialistAssignment(RuntimeRecord):
+    agent_profile: AgentProfile | None = None
     contract: Literal["specialist_assignment"] = "specialist_assignment"
     run_id: Identifier
     plan_revision: Revision
