@@ -96,6 +96,8 @@ Import the same repository again as, for example, `sciml-workbench`.
 
 Keep the frontend's monorepo option to include source files outside its root enabled: contract generation/checks use the repository's `contracts` directory. No database integration or model credentials should be connected to this project. Production always requires the operator login. When assigning a custom domain, update `WB_PUBLIC_ORIGIN` to that origin and redeploy.
 
+The compact **Admin** control on the right of the public navigation opens the operator login form. Set `WB_LOGIN_USERNAME` (for example, `kevin`) and `WB_LOGIN_PASSWORD` (at least 16 characters) in the **frontend project's** Vercel environment settings, then redeploy. The form uses the same signed, expiring session as `/sign-in`; it grants access to the existing operator workspace, not a separate user-role system. Credentials must stay in server environment variables, never in source code or `NEXT_PUBLIC_` variables.
+
 Use a stable backend production domain, not a temporary preview URL. Deploy frontend and backend from the same commit. Disable any ignored-build rule that would skip one project after shared contracts/backend changes; confirm the Git SHA in both deployment pages after every release. Git integration triggers separate builds, so this is not an atomic rollout. Use a maintenance window for incompatible changes.
 
 ## 4. Limits and agent setup
