@@ -107,7 +107,8 @@ test('saved policy, input authority and one Run research click start Autopilot w
   await expect(page.getByRole('main').getByRole('status').filter({ hasText: 'No further approval is needed' })).toBeVisible();
   expect(runPosts(s)).toHaveLength(1);
   const body = JSON.parse(runPosts(s)[0].body!);
-  expect(body).toEqual({ ...fixture.request, inputs: { material_ids: [ids.material], artifact_ids: [ids.dataset] } });
+  // Null deliberately inherits the saved project assignment for this request.
+  expect(body).toEqual({ ...fixture.request, agent_selection: null, inputs: { material_ids: [ids.material], artifact_ids: [ids.dataset] } });
   expect(body.mode).toBe('autopilot');
 
   // The accepted run is shown from its durable record: plan, ordered activity, linked job and result.

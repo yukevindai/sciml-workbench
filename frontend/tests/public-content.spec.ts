@@ -40,7 +40,11 @@ test('public navigation, all guides, articles and history work without authentic
   expect(guides).toHaveLength(6);
   for (const href of guides) {
     await page.goto(href);
-    await expect(page.locator('.article-body section')).toHaveCount(href.includes('troubleshooting') ? 5 : 4);
+    const hasFiveSections = ['/docs/troubleshooting', '/docs/working-with-agents'].includes(href);
+    await expect(page.locator('.article-body section')).toHaveCount(hasFiveSections ? 5 : 4);
+    if (href === '/docs/working-with-agents') {
+      await expect(page.getByRole('heading', { name: 'Choose your agents', exact: true })).toBeVisible();
+    }
     await expect(page.locator('.guide-sidebar a[aria-current="page"]')).toHaveAttribute('href', href);
   }
   await page.goto('/blog');
