@@ -44,5 +44,5 @@ export default async function Page({ params, searchParams }: { params: Promise<{
     if (!project || !/^[a-zA-Z0-9_-]+$/.test(project) || (query.audit !== undefined && (!audit || !/^[a-zA-Z0-9_-]+$/.test(audit)))) notFound();
     return <Workbench key={`${project}:${audit ?? ''}`} view={view} requestedProjectId={project} requestedAuditId={audit} />;
   }
-  return <Workbench view={view} />;
+  return <Workbench view={view} requestedProjectId={project} />;
 }

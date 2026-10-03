@@ -1,5 +1,10 @@
 /* Generated from Pydantic JSON schemas. Do not edit; run npm run contracts:generate. */
-import type { AgentMarket, AgentProfile, AgentTeam, ProjectAgentSelection, ProjectResponse, ProjectsResponse, LegacyJobResponse, JobsResponse, LegacyArtifact, IntakeArtifact, MaterialResponse, ArtifactsResponse, ArtifactPreviews, EvidencePageText, EvidenceSpanView, EvidenceAnchors, ReportSummary, Capabilities, JobDetail, JobPage, ArtifactPage, EvaluationStatusView, EvaluationView, ResearchRun, ResearchRuns, RunDetail, RunResult, RunEvents, ExecutionPolicySummary } from './http';
+import type { ResearchTool, ResearchWorkflow, WorkflowCatalog, WorkflowRun, WorkflowActivity, AgentMarket, AgentProfile, AgentTeam, ProjectAgentSelection, ProjectResponse, ProjectsResponse, LegacyJobResponse, JobsResponse, LegacyArtifact, IntakeArtifact, MaterialResponse, ArtifactsResponse, ArtifactPreviews, EvidencePageText, EvidenceSpanView, EvidenceAnchors, ReportSummary, Capabilities, JobDetail, JobPage, ArtifactPage, EvaluationStatusView, EvaluationView, ResearchRun, ResearchRuns, RunDetail, RunResult, RunEvents, ExecutionPolicySummary } from './http';
+export function validateResearchTool(value: unknown): value is ResearchTool;
+export function validateResearchWorkflow(value: unknown): value is ResearchWorkflow;
+export function validateWorkflowCatalog(value: unknown): value is WorkflowCatalog;
+export function validateWorkflowRun(value: unknown): value is WorkflowRun;
+export function validateWorkflowActivity(value: unknown): value is WorkflowActivity;
 export function validateAgentMarket(value: unknown): value is AgentMarket;
 export function validateAgentProfile(value: unknown): value is AgentProfile;
 export function validateAgentTeam(value: unknown): value is AgentTeam;

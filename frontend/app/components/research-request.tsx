@@ -94,7 +94,7 @@ export function ResearchRequest({ wb, onRun }: { wb: Workbench; onRun: (run: Res
     !objective.trim() && 'Describe the research goal.',
     objective.length > 4000 && 'Shorten the goal to 4,000 characters or fewer.',
     policyLoading && 'Reading the saved policy…',
-    !policyLoading && !policy && 'No saved execution policy covers this project. An operator must install one before agents can run; manual tools remain available.',
+    !policyLoading && !policy && 'No saved execution policy covers this project. An operator must install one before agents can run; your saved work remains available.',
     summary && !summary.agent_available && `Agent execution is unavailable: ${summary.unavailable_reason ?? 'no reason given'}`,
     uncovered.length > 0 && `The saved policy does not authorize: ${uncovered.map(item => item.label).join(', ')}. Deselect them or ask an operator to extend the policy.`,
   ].filter((value): value is string => Boolean(value));

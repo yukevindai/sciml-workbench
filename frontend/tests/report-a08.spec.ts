@@ -1,3 +1,4 @@
+import { selectPicker } from './picker';
 import { expect, test, type Page, type Route } from '@playwright/test';
 import { jobPage } from './job-page';
 import manual from './fixtures/report-manual.json';
@@ -54,7 +55,7 @@ test('lineage table and graph resolve dependencies and keep broken references vi
   await expect(splitRow).toContainText(`Dataset ${ids.dataset.slice(0, 8)}`);
   await expect(splitRow).toContainText('Benchmark');
 
-  await page.getByLabel('Focus on').selectOption('');
+  await selectPicker(page, 'Focus on', '');
   const datasetRow = table.getByRole('row').filter({ hasText: 'demo.csv · 60 rows' });
   await expect(datasetRow).toContainText('Original input');
   await page.setViewportSize({ width: 1440, height: 1000 });
@@ -139,40 +140,6 @@ test('summary read failures are explicit and retryable; unknown report links sub
   await expect(card).not.toContainText('Verified');
   await card.getByRole('button', { name: 'Verify and inspect' }).click();
   await expect(card).toContainText('Verified');
-});
-
-test('manual export sends one request per attempt, reuses its key on retry and waits for running work', async ({ page }) => {
-  const posts: string[] = [];
-  let release!: () => void;
-  const gate = new Promise<void>(resolve => { release = resolve; });
-  await workspace(page, manualFixture, async (route, pathname) => {
-    if (route.request().method() !== 'POST' || !pathname.endsWith('/report')) return false;
-    posts.push(route.request().headers()['idempotency-key']);
-    if (posts.length === 1) { await route.fulfill({ status: 503, json: { error: 'Project busy' } }); return true; }
-    await gate;
-    await route.fulfill({ status: 202, json: { ...manualJobs[0], id: 'export-2', state: 'queued', result_id: null, started_at: null, finished_at: null } });
-    return true;
-  });
-  await page.goto(`/report?project=${manual.project.id}`);
-  const button = page.getByRole('button', { name: 'Export project' });
-  await button.click();
-  await expect(page.getByRole('alert').filter({ hasText: 'Project busy' })).toBeVisible();
-  await button.dblclick();
-  await expect.poll(() => posts.length).toBe(2);
-  release();
-  await expect(page.getByText('Export accepted.')).toBeVisible();
-  expect(posts).toHaveLength(2);
-  expect(posts[1]).toBe(posts[0]);
-});
-
-test('export is disabled while other work runs and failed exports show no archive', async ({ page }) => {
-  const running = { ...manualJobs.find(j => j.kind === 'audit')!, id: 'running-audit', state: 'running' as const, result_id: null, finished_at: null };
-  const failedExport = { ...manualJobs.find(j => j.kind === 'report')!, id: 'failed-export', state: 'failed' as const, result_id: null, error: 'Operation did not complete; inspect its safe error code.' };
-  await workspace(page, { ...manualFixture, jobs: [failedExport, running, ...manualJobs] });
-  await page.goto(`/report?project=${manual.project.id}`);
-  await expect(page.getByRole('button', { name: 'Export project' })).toBeDisabled();
-  await expect(page.getByText('Wait for 1 running job to settle')).toBeVisible();
-  await expect(page.getByText('No archive: Operation did not complete')).toBeVisible();
 });
 
 test('lineage helpers report missing references and cycles without dropping nodes', () => {

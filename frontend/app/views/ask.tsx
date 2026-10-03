@@ -66,7 +66,8 @@ export function AskView({ wb }: { wb: Workbench }) {
       .then(history => {
         if (controller.signal.aborted) return;
         setRuns(history.runs);
-        const remembered = rememberedRun(pid);
+        const requested = new URLSearchParams(window.location.search).get('run');
+        const remembered = requested ?? rememberedRun(pid);
         // Reopen the request someone was looking at, or one still in progress.
         const open = history.runs.find(run => run.id === remembered) ?? chooseRun(history.runs.filter(run => !['completed', 'failed', 'cancelled', 'partially_completed'].includes(run.state)), '');
         setRunId(current => current || open?.id || '');
@@ -122,8 +123,7 @@ export function AskView({ wb }: { wb: Workbench }) {
   const current = runs.find(run => run.id === runId);
   const unavailable = summary && !summary.agent_available;
   const notice = unavailable && <Alert variant="warning" title="The AI assistant isn’t switched on yet">
-    Whoever runs this workspace needs to add a DeepSeek key and turn agents on. Until then you can still work by hand with the{' '}
-    <Link className="text-link" href="/dataset-audit">advanced tools</Link>.
+    Ask the workspace owner to configure the AI provider and enable your research group. Your saved projects and agents remain available.
   </Alert>;
 
   if (current) {
@@ -181,7 +181,6 @@ export function AskView({ wb }: { wb: Workbench }) {
       {wb.projects.length > 0 && <button type="button" className="button button--ghost button--sm" disabled={!pid || sending} onClick={() => wb.setProjectId('')}>
         <Plus size={14} aria-hidden="true" /> Start a new project
       </button>}
-      <Link className="button button--ghost button--sm" href="/dataset-audit"><Wrench size={14} aria-hidden="true" /> Prefer to work by hand? Open the advanced tools</Link>
     </div>
   </div>;
 }

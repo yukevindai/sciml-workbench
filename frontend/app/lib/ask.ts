@@ -77,10 +77,10 @@ const readPolicy = (projectId: string) =>
   api(`projects/${projectId}/execution-policy`, parseExecutionPolicy, undefined, READ_TIMEOUT);
 
 /** The saved permissions, extended automatically when the server allows it. */
-async function permissions(projectId: string, items: ScopeItem[]): Promise<EffectivePolicy> {
+export async function permissions(projectId: string, items: ScopeItem[]): Promise<EffectivePolicy> {
   let summary: ExecutionPolicySummary = await readPolicy(projectId);
   if (!summary.agent_available) {
-    throw new AskBlocked('The AI assistant isn’t switched on for this workspace yet. Ask the person who runs it to add a DeepSeek key, or use the advanced tools to work by hand.');
+    throw new AskBlocked('The AI assistant isn’t switched on for this workspace yet. Ask the person who runs it to add a DeepSeek key, and enable agents.');
   }
   const needsAccess = !summary.policy || items.some(item => !authorized(item, summary.policy));
   const refreshAutomaticLimits = summary.policy?.reference.policy_id === AUTO_POLICY_ID
@@ -105,7 +105,7 @@ async function permissions(projectId: string, items: ScopeItem[]): Promise<Effec
   return summary.policy;
 }
 
-function perRun(policy: EffectivePolicy): EffectivePolicy {
+export function perRun(policy: EffectivePolicy): EffectivePolicy {
   if (policy.reference.policy_id !== AUTO_POLICY_ID) return policy;
   const limits = { ...policy.limits };
   for (const key of Object.keys(RUN_LIMITS) as (keyof typeof RUN_LIMITS)[]) limits[key] = Math.min(limits[key], RUN_LIMITS[key]);

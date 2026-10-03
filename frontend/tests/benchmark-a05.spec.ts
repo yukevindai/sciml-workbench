@@ -141,54 +141,6 @@ test('reveal failures show no test output and allow a retry', async ({ page }) =
   await expect(panel.getByRole('region', { name: 'Test metrics' })).toBeVisible();
 });
 
-test('task card keeps target/feature overlap invalid, resets per dataset and retains a server-rejected draft', async ({ page }) => {
-  const submissions: unknown[] = [];
-  await workspace(page, [...previews, otherData], async (route, pathname) => {
-    if (!pathname.endsWith('/benchmark') || route.request().method() !== 'POST') return false;
-    submissions.push(route.request().postDataJSON());
-    await route.fulfill(submissions.length === 1 ? { status: 422, json: { detail: 'Original-unit admission failed' } }
-      : { json: { ...jobs[0], state: 'queued', result_id: null, error: null, started_at: null, finished_at: null } }); return true;
-  });
-  await page.addInitScript(id => localStorage.setItem(`sciml-dataset:${id}`, ''), project.id);
-  await page.goto('/benchmark');
-  await page.getByLabel('Dataset', { exact: true }).selectOption(dataset.id);
-  const runButton = page.getByRole('button', { name: 'Run benchmark', exact: true });
-  await expect(page.getByLabel('Target', { exact: true })).toHaveValue('response');
-  await expect(runButton).toBeEnabled();
-  await page.getByLabel('Target', { exact: true }).selectOption('temperature');
-  await expect(page.getByText('Target temperature cannot also be a feature.', { exact: false })).toBeVisible();
-  await expect(runButton).toBeDisabled();
-  await page.getByLabel('Target', { exact: true }).selectOption('response');
-  await page.getByText('Advanced — edit the task card as JSON', { exact: true }).click();
-  const editor = page.getByLabel('Task card declarations (JSON)', { exact: true });
-  await editor.fill(JSON.stringify({ ...benchmarkDefault, categorical_features: ['response'] }));
-  await expect(page.getByText('Target response cannot also be a feature.', { exact: false })).toBeVisible();
-  await expect(runButton).toBeDisabled();
-  for (const value of ['{', '[]', JSON.stringify({ ...benchmarkDefault, dataset_id: 'x' }), JSON.stringify({ ...benchmarkDefault, seed: -1 })]) {
-    await editor.fill(value); await editor.blur();
-    await expect(editor).toHaveValue(value);
-    await expect(runButton).toBeDisabled();
-  }
-  await editor.fill(JSON.stringify({ ...benchmarkDefault, units: {} }));
-  await expect(page.getByText('Units not declared', { exact: true })).toBeVisible();
-  await expect(runButton).toBeEnabled();
-  await editor.fill(JSON.stringify({ ...benchmarkDefault, limitations: ['Retained draft limitation'] }));
-  await editor.blur();
-  await runButton.click();
-  await expect(page.getByRole('main').getByRole('alert')).toContainText('Original-unit admission failed');
-  expect(JSON.parse(await editor.inputValue()).limitations).toEqual(['Retained draft limitation']);
-  await runButton.click();
-  await expect(page.getByRole('main').getByRole('status')).toContainText('Job queued');
-  const split = kinds(previews, 'split')[0];
-  expect(submissions).toEqual([1, 2].map(() => ({ ...benchmarkDefault, limitations: ['Retained draft limitation'], dataset_id: dataset.id, split_id: split.id })));
-
-  await page.getByLabel('Dataset', { exact: true }).selectOption(otherData.id);
-  await expect(page.getByLabel('Target', { exact: true })).toHaveValue('');
-  await expect(page.getByLabel('Independence status', { exact: true })).toHaveValue('');
-  await expect(page.getByText('Generate a partition of this dataset before running a baseline.')).toBeVisible();
-  await expect(runButton).toBeDisabled();
-});
-
 test('agent and job results link directly to benchmark inspection; unknown links substitute nothing', async ({ page }) => {
   await workspace(page);
   await page.goto('/benchmark');

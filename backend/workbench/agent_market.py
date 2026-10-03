@@ -2,7 +2,7 @@
 from sqlalchemy import select, update
 from .contracts import uid
 from .errors import DomainError
-from .market_contracts import AgentProfile, AgentTeam, AgentSelection, AgentRoster
+from .market_contracts import AgentProfile, AgentTeam, AgentSelection, AgentRoster, ResearchTool
 from .market_db import MarketEntryRow, ProjectAgentSelectionRow
 
 SKILLS = [
@@ -37,7 +37,8 @@ def entry(s, ident, kind):
 
 def agent(s, ident):
     built_in = next((a for a in defaults() if a.id == ident), None)
-    return built_in or AgentProfile.model_validate(entry(s, ident, 'agent').payload)
+    value = built_in or AgentProfile.model_validate(entry(s, ident, 'agent').payload)
+    return value.model_copy(update={'custom_tools': [ResearchTool.model_validate(entry(s, i, 'tool').payload) for i in value.custom_tool_ids]})
 
 
 def validate_input(s, kind, body):
@@ -45,14 +46,22 @@ def validate_input(s, kind, body):
         from .tool_registry import DESCRIPTORS
         if not set(body.tools) <= DESCRIPTORS.keys():
             raise DomainError('Choose only currently integrated tools', 422, 'UNSUPPORTED_CAPABILITY')
-    else:
+        for ident in body.custom_tool_ids:
+            entry(s, ident, 'tool')
+    elif kind == 'tool':
+        from .tool_registry import DESCRIPTORS
+        if not set(body.capabilities) <= DESCRIPTORS.keys():
+            raise DomainError('Choose only currently integrated capabilities', 422, 'UNSUPPORTED_CAPABILITY')
+    elif kind == 'team':
         for ident in body.agent_ids:
             agent(s, ident)
 
 
 def save_entry(s, kind, body, ident=None):
     validate_input(s, kind, body)
-    model = AgentProfile if kind == 'agent' else AgentTeam
+    if ident and any(a.id == ident for a in defaults()):
+        raise DomainError('Built-in agents are preserved. Create a customized copy instead.', 409, 'REFERENCE_INVALID')
+    model = {'agent': AgentProfile, 'team': AgentTeam, 'tool': ResearchTool}[kind]
     data = body.model_dump(exclude={'expected_revision'})
     if ident:
         row = entry(s, ident, kind)
@@ -72,6 +81,8 @@ def save_entry(s, kind, body, ident=None):
 
 
 def archive_entry(s, ident, kind, expected):
+    if any(a.id == ident for a in defaults()):
+        raise DomainError('Built-in agents cannot be archived.', 409, 'REFERENCE_INVALID')
     row = entry(s, ident, kind)
     value = {**row.payload, 'archived': True, 'revision': expected + 1}
     result = s.execute(update(MarketEntryRow).where(MarketEntryRow.id == ident,
@@ -83,9 +94,10 @@ def archive_entry(s, ident, kind, expected):
 
 def catalog(s):
     from .tool_registry import DESCRIPTORS
-    rows = list(s.scalars(select(MarketEntryRow).order_by(MarketEntryRow.id)))
+    rows = list(s.scalars(select(MarketEntryRow).where(MarketEntryRow.kind.in_(['agent', 'team', 'tool'])).order_by(MarketEntryRow.id)))
     return dict(agents=[*defaults(), *[r.payload for r in rows if r.kind == 'agent' and not r.payload['archived']]],
         teams=[r.payload for r in rows if r.kind == 'team' and not r.payload['archived']], skills=SKILLS,
+        custom_tools=[r.payload for r in rows if r.kind == 'tool' and not r.payload['archived']],
         tools=[dict(id=n, description=d.purpose) for n, d in DESCRIPTORS.items()])
 
 
@@ -115,7 +127,7 @@ def restrict_policy(policy, roster):
     if not roster:
         return policy
     value = AgentRoster.model_validate(roster)
-    tools = frozenset(t for a in value.agents for t in a.tools)
+    tools = frozenset(t for a in value.agents for t in [*a.tools, *[c for recipe in a.custom_tools for c in recipe.capabilities]])
     return policy.model_copy(update={'allowed_tools': policy.allowed_tools & tools})
 
 

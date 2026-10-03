@@ -64,40 +64,19 @@ test('public navigation, all guides, articles and history work without authentic
   await context.close();
 });
 
-test('pixel artwork moves, can be paused, persists between pages, and respects reduced motion', async ({ page }) => {
+test('motion follows the system preference without a visible toggle', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   await page.goto('/');
   await expect(page.locator('html')).toHaveAttribute('data-motion', 'on');
-  const scene = page.locator('.hero-pixels');
-  const pixels = () => scene.evaluate(pixelFingerprint);
-  const first = await pixels();
-  await expect.poll(pixels).not.toBe(first);
-  // Motion controls live in sign-in/workspace settings, not the public hero or footer.
-  await expect(page.getByRole('button', { name: /animations/ })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: /animations|motion/i })).toHaveCount(0);
   await page.goto('/sign-in');
-  await page.getByRole('button', { name: 'Pause animations' }).click();
-  await page.getByRole('link', { name: 'Back to home' }).click();
-  await expect(page).toHaveURL(/\/$/);
-  await expect(page.locator('html')).toHaveAttribute('data-motion', 'off');
-  const frozen = await pixels();
-  await page.waitForTimeout(160);
-  expect(await pixels()).toBe(frozen);
-  await page.getByRole('navigation', { name: 'Main navigation', exact: true }).getByRole('link', { name: 'Blog', exact: true }).click();
-  // The shared motion attribute is already off on the landing page. Wait for
-  // client navigation to finish before reloading, or reload can cancel it.
-  await expect(page).toHaveURL(/\/blog$/);
-  await expect(page.locator('.blog-card')).toHaveCount(3);
-  await expect(page.locator('html')).toHaveAttribute('data-motion', 'off');
-  await page.reload();
-  await expect(page).toHaveURL(/\/blog$/);
-  await expect(page.locator('.blog-card')).toHaveCount(3);
-  await expect(page.locator('html')).toHaveAttribute('data-motion', 'off');
-  await page.goto('/sign-in');
-  await page.getByRole('button', { name: 'Play animations' }).click();
-  await expect(page.locator('html')).toHaveAttribute('data-motion', 'on');
+  await expect(page.getByRole('button', { name: /animations|motion/i })).toHaveCount(0);
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await expect(page.locator('html')).toHaveAttribute('data-motion', 'off');
-  await expect(page.getByRole('button', { name: 'Reduced motion enabled' })).toBeDisabled();
+  await page.goto('/blog');
+  await expect(page.locator('html')).toHaveAttribute('data-motion', 'off');
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await expect(page.locator('html')).toHaveAttribute('data-motion', 'on');
 });
 
 test('mobile navigation supports keyboard escape and public pages fit both themes', async ({ page }, info) => {

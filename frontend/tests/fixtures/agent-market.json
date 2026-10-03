@@ -30,7 +30,9 @@
       "id": "default-pi",
       "revision": 1,
       "built_in": true,
-      "archived": false
+      "archived": false,
+      "custom_tool_ids": [],
+      "custom_tools": []
     },
     {
       "name": "Data Specialist",
@@ -59,7 +61,9 @@
       "id": "default-data",
       "revision": 1,
       "built_in": true,
-      "archived": false
+      "archived": false,
+      "custom_tool_ids": [],
+      "custom_tools": []
     },
     {
       "name": "Researcher",
@@ -85,7 +89,9 @@
       "id": "default-researcher",
       "revision": 1,
       "built_in": true,
-      "archived": false
+      "archived": false,
+      "custom_tool_ids": [],
+      "custom_tools": []
     },
     {
       "name": "Experiment Analyst",
@@ -111,7 +117,9 @@
       "id": "default-memory",
       "revision": 1,
       "built_in": true,
-      "archived": false
+      "archived": false,
+      "custom_tool_ids": [],
+      "custom_tools": []
     },
     {
       "name": "Scientific Reviewer",
@@ -136,7 +144,9 @@
       "id": "default-reviewer",
       "revision": 1,
       "built_in": true,
-      "archived": false
+      "archived": false,
+      "custom_tool_ids": [],
+      "custom_tools": []
     }
   ],
   "teams": [],
@@ -236,5 +246,6 @@
       "name": "Scientific review",
       "description": "Independently check exact claims and their supporting evidence."
     }
-  ]
+  ],
+  "custom_tools": []
 }

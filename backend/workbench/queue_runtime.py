@@ -7,6 +7,7 @@ from vercel.queue import RetryAfter, send
 from .config import AgentSettings, load_settings
 from .db import Database, JobRow, RecoveryRow
 from .agent_db import RunRow
+from .market_db import MarketEntryRow
 from .serverless import tick
 
 TOPIC = 'workbench-wake-v1'
@@ -40,6 +41,9 @@ def has_work(settings):
                     ~JobRow.id.in_(select(RecoveryRow.job_id))).limit(1)):
                 return True
             agents = load_settings(AgentSettings)
+            if agents.agents_enabled and session.scalar(select(MarketEntryRow.id).where(
+                    MarketEntryRow.kind == 'workflow_run', MarketEntryRow.payload['state'].as_string() == 'running').limit(1)):
+                return True
             return bool(agents.agents_enabled and session.scalar(select(RunRow.id).where(
                 RunRow.state.in_(['queued', 'running', 'waiting_for_job'])).limit(1)))
     finally:
@@ -54,6 +58,9 @@ def has_ready_work(settings):
             if session.scalar(select(JobRow.id).where(JobRow.state == 'queued').limit(1)):
                 return True
             agents = load_settings(AgentSettings)
+            if agents.agents_enabled and session.scalar(select(MarketEntryRow.id).where(
+                    MarketEntryRow.kind == 'workflow_run', MarketEntryRow.payload['state'].as_string() == 'running').limit(1)):
+                return True
             return bool(agents.agents_enabled and session.scalar(select(RunRow.id).where(
                 RunRow.state == 'queued').limit(1)))
     finally:

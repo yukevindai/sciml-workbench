@@ -51,6 +51,10 @@ def tick(settings, kind):
             agents.require_runtime()
             if agents.agent_lease_seconds > 180 or agents.provider_timeout_seconds > 20:
                 raise ConfigurationError('Vercel Hobby requires agent leases <=180 seconds and provider timeouts <=20 seconds.')
+            from .workflows import tick as workflow_tick
+            from .agent_runs import RunService
+            from .agent_runtime import admission
+            workflow_tick(db, RunService(admission=admission))
             scheduler = Scheduler(db, lease_seconds=agents.agent_lease_seconds)
             # Do not make model lookups on idle cron ticks.
             claim = scheduler.claim('vercel:' + uid())

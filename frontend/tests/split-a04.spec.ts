@@ -1,3 +1,4 @@
+import { selectPicker } from './picker';
 import { expect, test, type Page, type Route } from '@playwright/test';
 import { jobPage } from './job-page';
 import { readFileSync } from 'node:fs';
@@ -53,7 +54,6 @@ test('direct split inspection retains exact audit lineage, exclusions and real d
   await page.goto(link);
   const panel = page.locator(`#split-${split.id}`);
   await expect(panel).toBeFocused();
-  await expect(page.getByLabel('Active dataset', { exact: true })).toHaveValue(dataset.id);
   await expect(panel.getByRole('link', { name: `Inspect source audit ${audit.id}` })).toHaveAttribute('href', `/dataset-audit?project=p&audit=${audit.id}#audit-${audit.id}`);
   await expect(panel).toContainText(dataset.sha256);
   await expect(panel).toContainText('benchmark admission not established');
@@ -75,57 +75,10 @@ test('direct split inspection retains exact audit lineage, exclusions and real d
   await page.screenshot({ path: 'test-results/a04-split-mobile-dark.png' });
   await counts.evaluate(element => element.scrollIntoView({ block: 'start', behavior: 'instant' }));
   await page.screenshot({ path: 'test-results/a04-split-counts-mobile.png' });
-  await page.getByLabel('Frozen split', { exact: true }).selectOption(newerSplit.id);
+  await selectPicker(page, 'Frozen split', newerSplit.id);
   await expect(page.locator('#split-newer-split').getByRole('link', { name: `Inspect source audit ${newerAudit.id}` })).toBeVisible();
   await page.getByRole('button', { name: 'Select the linked split and dataset' }).click();
   await expect(page.locator(`#split-${split.id}`)).toBeFocused();
-});
-
-test('dataset changes reset configuration and cannot select an unrelated or broken audit', async ({ page }) => {
-  const broken = { ...otherAudit, id: 'bad-audit', parents: [dataset.id] };
-  await workspace(page, [dataset, audit, otherData, broken]);
-  await page.goto(link);
-  await page.getByLabel('Dataset', { exact: true }).selectOption(dataset.id);
-  await expect(page.getByLabel('Source audit', { exact: true })).toHaveValue(audit.id);
-  await page.getByLabel('Target column', { exact: true }).selectOption('y');
-  await page.getByRole('group', { name: 'Grouping columns', exact: true }).getByRole('button', { name: 'group_id', exact: true }).click();
-  await page.getByText('Advanced — edit SciSplit configuration as JSON', { exact: true }).click();
-  await page.getByLabel('SciSplit configuration (JSON)', { exact: true }).fill('{');
-  await expect(page.getByRole('button', { name: 'Generate partition', exact: true })).toBeDisabled();
-  await page.getByLabel('Dataset', { exact: true }).selectOption(otherData.id);
-  await expect(page.getByLabel('Target column', { exact: true })).toHaveValue('');
-  await expect(page.getByRole('group', { name: 'Grouping columns', exact: true }).getByRole('button', { name: 'group_id', exact: true })).toHaveAttribute('aria-pressed', 'false');
-  await expect(page.getByLabel('Source audit', { exact: true }).getByRole('option')).toHaveCount(1);
-  await expect(page.getByRole('button', { name: 'Generate partition', exact: true })).toBeDisabled();
-});
-
-test('manual split validates drafts, retains server-rejected options and submits the explicitly selected audit', async ({ page }) => {
-  const submissions: unknown[] = [];
-  await workspace(page, [dataset, audit, newerAudit], async (route, pathname) => {
-    if (!pathname.endsWith('/split') || route.request().method() !== 'POST') return false;
-    submissions.push(route.request().postDataJSON());
-    await route.fulfill(submissions.length === 1 ? { status: 422, json: { detail: 'Invalid scientific boundary' } }
-      : { json: { ...job, state: 'queued', result_id: null, started_at: null, finished_at: null } }); return true;
-  });
-  await page.goto('/split-designer');
-  await page.getByLabel('Source audit', { exact: true }).selectOption(audit.id);
-  await page.getByText('Advanced — edit SciSplit configuration as JSON', { exact: true }).click();
-  const editor = page.getByLabel('SciSplit configuration (JSON)', { exact: true });
-  for (const value of ['null', '[]', '{"strategy":"random","columns":null}', '{"strategy":"random","test_size":-1}', '{"strategy":"random","seed":1.5}']) {
-    await editor.fill(value); await editor.blur();
-    await expect(editor).toHaveValue(value);
-    await expect(page.getByRole('button', { name: 'Generate partition', exact: true })).toBeDisabled();
-  }
-  await editor.fill(JSON.stringify({ strategy: 'random', group_columns: ['stale'] }));
-  await expect(page.getByText('Columns not in this dataset: stale.', { exact: true })).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Generate partition', exact: true })).toBeDisabled();
-  await editor.fill(JSON.stringify(split.config));
-  await page.getByRole('button', { name: 'Generate partition', exact: true }).click();
-  await expect(page.getByRole('main').getByRole('alert')).toContainText('Invalid scientific boundary');
-  expect(JSON.parse(await editor.inputValue()).cutoff).toBe('2020-01-07');
-  await page.getByRole('button', { name: 'Generate partition', exact: true }).click();
-  await expect(page.getByRole('main').getByRole('status')).toContainText('Job queued');
-  expect(submissions).toEqual([1, 2].map(() => ({ dataset_id: dataset.id, audit_id: audit.id, config: parseSplitConfig(split.config) })));
 });
 
 test('full assignment access extends beyond the 400-row visual preview and preserves every exported label', async ({ page }) => {
@@ -161,7 +114,7 @@ test('broken lineage and unsupported diagnostics remain explicit without substit
   expect((await page.goto('/split-designer?split=missing'))?.status()).toBe(404);
 });
 
-test('agent and job results link directly to stored splits while manual design survives activity outages', async ({ page }) => {
+test('agent and job results link directly to stored splits while retained results survive activity outages', async ({ page }) => {
   let unavailable = false;
   await workspace(page, [dataset, audit, split], async (route, pathname) => {
     if (!unavailable || !pathname.endsWith('/agent-runs')) return false;
@@ -173,7 +126,7 @@ test('agent and job results link directly to stored splits while manual design s
   unavailable = true;
   await page.getByRole('button', { name: 'Refresh agent activity' }).click();
   await expect(page.getByText(/Agent activity unavailable:/)).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Generate partition', exact: true })).toBeEnabled();
+  await expect(page.getByRole('button', { name: 'Generate partition', exact: true })).toHaveCount(0);
   await page.getByText('Job activity', { exact: true }).click();
   await expect(page.getByRole('link', { name: 'Inspect split result' })).toHaveAttribute('href', link);
 });

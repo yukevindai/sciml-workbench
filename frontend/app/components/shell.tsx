@@ -1,10 +1,10 @@
 'use client';
 
+import { Select } from './select';
 import Link from 'next/link';
 import { FlaskConical, ChevronRight, ArrowUpRight, Loader2, LogOut, ShieldCheck } from 'lucide-react';
 import { NAV_GROUPS, navItem, type Stage, type View } from '../lib/pipeline';
 import type { DatasetArtifact, Project } from '../lib/types';
-import { MotionToggle } from './motion-preferences';
 import { ThemeToggle } from './theme-toggle';
 import { WorkspacePicker } from './workspace-picker';
 
@@ -54,13 +54,7 @@ export function Sidebar({ view, stages }: { view: string; stages: Stage[] }) {
                 </Link>
               );
             });
-            // Hand-operated tools stay one click away without crowding the simple start.
-            return group.advanced ? (
-              <details className="nav-group nav-group--advanced" key={group.label} open={view !== 'ask' || undefined}>
-                <summary className="nav-group-label"><ChevronRight size={13} className="disclosure-chevron" aria-hidden="true" />{group.label}</summary>
-                {links}
-              </details>
-            ) : (
+            return (
               <div className="nav-group" key={group.label}>
                 <span className="nav-group-label">{group.label}</span>
                 {links}
@@ -70,7 +64,7 @@ export function Sidebar({ view, stages }: { view: string; stages: Stage[] }) {
         </nav>
       </div>
 
-      <div className="sidebar-foot"><Link href="/docs" className="sidebar-home">Documentation <ArrowUpRight size={14} aria-hidden="true" /></Link><MotionToggle />
+      <div className="sidebar-foot"><Link href="/docs" className="sidebar-home">Documentation <ArrowUpRight size={14} aria-hidden="true" /></Link>
         <Link href="/" className="sidebar-home">About SciML Workbench <ArrowUpRight size={14} aria-hidden="true" /></Link>
       </div>
     </aside>
@@ -80,7 +74,7 @@ export function Sidebar({ view, stages }: { view: string; stages: Stage[] }) {
 /* ---------------------------------- topbar ------------------------------- */
 
 export function TopBar({
-  projects, projectId, onProjectChange, busyJobs, datasets, datasetId, onDatasetChange, loading, preview, locked, simple = false,
+  projects, projectId, onProjectChange, busyJobs, datasets, datasetId, onDatasetChange, loading, preview, locked, simple = true,
 }: {
   projects: Project[];
   projectId: string;
@@ -106,12 +100,12 @@ export function TopBar({
         </div>
         {!simple && <div className="project-switcher">
           <label className="field-label" htmlFor="active-dataset">Active dataset</label>
-          <select id="active-dataset" className="select" value={datasetId}
+          <Select id="active-dataset" className="select" value={datasetId}
             disabled={loading || preview || locked || !datasets.length}
             onChange={event => onDatasetChange(event.target.value)}>
             <option value="" disabled>{loading ? 'Loading datasets…' : 'No dataset selected'}</option>
             {datasets.map(dataset => <option key={dataset.id} value={dataset.id}>{dataset.filename} · {dataset.id.slice(0, 8)}</option>)}
-          </select>
+          </Select>
         </div>}
       </div>
 

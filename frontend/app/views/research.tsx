@@ -7,7 +7,6 @@ import type { Workbench } from '../lib/context';
 import type { ResearchRun } from '../lib/generated/http';
 import { chooseRun, loadRunHistory, rememberedRun, rememberRun } from '../lib/runs';
 import { EmptyState, Panel } from '../components/ui';
-import { ResearchRequest } from '../components/research-request';
 import { ResearchRunPanel } from '../components/research-run';
 
 export function ResearchView({ wb }: { wb: Workbench }) {
@@ -42,11 +41,6 @@ export function ResearchView({ wb }: { wb: Workbench }) {
       .sort((a, b) => b.created_at.localeCompare(a.created_at) || b.id.localeCompare(a.id)));
   }, [wb.projectId]);
 
-  const accepted = useCallback((run: ResearchRun) => {
-    changed(run);
-    select(run.id);
-  }, [changed, select]);
-
   if (!wb.activeProject) {
     return <Panel title="Your research workspace">
       <EmptyState icon={Database} title="Start with a project"
@@ -58,37 +52,11 @@ export function ResearchView({ wb }: { wb: Workbench }) {
 
   return (
     <>
-      <Panel title="Your research workspace" description="Ask for research in one request, or use the manual tools in the navigation. Both record the same traceable results.">
-        <div className="stack">
-          <div>
-            <h3>{wb.activeProject.name}</h3>
-            <p className="prose">{wb.activeProject.description || 'No research question recorded yet.'}</p>
-          </div>
-          {!wb.selectedDataset && (
-            <EmptyState icon={Database} title="No dataset attached">
-              Attach a CSV below with your request, or in Dataset audit to inspect it manually.
-            </EmptyState>
-          )}
-          {wb.selectedDataset && (
-            <div className="research-context">
-              <span className="field-label">Selected dataset</span>
-              <strong>{wb.selectedDataset.filename}</strong>
-              <p>{wb.selectedDataset.rows} rows · {wb.selectedDataset.columns.length} columns</p>
-              <p className="meta-id">Dataset ID: {wb.selectedDataset.id}</p>
-              {wb.selectedDataset.schema_version === '2.0' && wb.selectedDataset.unresolved_fields.length > 0 && (
-                <p>Unresolved declarations: {wb.selectedDataset.unresolved_fields.join(', ')}. Inspect these before drawing conclusions.</p>
-              )}
-            </div>
-          )}
-          <div className="research-actions">
-            <Link className="button button--secondary" href="/dataset-audit">{wb.selectedDataset ? 'Inspect dataset' : 'Attach a CSV manually'}</Link>
-            <Link className="button button--secondary" href="/evidence">Inspect evidence</Link>
-            <Link className="text-link" href="/projects">Manage projects</Link>
-          </div>
-          <p className="field-hint">Job status describes execution. A successful job does not mean the data is clean, a model is scientifically valid, or a report has passed replay verification.</p>
-        </div>
+      <Panel title="Research activity" description="Review agent investigations, answer questions, and inspect their retained results.">
+        <h3>{wb.activeProject.name}</h3>
+        {wb.selectedDataset ? <div className="research-context"><strong>{wb.selectedDataset.filename}</strong><p>{wb.selectedDataset.rows} rows · {wb.selectedDataset.columns.length} columns</p></div> : <h3>No dataset attached</h3>}
+        <div className="market-actions"><Link className="button button--primary" href={`/ask?project=${wb.projectId}`}>Assign a new question</Link><Link className="button button--secondary" href="/workflows">Open workflows</Link></div>
       </Panel>
-      <ResearchRequest key={wb.projectId} wb={wb} onRun={accepted} />
       <ResearchRunPanel wb={wb} runs={runs} runId={runId} truncated={truncated} historyError={historyError} onSelect={select} onChanged={changed} />
     </>
   );

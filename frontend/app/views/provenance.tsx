@@ -1,5 +1,6 @@
 'use client';
 
+import { Select } from '../components/select';
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { ArrowRight, Layers } from 'lucide-react';
@@ -84,10 +85,10 @@ export function ProvenanceView({ wb, requestedArtifactId }: { wb: Workbench; req
 
         <div className="cluster" id="lineage-selected">
           <label className="field-label" htmlFor="lineage-focus">Focus on</label>
-          <select id="lineage-focus" className="select" value={scope ? selected : ''} onChange={event => setSelected(event.target.value)}>
+          <Select id="lineage-focus" className="select" value={scope ? selected : ''} onChange={event => setSelected(event.target.value)}>
             <option value="">Whole project</option>
             {entries.filter(n => n.artifact).map(n => <option key={n.id} value={n.id}>{KIND_LABEL[n.artifact!.kind] ?? n.artifact!.kind} · {artifactLabel(n.artifact!)} · {shortId(n.id)}</option>)}
-          </select>
+          </Select>
           {scope && <span className="field-hint">Showing {shown.length} artifacts it depends on or that depend on it.</span>}
         </div>
 

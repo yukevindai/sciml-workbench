@@ -1,0 +1,296 @@
+{
+  "workflows": [
+    {
+      "name": "Evidence to insight",
+      "description": "Research the sources and review them in parallel, then synthesize a grounded answer.",
+      "trigger": "manual",
+      "nodes": [
+        {
+          "id": "start",
+          "kind": "trigger",
+          "name": "Research request",
+          "x": 40.0,
+          "y": 210.0,
+          "instructions": "",
+          "assignment": {
+            "kind": "automatic",
+            "id": null,
+            "exclusive": true
+          },
+          "tool_id": null,
+          "iterations": 2,
+          "condition": "has_artifacts"
+        },
+        {
+          "id": "research",
+          "kind": "research",
+          "name": "Investigate evidence",
+          "x": 340.0,
+          "y": 80.0,
+          "instructions": "Investigate the supplied sources and retain evidence for the research question.",
+          "assignment": {
+            "kind": "automatic",
+            "id": null,
+            "exclusive": true
+          },
+          "tool_id": null,
+          "iterations": 2,
+          "condition": "has_artifacts"
+        },
+        {
+          "id": "review",
+          "kind": "research",
+          "name": "Independent critique",
+          "x": 340.0,
+          "y": 350.0,
+          "instructions": "Independently examine assumptions, limitations and conflicting evidence for the research question.",
+          "assignment": {
+            "kind": "automatic",
+            "id": null,
+            "exclusive": true
+          },
+          "tool_id": null,
+          "iterations": 2,
+          "condition": "has_artifacts"
+        },
+        {
+          "id": "join",
+          "kind": "join",
+          "name": "Bring findings together",
+          "x": 650.0,
+          "y": 210.0,
+          "instructions": "",
+          "assignment": {
+            "kind": "automatic",
+            "id": null,
+            "exclusive": true
+          },
+          "tool_id": null,
+          "iterations": 2,
+          "condition": "has_artifacts"
+        },
+        {
+          "id": "synthesis",
+          "kind": "research",
+          "name": "Synthesize findings",
+          "x": 930.0,
+          "y": 210.0,
+          "instructions": "Synthesize the connected findings into an evidence-grounded answer. Explain disagreements and uncertainty.",
+          "assignment": {
+            "kind": "automatic",
+            "id": null,
+            "exclusive": true
+          },
+          "tool_id": null,
+          "iterations": 2,
+          "condition": "has_artifacts"
+        },
+        {
+          "id": "end",
+          "kind": "finish",
+          "name": "Research complete",
+          "x": 1220.0,
+          "y": 210.0,
+          "instructions": "",
+          "assignment": {
+            "kind": "automatic",
+            "id": null,
+            "exclusive": true
+          },
+          "tool_id": null,
+          "iterations": 2,
+          "condition": "has_artifacts"
+        }
+      ],
+      "edges": [
+        {
+          "source": "start",
+          "target": "research",
+          "port": "out",
+          "data_type": "signal"
+        },
+        {
+          "source": "start",
+          "target": "review",
+          "port": "out",
+          "data_type": "signal"
+        },
+        {
+          "source": "research",
+          "target": "join",
+          "port": "out",
+          "data_type": "artifacts"
+        },
+        {
+          "source": "review",
+          "target": "join",
+          "port": "out",
+          "data_type": "artifacts"
+        },
+        {
+          "source": "join",
+          "target": "synthesis",
+          "port": "out",
+          "data_type": "artifacts"
+        },
+        {
+          "source": "synthesis",
+          "target": "end",
+          "port": "out",
+          "data_type": "artifacts"
+        }
+      ],
+      "concurrency": 2,
+      "id": "workflow-evidence",
+      "revision": 1,
+      "built_in": true,
+      "archived": false
+    },
+    {
+      "name": "Evaluate and refine",
+      "description": "Check data, branch on retained results, and run two bounded rounds of evaluation.",
+      "trigger": "manual",
+      "nodes": [
+        {
+          "id": "start",
+          "kind": "trigger",
+          "name": "Research request",
+          "x": 40.0,
+          "y": 210.0,
+          "instructions": "",
+          "assignment": {
+            "kind": "automatic",
+            "id": null,
+            "exclusive": true
+          },
+          "tool_id": null,
+          "iterations": 2,
+          "condition": "has_artifacts"
+        },
+        {
+          "id": "audit",
+          "kind": "research",
+          "name": "Check research inputs",
+          "x": 330.0,
+          "y": 210.0,
+          "instructions": "Assess supplied data and research feasibility. Retain a data audit when possible.",
+          "assignment": {
+            "kind": "automatic",
+            "id": null,
+            "exclusive": true
+          },
+          "tool_id": null,
+          "iterations": 2,
+          "condition": "has_artifacts"
+        },
+        {
+          "id": "branch",
+          "kind": "branch",
+          "name": "Results available?",
+          "x": 620.0,
+          "y": 210.0,
+          "instructions": "",
+          "assignment": {
+            "kind": "automatic",
+            "id": null,
+            "exclusive": true
+          },
+          "tool_id": null,
+          "iterations": 2,
+          "condition": "has_artifacts"
+        },
+        {
+          "id": "iterate",
+          "kind": "repeat",
+          "name": "Evaluate and refine",
+          "x": 920.0,
+          "y": 70.0,
+          "instructions": "Evaluate the research question using the connected results. Improve the comparison using lessons from the previous round.",
+          "assignment": {
+            "kind": "automatic",
+            "id": null,
+            "exclusive": true
+          },
+          "tool_id": null,
+          "iterations": 2,
+          "condition": "has_artifacts"
+        },
+        {
+          "id": "clarify",
+          "kind": "research",
+          "name": "Identify missing evidence",
+          "x": 920.0,
+          "y": 380.0,
+          "instructions": "Explain the missing inputs and propose an actionable research plan without fabricating results.",
+          "assignment": {
+            "kind": "automatic",
+            "id": null,
+            "exclusive": true
+          },
+          "tool_id": null,
+          "iterations": 2,
+          "condition": "has_artifacts"
+        },
+        {
+          "id": "end",
+          "kind": "finish",
+          "name": "Findings ready",
+          "x": 1240.0,
+          "y": 210.0,
+          "instructions": "",
+          "assignment": {
+            "kind": "automatic",
+            "id": null,
+            "exclusive": true
+          },
+          "tool_id": null,
+          "iterations": 2,
+          "condition": "has_artifacts"
+        }
+      ],
+      "edges": [
+        {
+          "source": "start",
+          "target": "audit",
+          "port": "out",
+          "data_type": "signal"
+        },
+        {
+          "source": "audit",
+          "target": "branch",
+          "port": "out",
+          "data_type": "artifacts"
+        },
+        {
+          "source": "branch",
+          "target": "iterate",
+          "port": "yes",
+          "data_type": "artifacts"
+        },
+        {
+          "source": "branch",
+          "target": "clarify",
+          "port": "no",
+          "data_type": "artifacts"
+        },
+        {
+          "source": "iterate",
+          "target": "end",
+          "port": "out",
+          "data_type": "artifacts"
+        },
+        {
+          "source": "clarify",
+          "target": "end",
+          "port": "out",
+          "data_type": "artifacts"
+        }
+      ],
+      "concurrency": 2,
+      "id": "workflow-evaluation",
+      "revision": 1,
+      "built_in": true,
+      "archived": false
+    }
+  ]
+}

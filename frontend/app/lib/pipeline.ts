@@ -5,11 +5,11 @@ import {
 import { kinds, type Artifact } from './types';
 
 export type View =
-  | 'agent-market' | 'ask' | 'research' | 'projects' | 'evidence' | 'dataset-audit' | 'split-designer'
+  | 'workflows' | 'tools' | 'agent-market' | 'ask' | 'research' | 'projects' | 'evidence' | 'dataset-audit' | 'split-designer'
   | 'benchmark' | 'failure-memory' | 'provenance' | 'report';
 
 export const VIEWS: View[] = [
-  'agent-market', 'ask', 'research', 'projects', 'evidence', 'dataset-audit', 'split-designer',
+  'workflows', 'tools', 'agent-market', 'ask', 'research', 'projects', 'evidence', 'dataset-audit', 'split-designer',
   'benchmark', 'failure-memory', 'provenance', 'report',
 ];
 
@@ -28,6 +28,8 @@ export type NavItem = {
 };
 
 export const NAV: NavItem[] = [
+  { view: 'workflows', label: 'Workflows', icon: GitBranch, title: 'Research workflows', lede: 'Connect agents and tools into repeatable research.' },
+  { view: 'tools', label: 'Tools', icon: SlidersHorizontal, title: 'Research tools', lede: 'Build reusable tools for your agents and workflows.' },
   { view: 'agent-market', label: 'Agent market', icon: Bot, title: 'Agent market', lede: 'Customize agents and build reusable teams for the way you research.' },
   {
     view: 'ask', label: 'Ask', icon: MessageSquareText,
@@ -35,9 +37,9 @@ export const NAV: NavItem[] = [
     lede: 'Ask a question about your data in plain words and let the assistant do the work.',
   },
   {
-    view: 'research', label: 'Detailed request', icon: SlidersHorizontal,
-    title: 'Detailed request',
-    lede: 'Write a request with full control over which files the assistant may use, its permissions and its limits.',
+    view: 'research', label: 'Research activity', icon: SlidersHorizontal,
+    title: 'Research activity',
+    lede: 'Follow your research group, answer questions, and inspect its findings.',
   },
   {
     view: 'projects', label: 'Projects', icon: Boxes,
@@ -46,23 +48,23 @@ export const NAV: NavItem[] = [
   },
   {
     view: 'dataset-audit', label: 'Check data', icon: ShieldCheck,
-    title: 'Check data',
-    lede: 'Upload a spreadsheet and check it for missing values, duplicates and other problems before you use it.',
+    title: 'Data quality results',
+    lede: 'Inspect the data quality findings retained by your research group.',
   },
   {
     view: 'split-designer', label: 'Split data', icon: GitBranch,
-    title: 'Split data',
-    lede: 'Choose which rows train a model and which are kept aside to test it fairly.',
+    title: 'Data partitions',
+    lede: 'Inspect the frozen partitions used in your research.',
   },
   {
     view: 'benchmark', label: 'Test models', icon: Activity,
-    title: 'Test models',
-    lede: 'Build a simple prediction model on your split data and see how well it does on data it has not seen.',
+    title: 'Model evaluation results',
+    lede: 'Review comparisons, evaluation boundaries, and retained results.',
   },
   {
     view: 'failure-memory', label: 'Lessons learned', icon: Lightbulb,
     title: 'Lessons learned',
-    lede: 'Write down what did not work and why, so the next attempt goes better.',
+    lede: 'Review what your research group learned from previous experiments.',
   },
   {
     view: 'evidence', label: 'Papers & sources', icon: BookOpen,
@@ -81,9 +83,9 @@ export const NAV: NavItem[] = [
   },
 ];
 
-export const NAV_GROUPS: { label: string; views: View[]; advanced?: boolean }[] = [
-  { label: 'Workspace', views: ['ask', 'agent-market', 'projects'] },
-  { label: 'Advanced tools', views: ['research', 'dataset-audit', 'split-designer', 'benchmark', 'failure-memory', 'evidence', 'provenance', 'report'], advanced: true },
+export const NAV_GROUPS: { label: string; views: View[] }[] = [
+  { label: 'Research', views: ['ask', 'projects', 'workflows'] },
+  { label: 'Your lab group', views: ['agent-market', 'tools'] },
 ];
 
 export function navItem(view: string): NavItem | undefined {

@@ -1,4 +1,5 @@
 'use client';
+import { Select } from '../components/select';
 import Link from 'next/link';
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { Bot, Copy, Plus, Users, X } from 'lucide-react';
@@ -6,9 +7,9 @@ import type { Workbench } from '../lib/context';
 import { loadMarket, saveAgent, saveTeam, archiveAgent, archiveTeam, type AgentMarket, type AgentProfile, type AgentTeam } from '../lib/agent-market';
 import { Alert, Badge, Panel } from '../components/ui';
 
-type AgentDraft = Pick<AgentProfile, 'name' | 'role' | 'description' | 'instructions' | 'skills' | 'tools'>;
+type AgentDraft = Pick<AgentProfile, 'name' | 'role' | 'description' | 'instructions' | 'skills' | 'tools' | 'custom_tool_ids'>;
 type TeamDraft = Pick<AgentTeam, 'name' | 'description' | 'agent_ids' | 'lead_agent_id'>;
-const blankAgent = (): AgentDraft => ({ name: '', role: 'Specialist', description: '', instructions: '', skills: ['evidence'], tools: [] });
+const blankAgent = (): AgentDraft => ({ name: '', role: 'Specialist', description: '', instructions: '', skills: ['evidence'], tools: [], custom_tool_ids: [] });
 const blankTeam = (): TeamDraft => ({ name: '', description: '', agent_ids: [], lead_agent_id: '' });
 const toggle = <T,>(items: T[], item: T) => items.includes(item) ? items.filter(i => i !== item) : [...items, item];
 
@@ -22,6 +23,7 @@ export function AgentMarketView({ wb }: { wb: Workbench }) {
   const [editor, setEditor] = useState<'agent' | 'team' | null>(null);
   const [editing, setEditing] = useState<AgentProfile | AgentTeam | null>(null);
   const [agent, setAgent] = useState<AgentDraft>(blankAgent);
+  const [copySource, setCopySource] = useState('');
   const [team, setTeam] = useState<TeamDraft>(blankTeam);
   const [archive, setArchive] = useState<{ kind: 'agent' | 'team'; item: AgentProfile | AgentTeam } | null>(null);
   const editorRef = useRef<HTMLElement>(null);
@@ -34,8 +36,9 @@ export function AgentMarketView({ wb }: { wb: Workbench }) {
   }, [wb.preview]);
   useEffect(() => { if (editor) { editorRef.current?.scrollIntoView({ block: 'start' }); editorRef.current?.querySelector('input')?.focus(); } }, [editor, editing]);
   const openAgent = (source?: AgentProfile, duplicate = false) => {
+    setCopySource(source?.built_in || duplicate ? source?.name ?? '' : '');
     setEditing(source && !source.built_in && !duplicate ? source : null);
-    setAgent(source ? { name: duplicate || source.built_in ? `${source.name} copy`.slice(0, 80) : source.name, role: source.role, description: source.description, instructions: source.instructions, skills: source.skills, tools: source.tools } : blankAgent());
+    setAgent(source ? { name: duplicate || source.built_in ? `${source.name} copy`.slice(0, 80) : source.name, role: source.role, description: source.description, instructions: source.instructions, skills: source.skills, tools: source.tools, custom_tool_ids: source.custom_tool_ids ?? [] } : blankAgent());
     setEditor('agent'); setError(''); setNotice('');
   };
   const openTeam = (source?: AgentTeam) => { setEditing(source ?? null); setTeam(source ? { name: source.name, description: source.description, agent_ids: source.agent_ids, lead_agent_id: source.lead_agent_id } : blankTeam()); setEditor('team'); setError(''); setNotice(''); };
@@ -65,6 +68,7 @@ export function AgentMarketView({ wb }: { wb: Workbench }) {
     {!market && error && <button className="button button--secondary" onClick={() => { setError(''); void reload().catch(e => setError(e.message)); }}>Retry</button>}
     {editor && market && <section className="panel market-editor" ref={editorRef} aria-labelledby="market-editor-title">
       <div className="panel-head"><h2 id="market-editor-title">{editing ? 'Edit' : 'Create'} {editor}</h2><button className="button button--ghost" aria-label="Close editor" disabled={busy} onClick={() => setEditor(null)}><X size={18} /></button></div>
+      {editor === 'agent' && copySource && <Alert>Customizing a copy of {copySource}. The original stays available in your catalog.</Alert>}
       <form className="panel-body stack" onSubmit={save}><fieldset disabled={busy} className="market-fieldset stack">
         <div className="market-form-grid">
           <label>Name<input className="input" required maxLength={80} value={editor === 'agent' ? agent.name : team.name} onChange={e => editor === 'agent' ? setAgent({ ...agent, name: e.target.value }) : setTeam({ ...team, name: e.target.value })} placeholder={editor === 'agent' ? 'e.g. Electrolyte Researcher' : 'e.g. Battery Literature Team'} /></label>
@@ -75,10 +79,12 @@ export function AgentMarketView({ wb }: { wb: Workbench }) {
           <fieldset className="market-fieldset"><legend>Skills <span className="field-hint">Choose at least one</span></legend><div className="market-choice-grid">{market.skills.map(skill => <label className="market-check" key={skill.id}><input type="checkbox" checked={agent.skills.includes(skill.id)} onChange={() => setAgent({ ...agent, skills: toggle(agent.skills, skill.id) })} /><span><strong>{skill.name}</strong><small>{skill.description}</small></span></label>)}</div></fieldset>
           <label>Working instructions<textarea className="textarea" maxLength={4000} rows={4} value={agent.instructions} onChange={e => setAgent({ ...agent, instructions: e.target.value })} placeholder="e.g. Focus on lithium-ion electrolytes. Explain assumptions and flag composition aliasing. Prefer concise summaries with exact citations." /></label>
           <fieldset className="market-fieldset"><legend>Tools <span className="field-hint">{agent.tools.length} selected</span></legend><p className="field-hint">Choose integrated tools this agent may use. No tools means advice from the supplied context. Project permissions still apply; teams execute tools through their lead.</p><div className="market-choice-grid market-tools">{market.tools.map(tool => <label className="market-check" key={tool.id}><input type="checkbox" checked={agent.tools.includes(tool.id)} onChange={() => setAgent({ ...agent, tools: toggle(agent.tools, tool.id) })} /><span><strong>{tool.id.replaceAll('_', ' ')}</strong><small>{tool.description}</small></span></label>)}</div></fieldset>
+          {(agent.custom_tool_ids ?? []).some(id => !(market.custom_tools ?? []).some(t => t.id === id)) && <Alert variant="warning">An attached tool was archived. <button type="button" className="text-link" onClick={() => setAgent({ ...agent, custom_tool_ids: (agent.custom_tool_ids ?? []).filter(id => (market.custom_tools ?? []).some(t => t.id === id)) })}>Remove unavailable tools</button></Alert>}
+          <fieldset className="market-fieldset"><legend>My research tools</legend><p className="field-hint">Reusable instructions and capabilities you created. <Link className="text-link" href="/tools">Manage tools</Link></p><div className="market-choice-grid">{(market.custom_tools ?? []).map(tool => <label className="market-check" key={tool.id}><input type="checkbox" checked={(agent.custom_tool_ids ?? []).includes(tool.id)} onChange={() => setAgent({ ...agent, custom_tool_ids: toggle(agent.custom_tool_ids ?? [], tool.id) })} /><span><strong>{tool.name}</strong><small>{tool.description}</small></span></label>)}</div></fieldset>
         </> : <>
           <fieldset className="market-fieldset"><legend>Team members <span className="field-hint">{team.agent_ids.length} of 8</span></legend><div className="market-choice-grid">{market.agents.map(member => <label className="market-check" key={member.id}><input type="checkbox" checked={team.agent_ids.includes(member.id)} disabled={!team.agent_ids.includes(member.id) && team.agent_ids.length >= 8} onChange={() => { const ids = toggle(team.agent_ids, member.id); setTeam({ ...team, agent_ids: ids, lead_agent_id: ids.includes(team.lead_agent_id) ? team.lead_agent_id : ids[0] ?? '' }); }} /><span><strong>{member.name}</strong><small>{member.role}</small></span></label>)}</div></fieldset>
           {team.agent_ids.some(id => !market.agents.some(a => a.id === id)) && <Alert variant="warning">This team includes an archived agent. <button type="button" className="text-link" onClick={() => { const ids = team.agent_ids.filter(id => market.agents.some(a => a.id === id)); setTeam({ ...team, agent_ids: ids, lead_agent_id: ids.includes(team.lead_agent_id) ? team.lead_agent_id : ids[0] ?? '' }); }}>Remove unavailable members</button></Alert>}
-          <label>Team lead<select className="select" required value={team.lead_agent_id} onChange={e => setTeam({ ...team, lead_agent_id: e.target.value })}><option value="">Choose a team member</option>{market.agents.filter(a => team.agent_ids.includes(a.id)).map(a => <option key={a.id} value={a.id}>{a.name}</option>)}</select></label>
+          <label>Team lead<Select className="select" required value={team.lead_agent_id} onChange={e => setTeam({ ...team, lead_agent_id: e.target.value })}><option value="">Choose a team member</option>{market.agents.filter(a => team.agent_ids.includes(a.id)).map(a => <option key={a.id} value={a.id}>{a.name}</option>)}</Select></label>
           <p className="field-hint">The lead coordinates work using the combined team tools. Members contribute their selected skills. Include a Scientific Reviewer for independently reviewed findings.</p>
         </>}
         <div className="market-actions"><button className="button button--primary" disabled={editor === 'agent' ? !agent.skills.length : !team.agent_ids.length}>{busy ? 'Saving…' : `Save ${editor}`}</button><button type="button" className="button button--ghost" onClick={() => setEditor(null)}>Cancel</button></div>
@@ -92,7 +98,7 @@ export function AgentMarketView({ wb }: { wb: Workbench }) {
         <div className="market-card-actions"><Link className="button button--primary button--sm" href={`/ask?team=${t.id}`}>Assign a task</Link><button className="button button--ghost button--sm" disabled={busy} onClick={() => openTeam(t)}>Edit</button><button className="button button--ghost button--sm" disabled={busy} onClick={() => setArchive({ kind: 'team', item: t })}>Archive</button></div>
       </Panel>) : agents.map(a => <Panel key={a.id} className="market-card" title={<><Bot size={20} aria-hidden="true" /> {a.name}</>} aside={<Badge state={a.built_in ? 'Built-in' : 'Custom'} />} description={a.description}>
         <p className="market-role">{a.role}</p><div className="market-members">{a.skills.map(s => <span className="badge" key={s}>{market.skills.find(skill => skill.id === s)?.name ?? s}</span>)}</div><p className="field-hint">{a.tools.length} tools · {a.built_in ? 'Ready to customize' : `Revision ${a.revision}`}</p>
-        <div className="market-card-actions"><Link className="button button--primary button--sm" href={`/ask?agent=${a.id}`}>Assign a task</Link><button className="button button--ghost button--sm" disabled={busy} onClick={() => openAgent(a)}>{a.built_in ? 'Customize' : 'Edit'}</button>{!a.built_in && <><button className="button button--ghost button--sm" disabled={busy} aria-label={`Duplicate ${a.name}`} onClick={() => openAgent(a, true)}><Copy size={15} /></button><button className="button button--ghost button--sm" disabled={busy} onClick={() => setArchive({ kind: 'agent', item: a })}>Archive</button></>}</div>
+        <div className="market-card-actions"><Link className="button button--primary button--sm" href={`/ask?agent=${a.id}`}>Assign a task</Link><button className="button button--ghost button--sm" disabled={busy} onClick={() => openAgent(a)}>{a.built_in ? 'Customize a copy' : 'Edit'}</button>{!a.built_in && <><button className="button button--ghost button--sm" disabled={busy} aria-label={`Duplicate ${a.name}`} onClick={() => openAgent(a, true)}><Copy size={15} /></button><button className="button button--ghost button--sm" disabled={busy} onClick={() => setArchive({ kind: 'agent', item: a })}>Archive</button></>}</div>
       </Panel>)}</div>
       {(tab === 'teams' ? teams : agents).length === 0 && <Panel title={search ? 'No matching results' : tab === 'teams' ? 'Your first team starts here' : 'Make an agent your own'} description={search ? 'Try a different name or clear the search.' : 'Create one above, or customize a built-in agent to get started.'}>{null}</Panel>}
       <p className="field-hint">Saved privately in this workspace. Names and instructions guide behavior; tool access always stays within project permissions.</p>

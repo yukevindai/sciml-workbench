@@ -7,6 +7,29 @@ Name = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max
 Skill = Literal['planning', 'data_evaluation', 'evidence', 'failure_memory', 'scientific_reviewer']
 
 
+class ResearchToolInput(ContractModel):
+    name: Name
+    description: str = Field(default='', max_length=500)
+    instructions: str = Field(min_length=1, max_length=4000)
+    capabilities: list[ToolName] = Field(min_length=1, max_length=30)
+
+    @model_validator(mode='after')
+    def unique(self):
+        if len(set(self.capabilities)) != len(self.capabilities):
+            raise ValueError('Capabilities must be unique')
+        return self
+
+
+class ResearchTool(ResearchToolInput):
+    id: Identifier
+    revision: Revision = 1
+    archived: bool = False
+
+
+class ResearchToolUpdate(ResearchToolInput):
+    expected_revision: Revision
+
+
 class AgentInput(ContractModel):
     name: Name
     role: Name
@@ -14,10 +37,11 @@ class AgentInput(ContractModel):
     instructions: str = Field(default='', max_length=4000)
     skills: list[Skill] = Field(min_length=1, max_length=5)
     tools: list[ToolName] = Field(default_factory=list, max_length=30)
+    custom_tool_ids: list[Identifier] = Field(default_factory=list, max_length=20)
 
     @model_validator(mode='after')
     def unique(self):
-        if len(set(self.skills)) != len(self.skills) or len(set(self.tools)) != len(self.tools):
+        if len(set(self.skills)) != len(self.skills) or len(set(self.tools)) != len(self.tools) or len(set(self.custom_tool_ids)) != len(self.custom_tool_ids):
             raise ValueError('Skills and tools must be unique')
         return self
 
@@ -26,6 +50,7 @@ class AgentProfile(AgentInput):
     id: Identifier
     revision: Revision = 1
     built_in: bool = False
+    custom_tools: list[ResearchTool] = Field(default_factory=list, max_length=20)
     archived: bool = False
 
 
@@ -94,6 +119,7 @@ class AgentMarket(ContractModel):
     agents: list[AgentProfile]
     teams: list[AgentTeam]
     tools: list[MarketTool]
+    custom_tools: list[ResearchTool] = Field(default_factory=list)
     skills: list[MarketSkill]
 
 

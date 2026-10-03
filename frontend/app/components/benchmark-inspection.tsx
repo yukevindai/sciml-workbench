@@ -182,7 +182,7 @@ export function RunInspection({ wb, run, focus, revealed, onReveal }: {
         {outcomes.length ? <ul>{outcomes.map(outcome => <li key={outcome.id}>
           <Link className="text-link" href={failureHref(run.project_id, outcome.id)}>{'reason' in outcome ? outcome.reason : 'Recorded outcome'}</Link> · {outcome.schema_version === '2.0' ? `${outcome.actor.kind} · ${humanise(outcome.observation.kind)} · receipt ${outcome.receipt.state}` : 'legacy human record'} · {formatDate(outcome.created_at)}
         </li>)}</ul> : <p>No unsuccessful outcome is recorded for this run. Absence of a record is not evidence of success.</p>}
-        <Link className="text-link" href={assessRunHref(run.project_id, run.id)}>Record that this run did not meet my objective <ArrowUpRight size={14} aria-hidden="true" /></Link>
+        <Link className="text-link" href={`/ask?project=${run.project_id}`}>Ask your agents to investigate this result <ArrowUpRight size={14} aria-hidden="true" /></Link>
       </div>
       <JsonBox value={run} summary="Inspect preview projection (test output withheld)" />
     </div>

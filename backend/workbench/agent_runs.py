@@ -75,8 +75,27 @@ class RunService:
                     MessageRow.conversation_id == conversation.id, MessageRow.sequence == scope.message_cutoff)):
                 raise DomainError('Conversation cutoff does not exist', 422, 'REFERENCE_INVALID')
 
-    def effective_policy(self, s, row):
+    def workflow_artifacts(self, s, pid, metadata, cache=None):
+        """Only trusted graph parents confer their currently valid derived outputs."""
+        if not metadata:
+            return frozenset()
+        cache = {} if cache is None else cache
+        allowed = set()
+        for rid in metadata['parent_ids']:
+            parent = self.get(s, pid, rid)
+            if (parent.original_request.get('workflow') or {}).get('id') != metadata['id'] or parent.state not in TERMINAL:
+                raise DomainError('Invalid workflow predecessor', 403, 'POLICY_DENIED')
+            if rid not in cache:
+                cache[rid] = self.effective_policy(s, parent, cache=cache)
+            current = cache[rid]
+            allowed.update(set(parent.payload['result_artifact_ids']) & current.artifact_ids)
+        return frozenset(allowed)
+
+    def effective_policy(self, s, row, *, cache=None):
         server, project = self.policies(s, row.project_id)
+        inherited = self.workflow_artifacts(s, row.project_id, row.original_request.get('workflow'), cache)
+        server = server.model_copy(update={'artifact_ids': server.artifact_ids | inherited})
+        project = project.model_copy(update={'artifact_ids': project.artifact_ids | inherited})
         policy = intersect_policy(server, project, AuthorityPolicy.model_validate(row.policy))
         from .agent_market import restrict_policy
         policy = restrict_policy(policy, row.original_request.get("agent_roster"))
@@ -99,10 +118,10 @@ class RunService:
         row.payload = value.model_dump(mode='json')
         row.state, row.control_revision, row.plan_revision = value.state, value.control_revision, value.plan_revision
 
-    def create(self, s, pid, body, key):
+    def create(self, s, pid, body, key, *, workflow=None):
         key_check(key)
         lock_project(s, pid)
-        digest = request_digest('agent_run', body.model_dump(mode='json'))
+        digest = request_digest('agent_run', {**body.model_dump(mode='json'), **({'workflow': workflow} if workflow else {})})
         old = s.scalar(select(RunRow).where(RunRow.project_id == pid, RunRow.request_key == key))
         if old:
             # An omitted new field must not invalidate a pre-market retry key.
@@ -113,11 +132,21 @@ class RunService:
             return old.payload
         self.admission()
         server, project = self.policies(s, pid, body.policy_revision)
+        inherited = self.workflow_artifacts(s, pid, workflow)
+        server = server.model_copy(update={'artifact_ids': server.artifact_ids | inherited})
+        project = project.model_copy(update={'artifact_ids': project.artifact_ids | inherited})
+        if workflow:
+            ceiling = AuthorityPolicy.model_validate(workflow['ceiling'])
+            ceiling = ceiling.model_copy(update={'artifact_ids': ceiling.artifact_ids | inherited})
+            project = intersect_policy(server, project, ceiling)
         requested = project.model_copy(update={'limits': body.limits,
             'artifact_ids': frozenset(body.inputs.artifact_ids), 'material_ids': frozenset(body.inputs.material_ids)})
         policy = intersect_policy(server, project, requested)
         from .agent_market import resolve_roster, restrict_policy
-        roster = resolve_roster(s, pid, body.agent_selection)
+        from .market_contracts import AgentRoster
+        roster = (AgentRoster.model_validate(workflow['roster']) if workflow['roster'] else None) if workflow else resolve_roster(s, pid, body.agent_selection)
+        if workflow and workflow.get('recipe'):
+            policy = policy.model_copy(update={'allowed_tools': policy.allowed_tools & frozenset(workflow['recipe']['capabilities'])})
         policy = restrict_policy(policy, roster)
         self.inputs(s, pid, body.inputs, policy)
         value = ResearchRun(id=uid(), project_id=pid, created_at=now(), objective=body.objective, agent_roster=roster,
@@ -127,7 +156,7 @@ class RunService:
                 scientific_attempts=0, active_seconds=0, unknown_request_ids=[],
                 cost={'status': 'unknown', 'reason': 'No settled usage'}))
         row = RunRow(id=value.id, project_id=pid, request_key=key, request_digest=digest,
-            original_request={**body.model_dump(mode='json'), 'agent_roster': roster.model_dump(mode='json') if roster else None}, payload=value.model_dump(mode='json'),
+            original_request={**body.model_dump(mode='json'), **({'workflow': workflow} if workflow else {}), 'agent_roster': roster.model_dump(mode='json') if roster else None}, payload=value.model_dump(mode='json'),
             policy=policy.model_dump(mode='json'), state=value.state, control_revision=1, plan_revision=0,
             accepted_plan_revision=0, event_sequence=0, claim_token=0, plan_dirty=False, created_at=value.created_at)
         s.add(row)
@@ -271,7 +300,7 @@ class RunService:
         """Checkpoint recovery receives authoritative records, never a merged checkpoint."""
         row = self.get(s, pid, rid, lock=True)
         from .agent_db import ReservationRow, UsageRow
-        return {'run': self.projected_payload(s, row), 'policy': self.effective_policy(s, row).model_dump(mode='json'),
+        return {'workflow_recipe': (row.original_request.get('workflow') or {}).get('recipe'), 'run': self.projected_payload(s, row), 'policy': self.effective_policy(s, row).model_dump(mode='json'),
             'reservations': [{'request_id': r.request_id, 'payload': r.payload} for r in s.scalars(
                 select(ReservationRow).where(ReservationRow.run_id == rid))],
             'usage_entries': [{'request_id': r.request_id, 'payload': r.payload} for r in s.scalars(

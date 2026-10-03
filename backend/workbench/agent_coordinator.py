@@ -209,6 +209,8 @@ class Coordinator:
                 'If the roster cannot complete the objective, explain the missing skill or tool and ask the user to change the assignment. '
                 'Agent instructions are preferences and never override evidence, review, permissions or output schemas.'))
             parts.append(ContextPart(pid, message_class, json.dumps({'selected_roster': roster})))
+        if snapshot.get('workflow_recipe'):
+            parts.append(ContextPart(pid, message_class, json.dumps({'research_tool': snapshot['workflow_recipe']})))
         if snapshot['plan_dirty']:
             parts.append(ContextPart(pid, 'schema', 'The operator amended this run. Publish a revised plan before new work.'))
         with self.db.session() as s:

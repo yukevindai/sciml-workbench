@@ -22,7 +22,7 @@ export function ProjectsView({ wb }: { wb: Workbench }) {
 
   return (
     <>
-      <NextAction stage={wb.workflow.next} hasProject={Boolean(wb.projectId)} />
+
 
       {hasWork && (
         <div className="tiles">
@@ -34,11 +34,8 @@ export function ProjectsView({ wb }: { wb: Workbench }) {
       )}
 
       <div className="split split--wide-first">
-        <Panel
-          title="Your workflow"
-          description="Four steps, in order. Each one keeps a link to the artifacts it was built from, which is what makes the final report reproducible."
-        >
-          <PipelineRail stages={wb.workflow.stages} />
+        <Panel title="Your research group" description="Assign a question, choose your agents, or run a repeatable research workflow.">
+          <div className="stack"><Link className="button button--primary" href="/ask">Ask your research group</Link><Link className="button button--secondary" href="/workflows">Explore workflows</Link><Link className="text-link" href="/agent-market">Customize agents and teams</Link></div>
         </Panel>
 
         <Panel
@@ -115,8 +112,8 @@ export function ProjectsView({ wb }: { wb: Workbench }) {
               {wb.activeProject.description || 'No research question recorded for this project yet.'}
             </p>
             <div className="research-actions">
-              <Link className="button" href="/dataset-audit">Attach a CSV</Link>
-              <Link className="button button--secondary" href="/evidence">Attach a source PDF</Link>
+              <Link className="button" href="/ask">Add research materials</Link>
+
             </div>
           </div>
         </Panel>

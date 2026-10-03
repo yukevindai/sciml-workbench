@@ -1,3 +1,4 @@
+import { selectPicker } from './picker';
 import { expect, test, type Page, type Route } from '@playwright/test';
 import { jobDetail, jobPage } from './job-page';
 import fixtures from './fixtures/failure-receipts.json';
@@ -76,13 +77,13 @@ test('records show actor, observation, uncertainty and exact run; agent and huma
   await expect(manual).toContainText('Researcher assessment');
   expect(await page.locator('main').innerText()).not.toContain(TEST_RMSE);
 
-  await page.getByLabel('Filter by who recorded it').selectOption('agent');
+  await selectPicker(page, 'Filter by who recorded it', 'agent');
   await expect(page.locator('.failure-record')).toHaveCount(1);
-  await page.getByLabel('Filter by who recorded it').selectOption('human');
+  await selectPicker(page, 'Filter by who recorded it', 'human');
   await expect(page.locator('.failure-record')).toHaveCount(failures.length - 1);
 
   await page.setViewportSize({ width: 1440, height: 1000 });
-  await page.getByLabel('Filter by who recorded it').selectOption('all');
+  await selectPicker(page, 'Filter by who recorded it', 'all');
   await agent.evaluate(element => element.scrollIntoView({ block: 'start', behavior: 'instant' }));
   await page.screenshot({ path: 'test-results/a07-records-desktop.png' });
 });
@@ -113,53 +114,6 @@ test('unknown receipts are distinct from confirmed ones and reconciliation keeps
   await page.screenshot({ path: 'test-results/a07-receipts-mobile-dark.png' });
 });
 
-test('double click sends one request; a lost response is retried with the same key and the draft is preserved', async ({ page }) => {
-  let release!: () => void;
-  const gate = new Promise<void>(resolve => { release = resolve; });
-  const posts: Posts = { keys: [], bodies: [] };
-  await workspace(page, failurePost(posts, async count => {
-    if (count === 1) return { status: 503, json: { error: 'Storage unavailable' } };
-    await gate;
-    return accepted('new-failure-job');
-  }));
-  await page.goto(`/failure-memory?project=${project.id}`);
-  const save = page.getByRole('button', { name: 'Save to Failure Memory' });
-  await expect(page.getByLabel('Benchmark run')).toHaveValue('');
-  await page.getByLabel('Why was this run unsuccessful?').fill('Missed the high-temperature objective');
-  await page.getByLabel('Uncertainty and limits').fill('Observed on one seed only');
-  await expect(save).toBeDisabled();
-  await page.getByLabel('Benchmark run').selectOption(ids.ridge);
-
-  await save.click();
-  await expect(page.getByRole('alert').filter({ hasText: 'Storage unavailable' })).toBeVisible();
-  await expect(page.getByLabel('Why was this run unsuccessful?')).toHaveValue('Missed the high-temperature objective');
-  await expect(page.getByLabel('Uncertainty and limits')).toHaveValue('Observed on one seed only');
-
-  await save.dblclick();
-  await expect.poll(() => posts.keys.length).toBe(2);
-  release();
-  await expect(page.getByRole('status').filter({ hasText: 'Accepted as job new-failure-job' })).toBeVisible();
-  expect(posts.keys).toHaveLength(2);
-  expect(posts.keys[1]).toBe(posts.keys[0]);
-  expect(posts.bodies[1]).toEqual({ benchmark_id: ids.ridge, reason: 'Missed the high-temperature objective', uncertainty_notes: 'Observed on one seed only' });
-  await expect(page.getByLabel('Why was this run unsuccessful?')).toHaveValue('');
-});
-
-test('editing a failed draft starts a new request key', async ({ page }) => {
-  const posts: Posts = { keys: [], bodies: [] };
-  await workspace(page, failurePost(posts, async count => count === 1 ? { status: 503, json: { error: 'Storage unavailable' } } : accepted('edited-job')));
-  await page.goto(assessRunHref(project.id, ids.rejected));
-  await expect(page.getByLabel('Benchmark run')).toHaveValue(ids.rejected);
-  await page.getByLabel('Why was this run unsuccessful?').fill('First wording');
-  await page.getByLabel('Uncertainty and limits').fill('Unknown');
-  await page.getByRole('button', { name: 'Save to Failure Memory' }).click();
-  await expect(page.getByRole('alert').filter({ hasText: 'Storage unavailable' })).toBeVisible();
-  await page.getByLabel('Why was this run unsuccessful?').fill('Second wording');
-  await page.getByRole('button', { name: 'Save to Failure Memory' }).click();
-  await expect(page.getByText('Accepted as job edited-job')).toBeVisible();
-  expect(posts.keys[1]).not.toBe(posts.keys[0]);
-});
-
 test('unknown run and record links substitute nothing; receipt read failures are explicit and retryable', async ({ page }) => {
   let failIndex = true;
   await workspace(page, async (route, pathname) => {
@@ -169,7 +123,7 @@ test('unknown run and record links substitute nothing; receipt read failures are
   await page.goto(`/failure-memory?project=${project.id}&benchmark=missing-run&failure=missing-record`);
   await expect(page.getByText('This project has no benchmark with ID missing-run')).toBeVisible();
   await expect(page.getByText('This project has no confirmed failure record with ID missing-record')).toBeVisible();
-  await expect(page.getByLabel('Benchmark run')).toHaveValue('');
+  await expect(page.getByLabel('Benchmark run')).toHaveCount(0);
   await expect(page.getByRole('alert').filter({ hasText: 'Receipts unavailable: Database unavailable' })).toBeVisible();
   await page.getByRole('button', { name: 'Refresh receipts' }).click();
   await expect(page.locator('.receipt')).toHaveCount(index.items.length);
@@ -179,7 +133,7 @@ test('job activity and benchmark outcome history link to failure records and to 
   await workspace(page);
   await page.goto(`/benchmark?project=${project.id}&benchmark=${ids.ridge}#benchmark-${ids.ridge}`);
   const run = page.locator(`#benchmark-${ids.ridge}`);
-  await expect(run.getByRole('link', { name: /Record that this run did not meet my objective/ })).toHaveAttribute('href', assessRunHref(project.id, ids.ridge));
+  await expect(run.getByRole('link', { name: /Ask your agents to investigate this result/ })).toHaveAttribute('href', `/ask?project=${project.id}`);
   await expect(run.getByRole('link', { name: agentRecord.reason })).toHaveAttribute('href', failureHref(project.id, agentRecord.id));
   await page.getByText('Job activity').click();
   const hrefs = await page.getByRole('link', { name: 'Inspect failure record' }).evaluateAll(links => links.map(link => link.getAttribute('href')));

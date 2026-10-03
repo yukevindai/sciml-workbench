@@ -1,5 +1,6 @@
 'use client';
 
+import { Select } from './select';
 import { useState } from 'react';
 import Link from 'next/link';
 import { Activity } from 'lucide-react';
@@ -79,10 +80,10 @@ export function BenchmarkForm({ wb, dataset }: { wb: Workbench; dataset: Dataset
           {props => <input className="input" value={config.independence_unit} onChange={e => setConfig({ ...config, independence_unit: e.target.value })} {...props} />}
         </Field>
         <Field label="Independence status">
-          {props => <select className="select" value={config.independence_status} onChange={e => setConfig({ ...config, independence_status: e.target.value as typeof config.independence_status })} {...props}>
+          {props => <Select className="select" value={config.independence_status} onChange={e => setConfig({ ...config, independence_status: e.target.value as typeof config.independence_status })} {...props}>
             <option value="" disabled>Select a status</option>
             {INDEPENDENCE.map(option => <option key={option.value} value={option.value}>{option.label}</option>)}
-          </select>}
+          </Select>}
         </Field>
       </div>
       <Field label="Why are those units independent?" hint="The argument a reviewer would need: what stops information leaking between them?">
@@ -95,10 +96,10 @@ export function BenchmarkForm({ wb, dataset }: { wb: Workbench; dataset: Dataset
         placeholder="Single synthetic fixture; not experimental evidence" values={config.limitations}
         onChange={limitations => setConfig({ ...config, limitations })} emptyText="At least one limitation is required" />
       <Field label="Scientific domain">
-        {props => <select className="select" value={config.domain} onChange={e => setConfig({ ...config, domain: e.target.value as typeof config.domain })} {...props}>
+        {props => <Select className="select" value={config.domain} onChange={e => setConfig({ ...config, domain: e.target.value as typeof config.domain })} {...props}>
           <option value="" disabled>Select a domain</option>
           {DOMAINS.map(domain => <option key={domain} value={domain}>{humanise(domain)}</option>)}
-        </select>}
+        </Select>}
       </Field>
       <JustificationEditor value={config.accepted_warnings} onChange={accepted_warnings => setConfig({ ...config, accepted_warnings })} />
       <Field label="Random seed" hint="Recorded with the run so it can be replayed exactly.">
