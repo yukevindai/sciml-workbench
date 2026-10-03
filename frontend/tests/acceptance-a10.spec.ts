@@ -61,7 +61,7 @@ async function runRequest(page: Page, goal: string, { review = false, double = f
   const response = page.waitForResponse(r => r.request().method()==='POST' && new URL(r.url()).pathname===`/api/projects/${state.a}/agent-runs`);
   if (double) await page.getByRole('button', { name:'Send', exact:true }).dblclick();
   else await page.getByRole('textbox', { name:'What would you like to find out?' }).press('Enter');
-  expect((await response).status()).toBe(201);
+  expect((await response).status()).toBe(202);
   const runs = await json<Run[]>(page, `projects/${state.a}/agent-runs?limit=100`);
   const run = runs.find(value => value.objective === goal)!;
   expect(run, 'accepted request is persisted').toBeTruthy();
