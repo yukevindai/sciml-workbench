@@ -234,3 +234,15 @@
     overflow-y: auto;
   }
 }
+
+/* Every picker shares one compact menu and keyboard interaction. */
+.workspace-picker--compact .picker-trigger { min-height: 40px; padding: 8px 12px; border-radius: 8px; }
+.select-field { position: relative; min-width: 0; width: 100%; }
+.picker-popover--portal { position: fixed; z-index: 1000; bottom: auto; right: auto; display: flex; flex-direction: column; animation: picker-appear 120ms ease-out; }
+.picker-popover--portal .picker-options { max-height: none; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 4px; }
+.picker-popover--portal .picker-option { min-height: 38px; padding: 8px 10px; border-radius: 6px; font-size: 13px; }
+.picker-option:disabled { opacity: .5; cursor: not-allowed; }
+.picker-group { padding: 8px 10px 4px; font-size: 11px; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: .08em; }
+.picker-validity { opacity: 0; position: absolute; width: 1px; height: 1px; top: 0; pointer-events: none; }
+@keyframes picker-appear { from { opacity: 0; transform: translateY(-3px); } to { opacity: 1; transform: translateY(0); } }
+@media (prefers-reduced-motion: reduce) { .picker-popover--portal { animation: none; } }

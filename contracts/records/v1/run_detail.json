@@ -75,6 +75,16 @@
           "title": "Tools",
           "type": "array"
         },
+        "custom_tool_ids": {
+          "items": {
+            "maxLength": 160,
+            "minLength": 1,
+            "type": "string"
+          },
+          "maxItems": 20,
+          "title": "Custom Tool Ids",
+          "type": "array"
+        },
         "id": {
           "maxLength": 160,
           "minLength": 1,
@@ -92,6 +102,14 @@
           "default": false,
           "title": "Built In",
           "type": "boolean"
+        },
+        "custom_tools": {
+          "items": {
+            "$ref": "#/$defs/ResearchTool"
+          },
+          "maxItems": 20,
+          "title": "Custom Tools",
+          "type": "array"
         },
         "archived": {
           "default": false,
@@ -921,6 +939,88 @@
         "status"
       ],
       "title": "ResearchStep",
+      "type": "object"
+    },
+    "ResearchTool": {
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "maxLength": 80,
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        },
+        "description": {
+          "default": "",
+          "maxLength": 500,
+          "title": "Description",
+          "type": "string"
+        },
+        "instructions": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Instructions",
+          "type": "string"
+        },
+        "capabilities": {
+          "items": {
+            "enum": [
+              "inspect_project",
+              "inspect_dataset",
+              "list_artifacts",
+              "read_artifact",
+              "read_job",
+              "run_audit",
+              "generate_split",
+              "seal_evaluation",
+              "run_baseline",
+              "read_evaluation",
+              "ingest_evidence",
+              "search_evidence",
+              "read_evidence_span",
+              "search_failures",
+              "read_failure",
+              "record_outcome",
+              "reconcile_outcome",
+              "validate_claims",
+              "build_report",
+              "verify_report",
+              "replay_science",
+              "read_memory"
+            ],
+            "type": "string"
+          },
+          "maxItems": 30,
+          "minItems": 1,
+          "title": "Capabilities",
+          "type": "array"
+        },
+        "id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "revision": {
+          "default": 1,
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "title": "Revision",
+          "type": "integer"
+        },
+        "archived": {
+          "default": false,
+          "title": "Archived",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "name",
+        "instructions",
+        "capabilities",
+        "id"
+      ],
+      "title": "ResearchTool",
       "type": "object"
     },
     "ResourceLimits": {

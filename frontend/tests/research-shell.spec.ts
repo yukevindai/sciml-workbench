@@ -26,26 +26,6 @@ test.beforeEach(async ({ page }) => {
   await page.addInitScript(() => localStorage.setItem('sciml-theme', 'light'));
 });
 
-test('the detailed request and all eight manual views remain reachable', async ({ page }) => {
-  await mockWorkspace(page);
-  await page.goto('/research');
-  await expect(page.getByRole('heading', { name: 'Detailed request', exact: true })).toBeVisible();
-  await expect(page.getByLabel('Active project', { exact: true })).toHaveAttribute('value', project.id);
-  await expect(page.getByLabel('Active dataset', { exact: true })).toHaveValue(dataset.id);
-  await expect(page.getByText('Unresolved declarations:')).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Run research' })).toBeDisabled();
-  // No run controls in the research view; the sidebar has an independent motion preference.
-  await expect(page.getByRole('main').getByRole('button', { name: /Pause|Resume|Cancel/ })).toHaveCount(0);
-  const nav = page.getByRole('navigation', { name: 'Workbench sections' });
-  for (const label of ['Ask', 'Detailed request', 'Projects', 'Check data', 'Split data', 'Test models', 'Lessons learned', 'Papers & sources', 'History', 'Export']) {
-    await expect(nav.getByRole('link', { name: label, exact: true })).toHaveCount(1);
-  }
-  await nav.getByRole('link', { name: 'Papers & sources', exact: true }).click();
-  await expect(page.getByRole('heading', { name: 'Papers & sources', exact: true })).toBeVisible();
-  await page.goBack();
-  await expect(page.getByRole('heading', { name: 'Detailed request', exact: true })).toBeVisible();
-});
-
 test('loading does not masquerade as an empty workspace; errors can be retried', async ({ page }) => {
   let release!: () => void;
   const gate = new Promise<void>(resolve => { release = resolve; });
@@ -105,28 +85,10 @@ test('late project responses cannot replace a newly selected project', async ({ 
   const lateResponse = page.waitForResponse(response => response.url().endsWith(`/projects/${project.id}/artifact-previews`));
   release();
   await lateResponse;
-  await expect(page.getByLabel('Active dataset', { exact: true })).toBeDisabled();
   await expect(page.getByText(dataset.filename, { exact: true })).toHaveCount(0);
   await page.reload();
   await expect(page.getByLabel('Active project', { exact: true })).toHaveAttribute('value', second.id);
   await expect(page.getByRole('heading', { name: 'No dataset attached' })).toBeVisible();
-});
-
-test('dataset selection survives navigation and refresh and is scoped by project', async ({ page }) => {
-  const another = { ...dataset, id: 'another-dataset', filename: 'another.csv' };
-  await mockWorkspace(page, async (route, path) => {
-    if (path !== `/api/projects/${project.id}/artifact-previews`) return false;
-    await route.fulfill({ json: [dataset, another] });
-    return true;
-  });
-  await page.goto('/research');
-  await page.getByLabel('Active dataset', { exact: true }).selectOption(dataset.id);
-  await page.getByRole('navigation').getByRole('link', { name: 'Projects', exact: true }).click();
-  await expect(page.getByLabel('Active dataset', { exact: true })).toHaveValue(dataset.id);
-  await page.reload();
-  await expect(page.getByLabel('Active dataset', { exact: true })).toHaveValue(dataset.id);
-  await selectPicker(page, 'Active project', second.id);
-  await expect(page.getByLabel('Active dataset', { exact: true })).toHaveValue('');
 });
 
 test('a polling outage retains the last validated project data and clears on retry', async ({ page }) => {
@@ -177,17 +139,17 @@ test('mobile navigation and skip link work by keyboard in both themes', async ({
   await page.setViewportSize({ width: 375, height: 812 });
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/research');
-  await expect(page.getByRole('heading', { name: project.name })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Research activity', exact: true }).first()).toBeVisible();
   await page.keyboard.press('Tab');
   await expect(page.getByRole('link', { name: 'Skip to main content' })).toBeFocused();
   await page.keyboard.press('Enter');
   await expect(page.getByRole('main')).toBeFocused();
-  const audit = page.getByRole('navigation').getByRole('link', { name: 'Check data', exact: true });
+  const audit = page.getByRole('navigation').getByRole('link', { name: 'Projects', exact: true });
   await audit.focus();
   await page.keyboard.press('Enter');
-  await expect(page.getByRole('heading', { name: 'Check data', exact: true })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Projects', exact: true })).toBeVisible();
   await page.goto('/research');
-  await expect(page.getByRole('heading', { name: project.name })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Research activity', exact: true }).first()).toBeVisible();
   for (const theme of ['dark', 'light']) {
     await page.getByRole('button', { name: `Switch to ${theme} theme` }).click();
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
@@ -214,4 +176,18 @@ test('fixtures are development-only, visibly synthetic, and never call the API',
   await page.goto('/dev/research-shell?state=empty');
   await expect(page.getByRole('heading', { name: 'Start with a project' })).toBeVisible();
   expect(calls).toEqual([]);
+});
+
+test('navigation is agentic and legacy result views have no manual entry forms', async ({ page }) => {
+  await mockWorkspace(page);
+  await page.goto('/projects');
+  const nav = page.getByRole('navigation', { name: 'Workbench sections' });
+  for (const label of ['Ask', 'Projects', 'Workflows', 'Agent market', 'Tools']) await expect(nav.getByRole('link', { name: label, exact: true })).toBeVisible();
+  await expect(page.getByText('Advanced tools', { exact: true })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: /animations|motion/i })).toHaveCount(0);
+  for (const path of ['/dataset-audit', '/split-designer', '/benchmark', '/failure-memory', '/evidence', '/report']) {
+    await page.goto(path);
+    await expect(page.locator('main form')).toHaveCount(0);
+    await expect(page.getByRole('button', { name: /Run audit|Generate partition|Export project|Record assessment/ })).toHaveCount(0);
+  }
 });

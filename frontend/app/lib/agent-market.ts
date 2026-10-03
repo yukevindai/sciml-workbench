@@ -1,5 +1,5 @@
 import { api, json } from './api';
-import { parseAgentMarket, parseAgentProfile, parseAgentTeam, parseProjectAgentSelection } from './decode';
+import { parseResearchTool, parseAgentMarket, parseAgentProfile, parseAgentTeam, parseProjectAgentSelection } from './decode';
 import type { AgentSelection } from './generated/http';
 
 export type { AgentMarket, AgentProfile, AgentTeam, AgentSelection } from './generated/http';
@@ -23,3 +23,6 @@ export function fromKey(key: string, exclusive = true): AgentSelection | null {
   const [kind, id] = key.split(':');
   return { kind: kind as 'agent' | 'team', id, exclusive };
 }
+
+export const saveTool = (body: unknown, id?: string) => api(`agent-market/tools${id ? `/${id}` : ''}`, parseResearchTool, json(body), 30_000);
+export const archiveTool = (id: string, revision: number) => api(`agent-market/tools/${id}/archive`, parseResearchTool, json({ expected_revision: revision }), 30_000);

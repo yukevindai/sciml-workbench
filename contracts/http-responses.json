@@ -392,6 +392,13 @@
           "title": "Tools",
           "type": "array"
         },
+        "custom_tools": {
+          "items": {
+            "$ref": "#/$defs/ResearchTool"
+          },
+          "title": "Custom Tools",
+          "type": "array"
+        },
         "skills": {
           "items": {
             "$ref": "#/$defs/MarketSkill"
@@ -404,6 +411,7 @@
         "agents",
         "teams",
         "tools",
+        "custom_tools",
         "skills"
       ],
       "title": "AgentMarket",
@@ -484,6 +492,16 @@
           "title": "Tools",
           "type": "array"
         },
+        "custom_tool_ids": {
+          "items": {
+            "maxLength": 160,
+            "minLength": 1,
+            "type": "string"
+          },
+          "maxItems": 20,
+          "title": "Custom Tool Ids",
+          "type": "array"
+        },
         "id": {
           "maxLength": 160,
           "minLength": 1,
@@ -502,6 +520,14 @@
           "title": "Built In",
           "type": "boolean"
         },
+        "custom_tools": {
+          "items": {
+            "$ref": "#/$defs/ResearchTool"
+          },
+          "maxItems": 20,
+          "title": "Custom Tools",
+          "type": "array"
+        },
         "archived": {
           "default": false,
           "title": "Archived",
@@ -515,9 +541,11 @@
         "instructions",
         "skills",
         "tools",
+        "custom_tool_ids",
         "id",
         "revision",
         "built_in",
+        "custom_tools",
         "archived"
       ],
       "title": "AgentProfile",
@@ -6109,6 +6137,179 @@
       "title": "ResearchStep",
       "type": "object"
     },
+    "ResearchTool": {
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "maxLength": 80,
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        },
+        "description": {
+          "default": "",
+          "maxLength": 500,
+          "title": "Description",
+          "type": "string"
+        },
+        "instructions": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Instructions",
+          "type": "string"
+        },
+        "capabilities": {
+          "items": {
+            "enum": [
+              "inspect_project",
+              "inspect_dataset",
+              "list_artifacts",
+              "read_artifact",
+              "read_job",
+              "run_audit",
+              "generate_split",
+              "seal_evaluation",
+              "run_baseline",
+              "read_evaluation",
+              "ingest_evidence",
+              "search_evidence",
+              "read_evidence_span",
+              "search_failures",
+              "read_failure",
+              "record_outcome",
+              "reconcile_outcome",
+              "validate_claims",
+              "build_report",
+              "verify_report",
+              "replay_science",
+              "read_memory"
+            ],
+            "type": "string"
+          },
+          "maxItems": 30,
+          "minItems": 1,
+          "title": "Capabilities",
+          "type": "array"
+        },
+        "id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "revision": {
+          "default": 1,
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "title": "Revision",
+          "type": "integer"
+        },
+        "archived": {
+          "default": false,
+          "title": "Archived",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "name",
+        "description",
+        "instructions",
+        "capabilities",
+        "id",
+        "revision",
+        "archived"
+      ],
+      "title": "ResearchTool",
+      "type": "object"
+    },
+    "ResearchWorkflow": {
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "maxLength": 80,
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        },
+        "description": {
+          "default": "",
+          "maxLength": 500,
+          "title": "Description",
+          "type": "string"
+        },
+        "trigger": {
+          "default": "manual",
+          "enum": [
+            "manual",
+            "daily"
+          ],
+          "title": "Trigger",
+          "type": "string"
+        },
+        "nodes": {
+          "items": {
+            "$ref": "#/$defs/WorkflowNode"
+          },
+          "maxItems": 30,
+          "minItems": 2,
+          "title": "Nodes",
+          "type": "array"
+        },
+        "edges": {
+          "items": {
+            "$ref": "#/$defs/WorkflowEdge"
+          },
+          "maxItems": 60,
+          "minItems": 1,
+          "title": "Edges",
+          "type": "array"
+        },
+        "concurrency": {
+          "default": 2,
+          "maximum": 3,
+          "minimum": 1,
+          "title": "Concurrency",
+          "type": "integer"
+        },
+        "id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "revision": {
+          "default": 1,
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "title": "Revision",
+          "type": "integer"
+        },
+        "built_in": {
+          "default": false,
+          "title": "Built In",
+          "type": "boolean"
+        },
+        "archived": {
+          "default": false,
+          "title": "Archived",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "name",
+        "description",
+        "trigger",
+        "nodes",
+        "edges",
+        "concurrency",
+        "id",
+        "revision",
+        "built_in",
+        "archived"
+      ],
+      "title": "ResearchWorkflow",
+      "type": "object"
+    },
     "ResearcherAssessment": {
       "additionalProperties": false,
       "properties": {
@@ -7883,6 +8084,324 @@
       "title": "ValidationSearchPreview",
       "type": "object"
     },
+    "WorkflowActivity": {
+      "additionalProperties": false,
+      "properties": {
+        "runs": {
+          "items": {
+            "$ref": "#/$defs/WorkflowRun"
+          },
+          "title": "Runs",
+          "type": "array"
+        },
+        "scheduled_workflow_ids": {
+          "items": {
+            "maxLength": 160,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Scheduled Workflow Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "runs",
+        "scheduled_workflow_ids"
+      ],
+      "title": "WorkflowActivity",
+      "type": "object"
+    },
+    "WorkflowCatalog": {
+      "additionalProperties": false,
+      "properties": {
+        "workflows": {
+          "items": {
+            "$ref": "#/$defs/ResearchWorkflow"
+          },
+          "title": "Workflows",
+          "type": "array"
+        }
+      },
+      "required": [
+        "workflows"
+      ],
+      "title": "WorkflowCatalog",
+      "type": "object"
+    },
+    "WorkflowEdge": {
+      "additionalProperties": false,
+      "properties": {
+        "source": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "ConnectionSource",
+          "type": "string"
+        },
+        "target": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "ConnectionTarget",
+          "type": "string"
+        },
+        "port": {
+          "default": "out",
+          "enum": [
+            "out",
+            "yes",
+            "no"
+          ],
+          "title": "Port",
+          "type": "string"
+        },
+        "data_type": {
+          "default": "artifacts",
+          "enum": [
+            "signal",
+            "artifacts"
+          ],
+          "title": "Data Type",
+          "type": "string"
+        }
+      },
+      "required": [
+        "source",
+        "target",
+        "port",
+        "data_type"
+      ],
+      "title": "WorkflowEdge",
+      "type": "object"
+    },
+    "WorkflowNode": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "trigger",
+            "research",
+            "tool",
+            "branch",
+            "join",
+            "repeat",
+            "finish"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "name": {
+          "maxLength": 80,
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        },
+        "x": {
+          "default": 0,
+          "maximum": 10000,
+          "minimum": 0,
+          "title": "X",
+          "type": "number"
+        },
+        "y": {
+          "default": 0,
+          "maximum": 10000,
+          "minimum": 0,
+          "title": "Y",
+          "type": "number"
+        },
+        "instructions": {
+          "default": "",
+          "maxLength": 2000,
+          "title": "Instructions",
+          "type": "string"
+        },
+        "assignment": {
+          "$ref": "#/$defs/AgentSelection"
+        },
+        "tool_id": {
+          "anyOf": [
+            {
+              "maxLength": 160,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Tool Id"
+        },
+        "iterations": {
+          "default": 2,
+          "maximum": 5,
+          "minimum": 1,
+          "title": "Iterations",
+          "type": "integer"
+        },
+        "condition": {
+          "default": "has_artifacts",
+          "enum": [
+            "has_artifacts",
+            "all_completed"
+          ],
+          "title": "Condition",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "kind",
+        "name",
+        "x",
+        "y",
+        "instructions",
+        "assignment",
+        "tool_id",
+        "iterations",
+        "condition"
+      ],
+      "title": "WorkflowNode",
+      "type": "object"
+    },
+    "WorkflowNodeState": {
+      "additionalProperties": false,
+      "properties": {
+        "state": {
+          "default": "pending",
+          "enum": [
+            "pending",
+            "running",
+            "completed",
+            "failed",
+            "skipped"
+          ],
+          "title": "State",
+          "type": "string"
+        },
+        "run_ids": {
+          "items": {
+            "maxLength": 160,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Run Ids",
+          "type": "array"
+        },
+        "artifact_ids": {
+          "items": {
+            "maxLength": 160,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Artifact Ids",
+          "type": "array"
+        },
+        "branch": {
+          "anyOf": [
+            {
+              "enum": [
+                "yes",
+                "no"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Branch"
+        }
+      },
+      "required": [
+        "state",
+        "run_ids",
+        "artifact_ids",
+        "branch"
+      ],
+      "title": "WorkflowNodeState",
+      "type": "object"
+    },
+    "WorkflowRun": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "project_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Project Id",
+          "type": "string"
+        },
+        "workflow_id": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Workflow Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "created_at": {
+          "title": "Created At",
+          "type": "string"
+        },
+        "state": {
+          "enum": [
+            "running",
+            "waiting",
+            "completed",
+            "partially_completed",
+            "failed",
+            "cancelled"
+          ],
+          "title": "State",
+          "type": "string"
+        },
+        "nodes": {
+          "additionalProperties": {
+            "$ref": "#/$defs/WorkflowNodeState"
+          },
+          "title": "Nodes",
+          "type": "object"
+        },
+        "error": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Error"
+        }
+      },
+      "required": [
+        "id",
+        "project_id",
+        "workflow_id",
+        "name",
+        "created_at",
+        "state",
+        "nodes",
+        "error"
+      ],
+      "title": "WorkflowRun",
+      "type": "object"
+    },
     "ProjectsResponse": {
       "type": "array",
       "items": {
@@ -8304,6 +8823,21 @@
   "$id": "https://sciml-workbench.local/contracts/http-responses.json",
   "title": "HttpResponse",
   "anyOf": [
+    {
+      "$ref": "#/$defs/ResearchWorkflow"
+    },
+    {
+      "$ref": "#/$defs/WorkflowCatalog"
+    },
+    {
+      "$ref": "#/$defs/WorkflowRun"
+    },
+    {
+      "$ref": "#/$defs/WorkflowActivity"
+    },
+    {
+      "$ref": "#/$defs/ResearchTool"
+    },
     {
       "$ref": "#/$defs/AgentMarket"
     },

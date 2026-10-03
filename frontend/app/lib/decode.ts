@@ -1,4 +1,5 @@
 import {
+  validateResearchTool, validateResearchWorkflow, validateWorkflowCatalog, validateWorkflowRun, validateWorkflowActivity,
   validateAgentMarket, validateAgentProfile, validateAgentTeam, validateProjectAgentSelection,
   validateArtifactPreviews, validateArtifactsResponse, validateEvaluationStatusView, validateEvidenceAnchors, validateEvidencePageText, validateEvidenceSpanView, validateIntakeArtifact, validateMaterialResponse, validateLegacyJobResponse,
   validateJobPage, validateJobsResponse, validateReportSummary, validateProjectResponse, validateProjectsResponse, validateResearchRuns,
@@ -48,3 +49,9 @@ export const parseAgentMarket = decoder(validateAgentMarket);
 export const parseAgentProfile = decoder(validateAgentProfile);
 export const parseAgentTeam = decoder(validateAgentTeam);
 export const parseProjectAgentSelection = decoder(validateProjectAgentSelection);
+
+export const parseResearchTool = decoder(validateResearchTool);
+export const parseResearchWorkflow = decoder(validateResearchWorkflow);
+export const parseWorkflowCatalog = decoder(validateWorkflowCatalog);
+export const parseWorkflowRun = decoder(validateWorkflowRun);
+export const parseWorkflowActivity = decoder(validateWorkflowActivity);

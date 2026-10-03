@@ -22,7 +22,7 @@ const CAPABILITIES = [
 ];
 
 const FAQ = [
-  { q: 'Do I need to know how to code?', a: 'No. Describe what you want in plain language. You can also open the advanced tools whenever you want to control individual steps.' },
+  { q: 'Do I need to know how to code?', a: 'No. Describe what you want in plain language. Customize your agents and connect research steps in a visual workflow when you want a repeatable process.' },
   { q: 'Which files can I work with?', a: 'Add CSV datasets and PDF research papers. Your original files are preserved, and derived results remain connected to their sources.' },
   { q: 'Which AI does it use?', a: 'DeepSeek and Anthropic adapters are supported. Your workspace owner configures the provider, models, and agent availability.' },
   { q: 'Is my raw data sent to the AI?', a: 'By default, the assistant sees column names and summary statistics while analysis runs on the workspace server. Access to materials is governed by your workspace’s execution policy.' },

@@ -1,5 +1,6 @@
 'use client';
 
+import { Select } from './select';
 import { useState } from 'react';
 import { AlertTriangle, Loader2 } from 'lucide-react';
 import Link from 'next/link';
@@ -52,12 +53,12 @@ export function JobActivity({ wb }: { wb: Workbench }) {
         {pending.length > 0 && <UnconfirmedSubmissions wb={wb} pending={pending} />}
         {jobs.length > 0 && <div className="cluster">
           <label className="field-label" htmlFor="job-filter">Show</label>
-          <select id="job-filter" className="select" style={{ width: 'auto' }} value={filter}
+          <Select id="job-filter" className="select" style={{ width: 'auto' }} value={filter}
             onChange={event => { setFilter(event.target.value as Filter); setShown(PAGE); }}>
             <option value="all">All jobs ({jobs.length})</option>
             <option value="active">Queued or running ({active.length})</option>
             <option value="failed">Failed ({failed.length})</option>
-          </select>
+          </Select>
           {wb.lastUpdated && <span className="field-hint">Status read at {new Date(wb.lastUpdated).toLocaleTimeString()}.</span>}
         </div>}
         {wb.jobsTruncated && <p className="field-hint">Only the newest {jobs.length} jobs are loaded. Older jobs are not listed here.</p>}

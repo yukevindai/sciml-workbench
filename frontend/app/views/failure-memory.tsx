@@ -1,5 +1,6 @@
 'use client';
 
+import { Select } from '../components/select';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { FlaskConical, Search } from 'lucide-react';
@@ -20,23 +21,23 @@ const MAX_PAGES = 10;
 type Filter = 'all' | 'human' | 'agent';
 
 export function FailureMemoryView({ wb, requestedFailureId, requestedBenchmarkId }: { wb: Workbench; requestedFailureId?: string; requestedBenchmarkId?: string }) {
-  const [runId, setRunId] = useState(() => requestedBenchmarkId ?? '');
-  const [reason, setReason] = useState('');
-  const [uncertainty, setUncertainty] = useState('');
-  const [accepted, setAccepted] = useState('');
+
+
+
+
   const [query, setQuery] = useState('');
   const [filter, setFilter] = useState<Filter>('all');
   const [receipts, setReceipts] = useState<JobDetail[]>([]);
   const [receiptsLoaded, setReceiptsLoaded] = useState(false);
   const [receiptsError, setReceiptsError] = useState('');
   const [truncated, setTruncated] = useState(false);
-  const pending = usePendingSubmissions(wb.projectId);
-  const submitting = useRef(false);
+
+
   const sequence = useRef(0);
 
   const stage = wb.workflow.stages.find(s => s.view === 'failure-memory');
   const failures = kinds(wb.artifacts, 'failure').sort((a, b) => b.created_at.localeCompare(a.created_at));
-  const run = wb.runs.find(value => value.id === runId);
+
   const described = failures.map(failure => ({ failure, view: describeFailure(failure) }));
   const needle = query.trim().toLowerCase();
   const matches = described.filter(({ failure, view }) =>
@@ -72,64 +73,8 @@ export function FailureMemoryView({ wb, requestedFailureId, requestedBenchmarkId
   useEffect(() => { void loadReceipts(); }, [loadReceipts, failureJobs]);
   useEffect(() => () => { sequence.current += 1; }, []);
 
-  const draft = run ? { benchmark_id: run.id, reason, uncertainty_notes: uncertainty } : null;
-  const retained = draft ? pending.some(entry => entry.fingerprint === fingerprint('failure', draft)) : false;
-  const submit = () => {
-    if (submitting.current || !draft) return;
-    // The same draft reuses its retained key (also after a reload), so a double click or a
-    // retry after a lost response resolves to the one original job. Any edit is a new request.
-    submitting.current = true;
-    setAccepted('');
-    void wb.act(async () => {
-      const job = await submitOperation(wb.projectId, 'failure', draft);
-      setReason(''); setUncertainty(''); setAccepted(job.id);
-      wb.setNotice('Assessment accepted. Its import status appears under import receipts; acceptance is not a confirmed record.');
-    }).finally(() => { submitting.current = false; });
-  };
-
   return <>
-    <StageGate stage={stage} />
-
-    <Panel id="assess" title="Record a researcher assessment"
-      description="A run can finish perfectly and still fail your scientific objective. Record that judgement while the reasoning is fresh.">
-      <Alert variant="info" title="Computational outcome, not an experiment">
-        This record is labeled as your judgement of a computational run. It does not change the run&rsquo;s execution status or claim that a physical experiment failed. Agents record only objective observations and cannot write this.
-      </Alert>
-      {requestedBenchmarkId && !wb.runs.some(value => value.id === requestedBenchmarkId) && <Alert variant="error" title="Requested run unavailable">
-        This project has no benchmark with ID {requestedBenchmarkId}. No other run was selected.
-      </Alert>}
-      <fieldset className="intake-fields" disabled={wb.busy || !wb.projectId}>
-        <Field label="Benchmark run" hint="Choose the exact run you are assessing. Nothing is selected for you.">
-          {props => <select className="select" value={runId} onChange={event => setRunId(event.target.value)} {...props}>
-            <option value="">Select a run</option>
-            {[...wb.runs].sort((a, b) => b.created_at.localeCompare(a.created_at)).map(value =>
-              <option key={value.id} value={value.id}>{value.model} · seed {value.seed} · {value.status} · {shortId(value.id)}</option>)}
-          </select>}
-        </Field>
-        {run && <p className="field-hint">Dataset {run.dataset_id} · split {run.split_id} · <Link className="text-link" href={benchmarkHref(wb.projectId, run.id)}>inspect this run</Link></p>}
-        <div className="split">
-          <Field label="Why was this run unsuccessful?" hint="Which objective went unmet? Describe the outcome, not a fix.">
-            {props => <textarea className="textarea" maxLength={3000} value={reason} onChange={event => setReason(event.target.value)}
-              placeholder="The model beat the mean baseline overall but failed on every held-out family above 320 K, which is the regime we care about." {...props} />}
-          </Field>
-          <Field label="Uncertainty and limits" hint="Separate what you observed from what you suspect. What is still unknown?">
-            {props => <textarea className="textarea" maxLength={3000} value={uncertainty} onChange={event => setUncertainty(event.target.value)}
-              placeholder="Observed: error grows with temperature. Suspected but untested: too few high-temperature families to learn from." {...props} />}
-          </Field>
-        </div>
-        <UnknownImportsNotice count={unknown} />
-        <div className="panel-foot">
-          <span className="field-hint">{retained
-            ? 'Retrying reuses the original request, so it cannot create a duplicate record.'
-            : 'Saved to the independent Failure Memory service, which keeps its own records. Your draft is kept if saving fails.'}</span>
-          <button type="button" className="button" disabled={wb.busy || !run || !reason.trim() || !uncertainty.trim()} onClick={submit}>
-            <FlaskConical size={15} aria-hidden="true" />Save to Failure Memory
-          </button>
-        </div>
-        {accepted && <p className="field-hint" role="status">Accepted as job {accepted}. See <a className="text-link" href={`#receipt-${accepted}`}>its receipt</a>.</p>}
-      </fieldset>
-    </Panel>
-
+    {requestedBenchmarkId && !wb.runs.some(run => run.id === requestedBenchmarkId) && <Alert variant="error">This project has no benchmark with ID {requestedBenchmarkId}</Alert>}
     <Panel title="Import receipts" description="Every Failure Memory import in this project, with its confirmation state. Unknown outcomes are kept separate from confirmed records."
       aside={<button type="button" className="button button--secondary button--sm" onClick={() => void loadReceipts()}>Refresh receipts</button>}>
       {receiptsError && <Alert variant="error" role="alert">Receipts unavailable: {receiptsError}{receiptsLoaded ? ' Previously loaded receipts remain visible.' : ''}</Alert>}
@@ -141,9 +86,9 @@ export function FailureMemoryView({ wb, requestedFailureId, requestedBenchmarkId
 
     <Panel title="Recorded failures" description={failures.length ? `${failures.length} confirmed record${failures.length === 1 ? '' : 's'} in this project` : undefined}
       aside={failures.length > 0 ? <div className="cluster">
-        <select className="select" aria-label="Filter by who recorded it" value={filter} onChange={event => setFilter(event.target.value as Filter)}>
+        <Select className="select" aria-label="Filter by who recorded it" value={filter} onChange={event => setFilter(event.target.value as Filter)}>
           <option value="all">All records</option><option value="human">Human-assessed</option><option value="agent">Recorded by agent</option>
-        </select>
+        </Select>
         <Search size={15} aria-hidden="true" className="dim" />
         <input className="input" style={{ width: '14rem' }} aria-label="Search recorded failures" placeholder="Search records…" value={query} onChange={event => setQuery(event.target.value)} />
       </div> : undefined}>

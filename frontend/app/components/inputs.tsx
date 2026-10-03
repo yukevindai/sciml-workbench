@@ -1,5 +1,6 @@
 'use client';
 
+import { Select } from './select';
 import { useEffect, useId, useRef, useState } from 'react';
 import { Check, CircleAlert, Plus, TriangleAlert, X } from 'lucide-react';
 import { Field, FieldGroup } from './ui';
@@ -82,14 +83,14 @@ export function ColumnSelect({
   return (
     <Field label={label} hint={hint}>
       {props => (
-        <select className="select" value={value} onChange={e => onChange(e.target.value)} {...props}>
+        <Select className="select" value={value} onChange={e => onChange(e.target.value)} {...props}>
           <option value="" disabled={!allowEmpty}>{placeholder}</option>
           {options.map(column => (
             <option key={column} value={column}>
               {column}{columns.includes(column) ? '' : ' (not in dataset)'}
             </option>
           ))}
-        </select>
+        </Select>
       )}
     </Field>
   );
@@ -182,7 +183,7 @@ export function UnitsEditor({
 
       {entries.map(([column, unit], index) => (
         <div className="kv-row" key={`${column}-${index}`}>
-          <select
+          <Select
             className="select"
             value={column}
             aria-label={`Column for unit ${index + 1}`}
@@ -190,7 +191,7 @@ export function UnitsEditor({
           >
             {!columns.includes(column) && <option value={column}>{column} (not in dataset)</option>}
             {columns.map(c => <option key={c} value={c}>{c}</option>)}
-          </select>
+          </Select>
           <input
             className="input kv-value"
             value={unit}

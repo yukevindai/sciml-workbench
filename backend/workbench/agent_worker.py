@@ -19,6 +19,10 @@ def run(settings, step, stopping, *, worker_id=None, lease_seconds=60):
         from .telemetry import Heartbeat
         with saver(settings.database_url) as checkpointer, Heartbeat(settings.storage_root, 'agent') as heartbeat:
             while not stopping.is_set():
+                from .workflows import tick as workflow_tick
+                from .agent_runs import RunService
+                from .agent_runtime import admission
+                workflow_tick(db, RunService(admission=admission))
                 claim = scheduler.claim(identity)
                 if claim is None:
                     heartbeat.progress('idle')

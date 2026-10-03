@@ -15,7 +15,7 @@ test('custom agents, teams and project assignment survive navigation', async ({ 
     else if (path === '/api/projects/p/artifact-previews' || path.endsWith('/agent-runs') || path.endsWith('/research-materials')) value = [];
     else if (path === '/api/agent-market') value = market;
     else if (path === '/api/agent-market/agents') {
-      const created = { ...body, id: 'custom-researcher', revision: 1, built_in: false, archived: false } as AgentProfile;
+      const created = { ...body, custom_tools: [], id: 'custom-researcher', revision: 1, built_in: false, archived: false } as AgentProfile;
       market.agents.push(created); value = created;
     } else if (path === '/api/agent-market/teams') {
       const created = { ...body, id: 'battery-team', revision: 1, archived: false } as AgentTeam;

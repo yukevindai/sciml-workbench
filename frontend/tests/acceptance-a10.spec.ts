@@ -42,28 +42,32 @@ async function createProject(page: Page, name: string): Promise<string> {
 }
 
 async function attach(page: Page, file: string) {
-  await page.goto('/research');
-  await page.getByLabel('Attach files').setInputFiles(file);
-  await expect(page.getByRole('main').getByRole('status').filter({ hasText: 'Attaching does not start research' })).toBeVisible({ timeout: 30_000 });
+  const pid = (await page.getByLabel('Active project', { exact: true }).getAttribute('value'))!;
+  const response = await page.request.post(`/api/projects/${pid}/research-materials`, {
+    data: readFileSync(file), headers: { 'Content-Type':'text/csv', 'X-Filename':file.split('/').at(-1)!, 'Idempotency-Key':crypto.randomUUID(), Origin:new URL(page.url()).origin },
+  });
+  expect(response.status()).toBe(201);
 }
 
 function countPosts(page: Page) {
   page.on('request', request => { if (request.method() === 'POST') state.posts.push(new URL(request.url()).pathname); });
 }
 
-async function runRequest(page: Page, goal: string, { review = false } = {}) {
-  await page.goto('/research');
-  await expect(page.getByText(/Autopilot policy revision \d+/)).toBeVisible();
-  const inputs = page.getByRole('list', { name: 'Inputs' });
-  for (const box of await inputs.getByRole('checkbox').all()) if (!(await box.isChecked())) await box.check();
-  await page.getByLabel('Research goal').fill(goal);
-  if (review) await page.getByRole('checkbox', { name: /Review the plan/ }).check();
-  await page.getByRole('button', { name: 'Run research' }).click();
-  await expect(page.getByRole('main').getByRole('status').filter({ hasText: /Research accepted/ })).toBeVisible();
+async function runRequest(page: Page, goal: string, { review = false, double = false } = {}) {
+  await page.goto(`/ask?project=${state.a}`);
+  await expect(page.getByRole('list', { name:'Files for this request' })).toContainText('demo.csv');
+  await page.getByRole('textbox', { name:'What would you like to find out?' }).fill(goal);
+  if (review) await page.getByRole('checkbox', { name:'Show me the plan first' }).check();
+  const response = page.waitForResponse(r => r.request().method()==='POST' && new URL(r.url()).pathname===`/api/projects/${state.a}/agent-runs`);
+  if (double) await page.getByRole('button', { name:'Send', exact:true }).dblclick();
+  else await page.getByRole('textbox', { name:'What would you like to find out?' }).press('Enter');
+  expect((await response).status()).toBe(201);
   const runs = await json<Run[]>(page, `projects/${state.a}/agent-runs?limit=100`);
-  const run = runs.find(value => value.objective === goal);
-  expect(run, 'accepted run is persisted').toBeTruthy();
-  return { run: run!, card: page.locator(`#run-${run!.id}`) };
+  const run = runs.find(value => value.objective === goal)!;
+  expect(run, 'accepted request is persisted').toBeTruthy();
+  await page.goto('/research');
+  await selectPicker(page, 'Research run', run.id);
+  return { run, card: page.locator(`#run-${run.id}`) };
 }
 
 test('private access: anonymous requests are refused; health stays public', async ({ browser, baseURL }) => {
@@ -86,31 +90,12 @@ test('one request completes under Autopilot and the browser matches persisted re
   countPosts(page);
   state.a = await createProject(page, `A10 electrolyte ${stamp}`);
   await attach(page, resolve(ROOT, 'examples/demo.csv'));
-  await page.goto('/research');
-  await expect(page.getByRole('list', { name: 'Before you can run' })).toContainText('does not authorize: demo.csv');
-  provision(state.a);   // The operator grants the new attachment; the product has no policy-write route.
-  await page.reload();
-  await expect(page.getByRole('list', { name: 'Inputs' })).toContainText('authorized by the saved policy');
-  await expect(page.getByRole('list', { name: 'Inputs' })).not.toContainText('not authorized');
-  await expect(page.getByText(/Autopilot policy revision \d+/)).toBeVisible();
-
-  // Keyboard only: goal, then Run research.
-  await page.getByLabel('Research goal').focus();
-  await page.keyboard.type('Audit demo.csv for missing values and duplicate rows.');
-  const run = page.getByRole('button', { name: 'Run research' });
-  await expect(run).toBeEnabled();
-  for (let i = 0; i < 30 && !(await run.evaluate(el => el === document.activeElement)); i += 1) await page.keyboard.press('Tab');
-  await expect(run).toBeFocused();
+  provision(state.a);
   const before = state.posts.length;
-  await page.keyboard.press('Enter');
-  await expect(page.getByRole('main').getByRole('status').filter({ hasText: 'No further approval is needed' })).toBeVisible();
-  const runs = await json<Run[]>(page, `projects/${state.a}/agent-runs?limit=100`);
-  expect(runs).toHaveLength(1);
-  const card = page.locator(`#run-${runs[0].id}`);
-  await expect(card.getByRole('group', { name: 'Run status' }).getByText('completed', { exact: true })).toBeVisible({ timeout: 180_000 });
-  // Exactly one mutation after the click: the run itself. No approval followed.
+  const { run, card } = await runRequest(page, 'Audit demo.csv for missing values and duplicate rows.');
+  await expect(card.getByRole('group', { name:'Run status' }).getByText('completed', { exact:true })).toBeVisible({ timeout:180_000 });
   expect(state.posts.slice(before)).toEqual([`/api/projects/${state.a}/agent-runs`]);
-
+  const runs = [run];
   const result = await json<{ state: string; artifact_ids: string[] }>(page, `projects/${state.a}/agent-runs/${runs[0].id}/result`);
   expect(result.state).toBe('completed');
   expect(result.artifact_ids).toHaveLength(1);
@@ -145,17 +130,10 @@ test('optional Review plan waits once, then completes after acceptance', async (
 
 test('a targeted question is answered once and the run completes; a double click submits one run', async ({ page }) => {
   test.setTimeout(300_000);
-  await page.goto('/research');
-  await expect(page.getByText(/Autopilot policy revision \d+/)).toBeVisible();
   const goal = `Audit demo.csv and report conductivity units (${stamp}).`;
-  await page.getByLabel('Research goal').fill(goal);
   const before = (await json<Run[]>(page, `projects/${state.a}/agent-runs?limit=100`)).length;
-  await page.getByRole('button', { name: 'Run research' }).dblclick();
-  await expect(page.getByRole('main').getByRole('status').filter({ hasText: /Research accepted/ })).toBeVisible();
-  const runs = await json<Run[]>(page, `projects/${state.a}/agent-runs?limit=100`);
-  expect(runs).toHaveLength(before + 1);
-  const run = runs.find(value => value.objective === goal)!;
-  const card = page.locator(`#run-${run.id}`);
+  const { run, card } = await runRequest(page, goal, { double:true });
+  expect((await json<Run[]>(page, `projects/${state.a}/agent-runs?limit=100`)).length).toBe(before+1);
   const question = card.locator('.clarification');
   await expect(question).toBeVisible({ timeout: 60_000 });
   await question.getByRole('radio', { name: /mS\/cm/ }).check();
@@ -228,40 +206,40 @@ test('two projects and datasets never leak selection, inputs or runs', async ({ 
     `m-${i},${['PA', 'PES', 'PVDF'][i % 3]},${(80 + i * 1.5).toFixed(1)},${(2 + (i % 5) * 0.3).toFixed(2)}`)].join('\n') + '\n');
   state.b = await createProject(page, `A10 membranes ${stamp}`);
   await attach(page, second);
-  await page.goto('/research');
-  const inputs = page.getByRole('list', { name: 'Inputs' });
+  await page.goto(`/ask?project=${state.b}`);
+  const inputs = page.getByRole('list', { name:'Files for this request' });
   await expect(inputs).toContainText(`membranes-${stamp}.csv`);
   await expect(inputs).not.toContainText('demo.csv');
-  await expect(page.getByText('No research has been requested in this project yet.')).toBeVisible();
-  // Only the disabled placeholder and B's own dataset.
-  await expect(page.getByLabel('Active dataset', { exact: true }).locator('option')).toHaveText(['No dataset selected', new RegExp(`^membranes-${stamp}\.csv · `)]);
-  // B's attachment is not authorized by A's grants.
-  await expect(page.getByRole('list', { name: 'Before you can run' })).toContainText(`does not authorize: membranes-${stamp}.csv`);
-
+  const bPolicy = await json<{policy:{material_ids:string[]} | null}>(page,`projects/${state.b}/execution-policy`);
+  expect(bPolicy.policy).toBeNull();
+  await page.goto('/research');
   await selectPicker(page, 'Active project', state.a!);
   await expect(page.getByLabel('Research run')).toBeVisible();
   const aRuns = await json<Run[]>(page, `projects/${state.a}/agent-runs?limit=100`);
   await page.getByLabel('Research run').click();
   await expect(page.locator('.picker-option')).toHaveCount(aRuns.length);
   await page.keyboard.press('Escape');
-  await expect(page.getByRole('list', { name: 'Inputs' })).not.toContainText('membranes');
+
   const bRuns = await json<Run[]>(page, `projects/${state.b}/agent-runs?limit=100`);
   expect(bRuns).toEqual([]);
 });
 
-test('a manual project export downloads and verifies against its recorded digest', async ({ page }) => {
+test('a retained project export downloads and verifies against its recorded digest', async ({ page }) => {
   test.setTimeout(300_000);
   await page.goto('/report');
   await selectPicker(page, 'Active project', state.a!);
-  await page.getByRole('button', { name: 'Export project' }).click();
-  const inspect = page.getByRole('link', { name: 'Inspect archive' }).first();
-  await expect(inspect).toBeVisible({ timeout: 180_000 });
-  await inspect.click();
+  // Seed an export through the operator API; the product exposes retained reports, not an entry form.
+  const queued = await page.request.post(`/api/projects/${state.a}/report`, { headers:{ Origin:new URL(page.url()).origin,'Idempotency-Key':crypto.randomUUID() } });
+  expect(queued.status()).toBe(202);
+  const exportJob = await queued.json();
+  let reportId = '';
+  await expect.poll(async()=>{ const job=await json<{state:string;result_id:string}>(page,`projects/${state.a}/jobs/${exportJob.id}`);reportId=job.result_id;return job.state; },{timeout:180_000}).toBe('succeeded');
+  await page.goto(`/report?project=${state.a}&report=${reportId}`);
   const download = page.waitForEvent('download');
   await page.getByRole('link', { name: 'Download ZIP' }).first().click();
   const file = await (await download).path();
   const bytes = readFileSync(file!);
-  const reportId = new URL(page.url()).searchParams.get('report')!;
+
   const report = await json<{ kind: string; sha256: string }>(page, `projects/${state.a}/artifacts/${reportId}`);
   expect(report.kind).toBe('report');
   expect(createHash('sha256').update(bytes).digest('hex')).toBe(report.sha256);

@@ -89,7 +89,7 @@ export function EvidenceDocument({ wb, document, anchors, focus, citation }: {
 
       <section className="provenance-block provenance-block--user" aria-labelledby={`user-${document.id}`}>
         <h3 id={`user-${document.id}`}>Supplied metadata <span className="badge badge--warning">Unverified</span></h3>
-        <p className="field-hint">Supplied at ingestion (the manual flow uses the attachment filename as the title), not read from the PDF. DOI, authors and license are not inferred.</p>
+        <p className="field-hint">Supplied at ingestion, not read from the PDF. DOI, authors and license are not inferred.</p>
         <dl className="audit-config">
           {record.metadata.length ? record.metadata.map(([key, value]) => <div key={key}><dt>{humanise(key)}</dt><dd>{value}</dd></div>)
             : <div><dt>Metadata</dt><dd>None recorded</dd></div>}

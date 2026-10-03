@@ -1,5 +1,6 @@
 'use client';
 
+import { Select } from './select';
 import { useState } from 'react';
 import Link from 'next/link';
 import { GitBranch } from 'lucide-react';
@@ -21,10 +22,10 @@ export function SplitForm({ wb, dataset }: { wb: Workbench; dataset: DatasetArti
   const issues = splitConfigIssues(config, dataset.columns);
   return <fieldset className="intake-fields" disabled={wb.busy}>
     <Field label="Source audit" hint="Only audits with matching dataset and parent lineage can be selected. Completion does not certify clean data.">
-      {props => <select className="select" value={audit?.id ?? ''} onChange={event => setAuditId(event.target.value)} {...props}>
+      {props => <Select className="select" value={audit?.id ?? ''} onChange={event => setAuditId(event.target.value)} {...props}>
         <option value="" disabled>Select an audit of this dataset</option>
         {audits.map(value => <option key={value.id} value={value.id}>{value.id} · {formatDate(value.created_at)}</option>)}
-      </select>}
+      </Select>}
     </Field>
     {audit ? <Link className="text-link" href={auditHref(wb.projectId, audit.id)}>Inspect selected audit</Link>
       : <Alert variant="warning">Complete an audit of this dataset with valid lineage before generating a partition.</Alert>}

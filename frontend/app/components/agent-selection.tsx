@@ -1,4 +1,5 @@
 'use client';
+import { Select } from './select';
 import Link from 'next/link';
 import { useEffect, useId, useState } from 'react';
 import { loadMarket, loadAssignment, assignProject, selectionKey, fromKey, type AgentMarket, type AgentSelection } from '../lib/agent-market';
@@ -32,14 +33,14 @@ export function AgentSelector({ projectId, value, onChange, disabled = false, pr
   return <div className="agent-selector">
     <div className="agent-selector-row">
       <label htmlFor={id}>{projectOnly ? 'Project agents' : 'Assign to'}</label>
-      <select className="select" id={id} value={selectionKey(value)} disabled={disabled || !market || saving}
+      <Select className="select" id={id} value={selectionKey(value)} disabled={disabled || !market || saving}
         onChange={e => { onChange(fromKey(e.target.value, value?.exclusive ?? true)); setNotice(''); }}>
         <option value="project">Project default · {name(saved)}</option>
         <option value="automatic">Automatic · built-in lab group</option>
         <optgroup label="Agents">{market?.agents.map(a => <option key={a.id} value={`agent:${a.id}`}>{a.name} · {a.role}</option>)}</optgroup>
         <optgroup label="Teams">{market?.teams.map(t => <option key={t.id} value={`team:${t.id}`}>{t.name}</option>)}</optgroup>
         {missing && value && <option value={selectionKey(value)}>Unavailable assignment</option>}
-      </select>
+      </Select>
       <Link className="text-link" href="/agent-market">Manage agents</Link>
     </div>
     {value && value.kind !== 'automatic' && <label className="market-check market-check--compact">

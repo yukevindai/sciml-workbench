@@ -1,3 +1,4 @@
+import { selectPicker } from './picker';
 import { expect, test, type Page, type Route } from '@playwright/test';
 import { jobDetail, jobPage } from './job-page';
 import recovery from './fixtures/job-recovery.json';
@@ -90,11 +91,11 @@ test('failed jobs, recovery decisions and agent run links are shown as recorded'
 
   await expect(page.locator(`#job-${rid.agent_job}`)).toContainText(`Agent run ${rid.run} · action ${rid.agent_action.slice(0, 8)} (owned by the run)`);
 
-  await page.getByLabel('Show', { exact: true }).selectOption('failed');
+  await selectPicker(page, 'Show', 'failed');
   await expect(jobs.getByRole('listitem')).toHaveCount(2);
-  await page.getByLabel('Show', { exact: true }).selectOption('active');
+  await selectPicker(page, 'Show', 'active');
   await expect(jobs.getByRole('listitem')).toHaveCount(2);
-  await page.getByLabel('Show', { exact: true }).selectOption('all');
+  await selectPicker(page, 'Show', 'all');
   await retry.getByRole('link', { name: `job ${rid.interrupted.slice(0, 8)}` }).click();
   await expect(page).toHaveURL(new RegExp(`#job-${rid.interrupted}$`));
   await page.setViewportSize({ width: 375, height: 900 });
@@ -109,49 +110,6 @@ test('a failed job that recorded an outcome links to it and says the execution f
   await expect(row.getByRole('link', { name: 'Inspect benchmark result' })).toHaveAttribute('href', new RegExp(`benchmark=${failedBenchmark.result_id}`));
   await expect(row).toContainText('The execution failed; this artifact records the unsuccessful outcome.');
   await expect(row.locator('.job-error')).toHaveCount(1);
-});
-
-test('a lost submission survives reload, is never resent automatically, and resends with its original key', async ({ page }) => {
-  const server = manualServer({ post: count => count === 1 ? { status: 503, json: { error: 'Response lost' } } : accepted('export-job') });
-  await serve(page, server);
-  await page.goto(reportHref(project.id, manual.ids.report));
-  await page.getByRole('button', { name: 'Export project' }).click();
-  await expect(page.getByRole('alert').filter({ hasText: 'may already have accepted this report request' })).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Export project' })).toBeEnabled();
-  expect(server.posts).toHaveLength(1);
-
-  await page.reload();
-  const unconfirmed = page.getByRole('region', { name: 'Unconfirmed submissions' });
-  await expect(unconfirmed).toContainText('Report export');
-  await expect(unconfirmed).toContainText(server.posts[0].key.slice(0, 8));
-  // Several poll cycles pass: nothing is resubmitted by loading the page.
-  await expect.poll(() => server.requests.index.length, { timeout: 15_000 }).toBeGreaterThanOrEqual(3);
-  expect(server.posts).toHaveLength(1);
-
-  await unconfirmed.getByRole('button', { name: 'Resend with the same key' }).click();
-  await expect(page.getByRole('status').filter({ hasText: 'Confirmed: the report export request is job export-j' })).toBeVisible();
-  expect(server.posts.map(post => post.key)).toEqual([server.posts[0].key, server.posts[0].key]);
-  await expect(unconfirmed).toHaveCount(0);
-  expect(await page.evaluate(id => localStorage.getItem(`sciml-submissions:${id}`), project.id)).toBeNull();
-});
-
-test('retrying the same inputs after reload reuses the key; a definitive refusal releases it', async ({ page }) => {
-  const server = manualServer({ post: count => count === 1 ? { status: 502, json: { error: 'Backend unavailable' } }
-    : count === 2 ? { status: 409, json: { error: 'Project has active work' } } : accepted('export-job') });
-  await serve(page, server);
-  await page.goto(`/report?project=${project.id}`);
-  await page.getByRole('button', { name: 'Export project' }).click();
-  await expect(page.getByRole('region', { name: 'Unconfirmed submissions' })).toBeVisible();
-  await page.reload();
-  await page.getByRole('button', { name: 'Export project' }).click();
-  await expect(page.getByRole('alert').filter({ hasText: 'Project has active work' })).toBeVisible();
-  expect(server.posts[1].key).toBe(server.posts[0].key);
-  // 409 is an answer: nothing was accepted under that key, so it is released.
-  await expect(page.getByRole('region', { name: 'Unconfirmed submissions' })).toHaveCount(0);
-  await page.getByRole('button', { name: 'Export project' }).click();
-  await expect(page.getByRole('status').filter({ hasText: 'Export accepted' })).toBeVisible();
-  expect(server.posts).toHaveLength(3);
-  expect(server.posts[2].key).not.toBe(server.posts[0].key);
 });
 
 test('an outage keeps results visible and backs off; a terminal job refreshes artifacts', async ({ page }) => {
@@ -187,21 +145,6 @@ test('an outage keeps results visible and backs off; a terminal job refreshes ar
   await expect(page.locator(`#report-${manual.ids.report}`)).toBeVisible();
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.screenshot({ path: 'test-results/a09-terminal-refresh.png' });
-});
-
-test('controls leave busy states when a submission fails during an outage', async ({ page }) => {
-  const server = manualServer({ post: () => ({ status: 503, json: { error: 'Database unavailable' } }) });
-  await serve(page, server);
-  await page.goto(`/report?project=${project.id}`);
-  await expect(page.getByRole('button', { name: 'Export project' })).toBeEnabled();
-  server.outage = true;
-  await page.getByRole('button', { name: 'Export project' }).dblclick();
-  await expect(page.getByRole('alert').filter({ hasText: 'may already have accepted' })).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Export project' })).toBeEnabled();
-  await expect(page.getByRole('button', { name: 'Resend with the same key' })).toBeEnabled();
-  expect(server.posts).toHaveLength(1);
-  await page.getByRole('button', { name: 'Forget' }).click();
-  await expect(page.getByRole('region', { name: 'Unconfirmed submissions' })).toHaveCount(0);
 });
 
 test('poll cadence and recovery wording helpers', () => {

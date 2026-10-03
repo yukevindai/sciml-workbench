@@ -45,7 +45,7 @@ def test_catalog_crud_defaults_and_revision_conflict(registry):
         changed = client.post(path, json={**body, 'name': 'PI Kevin', 'expected_revision': 1})
         assert changed.status_code == 200 and changed.json()['revision'] == 2
         assert client.post(path, json={**body, 'expected_revision': 1}).status_code == 409
-        assert client.post('/api/v1/agent-market/agents/default-pi', json={**body, 'expected_revision': 1}).status_code == 404
+        assert client.post('/api/v1/agent-market/agents/default-pi', json={**body, 'expected_revision': 1}).status_code == 409
         assert client.post('/api/v1/agent-market/agents', json={**body, 'tools': ['search_evidence']}).status_code == 422
         assert client.post(path + '/archive', json={'expected_revision': 2}).status_code == 200
         assert len(client.get('/api/v1/agent-market').json()['agents']) == 5

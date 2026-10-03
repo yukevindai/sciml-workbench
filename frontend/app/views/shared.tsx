@@ -1,5 +1,6 @@
 'use client';
 
+import { Select } from '../components/select';
 import type { Workbench } from '../lib/context';
 import { shortId } from '../lib/format';
 import { Field } from '../components/ui';
@@ -9,7 +10,7 @@ export function DatasetSelect({ wb }: { wb: Workbench }) {
   return (
     <Field label="Dataset" hint="Audits, partitions and runs below all belong to this file.">
       {props => (
-        <select
+        <Select
           className="select"
           value={wb.selectedDataset?.id ?? ''}
           onChange={event => wb.setDatasetId(event.target.value)}
@@ -21,7 +22,7 @@ export function DatasetSelect({ wb }: { wb: Workbench }) {
               {dataset.filename} · {dataset.rows} rows · {dataset.columns.length} columns
             </option>
           ))}
-        </select>
+        </Select>
       )}
     </Field>
   );
@@ -32,7 +33,7 @@ export function SplitSelect({ wb }: { wb: Workbench }) {
   return (
     <Field label="Frozen split" hint="Partitions are immutable once generated; a run always names the exact one it used.">
       {props => (
-        <select
+        <Select
           className="select"
           value={wb.selectedSplit?.id ?? ''}
           onChange={event => wb.setSplitId(event.target.value)}
@@ -44,7 +45,7 @@ export function SplitSelect({ wb }: { wb: Workbench }) {
               {String(split.config?.strategy ?? 'partition')} · {shortId(split.id)}
             </option>
           ))}
-        </select>
+        </Select>
       )}
     </Field>
   );

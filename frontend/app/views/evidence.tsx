@@ -40,10 +40,9 @@ export function EvidenceView({ wb, requestedEvidenceId, requestedClaimSetId }: {
   return <>
     {missingEvidence && <Alert variant="error" title="Requested evidence unavailable">This project has no ingested document with ID {requestedEvidenceId}. No other document is substituted for that link.</Alert>}
     {missingClaims && <Alert variant="error" title="Requested claims unavailable">This project has no claim set with ID {requestedClaimSetId}. No other claims are substituted for that link.</Alert>}
-    <PdfAttachments key={wb.projectId} wb={wb} />
     <Panel title="How to read this evidence" description="Each item below is labeled by where it came from.">
       <ul className="stack stack--tight">
-        <li><strong>Supplied metadata.</strong> The title and any metadata given at ingestion. The manual flow uses the filename as the title. None of it is checked against the PDF.</li>
+        <li><strong>Supplied metadata.</strong> The title and any metadata given at ingestion. None of it is checked against the PDF.</li>
         <li><strong>Derived from the PDF.</strong> Page inventory, text-layer availability and exact page text, as returned by the pinned ingestion tool. Pages without a text layer stay empty; there is no OCR.</li>
         <li><strong>Claims.</strong> Statements with a category and checked references. A verified reference shows a location or stored value. It does not show that the claim is true.</li>
       </ul>

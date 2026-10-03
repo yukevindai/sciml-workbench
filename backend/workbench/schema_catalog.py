@@ -14,7 +14,7 @@ from .read_contracts import ArtifactPreview, BenchmarkPreview, EvaluationStatusV
 from .read_contracts import EvidenceAnchor, EvidencePageText, EvidenceSpanView, ReportSummary
 from .agent_http_contracts import RunDetail, RunResult, ExecutionPolicySummary
 
-from .market_contracts import AgentMarket, AgentProfile, AgentTeam, ProjectAgentSelection
+from .market_contracts import ResearchTool, AgentMarket, AgentProfile, AgentTeam, ProjectAgentSelection
 
 BASE_URI = "https://sciml-workbench.local/contracts"
 RECORD_TYPES = {
@@ -73,7 +73,14 @@ CATALOG_TYPES = {
                              legacy.SplitInput, legacy.BenchmarkInput, legacy.FailureInput)},
 }
 
+from .workflow_contracts import ResearchWorkflow, WorkflowCatalog, WorkflowRun, WorkflowActivity
+
 HTTP_RESPONSE_TYPES = {
+    "ResearchWorkflow": ResearchWorkflow,
+    "WorkflowCatalog": WorkflowCatalog,
+    "WorkflowRun": WorkflowRun,
+    "WorkflowActivity": WorkflowActivity,
+    "ResearchTool": ResearchTool,
     "AgentMarket": AgentMarket,
     "AgentProfile": AgentProfile,
     "AgentTeam": AgentTeam,
