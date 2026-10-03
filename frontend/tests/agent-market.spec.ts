@@ -48,8 +48,15 @@ test('custom agents, teams and project assignment survive navigation', async ({ 
   await expect(page.getByLabel('Assign to', { exact: true })).toHaveAttribute('value', 'team:battery-team');
   await expect(page.getByRole('checkbox', { name: 'Only use this team' })).toBeChecked();
   await page.getByRole('button', { name: 'Use as project default' }).click();
+  await expect(page.getByText('Project default saved for new requests.', { exact: true })).toBeVisible();
   expect(selection).toEqual({ kind: 'team', id: 'battery-team', exclusive: true });
+  // An explicit assignment in the task URL still takes precedence after reload.
   await page.reload();
+  await expect(page.getByLabel('Assign to', { exact: true })).toHaveAttribute('value', 'team:battery-team');
+  await expect(page.getByRole('checkbox', { name: 'Only use this team' })).toBeChecked();
+  // Opening the project without an assignment override inherits its saved default.
+  await page.goto('/ask?project=p');
+  await expect(page.getByLabel('Assign to', { exact: true })).toHaveAttribute('value', 'project');
   await expect(page.getByLabel('Assign to', { exact: true })).toContainText('Project default · Battery Literature Team');
 });
 
