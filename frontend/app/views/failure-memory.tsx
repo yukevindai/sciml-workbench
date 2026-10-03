@@ -74,6 +74,7 @@ export function FailureMemoryView({ wb, requestedFailureId, requestedBenchmarkId
   useEffect(() => () => { sequence.current += 1; }, []);
 
   return <>
+    <UnknownImportsNotice count={unknown} />
     {requestedBenchmarkId && !wb.runs.some(run => run.id === requestedBenchmarkId) && <Alert variant="error">This project has no benchmark with ID {requestedBenchmarkId}</Alert>}
     <Panel title="Import receipts" description="Every Failure Memory import in this project, with its confirmation state. Unknown outcomes are kept separate from confirmed records."
       aside={<button type="button" className="button button--secondary button--sm" onClick={() => void loadReceipts()}>Refresh receipts</button>}>
@@ -96,7 +97,7 @@ export function FailureMemoryView({ wb, requestedFailureId, requestedBenchmarkId
         This project has no confirmed failure record with ID {requestedFailureId}. An import with an unknown outcome has no record yet. No other record is substituted.
       </Alert>}
       {failures.length === 0 ? <EmptyState icon={FlaskConical} title="Nothing recorded yet">
-        The runs that did not work are usually the ones worth remembering. Save the first one above.
+        Ask your research group to retain unsuccessful results and what they learned.
       </EmptyState> : matches.length === 0 ? <p className="field-hint">No record matches this filter{needle ? ` and “${query}”` : ''}.</p>
         : <div className="stack stack--tight">{matches.map(({ failure }) => <FailureRecord key={failure.id} wb={wb} failure={failure} focus={failure.id === requestedFailureId} />)}</div>}
     </Panel>

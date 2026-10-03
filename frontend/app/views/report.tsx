@@ -27,6 +27,7 @@ export function ReportView({ wb, requestedReportId }: { wb: Workbench; requested
   const exporting = exports.some(job => job.state === 'queued' || job.state === 'running');
 
   return <>
+    {exporting && <Alert variant="info" role="status">An export is in progress.</Alert>}
     {requestedReportId && !reports.some(r => r.id === requestedReportId) && <Alert variant="error" title="Requested report unavailable">
       This project has no report with ID {requestedReportId}. No other archive is substituted.
     </Alert>}

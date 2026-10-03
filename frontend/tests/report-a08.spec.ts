@@ -50,7 +50,7 @@ test('lineage table and graph resolve dependencies and keep broken references vi
   await expect(table.getByRole('row', { name: new RegExp(`Missing reference ${ids.audit}`) })).toBeVisible();
   await expect(table.getByText(`Missing: ${ids.audit.slice(0, 8)} (not in this project listing)`).first()).toBeVisible();
   await expect(page.locator('.lineage-node--missing')).toHaveCount(1);
-  await expect(page.getByLabel('Focus on')).toHaveValue(ids.split);
+  await expect(page.getByLabel('Focus on')).toHaveAttribute('value', ids.split);
   const splitRow = table.getByRole('row').filter({ hasText: 'composition split' });
   await expect(splitRow).toContainText(`Dataset ${ids.dataset.slice(0, 8)}`);
   await expect(splitRow).toContainText('Benchmark');
@@ -66,7 +66,7 @@ test('unknown lineage links substitute nothing', async ({ page }) => {
   await workspace(page, manualFixture);
   await page.goto(provenanceHref(manual.project.id, 'missing-artifact'));
   await expect(page.getByText('This project has no artifact with ID missing-artifact')).toBeVisible();
-  await expect(page.getByLabel('Focus on')).toHaveValue('');
+  await expect(page.getByLabel('Focus on')).toHaveAttribute('value', '');
 });
 
 test('a verified project export names frozen inputs, failed jobs and environment; replay is never reported as run', async ({ page }) => {

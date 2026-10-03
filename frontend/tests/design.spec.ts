@@ -48,7 +48,7 @@ test('sign-in returns to the intended workspace and sign-out returns home', asyn
   await page.getByLabel('Password', { exact: true }).fill(process.env.WB_LOGIN_PASSWORD!);
   await page.getByRole('button', { name: 'Sign in', exact: true }).click();
   await expect(page).toHaveURL(/\/research$/);
-  await expect(page.getByRole('heading', { name: 'Detailed request', exact: true })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Your research workspace', exact: true })).toBeVisible();
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
   await page.getByRole('button', { name: 'Sign out' }).click();
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Your personal AI lab group');

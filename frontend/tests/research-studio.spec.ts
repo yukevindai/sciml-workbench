@@ -56,7 +56,7 @@ test('custom tool is reusable in a saved workflow and templates stay unchanged',
   expect(market.custom_tools[0].capabilities).toEqual(['inspect_project']);
   await page.getByRole('link',{name:'Use in workflow'}).click();
   await expect(page.getByRole('region',{name:'Workflow designer'})).toBeVisible();
-  await expect(page.getByRole('button',{name:'Research tool',exact:true})).toContainText('Paper comparison');
+  await expect(page.getByLabel('Research tool',{exact:true})).toContainText('Paper comparison');
   await page.getByRole('button',{name:'Save',exact:true}).click();
   await expect(page.getByRole('status')).toContainText('Workflow saved');
   expect(writes.at(-1)?.body.nodes.some((n:any)=>n.kind==='tool'&&n.tool_id==='custom-tool')).toBe(true);
