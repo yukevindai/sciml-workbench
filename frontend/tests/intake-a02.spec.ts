@@ -52,7 +52,7 @@ test('project validation retains the name and research question through a reject
   await expect(page.getByLabel('Research question', { exact: true })).toHaveValue('My question');
   await page.getByRole('button', { name: 'Create project', exact: true }).click();
   await expect(page.getByLabel('Active project', { exact: true })).toHaveAttribute('value', 'created');
-  await expect(page.getByRole('link', { name: 'Attach a source PDF', exact: true })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Ask your research group', exact: true })).toHaveAttribute('href', '/ask');
 });
 
 test('source draft parser rejects malformed values and preserves explicitly empty transformation lists', () => {

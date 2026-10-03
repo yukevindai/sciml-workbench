@@ -45,7 +45,7 @@ test('custom agents, teams and project assignment survive navigation', async ({ 
   await page.getByRole('button', { name: 'Teams 1', exact: true }).click();
   await expect(page.getByRole('heading', { name: 'Battery Literature Team' })).toBeVisible();
   await page.getByRole('link', { name: 'Assign a task', exact: true }).click();
-  await expect(page.getByLabel('Assign to', { exact: true })).toHaveValue('team:battery-team');
+  await expect(page.getByLabel('Assign to', { exact: true })).toHaveAttribute('value', 'team:battery-team');
   await expect(page.getByRole('checkbox', { name: 'Only use this team' })).toBeChecked();
   await page.getByRole('button', { name: 'Use as project default' }).click();
   expect(selection).toEqual({ kind: 'team', id: 'battery-team', exclusive: true });

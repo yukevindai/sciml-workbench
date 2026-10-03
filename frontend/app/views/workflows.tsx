@@ -66,6 +66,11 @@ export function WorkflowsView({ wb }: { wb: Workbench }) {
     }
   }, [market, graph]);
   useEffect(() => {
+    setActivity({ runs: [], scheduled_workflow_ids: [] });
+    setActivityError(''); setItems([]); setInputs([]); setRunOpen(false);
+    setInputError(pid ? 'Loading project inputs…' : '');
+  }, [pid]);
+  useEffect(() => {
     if (!pid || wb.preview) return;
     const c = new AbortController(); let timer: ReturnType<typeof setTimeout>;
     const refresh = async () => {
@@ -74,7 +79,7 @@ export function WorkflowsView({ wb }: { wb: Workbench }) {
       finally { if (!c.signal.aborted) timer = setTimeout(refresh, document.hidden ? 15000 : 4000); }
     };
     void refresh();
-    listFiles(pid,c.signal).then(files => { if (!c.signal.aborted) setItems(scopeItems(files,wb.datasets)); }).catch(e => { if (!c.signal.aborted) setInputError(e.message); });
+    listFiles(pid,c.signal).then(files => { if (!c.signal.aborted) { setItems(scopeItems(files,wb.datasets)); setInputError(''); } }).catch(e => { if (!c.signal.aborted) setInputError(e.message); });
     return () => { c.abort(); clearTimeout(timer); };
   }, [pid, wb.preview, wb.datasets]);
   useEffect(() => {

@@ -37,11 +37,11 @@ test('public navigation, all guides, articles and history work without authentic
   }
   await page.goto('/docs');
   const guides = await page.locator('.guide-card').evaluateAll(links => links.map(a => a.getAttribute('href')!));
-  expect(guides).toHaveLength(6);
+  expect(guides).toHaveLength(8);
   for (const href of guides) {
     await page.goto(href);
     const hasFiveSections = ['/docs/troubleshooting', '/docs/working-with-agents'].includes(href);
-    await expect(page.locator('.article-body section')).toHaveCount(hasFiveSections ? 5 : 4);
+    await expect(page.locator('.article-body section')).toHaveCount(href === '/docs/research-tools' ? 2 : hasFiveSections ? 5 : 4);
     if (href === '/docs/working-with-agents') {
       await expect(page.getByRole('heading', { name: 'Choose your agents', exact: true })).toBeVisible();
     }
