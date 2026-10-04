@@ -111,11 +111,16 @@ test('dragging empty canvas pans without editing nodes', async ({page})=>{
   await page.goto('/workflows');
   await page.getByRole('button',{name:'New workflow',exact:true}).click();
   const canvas=page.getByLabel('Research graph canvas');
+  // Raw mouse coordinates do not auto-scroll like locator actions. The canvas
+  // can extend below the viewport after opening the designer.
+  await canvas.scrollIntoViewIfNeeded();
+  await expect(canvas).toBeInViewport({ratio:1});
   const box=(await canvas.boundingBox())!;
   const node=page.locator('.workflow-node').first();
   const position=await node.getAttribute('style');
   await page.mouse.move(box.x+box.width-50,box.y+box.height-60);
   await page.mouse.down();
+  await expect(canvas).toHaveClass(/workflow-viewport--panning/);
   await page.mouse.move(box.x+box.width-200,box.y+box.height-120,{steps:8});
   await page.mouse.up();
   expect(await canvas.evaluate(el=>el.scrollLeft)).toBeGreaterThan(50);
