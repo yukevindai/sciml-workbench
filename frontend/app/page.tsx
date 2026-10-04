@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowRight, ArrowUpRight, BookOpen, FileCheck2, FlaskConical, History, Layers3, ShieldCheck, SplitSquareHorizontal } from 'lucide-react';
+import { ArrowRight, ArrowUpRight, FlaskConical, Layers3, ShieldCheck } from 'lucide-react';
 import { PublicNav } from './components/public-nav';
 import { PublicFooter } from './components/public-shell';
 import { PixelScene, type PixelVariant } from './components/pixel-scene';
@@ -15,15 +15,17 @@ export const metadata = {
 };
 
 const CAPABILITIES = [
-  { icon: FileCheck2, title: 'Know your data before you trust it.', body: 'Find missing values, duplicates, and suspicious numbers before they shape your conclusions.', link: '/dataset-audit', label: 'Check data' },
-  { icon: SplitSquareHorizontal, title: 'Give your models a fair test.', body: 'Design meaningful holdouts and compare simple baselines before chasing a better score.', link: '/split-designer', label: 'Explore evaluation' },
-  { icon: BookOpen, title: 'Keep the evidence close.', body: 'Connect claims to passages in your papers. Follow each result back to the files and steps behind it.', link: '/evidence', label: 'Papers & sources' },
-  { icon: History, title: 'Make every attempt count.', body: 'Record what didn’t work, preserve the context, and export a record your next experiment can build on.', link: '/failure-memory', label: 'Lessons learned' },
+  { title: 'Build the lab group you need.', body: 'Start with integrated agents, customize a copy, or create your own specialists. Give small teams a shared task and a lead.', link: '/agent-market', label: 'Meet your agents' },
+  { title: 'Connect a research process.', body: 'Turn a good investigation into a repeatable workflow. Connect agents, reusable tools, review steps and decisions on a visual canvas.', link: '/workflows', label: 'Design a workflow' },
+  { title: 'Challenge what you believe.', body: 'Stress-test an idea, paper or result with a curated specialist or council. Inspect the evidence, uncertainty and suggested tests.', link: '/stress-test', label: 'Explore stress testing' },
+  { title: 'Make your methods reusable.', body: 'Create named research tools with clear instructions and permitted capabilities. Give them to your agents or use them in a workflow.', link: '/tools', label: 'Explore research tools' },
 ];
 
 const FAQ = [
   { q: 'Do I need to know how to code?', a: 'No. Describe what you want in plain language. Customize your agents and connect research steps in a visual workflow when you want a repeatable process.' },
   { q: 'Which files can I work with?', a: 'Add CSV datasets and PDF research papers. Your original files are preserved, and derived results remain connected to their sources.' },
+  { q: 'What if I need help with a control?', a: 'Product Support is always available inside the signed-in workspace. Ask how a button works, explore the workflow guides, or get help choosing your next step.' },
+  { q: 'Does a council guarantee a sound result?', a: 'No. Curated reviewers apply distinct methods, statistics and evidence lenses. They use the configured provider and can share blind spots. Their critiques support scientific judgment and do not replace independent validation or peer review.' },
   { q: 'Which AI does it use?', a: 'DeepSeek and Anthropic adapters are supported. Your workspace owner configures the provider, models, and agent availability.' },
   { q: 'Is my raw data sent to the AI?', a: 'By default, the assistant sees column names and summary statistics while analysis runs on the workspace server. Access to materials is governed by your workspace’s execution policy.' },
   { q: 'Can I review or stop the work?', a: 'Yes. Ask to review the plan first, inspect the results, and use the available pause or cancel controls as the work progresses.' },
@@ -40,7 +42,7 @@ export default function Landing() {
         <PixelScene className="hero-pixels" variant="orbit" /><div className="hero-scrim" aria-hidden="true" />
         <div className="hero-content">
           <h1 id="hero-title" className="hero-title">Your personal <br />AI lab group</h1>
-          <p className="hero-lede">Explore your data. Follow the evidence. Move your research forward.</p>
+          <p className="hero-lede">Build your team. Follow the evidence. Put your ideas to the test.</p>
           <div className="hero-cta"><Link href="/ask" className="button button--lg">Get started <ArrowRight size={17} aria-hidden="true" /></Link><a href="#how" className="button button--lg button--secondary">Explore the workspace</a></div>
         </div>
       </section>
@@ -64,7 +66,7 @@ export default function Landing() {
       </section>
 
       <section className="landing-section workflow-section" aria-labelledby="workflow-title">
-        <div><p className="section-eyebrow">A more natural workflow</p><h2 id="workflow-title" className="section-title">Start with a question.<br /><span>Stay in control.</span></h2><p className="section-lede">Ask in plain language, or get hands-on with the detailed tools. Your work stays connected either way.</p><Link href="/ask" className="button button--lg">Get started<ArrowRight size={16} aria-hidden="true" /></Link></div>
+        <div><p className="section-eyebrow">A more natural workflow</p><h2 id="workflow-title" className="section-title">Start with a question.<br /><span>Stay in control.</span></h2><p className="section-lede">Describe the goal and choose your agents. Build a workflow when the process is worth repeating, then challenge the result before moving forward.</p><Link href="/ask" className="button button--lg">Get started<ArrowRight size={16} aria-hidden="true" /></Link></div>
         <Reveal><div className="workflow-art" data-pixel-interactive><PixelScene variant="network" /></div><ol className="workflow-list">
           <li><span className="workflow-number">01</span><div><h3>Bring your materials</h3><p>Add your datasets and papers. Keep the original files intact.</p></div></li>
           <li><span className="workflow-number">02</span><div><h3>Set the direction</h3><p>Describe your objective. Review the plan before it runs if you want.</p></div></li>

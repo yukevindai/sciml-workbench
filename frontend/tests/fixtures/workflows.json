@@ -291,6 +291,210 @@
       "revision": 1,
       "built_in": true,
       "archived": false
+    },
+    {
+      "name": "Specialist review",
+      "description": "A curated scientific challenge with evidence, severity, alternatives, and resolving tests.",
+      "trigger": "manual",
+      "nodes": [
+        {
+          "id": "start",
+          "kind": "trigger",
+          "name": "Claim to challenge",
+          "x": 40.0,
+          "y": 210.0,
+          "instructions": "",
+          "assignment": {
+            "kind": "automatic",
+            "id": null,
+            "exclusive": true
+          },
+          "tool_id": null,
+          "iterations": 2,
+          "condition": "has_artifacts"
+        },
+        {
+          "id": "stress-general",
+          "kind": "research",
+          "name": "Scientific Challenger",
+          "x": 350.0,
+          "y": 60.0,
+          "instructions": "Apply your curated scientific challenge rubric. Challenge assumptions, methods, evidence, statistical reasoning, and reproducibility. Produce a substantive independent critique, identify missing evidence, and prioritize resolving tests.",
+          "assignment": {
+            "kind": "agent",
+            "id": "stress-general",
+            "exclusive": true
+          },
+          "tool_id": null,
+          "iterations": 2,
+          "condition": "has_artifacts"
+        },
+        {
+          "id": "finish",
+          "kind": "finish",
+          "name": "Reviews ready",
+          "x": 720.0,
+          "y": 210.0,
+          "instructions": "",
+          "assignment": {
+            "kind": "automatic",
+            "id": null,
+            "exclusive": true
+          },
+          "tool_id": null,
+          "iterations": 2,
+          "condition": "has_artifacts"
+        }
+      ],
+      "edges": [
+        {
+          "source": "start",
+          "target": "stress-general",
+          "port": "out",
+          "data_type": "signal"
+        },
+        {
+          "source": "stress-general",
+          "target": "finish",
+          "port": "out",
+          "data_type": "artifacts"
+        }
+      ],
+      "concurrency": 1,
+      "id": "stress-single",
+      "revision": 1,
+      "built_in": true,
+      "archived": false
+    },
+    {
+      "name": "Independent council",
+      "description": "Independent methods, statistics, and evidence reviews. Compare all three perspectives; agreement is not proof.",
+      "trigger": "manual",
+      "nodes": [
+        {
+          "id": "start",
+          "kind": "trigger",
+          "name": "Claim to challenge",
+          "x": 40.0,
+          "y": 210.0,
+          "instructions": "",
+          "assignment": {
+            "kind": "automatic",
+            "id": null,
+            "exclusive": true
+          },
+          "tool_id": null,
+          "iterations": 2,
+          "condition": "has_artifacts"
+        },
+        {
+          "id": "stress-methods",
+          "kind": "research",
+          "name": "Methods Reviewer",
+          "x": 350.0,
+          "y": 60.0,
+          "instructions": "Apply your curated scientific challenge rubric. Focus on experimental design, controls, confounders, falsifiability, causal claims, and realistic alternative explanations. Produce a substantive independent critique, identify missing evidence, and prioritize resolving tests.",
+          "assignment": {
+            "kind": "agent",
+            "id": "stress-methods",
+            "exclusive": true
+          },
+          "tool_id": null,
+          "iterations": 2,
+          "condition": "has_artifacts"
+        },
+        {
+          "id": "stress-statistics",
+          "kind": "research",
+          "name": "Statistics Reviewer",
+          "x": 350.0,
+          "y": 250.0,
+          "instructions": "Apply your curated scientific challenge rubric. Focus on independent samples, leakage, composition aliasing, validation boundaries, baselines, effect sizes, uncertainty, and sensitivity. Do not treat generated rows as independent evidence. Produce a substantive independent critique, identify missing evidence, and prioritize resolving tests.",
+          "assignment": {
+            "kind": "agent",
+            "id": "stress-statistics",
+            "exclusive": true
+          },
+          "tool_id": null,
+          "iterations": 2,
+          "condition": "has_artifacts"
+        },
+        {
+          "id": "stress-evidence",
+          "kind": "research",
+          "name": "Evidence Reviewer",
+          "x": 350.0,
+          "y": 440.0,
+          "instructions": "Apply your curated scientific challenge rubric. Focus on whether cited passages support each claim, missing provenance, measurement conditions, reproducibility, and scope of generalization. Produce a substantive independent critique, identify missing evidence, and prioritize resolving tests.",
+          "assignment": {
+            "kind": "agent",
+            "id": "stress-evidence",
+            "exclusive": true
+          },
+          "tool_id": null,
+          "iterations": 2,
+          "condition": "has_artifacts"
+        },
+        {
+          "id": "finish",
+          "kind": "finish",
+          "name": "Reviews ready",
+          "x": 720.0,
+          "y": 210.0,
+          "instructions": "",
+          "assignment": {
+            "kind": "automatic",
+            "id": null,
+            "exclusive": true
+          },
+          "tool_id": null,
+          "iterations": 2,
+          "condition": "has_artifacts"
+        }
+      ],
+      "edges": [
+        {
+          "source": "start",
+          "target": "stress-methods",
+          "port": "out",
+          "data_type": "signal"
+        },
+        {
+          "source": "stress-methods",
+          "target": "finish",
+          "port": "out",
+          "data_type": "artifacts"
+        },
+        {
+          "source": "start",
+          "target": "stress-statistics",
+          "port": "out",
+          "data_type": "signal"
+        },
+        {
+          "source": "stress-statistics",
+          "target": "finish",
+          "port": "out",
+          "data_type": "artifacts"
+        },
+        {
+          "source": "start",
+          "target": "stress-evidence",
+          "port": "out",
+          "data_type": "signal"
+        },
+        {
+          "source": "stress-evidence",
+          "target": "finish",
+          "port": "out",
+          "data_type": "artifacts"
+        }
+      ],
+      "concurrency": 3,
+      "id": "stress-council",
+      "revision": 1,
+      "built_in": true,
+      "archived": false
     }
   ]
 }

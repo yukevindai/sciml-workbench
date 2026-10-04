@@ -61,3 +61,37 @@ Verification includes graph validation, fan-out/join, branches, bounded iteratio
 restarts, request idempotency, cancellations, schedule overlap prevention,
 immutable recipes, and capability narrowing. Real provider output is deliberately
 not used in tests.
+
+
+## Canvas and draft controls
+
+Drag empty canvas space with the primary or middle mouse button to pan. Arrow keys
+pan a focused canvas; dragging a step grip moves that step. Cancel creation closes
+a new draft immediately if untouched and confirms before discarding edits.
+
+## Product support
+
+Help is present only inside the signed-in workspace. Product Support answers usage
+questions from the product guide using the configured agent provider. It has no
+tools and sends no research attachments. Questions and answers are retained in the
+selected project's run history. Searchable local guidance works without a provider
+or selected project. Closing the panel does not stop an active support request.
+
+## Scientific stress tests
+
+Stress tests use immutable built-in workflows and reviewer profiles: one general
+scientific challenger or three independent reviewers (methods, statistics,
+evidence). Each receives the same selected, authorized inputs. They do not receive
+one another's prose. The council shares the request's budget across three runs.
+
+The rubric requires evidence or an explicit gap, severity, confidence with reasons,
+alternative explanations, resolving tests, strengths, and counterarguments. It
+forbids fabricated citations and quality scores. The same configured provider may
+have shared blind spots; this is critical feedback, not peer-review certification.
+
+Users select an idea, paper, or result, supply a claim, and optionally attach CSV/PDF
+materials or selected retained results. Each review links to its full conversation
+for findings, source artifacts, plan approvals, and questions. Stop test cancels
+active children and prevents more work. Idempotent retries preserve the exact start
+request after uncertain acceptance. Existing deployment workers, policy checks,
+provider verification, and storage are required; no new service is introduced.

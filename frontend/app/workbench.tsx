@@ -17,6 +17,8 @@ import { ResearchView } from './views/research';
 import { ToolsView } from './views/tools';
 import dynamic from 'next/dynamic';
 const WorkflowsView = dynamic(() => import('./views/workflows').then(module => module.WorkflowsView), { loading: () => <p role="status">Loading workflow studio…</p> });
+import { SupportAgent } from './components/support-agent';
+const StressTestView = dynamic(() => import('./views/stress-test').then(module => module.StressTestView), { loading: () => <p role="status">Loading stress tests…</p> });
 import { AgentMarketView } from './views/agent-market';
 import { AskView } from './views/ask';
 
@@ -251,7 +253,7 @@ export default function Workbench({ view, fixture, children, requestedProjectId,
   }, [projects, projectId, artifacts, jobs, jobsTruncated, lastUpdated, busy, datasetId, splitId, runId, act, submit, refreshJobs, setProjectId, setDatasetId, fixture]);
 
   const item = navItem(view);
-  const needsProject = view !== 'workflows' && view !== 'tools' && view !== 'agent-market' && view !== 'projects' && view !== 'research' && view !== 'ask' && !projectId;
+  const needsProject = view !== 'stress-test' && view !== 'workflows' && view !== 'tools' && view !== 'agent-market' && view !== 'projects' && view !== 'research' && view !== 'ask' && !projectId;
   const simple = view === 'ask';
   const loading = projectsLoading || projectLoading;
   const loadError = projectsError || projectError;
@@ -319,6 +321,7 @@ export default function Workbench({ view, fixture, children, requestedProjectId,
               {view === 'ask' && <AskView key={projectId} wb={model} />}
               {view === 'research' && <ResearchView wb={model} />}
               {view === 'projects' && <ProjectsView key={projectId} wb={model} />}
+              {view === 'stress-test' && <StressTestView key={projectId} wb={model} />}
               {view === 'workflows' && <WorkflowsView key={projectId} wb={model} />}
               {view === 'tools' && <ToolsView wb={model} />}
               {view === 'agent-market' && <AgentMarketView wb={model} />}
@@ -340,6 +343,7 @@ export default function Workbench({ view, fixture, children, requestedProjectId,
             <span>Every result keeps a link to the files and steps it came from.</span>
           </footer>}
         </main>
+        <SupportAgent key={projectId} projectId={projectId} view={view} preview={!!fixture} />
       </div>
     </div>
   );

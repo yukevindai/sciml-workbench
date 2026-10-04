@@ -36,7 +36,7 @@ def test_catalog_crud_defaults_and_revision_conflict(registry):
         assert client.get('/api/v1/agent-market').status_code == 401
         client.headers['Authorization'] = 'Bearer ' + 'a' * 48
         initial = client.get('/api/v1/agent-market').json()
-        assert len(initial['agents']) == 5 and initial['teams'] == []
+        assert len(initial['agents']) == 10 and initial['teams'] == []
         body = researcher().model_dump()
         created = client.post('/api/v1/agent-market/agents', json=body)
         assert created.status_code == 201, created.text
@@ -48,7 +48,7 @@ def test_catalog_crud_defaults_and_revision_conflict(registry):
         assert client.post('/api/v1/agent-market/agents/default-pi', json={**body, 'expected_revision': 1}).status_code == 409
         assert client.post('/api/v1/agent-market/agents', json={**body, 'tools': ['search_evidence']}).status_code == 422
         assert client.post(path + '/archive', json={'expected_revision': 2}).status_code == 200
-        assert len(client.get('/api/v1/agent-market').json()['agents']) == 5
+        assert len(client.get('/api/v1/agent-market').json()['agents']) == 10
 
 
 def test_team_and_project_assignment_persist_and_override(registry):
@@ -132,3 +132,14 @@ def test_selected_identity_reaches_real_coordinator_context(registry):
     assert 'Electrolyte Researcher' in sent and 'Flag electrolyte composition aliasing.' in sent
     assert 'default-pi' not in sent
     assert provider.requests[0]['tools'] == []
+
+
+def test_support_has_no_tools_and_curated_profiles_cannot_be_overwritten(registry):
+    tool, *_ = registry
+    run = start(tool, AgentSelection(kind='agent', id='support-guide', exclusive=True))
+    assert [a['id'] for a in run['agent_roster']['agents']] == ['support-guide']
+    with tool.db.session.begin() as s:
+        assert not tool.runs.effective_policy(s, s.get(RunRow, run['id'])).allowed_tools
+        for ident in ['support-guide', 'stress-general', 'stress-methods', 'stress-statistics', 'stress-evidence']:
+            with pytest.raises(DomainError):
+                market.save_entry(s, 'agent', AgentUpdate(**researcher().model_dump(), expected_revision=1), ident)

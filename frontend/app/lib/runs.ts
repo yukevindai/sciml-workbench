@@ -29,7 +29,7 @@ export const EXAMPLE_GOALS = [
 export type ScopeItem = {
   id: string;
   label: string;
-  media: 'csv' | 'pdf';
+  media: 'csv' | 'pdf' | 'result';
   material_ids: string[];
   artifact_ids: string[];
 };
