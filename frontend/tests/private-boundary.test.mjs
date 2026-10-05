@@ -98,7 +98,7 @@ test('production operator gate and server proxy enforce the private boundary', a
     }
     // The landing and sign-in pages are public.
     for (const path of ['/', '/sign-in', '/auth/session', '/docs', '/docs/getting-started', '/blog', '/blog/a-better-first-question', '/changelog']) assert.equal(proxy(request(path)).status, 200);
-    for (const path of ['/images/lab-orbitals.png', '/images/workspace-ask-dark.png', '/images/workspace-audit-light.png']) {
+    for (const path of ['/images/lab-orbitals.png', '/images/workspace-ask-dark.png', '/images/workspace-audit-light.png', '/images/product-ask-dark-desktop.jpg', '/images/product-stress-test-light-mobile.jpg']) {
       assert.equal(proxy(request(path)).status, 200);
     }
     assert.equal(proxy(request('/images/private-research.png')).status, 303);

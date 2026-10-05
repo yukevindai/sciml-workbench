@@ -12,11 +12,12 @@ for (const width of [375, 768, 1024, 1440]) {
       if (theme === 'light') await page.getByRole('button', { name: 'Switch to light theme' }).click();
       await expect(page.locator('html')).toHaveAttribute('data-theme', theme);
       await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-      // Current product illustrations stay legible in each theme.
+      // Real workspace screenshots load at each breakpoint and theme.
       for (const label of ['Ask a question', 'Design a workflow', 'Challenge an idea']) {
         await page.getByRole('tab', { name: label }).click();
-        await expect(page.locator('.preview-stage h3')).toBeVisible();
-        await expect(page.getByRole('tabpanel')).toContainText('Illustrative example');
+        const image = page.locator(`.preview-${theme} img`);
+        await expect(image).toBeVisible();
+        await expect.poll(() => image.evaluate((img: HTMLImageElement) => img.naturalWidth)).toBeGreaterThan(0);
         expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
       }
       await page.getByRole('tab', { name: 'Ask a question' }).click();

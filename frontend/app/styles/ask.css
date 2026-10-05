@@ -204,3 +204,15 @@
   .suggestions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
   .suggestion { padding: 12px; text-align: left; line-height: 1.5; }
 }
+
+/* Recorded progress stays visible; ticking timers never announce every second. */
+.run-progress { display: grid; gap: var(--space-4); padding: var(--space-6); border: 1px solid var(--color-border); border-radius: var(--radius-lg); background: var(--color-bg-surface); min-width: 0; }
+.progress-heading { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: var(--space-5); }
+.progress-heading > [role='status'] { display: inline-flex; align-items: center; gap: var(--space-3); }
+.progress-time { display: inline-flex; align-items: center; gap: var(--space-3); font-size: var(--text-sm); color: var(--color-text-secondary); font-variant-numeric: tabular-nums; }
+.progress-count { font-weight: var(--weight-semibold); }
+.progress-list { display: grid; gap: var(--space-3); padding-left: var(--space-6); }
+.progress-list li { overflow-wrap: anywhere; }
+.progress-list li > span { margin-left: var(--space-4); }
+.progress-update { border-left: 2px solid var(--color-border-strong); padding-left: var(--space-5); }
+@media (prefers-reduced-motion: reduce) { .run-progress .spin { animation: none; } }

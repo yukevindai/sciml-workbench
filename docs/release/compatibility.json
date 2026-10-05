@@ -96,7 +96,7 @@
     "backend/constraints.txt": "43a0fe3fe7f23d09094d34ee1d8aae5f950e117a7dbff79d656fcc0c8f3028e4",
     "backend/pyproject.toml": "c4e20bf376f99c7d645832be5a99586e2f9b7bae901aa8df448739f82093b246",
     "frontend/package-lock.json": "ca49abf720ad52839af8a37f85a7a7805dde86d3e3e0554abfeb13e9f6b0042b",
-    "frontend/package.json": "aad65690bacff9d9f7c8a14073c95172ab0ed3c9b2f8254e2162f74d7f3e184e",
+    "frontend/package.json": "ca4634a69e116b0ed8c6e17bd6d6fd47f706a7b24e5ea085e73f547f37342daa",
     "backend/Dockerfile": "cd55416d0e65fc8599229361bafc6a828f8ba8af80aa195d499ab1116b2569ae",
     "frontend/Dockerfile": "6c88c2688a4580dceb5db14d5de9925796fb87039393f41768e4d61ef0f7db86",
     "compose.yaml": "9dc1b38da9312a5a87b76da6dfd163e6bfb5bdd90b2bb57a0038a8893725b1d4",

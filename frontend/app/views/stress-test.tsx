@@ -3,13 +3,15 @@ import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 import { ArrowUpRight, FilePlus2, ShieldCheck, Users } from 'lucide-react';
 import type { Workbench } from '../lib/context';
-import type { ResearchWorkflow, WorkflowRun, RunDetail } from '../lib/generated/http';
+import type { ResearchWorkflow, WorkflowRun } from '../lib/generated/http';
 import { api } from '../lib/api';
-import { parseWorkflowCatalog, parseWorkflowActivity, parseWorkflowRun, parseRunDetail } from '../lib/decode';
+import { parseWorkflowCatalog, parseWorkflowActivity, parseWorkflowRun } from '../lib/decode';
 import { acceptedFile, listFiles, permissions, perRun, uploadFile } from '../lib/ask';
 import { runInput, scopeItems, type ScopeItem } from '../lib/runs';
 import { retainedPost, hasRetainedRequest } from '../lib/retained-request';
 import { WorkspacePicker } from '../components/workspace-picker';
+import { useRunFeed } from '../lib/run-feed';
+import { RunProgress, WorkflowProgress } from '../components/run-progress';
 import { Alert, Badge, Panel } from '../components/ui';
 
 const PRESETS=[
@@ -18,14 +20,14 @@ const PRESETS=[
 ] as const;
 const LENSES=[['Methods','Controls, confounders, causal claims and alternative explanations.'],['Statistics','Independence, leakage, baselines, uncertainty and generalization.'],['Evidence','Claim support, provenance, reproducibility and missing information.']];
 
-function ReviewResult({pid,rid,state}:{pid:string;rid:string;state:string}) {
-  const [detail,setDetail]=useState<RunDetail|null>(null),[error,setError]=useState('');
-  useEffect(()=>{const c=new AbortController();void api(`projects/${pid}/agent-runs/${rid}`,parseRunDetail,{signal:c.signal},30_000).then(v=>{if(!c.signal.aborted){if(v.run.project_id!==pid)throw new Error('Review belongs to another project.');setDetail(v);}}).catch(e=>{if(!c.signal.aborted)setError(e.message);});return()=>c.abort();},[pid,rid,state]);
-  return <div className="review-result">{detail?.answer&&<p className="review-answer">{detail.answer}</p>}{!detail?.answer&&detail?.assignments.filter(a=>a.findings.length).map(a=><div key={a.id}><h4>{a.agent_name??a.role}</h4><ul>{a.findings.map((f,i)=><li key={i}>{f}</li>)}</ul>{a.uncertainty&&<p><strong>Uncertainty:</strong> {a.uncertainty}</p>}{a.recommended_actions.length>0&&<><strong>Suggested next steps</strong><ul>{a.recommended_actions.map((v,i)=><li key={i}>{v}</li>)}</ul></>}</div>)}{error&&<p role="alert">{error}</p>}<Link className="text-link" href={`/ask?project=${pid}&run=${rid}`}>Open full review, evidence and questions <ArrowUpRight size={14} aria-hidden="true"/></Link></div>;
+function ReviewResult({pid,rid}:{pid:string;rid:string}) {
+  const {detail,events,error,lastRead}=useRunFeed(pid,rid,false);
+  return <div className="review-result">{detail&&<RunProgress run={detail.run} detail={detail} events={events} error={error} lastRead={lastRead}/>} {detail?.answer&&<p className="review-answer">{detail.answer}</p>}{!detail?.answer&&detail?.assignments.filter(a=>a.findings.length).map(a=><div key={a.id}><h4>{a.agent_name??a.role}</h4><ul>{a.findings.map((f,i)=><li key={i}>{f}</li>)}</ul>{a.uncertainty&&<p><strong>Uncertainty:</strong> {a.uncertainty}</p>}{a.recommended_actions.length>0&&<><strong>Suggested next steps</strong><ul>{a.recommended_actions.map((v,i)=><li key={i}>{v}</li>)}</ul></>}</div>)}{error&&<p role="alert">{error}</p>}<Link className="text-link" href={`/ask?project=${pid}&run=${rid}`}>Open full review, evidence and questions <ArrowUpRight size={14} aria-hidden="true"/></Link></div>;
 }
 
 export function StressTestView({wb}:{wb:Workbench}) {
   const pid=wb.projectId;
+  const [openReviews,setOpenReviews]=useState<Set<string>>(()=>new Set());
   const [presets,setPresets]=useState<ResearchWorkflow[]>([]),[mode,setMode]=useState('stress-single'),[kind,setKind]=useState('idea');
   const [claim,setClaim]=useState(''),[items,setItems]=useState<ScopeItem[]>([]),[selected,setSelected]=useState<string[]>([]),[review,setReview]=useState(false);
   const [catalogAttempt,setCatalogAttempt]=useState(0);
@@ -63,6 +65,6 @@ export function StressTestView({wb}:{wb:Workbench}) {
       {error&&<Alert variant="error" role="alert">{error}{!presets.length&&<button className="button button--ghost" onClick={()=>{setError('');setCatalogAttempt(v=>v+1);}}>Reload review setups</button>}</Alert>}{notice&&<Alert variant="success" role="status">{notice}</Alert>}{pending&&<p className="field-hint">The previous request’s acceptance is uncertain. Retry sends that exact saved claim and input selection.</p>}
       <button className="button button--primary" disabled={!pid||busy||uploading||loading||!!filesError||!presets.some(p=>p.id===mode)||(!claim.trim()&&!pending)||wb.preview} onClick={start}>{busy?'Starting…':pending?'Retry previous stress test':'Start stress test'}</button>
     </div></Panel><aside className="stress-rubric"><p className="page-eyebrow">Curated, not improvised</p><h3>A consistent standard of review.</h3>{LENSES.map(([title,text])=><div key={title}><h4>{title}</h4><p>{text}</p></div>)}<p className="field-hint">Every concern should include evidence, severity, confidence, an alternative explanation and a resolving test. Reviewers use your configured provider and may share its blind spots. Their agreement is not proof or peer-review certification.</p></aside></div>
-    {pid&&<section className="stack" aria-label="Stress test history"><h2>Your stress tests</h2>{activityError&&<Alert variant="error">{activityError}</Alert>}{!runs.length&&!activityError&&<p className="field-hint">Your retained reviews will appear here.</p>}{runs.map(run=><Panel key={run.id} title={run.name} aside={<Badge state={run.state}/>} description={new Date(run.created_at).toLocaleString()}>{run.error&&<Alert variant="error">{run.error}</Alert>}<div className="stack">{Object.entries(run.nodes).filter(([,s])=>s.run_ids.length).map(([id,state])=><details className="stress-review" key={id}><summary><strong>{presets.find(p=>p.id===run.workflow_id)?.nodes.find(n=>n.id===id)?.name??'Reviewer'}</strong><Badge state={state.state}/></summary>{state.run_ids.map(rid=><ReviewResult key={rid} pid={pid} rid={rid} state={run.state+state.state}/>)}</details>)}{['running','waiting'].includes(run.state)&&<><p className="field-hint">Open each review for questions, plan approval, and progress.</p><button className="button button--ghost" disabled={busy} onClick={async()=>{setBusy(true);try{const stopped=await api(`projects/${pid}/workflow-runs/${run.id}/cancel`,parseWorkflowRun,{method:'POST'},30_000);setRuns(v=>v.map(r=>r.id===stopped.id?stopped:r));}catch(e){setError(e instanceof Error?e.message:'Could not stop test.');}finally{setBusy(false);}}}>Stop test</button></>}</div></Panel>)}</section>}
+    {pid&&<section className="stack" aria-label="Stress test history"><h2>Your stress tests</h2>{activityError&&<Alert variant="error">{activityError}</Alert>}{!runs.length&&!activityError&&<p className="field-hint">Your retained reviews will appear here.</p>}{runs.map(run=><Panel key={run.id} title={run.name} aside={<Badge state={run.state}/>} description={new Date(run.created_at).toLocaleString()}><WorkflowProgress run={run} error={activityError}/>{run.error&&<Alert variant="error">{run.error}</Alert>}<div className="stack">{Object.entries(run.nodes).filter(([,s])=>s.run_ids.length).map(([id,state])=><details className="stress-review" key={id} onToggle={event=>{const open=event.currentTarget.open,key=`${run.id}:${id}`;setOpenReviews(current=>{if(current.has(key)===open)return current;const next=new Set(current);if(open)next.add(key);else next.delete(key);return next;});}}><summary><strong>{presets.find(p=>p.id===run.workflow_id)?.nodes.find(n=>n.id===id)?.name??'Reviewer'}</strong><Badge state={state.state}/></summary>{openReviews.has(`${run.id}:${id}`)&&state.run_ids.map(rid=><ReviewResult key={rid} pid={pid} rid={rid}/>)}</details>)}{['running','waiting'].includes(run.state)&&<><p className="field-hint">Open each review for questions, plan approval, and progress.</p><button className="button button--ghost" disabled={busy} onClick={async()=>{setBusy(true);try{const stopped=await api(`projects/${pid}/workflow-runs/${run.id}/cancel`,parseWorkflowRun,{method:'POST'},30_000);setRuns(v=>v.map(r=>r.id===stopped.id?stopped:r));}catch(e){setError(e instanceof Error?e.message:'Could not stop test.');}finally{setBusy(false);}}}>Stop test</button></>}</div></Panel>)}</section>}
   </div>;
 }
