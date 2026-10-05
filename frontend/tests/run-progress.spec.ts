@@ -84,8 +84,8 @@ test('support has a ticking timer and explicitly reports interrupted updates', a
   await expect(progress.getByRole('timer',{name:'Elapsed',exact:true})).toContainText('1m 14s');
 });
 
-test('public preview serves real UI captures anonymously without mounting support', async ({browser}) => {
-  const context=await browser.newContext({baseURL:process.env.E2E_BASE_URL||'http://localhost:3100',extraHTTPHeaders:{}});
+test('public preview serves real UI captures anonymously without mounting support', async ({browser,baseURL}) => {
+  const context=await browser.newContext({baseURL,extraHTTPHeaders:{}});
   const page=await context.newPage();
   const calls:string[]=[];
   await page.route('**/api/**', route=>{calls.push(route.request().url());return route.abort();});
