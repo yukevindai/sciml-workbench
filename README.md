@@ -2,11 +2,11 @@
 
 # SciML Workbench
 
-### An agentic workspace for reproducible scientific machine learning.
+### Your personal AI lab group.
 
 **Bring your data. Define the question. Keep the evidence.**
 
-Coordinate dataset audits, leakage-aware partitions, benchmark runs, evidence, and failure memory in one research workspace—with traceable artifacts from input to report.
+Ask a research question, assemble your agents, design a visual workflow, or challenge an idea with a scientific review council. Keep the data, evidence, results, and reasoning behind each investigation together.
 
 [![CI](https://github.com/yukevindai/sciml-workbench/actions/workflows/ci.yml/badge.svg)](https://github.com/yukevindai/sciml-workbench/actions/workflows/ci.yml)
 [![Python](https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white)](backend/pyproject.toml)
@@ -15,11 +15,43 @@ Coordinate dataset audits, leakage-aware partitions, benchmark runs, evidence, a
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-4169E1?logo=postgresql&logoColor=white)](compose.yaml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-7C3AED)](LICENSE)
 
-[Quick start](#quick-start) · [Agent workflow](#agent-workflow) · [Try the demo](#try-the-scientific-workflow) · [Documentation](#documentation) · [Release status](#release-status)
+[What’s new](#whats-new) · [Quick start](#quick-start) · [Agent workflow](#agent-workflow) · [Try the demo](#try-the-scientific-workflow) · [Documentation](#documentation) · [Release status](#release-status)
 
 </div>
 
 ---
+
+## What’s new
+
+**Product version: 0.2.0**, plus the improvements merged through **October 5, 2026** ([PR #19](https://github.com/yukevindai/sciml-workbench/pull/19)). The [product changelog](frontend/app/changelog/page.tsx) tracks UI milestones; the frontend/backend package version and release compatibility inventory remain **0.1.0**. These are separate from live deployment and release acceptance.
+
+| Update | What changed |
+|---|---|
+| **Research studio** | Custom agents and teams, reusable research tools, visual workflows, templates, parallel paths, conditions, bounded repeats, and optional daily schedules. Built-in agents remain intact when customized. |
+| **Workflow navigation** | Cancel accidental workflow creation; edited drafts ask before discarding. Hold the primary or middle mouse button on empty canvas space to pan. Move steps by their grips, or use keyboard controls and zoom/fit. |
+| **Product Support** | A persistent Help launcher inside the signed-in workspace, with AI answers about controls and searchable product guidance. It is absent from the public landing and sign-in pages. |
+| **Scientific stress tests** | Challenge an idea, paper, or result with one scientific reviewer or a preset council of independent methods, statistics, and evidence reviewers. |
+| **Loading and response improvements** | Workspace views load on demand; independent catalogs render without waiting for scientific history. Initial job and artifact reads run concurrently. Support uses a smaller direct-answer request, instant guide suggestions, and quicker response polling; queue continuations avoid unnecessary scheduler waits. |
+| **Visible progress** | Ask, lab-group activity, support, workflows, and stress tests show elapsed time and recorded activity or step counts where available. Queued, paused, input-required, and interrupted-update states are distinct. Timers use saved timestamps and add no server polling. |
+| **Accurate product previews** | Landing-page tabs use captures of the actual Ask, workflow, and stress-test screens, with synthetic data, desktop/mobile layouts, and light/dark themes. |
+| **CI correction** | The anonymous preview test now inherits the shared Playwright base URL, fixing its local-port mismatch in GitHub Actions. |
+
+These changes reduce avoidable waits and make ongoing work visible; model response time still depends on the provider and the task. Elapsed time includes queueing and waits, and is not an estimated completion percentage.
+
+### Inside the workspace
+
+These are captures of the real interface using synthetic example data. The public preview is illustrative; research runs require signing in and configuring the runtime.
+
+![Ask with research activity and elapsed time](frontend/public/images/product-ask-dark-desktop.jpg)
+
+<details>
+<summary><strong>Visual workflows and scientific stress tests</strong></summary>
+
+![Visual workflow designer](frontend/public/images/product-workflows-dark-desktop.jpg)
+
+![Scientific stress-test setup](frontend/public/images/product-stress-test-dark-desktop.jpg)
+
+</details>
 
 ## Agent market
 
@@ -34,19 +66,22 @@ Scientific ML involves more than fitting a model: checking source data, choosing
 The scientific methods stay in four independently usable upstream projects. The workbench adds the interface, durable execution, agent coordination, and reproducibility layer.
 
 > [!NOTE]
-> **Current release: 0.1.0 candidate.** Manual scientific tools work without a model API key. The AI assistant runs on **DeepSeek** (Anthropic is also supported) and stays off until a key and usage bounds are configured. The release handoff still records pending live-provider and hosted acceptance gates; see [release status](#release-status).
+> **Agent-led product UI; scientific APIs remain available independently.** The AI assistant runs on **DeepSeek** (Anthropic is also supported) and stays off until a key and usage bounds are configured. Scientific execution through the API does not require a model key, but Ask, workflow agents, AI support, and stress reviews do. Searchable product guidance remains available without a provider. The release handoff still records pending live-provider and hosted acceptance gates; see [release status](#release-status).
 
 ## What you can do
 
 | Capability | Research outcome |
 |---|---|
 | **Goal-driven coordination** | Start a research request with CSV/PDF attachments; follow the plan, real activity, linked results, and targeted questions. |
+| **Visual workflows** | Connect agent and tool steps, parallel paths, conditions, and bounded repeats; save templates and opt into daily schedules. |
+| **Scientific stress tests** | Receive structured critiques from one reviewer or three independent reviewers using the same selected evidence. |
+| **Product help** | Ask what a control does from inside the workspace, or search local guidance immediately. |
 | **Dataset auditing** | Inspect quality findings and source declarations before treating a dataset as suitable for a benchmark. Unknown metadata stays unknown. |
 | **Leakage-aware splitting** | Generate supported SciSplit partitions and inspect group-constrained counts, diagnostics, and every row assignment. |
 | **Scientific baselines** | Execute installed mean or ridge regression baselines against a frozen task card and partition. Track validation results and deliberate test exposure. |
 | **Evidence grounding** | Preserve original PDFs, inspect available text layers, and follow claim references to verified source spans. |
 | **Failure memory** | Retain unsuccessful-run context, uncertainty, actor attribution, and confirmed or unresolved import receipts. |
-| **Research controls** | Review a plan optionally, answer consolidated questions, pause/resume/cancel, and reconnect to the same persisted run. |
+| **Research controls** | Review a plan optionally, answer consolidated questions, pause/resume/cancel, and reconnect to the same persisted run with elapsed time and recorded activity. |
 | **Reproducible reports** | Export original inputs, artifacts, scientific outputs, source evidence, dependency pins, and a SHA-256 manifest; verify and replay supported science. |
 
 ## Four tools, one workspace
@@ -62,7 +97,7 @@ All four are installed as pinned dependencies and accessed through their public 
 
 ## Agent workflow
 
-**Autopilot** starts execution when you send a question in **Ask** (or choose **Run research** in **Detailed request**), within the installed policy and available budget. **Review plan** is an optional mode. Missing essential scientific information becomes a focused question; routine permitted steps do not require another approval.
+**Autopilot** starts execution when you send a question in **Ask**, within the installed policy and available budget. **Review plan** is an optional mode. Missing essential scientific information becomes a focused question; routine permitted steps do not require another approval.
 
 ```mermaid
 flowchart TD
@@ -93,6 +128,16 @@ Execution uses PostgreSQL-backed state, LangGraph checkpoints, durable action re
 
 **Configure the real runtime:** [Agent operator guide](docs/agent-operator-guide.md) · [Coordinator and recovery](docs/agent-coordinator.md) · [Budgets](docs/budgets.md)
 
+## Workflows, stress tests, and support
+
+In **Workflows**, start from a template or a new graph, assign agents or reusable tools, connect steps, and save before running. Drag empty canvas space to pan; use **Cancel creation** to leave a new draft. Execution continues on the backend when the browser closes. Stopping a workflow cancels active child runs while retaining completed results. Optional daily schedules run at most once per UTC day when the scheduler wakes, with no exact-time guarantee.
+
+In **Stress test**, choose an idea, paper, or scientific result, describe the central claim, and select the evidence to include. **Specialist review** uses one challenger; **Independent council** uses three reviewers who receive the same authorized inputs without seeing one another’s prose. The council shares the request budget. Reviews ask for evidence or explicit gaps, severity, justified confidence, alternative explanations, and resolving tests. Open each review for its findings, source artifacts, questions, and any plan approval. **Stop test** cancels active reviews. Reviewers can share a provider’s blind spots; agreement is not proof or peer-review certification.
+
+The **Help** launcher stays available throughout the signed-in workspace. Product Support explains controls using the product guide and has no research tools or research attachments. AI questions and answers stay in the selected project’s run history. Local guidance works without a provider or a selected project; closing Help does not cancel an active request.
+
+[Research studio and execution guide](docs/research-workflows.md) · [Agent market guide](docs/agent-market.md)
+
 ## Quick start
 
 ### 1. Start the local workspace
@@ -120,9 +165,9 @@ docker compose config --quiet
 docker compose up --build -d --wait
 ```
 
-Open **http://localhost:3000** for the landing page, choose **Get started**, and sign in on the sign-in page with `WB_LOGIN_USERNAME` and `WB_LOGIN_PASSWORD` from `.env`. You land on **Ask**: one prompt box where you attach a CSV or PDF and type what you want to know. The hand-operated tools are under **Advanced tools** in the sidebar.
+Open **http://localhost:3000** for the landing page, choose **Get started**, and sign in on the sign-in page with `WB_LOGIN_USERNAME` and `WB_LOGIN_PASSWORD` from `.env`. You land on **Ask**: one prompt box where you attach a CSV or PDF and type what you want to know. The main navigation includes **Ask**, **Projects**, **Workflows**, **Stress test**, **Agent market**, and **Tools**. The **Tools** catalog defines reusable agent instructions and allowed integrated capabilities; scientific results open through their inspection links.
 
-Setup applies migrations and provisions the local Failure Memory service account. Only the web interface is published, bound to loopback; PostgreSQL, the API, and workers stay internal. The manual workflow needs **no model API key**.
+Setup applies migrations and provisions the local Failure Memory service account. Only the web interface is published, bound to loopback; PostgreSQL, the API, and workers stay internal. The scientific APIs need **no model API key**; enable agents below to run research from the product UI.
 
 ### 2. Enable agents when configured
 
@@ -140,7 +185,7 @@ token and time budgets, with two specialists running at once. Larger batches
 continue in checkpointed waves. Coordinator calls and specialist calls share the
 same 40-request default allowance; a configured monetary ceiling also applies.
 
-**Reviewed path:** leave `WB_AGENT_AUTO_POLICY=0` and follow the [agent operator guide](docs/agent-operator-guide.md) to install exact server/project policies with `workbench.operator_policy`. Then only the inputs you granted can be offered to the model. **Detailed request** (under Advanced tools) shows the saved policy, inputs and limits for each request.
+**Reviewed path:** leave `WB_AGENT_AUTO_POLICY=0` and follow the [agent operator guide](docs/agent-operator-guide.md) to install exact server/project policies with `workbench.operator_policy`. Then only the inputs you granted can be offered to the model. Research activity retains each request’s inputs, policy, limits, and results for inspection.
 
 Start with the guide's narrow audit demonstration before expanding the permitted workflow. Model keys remain in backend configuration, never browser code, goal text, or uploaded files.
 
@@ -151,20 +196,17 @@ Start with the guide's narrow audit demonstration before expanding the permitted
 
 ## Try the scientific workflow
 
-The included [synthetic CSV](examples/demo.csv) demonstrates the integrations. It does not establish empirical predictive performance.
+The included [synthetic CSV](examples/demo.csv) demonstrates the integrations. It does not establish empirical predictive performance. The current UI starts research through agents; the older standalone scientific entry forms are no longer the product workflow.
 
-| Step | In the workspace |
-|---|---|
-| **1 · Create a project** | Open **Projects**, name the study, and describe the research question. |
-| **2 · Audit the dataset** | Upload `examples/demo.csv`, explicitly choose **Use bundled synthetic demo declarations**, and run the prefilled audit. Ordinary uploads start with unknown source metadata. |
-| **3 · Inspect a partition** | In **Split designer**, generate the supported partition. The demo requests 60/20/20 train/validation/test by generated family; inspect the actual group-constrained counts and full assignments. |
-| **4 · Run a baseline** | In **Benchmarks**, execute the prefilled ridge baseline. All 60 rows enter the upstream protocol. Inspect validation results; **Reveal test results…** records exposure before showing held-out scores. |
-| **5 · Record an unsuccessful outcome** | In **Failure memory**, select the run and give a reason and uncertainty. For example: “The synthetic demonstration cannot establish empirical predictive performance.” This is an attributed assessment, not an execution failure or physical experimental outcome. |
-| **6 · Attach evidence** | Upload a PDF in **Evidence**. Optionally choose **Extract text**, then inspect exact page text where available. Original files remain available even when extraction fails. |
-| **7 · Follow the lineage** | Open **Provenance** to inspect the links between inputs, configurations, jobs, and artifacts. |
-| **8 · Export the study** | After relevant jobs settle, choose **Export project** in **Reports**. Download the checked archive and inspect its frozen scope. |
+With agents configured, create or select a project in **Projects**, open **Ask**, attach the CSV, and send a scoped request such as:
 
-To exercise an admission rejection, submit a second benchmark with `units: {}` in the task card. The upstream rejects missing units; inspect the failed run and record its context.
+> Audit this synthetic dataset for missing values, duplicates, and unusual values. Do not train a model. Ask me for any source declarations you need; do not infer provenance or units.
+
+Choose a specific agent or team if needed, and optionally select **Review plan**. Follow the elapsed-time panel, answer scientific questions, and open the resulting audit. Then request a supported split and baseline once the required target, units, provenance, and evaluation choices are supplied. Results link to their inspection views; original inputs remain unchanged.
+
+For a paper, attach a PDF and ask for source-linked findings. To challenge the resulting claim, open **Stress test** and select the relevant evidence. Ask for a report after the work settles, then inspect and download the retained report archive.
+
+For a deterministic integration walkthrough without a live provider, use the [scientific integration guide](docs/tickets/C10.md) and [acceptance fixtures](docs/tickets/A10.md), rather than the removed manual UI forms.
 
 The agent path uses these same scientific integrations through scoped tools. Its [acceptance fixtures](docs/agent-coordinator.md#acceptance-evidence) exercise real scientific packages with deterministic provider responses; those fixtures are not evidence of live model quality.
 
@@ -215,7 +257,7 @@ A **modular monolith** with separate processes for HTTP requests, scientific job
 
 | Layer | Implementation |
 |---|---|
-| Research interface | Next.js + TypeScript; public landing page, sign-in page, prompt-first **Ask** home, detailed request and eight scientific inspection views |
+| Research interface | Next.js + TypeScript; public site and sign-in, **Ask**, projects, visual workflows, stress tests, agent/team and tool catalogs, in-product support, and linked scientific inspection views |
 | Application API | FastAPI + Pydantic; versioned contracts and scoped operations |
 | Agent orchestration | Python coordinator, DeepSeek (default) and Anthropic provider adapters, conditional specialists, LangGraph persistence |
 | Durable metadata | PostgreSQL 16 for projects, artifacts, jobs, run state, ledgers, and checkpoints |
@@ -310,11 +352,12 @@ The default backend tests use temporary SQLite metadata; PostgreSQL locking and 
 
 ## Release status
 
-The [release handoff](docs/release-handoff.md) separates implementation and local evidence from acceptance of a live model or hosted deployment.
+The latest product milestone is **0.2.0**, with subsequent responsiveness, progress, and preview updates merged on October 5. Package metadata and the [release handoff](docs/release-handoff.md) still identify the **0.1.0 candidate**. The handoff separates implementation and local evidence from acceptance of a live model or hosted deployment; the product changelog does not certify those gates.
 
 | Area | Recorded status |
 |---|---|
 | Scientific integrations and reproducible example | Implemented; revision-specific local evidence and example replay receipt are linked in the handoff. |
+| Research studio, support, stress tests, and visible progress | Merged through PR #19; consult revision-specific CI for automated verification. Live provider quality and deployed behavior require separate acceptance. |
 | Agent coordinator, specialists, controls, and reports | Implemented; exercised with deterministic provider/transport fixtures and real scientific integrations. |
 | Live account/model walkthrough and quality evaluation | Pending in the handoff; requires configured models, reviewed bounds/policies, and recorded live outcomes. |
 | Hosted access, redeploy, and production restore | Remain open acceptance gates in the handoff. |
@@ -330,6 +373,9 @@ Historical test counts remain in their original evidence records. A passed test 
 |---|---|
 | Install and configure | [Runtime setup](docs/runtime-setup.md) |
 | Run the agent workspace | [Agent operator guide](docs/agent-operator-guide.md) |
+| Configure agents and teams | [Agent market](docs/agent-market.md) |
+| Use workflows, stress tests, and support | [Research studio](docs/research-workflows.md) |
+| Follow product changes | [Product changelog](frontend/app/changelog/page.tsx) |
 | Understand decisions and recovery | [Coordinator runtime](docs/agent-coordinator.md) |
 | Deploy privately | [Vercel setup and Render migration](docs/vercel-setup.md) |
 | Operate and troubleshoot | [Operations](docs/operations.md) · [Diagnostics](docs/diagnostics.md) |
