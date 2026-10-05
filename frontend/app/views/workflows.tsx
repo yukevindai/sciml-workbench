@@ -53,9 +53,10 @@ export function WorkflowsView({ wb }: { wb: Workbench }) {
   const toolLinkApplied = useRef(false);
   const pid = wb.projectId;
   const load = useCallback(async (signal?: AbortSignal) => {
-    const [workflows, tools] = await Promise.all([api('workflows', parseWorkflowCatalog, { signal }, 30_000), loadMarket(signal)]);
-    if (signal?.aborted) return;
-    setCatalog(workflows.workflows); setMarket(tools);
+    await Promise.all([
+      api('workflows', parseWorkflowCatalog, { signal }, 30_000).then(value => { if (!signal?.aborted) setCatalog(value.workflows); }),
+      loadMarket(signal).then(value => { if (!signal?.aborted) setMarket(value); }),
+    ]);
   }, []);
   useEffect(() => { const c = new AbortController(); if (!wb.preview) void load(c.signal).catch(e => { if (!c.signal.aborted) setError(e.message); }); return () => c.abort(); }, [load, wb.preview]);
   useEffect(() => {
