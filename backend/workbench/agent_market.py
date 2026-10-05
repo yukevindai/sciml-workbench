@@ -24,8 +24,9 @@ def defaults():
         ('default-memory', 'Experiment Analyst', 'Specialist', ['failure_memory'], read + ['record_outcome'], 'Use prior experiment outcomes to identify useful next steps.'),
         ('default-reviewer', 'Scientific Reviewer', 'Reviewer', ['scientific_reviewer'], read, 'Independently verify each claim against retained evidence.'),
     ]
-    return [AgentProfile(id=i, name=n, role=r, skills=s, tools=t, description=d, built_in=True)
-            for i, n, r, s, t, d in definitions]
+    from .curated_agents import profiles
+    return [*[AgentProfile(id=i, name=n, role=r, skills=s, tools=t, description=d, built_in=True)
+            for i, n, r, s, t, d in definitions], *profiles(read)]
 
 
 def entry(s, ident, kind):
@@ -119,7 +120,7 @@ def resolve_roster(s, pid, selection=None):
         team = AgentTeam.model_validate(entry(s, selection.id, 'team').payload)
         members, lead, name = [agent(s, i) for i in team.agent_ids], team.lead_agent_id, team.name
     if not selection.exclusive:
-        members += [a for a in defaults() if a.id not in {m.id for m in members}]
+        members += [a for a in defaults() if a.id.startswith('default-') and a.id not in {m.id for m in members}]
     return AgentRoster(selection=selection, name=name, lead_agent_id=lead, agents=members)
 
 

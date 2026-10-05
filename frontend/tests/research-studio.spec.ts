@@ -87,3 +87,47 @@ test('graph settings and compact selectors work by keyboard and fit small screen
   await expect(page.getByRole('button',{name:/animations|motion toggle/i})).toHaveCount(0);
   await page.screenshot({path:'test-results/research-studio-mobile.png',fullPage:true});
 });
+
+test('new workflow can be cancelled and edited drafts require discard confirmation', async ({page})=>{
+  const {writes}=await studio(page);
+  await page.goto('/workflows');
+  await page.getByRole('button',{name:'New workflow',exact:true}).click();
+  await page.getByRole('button',{name:'Cancel creation',exact:true}).click();
+  await expect(page.getByRole('region',{name:'Workflow designer'})).toHaveCount(0);
+  await page.getByRole('button',{name:'New workflow',exact:true}).click();
+  await page.getByLabel('Workflow name',{exact:true}).fill('Keep this draft');
+  page.once('dialog',dialog=>dialog.dismiss());
+  await page.getByRole('button',{name:'Cancel creation',exact:true}).click();
+  await expect(page.getByLabel('Workflow name',{exact:true})).toHaveValue('Keep this draft');
+  page.once('dialog',dialog=>dialog.accept());
+  await page.getByRole('button',{name:'Cancel creation',exact:true}).click();
+  await expect(page.getByRole('region',{name:'Workflow designer'})).toHaveCount(0);
+  expect(writes).toEqual([]);
+});
+
+test('dragging empty canvas pans without editing nodes', async ({page})=>{
+  await studio(page);
+  await page.setViewportSize({width:1100,height:900});
+  await page.goto('/workflows');
+  await page.getByRole('button',{name:'New workflow',exact:true}).click();
+  const canvas=page.getByLabel('Research graph canvas');
+  // Raw mouse coordinates do not auto-scroll like locator actions. The canvas
+  // can extend below the viewport after opening the designer.
+  await canvas.scrollIntoViewIfNeeded();
+  await expect(canvas).toBeInViewport({ratio:1});
+  const box=(await canvas.boundingBox())!;
+  const node=page.locator('.workflow-node').first();
+  const position=await node.getAttribute('style');
+  await page.mouse.move(box.x+box.width-50,box.y+box.height-60);
+  await page.mouse.down();
+  await expect(canvas).toHaveClass(/workflow-viewport--panning/);
+  await page.mouse.move(box.x+box.width-200,box.y+box.height-120,{steps:8});
+  await page.mouse.up();
+  expect(await canvas.evaluate(el=>el.scrollLeft)).toBeGreaterThan(50);
+  await expect(node).toHaveAttribute('style',position!);
+  await expect(page.getByText(/New draft ·/)).toBeVisible();
+  await canvas.focus();
+  const before=await canvas.evaluate(el=>el.scrollLeft);
+  await page.keyboard.press('ArrowRight');
+  expect(await canvas.evaluate(el=>el.scrollLeft)).toBeGreaterThan(before);
+});

@@ -37,7 +37,7 @@ test('public navigation, all guides, articles and history work without authentic
   }
   await page.goto('/docs');
   const guides = await page.locator('.guide-card').evaluateAll(links => links.map(a => a.getAttribute('href')!));
-  expect(guides).toHaveLength(8);
+  expect(guides).toHaveLength(9);
   for (const href of guides) {
     await page.goto(href);
     const hasFiveSections = ['/docs/troubleshooting', '/docs/working-with-agents'].includes(href);
@@ -183,7 +183,7 @@ test('public copy, credits, numbered history and distinct pixel studies', async 
     await checkScenes();
   }
   await page.goto('/changelog');
-  await expect(page.locator('.release-meta p')).toHaveText(['0.1.3Latest', '0.1.2', '0.1.1', '0.1.0']);
+  await expect(page.locator('.release-meta p')).toHaveText(['0.2.0Latest', '0.1.3', '0.1.2', '0.1.1', '0.1.0']);
   await expect(page.getByText('Development update', { exact: true })).toHaveCount(0);
   await page.screenshot({ path: info.outputPath('changelog.png'), fullPage: true });
 });

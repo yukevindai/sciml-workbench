@@ -8,6 +8,9 @@
 .workflow-palette { display: flex; flex-wrap: wrap; gap: 2px; padding: 8px; border-bottom: 1px solid var(--color-border); }
 .workflow-viewport { height: 530px; overflow: auto; overscroll-behavior: contain; background-color: var(--color-bg-canvas); background-image: radial-gradient(var(--color-border-strong) 1px,transparent 1px); background-size: 20px 20px; }
 .workflow-space { position: relative; }
+.workflow-viewport { cursor: grab; touch-action: none; }
+.workflow-viewport--panning { cursor: grabbing; user-select: none; }
+.workflow-node { cursor: default; }
 .workflow-canvas { position: relative; transform-origin: top left; }
 .workflow-edges { position: absolute; inset: 0; pointer-events: none; overflow: visible; }
 .workflow-edges path { fill: none; stroke: var(--color-accent-solid); stroke-width: 2; }

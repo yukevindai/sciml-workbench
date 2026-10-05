@@ -104,8 +104,8 @@ test('the lab-group landing is stable, responsive, and keyboard navigable', asyn
   await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await page.getByRole('tab', { name: 'Ask a question' }).focus();
   await page.keyboard.press('ArrowRight');
-  await expect(page.getByRole('tab', { name: 'Guide the research' })).toHaveAttribute('aria-selected', 'true');
-  await expect(page.getByRole('tabpanel')).toContainText('Define the objective');
+  await expect(page.getByRole('tab', { name: 'Design a workflow' })).toHaveAttribute('aria-selected', 'true');
+  await expect(page.getByRole('tabpanel')).toContainText('Evidence to insight');
   await page.getByRole('button', { name: 'Switch to light theme' }).click();
   await page.getByRole('link', { name: 'Sign in', exact: true }).click();
   await expect(page).toHaveURL(/sign-in/);

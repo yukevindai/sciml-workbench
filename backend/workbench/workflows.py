@@ -38,7 +38,7 @@ def defaults():
         nodes=[node('start','trigger','Research request',40,210),node('audit','research','Check research inputs',330,210,instructions='Assess supplied data and research feasibility. Retain a data audit when possible.'),
                node('branch','branch','Results available?',620,210),node('iterate','repeat','Evaluate and refine',920,70,instructions='Evaluate the research question using the connected results. Improve the comparison using lessons from the previous round.',iterations=2),
                node('clarify','research','Identify missing evidence',920,380,instructions='Explain the missing inputs and propose an actionable research plan without fabricating results.'),node('end','finish','Findings ready',1240,210)],
-        edges=[edge('start','audit',data_type='signal'),edge('audit','branch'),edge('branch','iterate','yes'),edge('branch','clarify','no'),edge('iterate','end'),edge('clarify','end')])]
+        edges=[edge('start','audit',data_type='signal'),edge('audit','branch'),edge('branch','iterate','yes'),edge('branch','clarify','no'),edge('iterate','end'),edge('clarify','end')]), *stress_defaults()]
 
 
 def definition(s, ident):
@@ -238,3 +238,22 @@ def tick(db,service):
                 p['last_day']=day
             except DomainError:p['enabled']=False
             row.payload=p
+
+
+def stress_defaults():
+    """Independent reviewers receive the same scoped inputs, never each other's prose."""
+    from .curated_agents import REVIEWERS
+    values=[]
+    for mode, chosen in [('single', REVIEWERS[:1]), ('council', REVIEWERS[1:])]:
+        nodes=[dict(id='start',kind='trigger',name='Claim to challenge',x=40,y=210)]
+        edges=[]
+        for index,(ident,name,role,skills,focus) in enumerate(chosen):
+            nodes.append(dict(id=ident,kind='research',name=name,x=350,y=60+index*190,
+                assignment=dict(kind='agent',id=ident,exclusive=True),
+                instructions='Apply your curated scientific challenge rubric. '+focus+' Produce a substantive independent critique, identify missing evidence, and prioritize resolving tests.'))
+            edges.extend([dict(source='start',target=ident,port='out',data_type='signal'),dict(source=ident,target='finish',port='out',data_type='artifacts')])
+        nodes.append(dict(id='finish',kind='finish',name='Reviews ready',x=720,y=210))
+        values.append(ResearchWorkflow(id='stress-'+mode,name='Specialist review' if mode=='single' else 'Independent council',built_in=True,
+            description='A curated scientific challenge with evidence, severity, alternatives, and resolving tests.' if mode=='single' else 'Independent methods, statistics, and evidence reviews. Compare all three perspectives; agreement is not proof.',
+            concurrency=len(chosen),nodes=nodes,edges=edges))
+    return values

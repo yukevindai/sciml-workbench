@@ -4,6 +4,10 @@ import { Reveal } from '../components/reveal';
 
 export const metadata = { title: 'Changelog · SciML Workbench', description: 'Product improvements, development history, and release information for SciML Workbench.' };
 const updates = [
+  { id: '0.2.0', version: '0.2.0', date: '2026-10-04', title: 'Build your lab. Challenge your research.', groups: [
+    { label: 'New', items: ['Custom agents, teams, and reusable research tools, with built-in originals preserved when customized.', 'A visual workflow designer with templates, agent assignments, parallel paths, and recurring research.', 'Curated specialist and independent council stress tests for ideas, papers, and scientific results.', 'Product Support inside the signed-in workspace, with AI answers and searchable guidance.'] },
+    { label: 'Improved', items: ['Cancel a new workflow and drag empty canvas space to pan.', 'Consistent compact selectors and an agent-led workspace navigation.', 'Updated public product previews and guides. Motion follows your system preference automatically.'] },
+  ], commit: null },
   { id: '0.1.3', version: '0.1.3', date: '2026-09-29', title: 'A clearer view of your lab.', groups: [
     { label: 'Improved', items: ['An open header at the top of the page that becomes a floating navigation bar as you scroll.', 'A quieter hero and footer, with Feidy AI attribution and a consistent product tagline.', 'Distinct pixel studies for data quality, model evaluation, evidence, experiment history, and every article.'] },
     { label: 'Fixed', items: ['Motion preference checks wait for navigation before testing reload persistence.'] },

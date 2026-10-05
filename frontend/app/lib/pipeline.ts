@@ -5,11 +5,11 @@ import {
 import { kinds, type Artifact } from './types';
 
 export type View =
-  | 'workflows' | 'tools' | 'agent-market' | 'ask' | 'research' | 'projects' | 'evidence' | 'dataset-audit' | 'split-designer'
+  | 'stress-test' | 'workflows' | 'tools' | 'agent-market' | 'ask' | 'research' | 'projects' | 'evidence' | 'dataset-audit' | 'split-designer'
   | 'benchmark' | 'failure-memory' | 'provenance' | 'report';
 
 export const VIEWS: View[] = [
-  'workflows', 'tools', 'agent-market', 'ask', 'research', 'projects', 'evidence', 'dataset-audit', 'split-designer',
+  'stress-test', 'workflows', 'tools', 'agent-market', 'ask', 'research', 'projects', 'evidence', 'dataset-audit', 'split-designer',
   'benchmark', 'failure-memory', 'provenance', 'report',
 ];
 
@@ -28,6 +28,7 @@ export type NavItem = {
 };
 
 export const NAV: NavItem[] = [
+  { view: 'stress-test', label: 'Stress test', icon: ShieldCheck, title: 'Scientific stress tests', lede: 'Challenge ideas and evidence with a curated scientific council.' },
   { view: 'workflows', label: 'Workflows', icon: GitBranch, title: 'Research workflows', lede: 'Connect agents and tools into repeatable research.' },
   { view: 'tools', label: 'Tools', icon: SlidersHorizontal, title: 'Research tools', lede: 'Build reusable tools for your agents and workflows.' },
   { view: 'agent-market', label: 'Agent market', icon: Bot, title: 'Agent market', lede: 'Customize agents and build reusable teams for the way you research.' },
@@ -84,7 +85,7 @@ export const NAV: NavItem[] = [
 ];
 
 export const NAV_GROUPS: { label: string; views: View[] }[] = [
-  { label: 'Research', views: ['ask', 'projects', 'workflows'] },
+  { label: 'Research', views: ['ask', 'projects', 'workflows', 'stress-test'] },
   { label: 'Your lab group', views: ['agent-market', 'tools'] },
 ];
 

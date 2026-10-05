@@ -12,10 +12,12 @@ for (const width of [375, 768, 1024, 1440]) {
       if (theme === 'light') await page.getByRole('button', { name: 'Switch to light theme' }).click();
       await expect(page.locator('html')).toHaveAttribute('data-theme', theme);
       await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-      // Check each real product capture loads, including the alternate-theme images.
-      for (const label of ['Ask a question', 'Guide the research', 'Inspect the evidence']) {
+      // Current product illustrations stay legible in each theme.
+      for (const label of ['Ask a question', 'Design a workflow', 'Challenge an idea']) {
         await page.getByRole('tab', { name: label }).click();
-        await expect.poll(() => page.locator(`.preview-${theme}`).evaluate((image: HTMLImageElement) => image.complete && image.naturalWidth > 0)).toBe(true);
+        await expect(page.locator('.preview-stage h3')).toBeVisible();
+        await expect(page.getByRole('tabpanel')).toContainText('Illustrative example');
+        expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
       }
       await page.getByRole('tab', { name: 'Ask a question' }).click();
       await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));

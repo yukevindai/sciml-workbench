@@ -172,7 +172,7 @@ def test_workflow_and_tool_http_routes_preserve_private_boundary_and_revisions(r
     with TestClient(create_app(tool.settings)) as client:
         assert client.get('/api/v1/workflows').status_code==401
         client.headers['Authorization']='Bearer '+'a'*48
-        assert len(client.get('/api/v1/workflows').json()['workflows'])==2
+        assert len(client.get('/api/v1/workflows').json()['workflows'])==4
         recipe=dict(name='Compare evidence',instructions='Compare the project context.',capabilities=['inspect_project'])
         created=client.post('/api/v1/agent-market/tools',json=recipe)
         assert created.status_code==201
@@ -185,3 +185,30 @@ def test_workflow_and_tool_http_routes_preserve_private_boundary_and_revisions(r
         assert copied.json()['id']!='workflow-evidence'
         assert client.post('/api/v1/workflows/workflow-evidence',json={**body,'expected_revision':1}).status_code==409
         assert client.get('/api/v1/projects/p/workflow-runs').json()=={'runs':[],'scheduled_workflow_ids':[]}
+
+
+@pytest.mark.parametrize('ident,count', [('stress-single',1),('stress-council',3)])
+def test_curated_reviews_are_independent_scoped_budgeted_and_cancellable(registry,ident,count):
+    tool, _, data, _ = registry
+    run=begin(tool,ident,request(data));advance(tool)
+    current=read(tool,run.id)
+    reviewer_ids=[key for key in current.nodes if key.startswith('stress-')]
+    assert len(reviewer_ids)==count
+    child_ids=[current.nodes[key].run_ids[0] for key in reviewer_ids]
+    with tool.db.session.begin() as s:
+        for key,rid in zip(reviewer_ids,child_ids):
+            row=s.get(RunRow,rid)
+            assert row.payload['inputs']['artifact_ids']==[data.id]
+            assert row.payload['inputs']['material_ids']==[]
+            roster=row.payload['agent_roster']
+            assert [a['id'] for a in roster['agents']]==[key]
+            assert roster['selection']['exclusive']
+            assert row.payload['limits']['model_requests']==default_limits().model_requests//count
+            assert 'run_benchmark' not in tool.runs.effective_policy(s,row).allowed_tools
+        workflow=workflows.definition(s,ident)
+        assert not any(e.source in reviewer_ids and e.target in reviewer_ids for e in workflow.edges)
+        with pytest.raises(DomainError):
+            workflows.save(s,WorkflowUpdate(**workflow.model_dump(exclude={'id','revision','built_in','archived'}),expected_revision=1),ident)
+        workflows.cancel(s,'p',run.id,tool.runs)
+    with tool.db.session() as s:
+        assert all(s.get(RunRow,rid).state=='cancelled' for rid in child_ids)
