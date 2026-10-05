@@ -3,6 +3,7 @@
 import { useEffect, useId, useRef, useState, type DragEvent, type KeyboardEvent } from 'react';
 import { ArrowUp, FileSpreadsheet, FileText, Loader2, Paperclip, X } from 'lucide-react';
 import type { MaterialResponse } from '../lib/generated/http';
+import { PendingProgress } from './run-progress';
 import { acceptedFile } from '../lib/ask';
 
 export type Draft = { prompt: string; files: File[]; earlier: MaterialResponse[]; reviewPlan: boolean };
@@ -71,6 +72,7 @@ export function AskComposer({ onSend, busy, disabled, projectFiles, placeholder,
     <div className={`composer${dragging ? ' composer--drag' : ''}${compact ? ' composer--compact' : ''}`}
       onDragOver={event => { event.preventDefault(); setDragging(true); }}
       onDragLeave={() => setDragging(false)} onDrop={onDrop}>
+      {busy && <PendingProgress />}
       {(files.length > 0 || projectFiles.length > 0) && <ul className="composer-files" aria-label="Files for this request">
         {projectFiles.map(file => {
           const on = !skipped.includes(file.id);

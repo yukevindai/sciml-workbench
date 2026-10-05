@@ -7,6 +7,8 @@ const PUBLIC = new Set([
   '/', '/sign-in', '/auth/session', '/favicon.ico', '/robots.txt',
   // Bundled marketing assets only. Uploaded research files stay behind /api/.
   '/images/lab-orbitals.png',
+  ...['ask', 'workflows', 'stress-test'].flatMap(view =>
+    ['dark', 'light'].flatMap(theme => ['desktop', 'mobile'].map(size => `/images/product-${view}-${theme}-${size}.jpg`))),
   ...['ask', 'research', 'audit'].flatMap(view =>
     ['dark', 'light'].map(theme => `/images/workspace-${view}-${theme}.png`)),
 ]);

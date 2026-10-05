@@ -2,9 +2,9 @@
 
 import Link from 'next/link';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { CheckCircle2, ChevronRight, Circle, CircleAlert, CircleDot, ExternalLink, Loader2, Pause, Play, Sparkles, Square, User } from 'lucide-react';
+import { CheckCircle2, ChevronRight, Circle, CircleAlert, CircleDot, ExternalLink, Pause, Play, Sparkles, Square, User } from 'lucide-react';
 import { api, ApiError } from '../lib/api';
-import { PHASE, RESULT_LABEL, STEP_LABEL } from '../lib/ask';
+import { RESULT_LABEL, STEP_LABEL } from '../lib/ask';
 import { parseResearchRun } from '../lib/decode';
 import type { Workbench } from '../lib/context';
 import type { ResearchRun } from '../lib/generated/http';
@@ -13,6 +13,7 @@ import { useRunFeed } from '../lib/run-feed';
 import { awaitingPlanReview, isTerminalRun } from '../lib/runs';
 import { controlsFor, RunQuestions, type Control } from './run-controls';
 import { ResearchRunPanel } from './research-run';
+import { RunProgress } from './run-progress';
 import { AgentActivity } from './agent-activity';
 
 const STEP_ICON = { done: CheckCircle2, active: CircleDot, todo: Circle, problem: CircleAlert } as const;
@@ -84,8 +85,6 @@ export function AskRun({ wb, run: listed, runs, onChanged, onSelect }: {
 
   const plan = detail?.plan ?? null;
   const review = awaitingPlanReview(run, plan?.revision);
-  const phase = PHASE[run.state];
-  const working = phase.tone === 'working';
   const controls = controlsFor(run);
   const results = run.result_artifact_ids.map(id => wb.artifacts.find(value => value.id === id) ?? { id, kind: undefined });
   // A CSV upload is both a file and its dataset, so count files when there are any.
@@ -117,11 +116,7 @@ export function AskRun({ wb, run: listed, runs, onChanged, onSelect }: {
       <div className="message message--ai">
         <span className="avatar avatar--ai" aria-hidden="true"><Sparkles size={15} /></span>
         <div className="reply">
-          <div className={`phase phase--${phase.tone}`} role="status" aria-live="polite">
-            {working ? <Loader2 size={15} className="spin" aria-hidden="true" /> : <span className="phase-dot" aria-hidden="true" />}
-            <strong>{phase.label}</strong>
-            <span className="phase-detail">{phase.detail}</span>
-          </div>
+          <RunProgress run={run} detail={detail} events={events} error={feed.error} lastRead={feed.lastRead} />
 
           {run.stop_reason && (run.state === 'failed' || run.state === 'partially_completed') && <p className="reply-note">Reason given: {run.stop_reason}</p>}
           {feed.error && <p className="reply-note">We lost touch with this request for a moment and are reconnecting…</p>}
@@ -148,7 +143,6 @@ export function AskRun({ wb, run: listed, runs, onChanged, onSelect }: {
               })}
             </ol>
           </section>}
-          {!plan && working && <p className="reply-text reply-text--muted">Looking at your request and making a plan…</p>}
 
           {review && plan && <div className="reply-cta">
             <p>You asked to see the plan first. Nothing has been changed yet. Does this look right?</p>

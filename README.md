@@ -296,6 +296,8 @@ npm --prefix frontend run build
 (cd frontend && npx playwright install chromium && npm run test:e2e)
 ```
 
+Public product previews are screenshots of the real workspace routes with synthetic example data. After changing those screens, build and start the frontend locally, then run `npm --prefix frontend run preview:capture` with `E2E_BASE_URL` pointing at localhost and `WB_LOGIN_USERNAME` / `WB_LOGIN_PASSWORD` set to that local test login. The capture script intercepts all API reads, rejects mutations, and omits the in-product support launcher. Commit the generated desktop/mobile images for both themes, then rebuild before checking the public page. An optional `CHROMIUM_EXECUTABLE` selects an installed browser.
+
 For strict PostgreSQL data/API acceptance, set `TEST_DATABASE_URL` to a **dedicated test database** and run:
 
 ```bash

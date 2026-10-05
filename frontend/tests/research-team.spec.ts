@@ -105,7 +105,7 @@ test('the lab-group landing is stable, responsive, and keyboard navigable', asyn
   await page.getByRole('tab', { name: 'Ask a question' }).focus();
   await page.keyboard.press('ArrowRight');
   await expect(page.getByRole('tab', { name: 'Design a workflow' })).toHaveAttribute('aria-selected', 'true');
-  await expect(page.getByRole('tabpanel')).toContainText('Evidence to insight');
+  await expect(page.getByRole('tabpanel').getByRole('img', {name:/Actual workflow designer/})).toBeVisible();
   await page.getByRole('button', { name: 'Switch to light theme' }).click();
   await page.getByRole('link', { name: 'Sign in', exact: true }).click();
   await expect(page).toHaveURL(/sign-in/);

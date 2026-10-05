@@ -12,6 +12,7 @@ import { awaitingPlanReview, isTerminalRun } from '../lib/runs';
 import { executionStatus } from '../lib/status';
 import { Alert, Badge, Disclosure, Panel } from './ui';
 import { RunControls, RunQuestions } from './run-controls';
+import { RunProgress } from './run-progress';
 import { AgentActivity } from './agent-activity';
 import { WorkspacePicker } from './workspace-picker';
 
@@ -161,6 +162,7 @@ export function ResearchRunPanel({ wb, runs, runId, truncated, historyError, onS
       </section>
 
       {detail?.answer && <p className="reply-answer">{detail.answer}</p>}
+      <RunProgress run={run} detail={detail} events={events} error={feed.error} lastRead={feed.lastRead} />
       <AgentActivity run={run} detail={detail} events={events} />
 
       <section className="panel-section" aria-labelledby="run-results-heading">
