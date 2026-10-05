@@ -143,3 +143,25 @@ def test_support_has_no_tools_and_curated_profiles_cannot_be_overwritten(registr
         for ident in ['support-guide', 'stress-general', 'stress-methods', 'stress-statistics', 'stress-evidence']:
             with pytest.raises(DomainError):
                 market.save_entry(s, 'agent', AgentUpdate(**researcher().model_dump(), expected_revision=1), ident)
+
+
+def test_support_uses_compact_context_with_durable_single_call_answer(registry):
+    from test_agent_coordinator import setup, advance
+    from workbench.agent_coordinator import OPENING_INSTRUCTIONS
+    tool, ctx, data, foreign = registry
+    run = start(tool, AgentSelection(kind='agent', id='support-guide', exclusive=True))
+    scoped = (tool, replace(ctx, run_id=run['id']), data, foreign)
+    answer = 'Drag empty canvas space to pan. Drag a node grip to move that step.'
+    coordinator, scheduler, saver, provider = setup(scoped, [{'kind':'answer', 'summary':answer}])
+    with tool.db.session.begin() as s:
+        tool.runs.finish(s, 'p', ctx.run_id, 1, state='completed', artifact_ids=[])
+    assert advance(scheduler, saver, coordinator) == 'queued'
+    assert advance(scheduler, saver, coordinator) == 'completed'
+    assert len(provider.contexts) == 1 and provider.requests[0]['tools'] == []
+    sent = '\n'.join(part.text for part in provider.contexts[0])
+    assert 'Product reference:' in sent and 'OpeningDecision' not in sent
+    assert len(sent) < len(OPENING_INSTRUCTIONS)
+    with TestClient(create_app(tool.settings)) as client:
+        response = client.get(f"/api/v1/projects/p/agent-runs/{run['id']}", headers={'Authorization':'Bearer ' + 'a' * 48})
+        assert response.status_code == 200 and response.json()['answer'] == answer
+        assert response.json()['run']['usage']['model_requests'] == 1

@@ -19,11 +19,11 @@ export function SupportAgent({projectId,view,preview=false}:{projectId:string;vi
   const active=!!runId&&(!detail||!isTerminalRun(detail.run));
   useEffect(()=>{setPending(hasRetainedRequest(key)); try{setRunId(sessionStorage.getItem(`support-run:${projectId}`)??'');}catch{}},[key,projectId]);
   useEffect(()=>{
-    if(!runId||!projectId)return;
+    if(!open||!runId||!projectId)return;
     const c=new AbortController();let timer:ReturnType<typeof setTimeout>;
-    const poll=async()=>{try{const value=await api(`projects/${projectId}/agent-runs/${runId}`,parseRunDetail,{signal:c.signal},30_000);if(c.signal.aborted)return;if(value.run.project_id!==projectId)throw new Error('Support response belongs to another project.');setDetail(value);if(isTerminalRun(value.run))return;}catch(e){if(!c.signal.aborted)setError(e instanceof Error?e.message:'Could not refresh support.');}if(!c.signal.aborted)timer=setTimeout(poll,4000);};
+    const poll=async()=>{try{const value=await api(`projects/${projectId}/agent-runs/${runId}`,parseRunDetail,{signal:c.signal},30_000);if(c.signal.aborted)return;if(value.run.project_id!==projectId)throw new Error('Support response belongs to another project.');setDetail(value);if(isTerminalRun(value.run))return;}catch(e){if(!c.signal.aborted)setError(e instanceof Error?e.message:'Could not refresh support.');}if(!c.signal.aborted)timer=setTimeout(poll,document.hidden?15000:1000);};
     void poll();return()=>{c.abort();clearTimeout(timer);};
-  },[projectId,runId]);
+  },[open,projectId,runId]);
   const ask=async()=>{
     if(flight.current||!projectId||(!question.trim()&&!pending))return;flight.current=true;setBusy(true);setError('');setLookup(question);
     try{
@@ -50,6 +50,7 @@ export function SupportAgent({projectId,view,preview=false}:{projectId:string;vi
           {projectId&&<p className="field-hint">AI questions are retained in this project’s run history. No attachments are sent.</p>}
         </form>
         {error&&<p role="alert" className="field-hint">{error}{pending?' Retry resends the exact saved question.':''}</p>}
+        {lookup.trim()&&<section aria-label="Instant product guidance" className="support-answer"><p className="page-eyebrow">From the product guide</p><p>{helpTopics(lookup,view)[0]?.answer}</p><p className="field-hint">Suggested guidance. Ask the support agent if you need a tailored explanation.</p></section>}
         {detail&&<section aria-label="Support answer" className="support-answer"><p className="page-eyebrow">{detail.run.state.replaceAll('_',' ')}</p>{detail.answer?<p>{detail.answer}</p>:<p>{isTerminalRun(detail.run)?'This request ended without a direct answer. Open the conversation for its retained details.':'The agent is preparing an answer. Any questions or plan approvals appear in the conversation.'}</p>}<Link className="text-link" href={`/ask?project=${projectId}&run=${runId}`}>Open support conversation</Link></section>}
         {active&&detail&&<button className="button button--ghost" disabled={busy} onClick={async()=>{setBusy(true);try{await api(`projects/${projectId}/agent-runs/${runId}/cancel`,parseResearchRun,json({expected_run_revision:detail.run.control_revision}),30_000);}catch(e){setError(e instanceof Error?e.message:'Could not stop support.');}finally{setBusy(false);}}}>Stop support request</button>}
         <section className="stack" aria-label="Product guides"><h3>{lookup?'Related guidance':'Help with this page'}</h3>{helpTopics(lookup,view).map(topic=><details className="support-topic" key={topic.title}><summary>{topic.title}</summary><p>{topic.answer}</p><Link className="text-link" href={topic.href}>Read guide</Link></details>)}<Link className="text-link" href="/docs">All product guides</Link></section>

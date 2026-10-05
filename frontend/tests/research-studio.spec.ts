@@ -3,13 +3,16 @@ import catalogFixture from './fixtures/agent-market.json';
 import workflowsFixture from './fixtures/workflows.json';
 import { selectPicker } from './picker';
 
-async function studio(page: Page) {
+async function studio(page: Page, { holdJobs, holdProjects, onArtifacts }: { holdJobs?: Promise<void>; holdProjects?: Promise<void>; onArtifacts?: () => void } = {}) {
   const market = structuredClone(catalogFixture) as any;
   const workflows = structuredClone(workflowsFixture) as any;
   const writes: { path: string; body: any }[] = [];
   await page.route('**/api/**', async route => {
     const path = new URL(route.request().url()).pathname;
     const body = route.request().method() === 'POST' ? route.request().postDataJSON() : null;
+    if (path === '/api/projects' && holdProjects) await holdProjects;
+    if (path.endsWith('/job-index') && holdJobs) await holdJobs;
+    if (path.endsWith('/artifact-previews')) onArtifacts?.();
     let result: unknown;
     if (path === '/api/projects') result = [{ id:'p',name:'Battery research',description:'' }];
     else if (path.endsWith('/job-index')) result = { items:[], next_cursor:null };
@@ -26,6 +29,41 @@ async function studio(page: Page) {
   });
   return {market,workflows,writes};
 }
+
+test('workflow catalog and artifact reads do not wait for job history', async ({page}) => {
+  let release!: () => void;
+  const holdJobs = new Promise<void>(resolve => { release = resolve; });
+  let artifactsStarted = false;
+  const {workflows} = await studio(page, {holdJobs, onArtifacts: () => { artifactsStarted = true; }});
+  try {
+    await page.goto('/workflows');
+    // Keep job history blocked until the feature is usable. This fails if
+    // project reads become serial again or the shell gates catalogs on jobs.
+    await expect(page.getByRole('heading', {name: workflows.workflows[0].name, exact:true})).toBeVisible();
+    await expect.poll(() => artifactsStarted).toBe(true);
+    await page.getByRole('button', {name:'New workflow', exact:true}).click();
+    await expect(page.getByRole('region', {name:'Workflow designer'})).toBeVisible();
+  } finally {
+    release();
+  }
+});
+
+test('workflow drafts survive slow project selection without delaying the catalog', async ({page}) => {
+  let release!: () => void;
+  const holdProjects = new Promise<void>(resolve => { release = resolve; });
+  await studio(page, {holdProjects});
+  try {
+    await page.goto('/workflows');
+    await page.getByRole('button', {name:'New workflow', exact:true}).click();
+    await page.getByLabel('Workflow name', {exact:true}).fill('Keep my early draft');
+    const loaded = page.waitForResponse(response => response.url().endsWith('/api/projects/p/artifact-previews'));
+    release();
+    await loaded;
+    await expect(page.getByLabel('Workflow name', {exact:true})).toHaveValue('Keep my early draft');
+  } finally {
+    release();
+  }
+});
 
 test('customizing a built-in saves a copy and leaves its original unchanged', async ({page})=>{
   const {market,writes}=await studio(page);

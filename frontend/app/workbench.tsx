@@ -13,26 +13,30 @@ import { Sidebar, TopBar } from './components/shell';
 import { JobActivity } from './components/jobs';
 import { Alert } from './components/ui';
 import type { ShellFixture } from './lib/shell-fixture';
-import { ResearchView } from './views/research';
-import { ToolsView } from './views/tools';
 import dynamic from 'next/dynamic';
+const ResearchView = dynamic(() => import('./views/research').then(module => module.ResearchView), { loading: () => <p role="status">Loading workspace view…</p> });
+const ToolsView = dynamic(() => import('./views/tools').then(module => module.ToolsView), { loading: () => <p role="status">Loading workspace view…</p> });
 const WorkflowsView = dynamic(() => import('./views/workflows').then(module => module.WorkflowsView), { loading: () => <p role="status">Loading workflow studio…</p> });
 import { SupportAgent } from './components/support-agent';
 const StressTestView = dynamic(() => import('./views/stress-test').then(module => module.StressTestView), { loading: () => <p role="status">Loading stress tests…</p> });
-import { AgentMarketView } from './views/agent-market';
+const AgentMarketView = dynamic(() => import('./views/agent-market').then(module => module.AgentMarketView), { loading: () => <p role="status">Loading workspace view…</p> });
 import { AskView } from './views/ask';
 
-import { ProjectsView } from './views/projects';
-import { AuditView } from './views/audit';
-import { SplitView } from './views/split';
-import { BenchmarkView } from './views/benchmark';
-import { FailureMemoryView } from './views/failure-memory';
-import { EvidenceView } from './views/evidence';
-import { ProvenanceView } from './views/provenance';
-import { ReportView } from './views/report';
+const ProjectsView = dynamic(() => import('./views/projects').then(module => module.ProjectsView), { loading: () => <p role="status">Loading workspace view…</p> });
+const AuditView = dynamic(() => import('./views/audit').then(module => module.AuditView), { loading: () => <p role="status">Loading workspace view…</p> });
+const SplitView = dynamic(() => import('./views/split').then(module => module.SplitView), { loading: () => <p role="status">Loading workspace view…</p> });
+const BenchmarkView = dynamic(() => import('./views/benchmark').then(module => module.BenchmarkView), { loading: () => <p role="status">Loading workspace view…</p> });
+const FailureMemoryView = dynamic(() => import('./views/failure-memory').then(module => module.FailureMemoryView), { loading: () => <p role="status">Loading workspace view…</p> });
+const EvidenceView = dynamic(() => import('./views/evidence').then(module => module.EvidenceView), { loading: () => <p role="status">Loading workspace view…</p> });
+const ProvenanceView = dynamic(() => import('./views/provenance').then(module => module.ProvenanceView), { loading: () => <p role="status">Loading workspace view…</p> });
+const ReportView = dynamic(() => import('./views/report').then(module => module.ReportView), { loading: () => <p role="status">Loading workspace view…</p> });
 
 const PROJECT_STORAGE_KEY = 'sciml-project';
 const READ_TIMEOUT = 30_000;
+// These views own their catalog/input reads and do not need scientific history
+// before they can render. Project-dependent result views still wait for it.
+const INDEPENDENT_VIEWS = new Set<View>(['ask', 'workflows', 'tools', 'agent-market', 'stress-test']);
+const CATALOG_VIEWS = new Set<View>(['workflows', 'tools', 'agent-market']);
 
 export default function Workbench({ view, fixture, children, requestedProjectId, requestedAuditId, requestedSplitId, requestedBenchmarkId, requestedEvidenceId, requestedClaimSetId, requestedFailureId, requestedArtifactId, requestedReportId }: { view: View; fixture?: ShellFixture; children?: ReactNode; requestedProjectId?: string; requestedAuditId?: string; requestedSplitId?: string; requestedBenchmarkId?: string; requestedEvidenceId?: string; requestedClaimSetId?: string; requestedFailureId?: string; requestedArtifactId?: string; requestedReportId?: string }) {
   const [projects, setProjects] = useState<Project[]>(fixture?.projects ?? []);
@@ -116,11 +120,14 @@ export default function Workbench({ view, fixture, children, requestedProjectId,
     const sequence = ++requestSequence.current;
     const current = () => activeProject.current === projectId && requestSequence.current === sequence;
     try {
-      const listing = await loadJobs(projectId);
+      const readArtifacts = () => api(`projects/${projectId}/artifact-previews`, parseArtifactPreviews, undefined, READ_TIMEOUT);
+      const eagerArtifacts = forceArtifacts || Date.now() - artifactsReadAt.current >= ARTIFACT_REFRESH;
+      // Initial/forced reads are independent: do not put artifact loading behind
+      // up to five pages of job history. Promise.all also observes both failures.
+      const [listing, initialArtifacts] = await Promise.all([loadJobs(projectId), eagerArtifacts ? readArtifacts() : Promise.resolve(null)]);
       if (!current()) return true;
       const print = jobFingerprint(listing.jobs);
-      const nextArtifacts = forceArtifacts || print !== jobPrint.current || Date.now() - artifactsReadAt.current >= ARTIFACT_REFRESH
-        ? await api(`projects/${projectId}/artifact-previews`, parseArtifactPreviews, undefined, READ_TIMEOUT) : null;
+      const nextArtifacts = initialArtifacts ?? (print !== jobPrint.current ? await readArtifacts() : null);
       if (!current()) return true;
       if (nextArtifacts?.some(a => a.project_id !== projectId)) {
         throw new Error('The server returned data for a different project.');
@@ -152,7 +159,7 @@ export default function Workbench({ view, fixture, children, requestedProjectId,
     if (fixture) return;
     const controller = new AbortController();
     setProjectsLoading(true); setProjectsError('');
-    api('projects', parseProjects, { signal: controller.signal })
+    api('projects', parseProjects, { signal: controller.signal }, READ_TIMEOUT)
       .then(list => {
         if (controller.signal.aborted) return;
         setProjects(list);
@@ -257,7 +264,7 @@ export default function Workbench({ view, fixture, children, requestedProjectId,
   const simple = view === 'ask';
   const loading = projectsLoading || projectLoading;
   const loadError = projectsError || projectError;
-  const showViews = !projectsLoading && !projectsError && (!projectId || projectLoaded);
+  const showViews = CATALOG_VIEWS.has(view) || (!projectsLoading && !projectsError && (INDEPENDENT_VIEWS.has(view) || !projectId || projectLoaded));
 
   return (
     <div className="app-shell">
@@ -322,7 +329,7 @@ export default function Workbench({ view, fixture, children, requestedProjectId,
               {view === 'research' && <ResearchView wb={model} />}
               {view === 'projects' && <ProjectsView key={projectId} wb={model} />}
               {view === 'stress-test' && <StressTestView key={projectId} wb={model} />}
-              {view === 'workflows' && <WorkflowsView key={projectId} wb={model} />}
+              {view === 'workflows' && <WorkflowsView wb={model} />}
               {view === 'tools' && <ToolsView wb={model} />}
               {view === 'agent-market' && <AgentMarketView wb={model} />}
               {view === 'dataset-audit' && <AuditView key={projectId} wb={model} requestedAuditId={projectId === requestedProjectId ? requestedAuditId : undefined} />}
@@ -333,7 +340,7 @@ export default function Workbench({ view, fixture, children, requestedProjectId,
               {view === 'provenance' && <ProvenanceView key={projectId} wb={model} requestedArtifactId={projectId === requestedProjectId ? requestedArtifactId : undefined} />}
               {view === 'report' && <ReportView key={projectId} wb={model} requestedReportId={projectId === requestedProjectId ? requestedReportId : undefined} />}
 
-              {!simple && <JobActivity wb={model} />}
+              {!simple && projectLoaded && <JobActivity wb={model} />}
               {children}
             </>}
           </div>

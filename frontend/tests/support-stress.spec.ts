@@ -26,6 +26,8 @@ test('support guides explain controls and AI support submits no research inputs'
   const launcher=page.getByRole('button',{name:'Open product support'});
   await launcher.click();
   await page.getByLabel('Your question',{exact:true}).fill('How do I pan and zoom the workflow canvas?');
+  await expect(page.getByRole('region',{name:'Instant product guidance'})).toContainText('Hold the mouse down on empty canvas space');
+  expect(posts).toHaveLength(0);
   await page.getByText('Move around the workflow canvas',{exact:true}).click();
   await expect(page.getByRole('dialog')).toContainText('Hold the mouse down on empty canvas space');
   await page.getByRole('button',{name:'Ask support agent',exact:true}).click();
