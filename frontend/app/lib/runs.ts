@@ -1,3 +1,5 @@
+
+import { workspaceStorage } from './demo-mode';
 import { api, ApiError } from './api';
 import { parseResearchRun, parseResearchRuns } from './decode';
 import type { EffectivePolicy, MaterialResponse, ResearchRun } from './generated/http';
@@ -91,7 +93,7 @@ const encode = (input: RunInput) => JSON.stringify(canonical(input));
 export function pendingRun(projectId: string): PendingRun | null {
   if (!projectId) return null;
   try {
-    const raw = localStorage.getItem(PENDING_PREFIX + projectId);
+    const raw = workspaceStorage.getItem(PENDING_PREFIX + projectId);
     if (raw !== null) {
       const value: unknown = JSON.parse(raw);
       if (value && typeof value === 'object') {
@@ -110,8 +112,8 @@ export function pendingRun(projectId: string): PendingRun | null {
 function storePending(projectId: string, entry: PendingRun | null) {
   if (entry) memory.set(projectId, entry); else memory.delete(projectId);
   try {
-    if (entry) localStorage.setItem(PENDING_PREFIX + projectId, JSON.stringify(entry));
-    else localStorage.removeItem(PENDING_PREFIX + projectId);
+    if (entry) workspaceStorage.setItem(PENDING_PREFIX + projectId, JSON.stringify(entry));
+    else workspaceStorage.removeItem(PENDING_PREFIX + projectId);
   } catch { /* storage unavailable: the key survives only while this page stays open */ }
   window.dispatchEvent(new Event(RUN_CHANGE_EVENT));
 }
@@ -156,10 +158,10 @@ export const resendRun = (entry: PendingRun) => sendRun(entry);
 /* ------------------------------ current run ------------------------------- */
 
 export function rememberedRun(projectId: string): string {
-  try { return localStorage.getItem(CURRENT_PREFIX + projectId) ?? ''; } catch { return ''; }
+  try { return workspaceStorage.getItem(CURRENT_PREFIX + projectId) ?? ''; } catch { return ''; }
 }
 export function rememberRun(projectId: string, runId: string) {
-  try { localStorage.setItem(CURRENT_PREFIX + projectId, runId); } catch { /* storage unavailable */ }
+  try { workspaceStorage.setItem(CURRENT_PREFIX + projectId, runId); } catch { /* storage unavailable */ }
 }
 
 const HISTORY_PAGE = 100;

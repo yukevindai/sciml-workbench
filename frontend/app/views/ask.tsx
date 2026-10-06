@@ -1,6 +1,6 @@
 'use client';
 
-import Link from 'next/link';
+import Link from '../components/workspace-link';
 import { AgentSelector } from '../components/agent-selection';
 import type { AgentSelection } from '../lib/agent-market';
 import { useCallback, useEffect, useState } from 'react';

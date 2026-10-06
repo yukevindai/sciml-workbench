@@ -1,7 +1,7 @@
 'use client';
 
 import { Select } from './select';
-import Link from 'next/link';
+import Link from './workspace-link';
 import { FlaskConical, ChevronRight, ArrowUpRight, Loader2, LogOut, ShieldCheck } from 'lucide-react';
 import { NAV_GROUPS, navItem, type Stage, type View } from '../lib/pipeline';
 import type { DatasetArtifact, Project } from '../lib/types';
@@ -74,7 +74,7 @@ export function Sidebar({ view, stages }: { view: string; stages: Stage[] }) {
 /* ---------------------------------- topbar ------------------------------- */
 
 export function TopBar({
-  projects, projectId, onProjectChange, busyJobs, datasets, datasetId, onDatasetChange, loading, preview, locked, simple = true,
+  projects, projectId, onProjectChange, busyJobs, datasets, datasetId, onDatasetChange, loading, preview, locked, demo = false, simple = true,
 }: {
   projects: Project[];
   projectId: string;
@@ -85,6 +85,7 @@ export function TopBar({
   onDatasetChange: (id: string) => void;
   loading: boolean;
   preview: boolean;
+  demo?: boolean;
   locked: boolean;
   simple?: boolean;
 }) {
@@ -123,8 +124,9 @@ export function TopBar({
             </>
           )}
         </span>}
+        {demo && <span className="demo-pill">Demo · no AI calls</span>}
         <ThemeToggle />
-        {!preview && <form method="post" action="/auth/session">
+        {!preview && !demo && <form method="post" action="/auth/session">
           <input type="hidden" name="intent" value="sign-out" />
           <button type="submit" className="icon-button" aria-label="Sign out" title="Sign out"><LogOut size={16} aria-hidden="true" /></button>
         </form>}

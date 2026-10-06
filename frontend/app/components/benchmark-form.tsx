@@ -2,7 +2,7 @@
 
 import { Select } from './select';
 import { useState } from 'react';
-import Link from 'next/link';
+import Link from './workspace-link';
 import { Activity } from 'lucide-react';
 import type { Workbench } from '../lib/context';
 import type { BenchmarkConfig, DatasetArtifact } from '../lib/types';

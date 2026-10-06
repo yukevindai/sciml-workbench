@@ -1,6 +1,6 @@
 'use client';
 
-import Link from 'next/link';
+import Link from './workspace-link';
 import { ArrowRight, ChevronRight, Lock } from 'lucide-react';
 import type { Stage } from '../lib/pipeline';
 

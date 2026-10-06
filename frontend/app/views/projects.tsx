@@ -4,7 +4,7 @@ import { AgentSelector } from '../components/agent-selection';
 import type { AgentSelection } from '../lib/agent-market';
 
 import { useState } from 'react';
-import Link from 'next/link';
+import Link from '../components/workspace-link';
 import { Activity, Database, FlaskConical, Plus, ShieldCheck } from 'lucide-react';
 import { api, json } from '../lib/api';
 import { parseProject } from '../lib/decode';

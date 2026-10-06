@@ -1,6 +1,6 @@
 'use client';
 
-import Link from 'next/link';
+import Link from './workspace-link';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { CheckCircle2, ChevronRight, Circle, CircleAlert, CircleDot, ExternalLink, Pause, Play, Sparkles, Square, User } from 'lucide-react';
 import { api, ApiError } from '../lib/api';

@@ -26,7 +26,7 @@
 .auth-nav-actions { display: flex; align-items: center; gap: 12px; }
 .auth-story .hero-scrim { background: radial-gradient(ellipse at center, color-mix(in srgb, var(--color-bg-canvas) 93%, transparent), transparent 110%); }
 .auth-card .field-hint .text-link { margin-top: 8px; }
-.sidebar-foot { display: grid; gap: 4px; }
+.sidebar-foot { gap: 4px; }
 
 .public-main { min-height: calc(100dvh - 320px); }
 .public-container { width: min(1120px, calc(100% - 96px)); margin-inline: auto; }

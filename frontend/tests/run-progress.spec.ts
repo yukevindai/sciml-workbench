@@ -1,10 +1,11 @@
 import { expect, test, type Page } from '@playwright/test';
+import { setTimeout as delay } from 'node:timers/promises';
 import fixture from './fixtures/run-controls.json';
 import workflows from './fixtures/workflows.json';
 import { parseRunDetail } from '../app/lib/decode';
 
 const now = new Date('2026-10-05T15:00:00Z');
-async function setup(page: Page, support = false) {
+async function mockRun(page: Page, support = false, clock: 'paused' | 'fixed' = 'paused') {
   const detail = parseRunDetail(structuredClone(fixture.partial_detail));
   detail.run.created_at = '2026-10-05T14:58:55Z';
   detail.run.finished_at = null;
@@ -16,8 +17,13 @@ async function setup(page: Page, support = false) {
   detail.assignments[0].created_at = '2026-10-05T14:59:30Z';
   detail.plan!.steps[0].status = 'running';
   let offline = false;
-  await page.clock.install({time: now});
-  await page.clock.pauseAt(now);
+  if (clock === 'fixed') {
+    // Keep React's lazy-view rendering timers alive while asserting exact elapsed time.
+    await page.clock.setFixedTime(now);
+  } else {
+    await page.clock.install({time: now});
+    await page.clock.pauseAt(now);
+  }
   await page.addInitScript(([pid,rid,support]) => {
     if (support) sessionStorage.setItem(`support-run:${pid}`, rid);
     else localStorage.setItem(`sciml-run:${pid}`, rid);
@@ -34,12 +40,17 @@ async function setup(page: Page, support = false) {
       : path.endsWith(`/agent-runs/${detail.run.id}`) ? detail : null;
     await route.fulfill(body === null ? {status:503,json:{error:'Not mocked'}} : {json:body});
   });
+  return {detail, disconnect:()=>{offline=true;}};
+}
+
+async function setup(page: Page, support = false) {
+  const state = await mockRun(page, support);
   await page.goto('/ask');
   if(support) await page.getByRole('button',{name:'Open product support'}).click();
   const progress = page.getByRole('region',{name:'Run progress',exact:true});
   await expect(progress).toBeVisible();
   await expect(progress.getByRole('timer',{name:'Elapsed',exact:true})).toContainText('1m 5s');
-  return {detail, progress, disconnect:()=>{offline=true;}};
+  return {...state, progress};
 }
 
 test('lab-group activity is visible with elapsed time that survives reload', async ({page}) => {
@@ -103,27 +114,37 @@ test('public preview serves real UI captures anonymously without mounting suppor
 });
 
 
-test('council workflow shows elapsed time and recorded step counts', async ({page}) => {
-  const {detail}=await setup(page);
-  let reviewReads=0;
-  await page.route(`**/api/projects/*/agent-runs/${detail.run.id}`,route=>{reviewReads++;return route.fulfill({json:detail});});
-  const run={id:'council-example',project_id:fixture.project.id,workflow_id:'stress-council',name:'Independent council',created_at:'2026-10-05T14:58:55Z',state:'running',error:null,nodes:{
-    start:{state:'completed',run_ids:[],artifact_ids:[],branch:null},
-    methods:{state:'running',run_ids:[detail.run.id],artifact_ids:[],branch:null},
-    statistics:{state:'pending',run_ids:[],artifact_ids:[],branch:null},
-  }};
-  await page.route('**/api/workflows',route=>route.fulfill({json:workflows}));
-  await page.route('**/api/projects/*/workflow-runs',route=>route.fulfill({json:{runs:[run],scheduled_workflow_ids:[]}}));
-  await page.goto('/stress-test');
-  const progress=page.getByRole('region',{name:'Workflow progress'});
-  await expect(progress).toContainText('1 of 3 workflow steps completed · 1 running');
-  await expect(progress.getByRole('timer')).toContainText('1m 5s');
-  await page.clock.fastForward(2000);
-  await expect(progress.getByRole('timer')).toContainText('1m 7s');
-  expect(reviewReads).toBe(0);
-  await page.locator('.stress-review summary').click();
-  await expect(page.getByRole('region',{name:'Run progress',exact:true})).toBeVisible();
-  expect(reviewReads).toBeGreaterThan(0);
-  await page.locator('.stress-review summary').click();
-  await expect(page.getByRole('region',{name:'Run progress',exact:true})).toHaveCount(0);
-});
+for (const slowChunks of [false, true]) {
+  test(`council workflow shows elapsed time and recorded step counts${slowChunks ? ' with delayed JavaScript' : ''}`, async ({page}) => {
+    // Start on the council page: prior Ask polling must not count as a review read.
+    const {detail}=await mockRun(page, false, 'fixed');
+    let reviewReads=0;
+    await page.route(`**/api/projects/*/agent-runs/${detail.run.id}`,route=>{reviewReads++;return route.fulfill({json:detail});});
+    const run={id:'council-example',project_id:fixture.project.id,workflow_id:'stress-council',name:'Independent council',created_at:'2026-10-05T14:58:55Z',state:'running',error:null,nodes:{
+      start:{state:'completed',run_ids:[],artifact_ids:[],branch:null},
+      methods:{state:'running',run_ids:[detail.run.id],artifact_ids:[],branch:null},
+      statistics:{state:'pending',run_ids:[],artifact_ids:[],branch:null},
+    }};
+    await page.route('**/api/workflows',route=>route.fulfill({json:workflows}));
+    await page.route('**/api/projects/*/workflow-runs',route=>route.fulfill({json:{runs:[run],scheduled_workflow_ids:[]}}));
+    if (slowChunks) {
+      // Force the lazy view through its loading state, as on a cold CI browser.
+      await page.route('**/_next/static/chunks/*.js', async route => {
+        await delay(350);
+        await route.continue();
+      });
+    }
+    await page.goto('/stress-test');
+    const progress=page.getByRole('region',{name:'Workflow progress'});
+    await expect(progress).toContainText('1 of 3 workflow steps completed · 1 running');
+    await expect(progress.getByRole('timer')).toContainText('1m 5s');
+    await page.clock.setFixedTime(new Date(now.getTime() + 2000));
+    await expect(progress.getByRole('timer')).toContainText('1m 7s');
+    expect(reviewReads).toBe(0);
+    await page.locator('.stress-review summary').click();
+    await expect(page.getByRole('region',{name:'Run progress',exact:true})).toBeVisible();
+    expect(reviewReads).toBeGreaterThan(0);
+    await page.locator('.stress-review summary').click();
+    await expect(page.getByRole('region',{name:'Run progress',exact:true})).toHaveCount(0);
+  });
+}

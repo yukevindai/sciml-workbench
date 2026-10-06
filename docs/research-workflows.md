@@ -95,3 +95,31 @@ for findings, source artifacts, plan approvals, and questions. Stop test cancels
 active children and prevents more work. Idempotent retries preserve the exact start
 request after uncertain acceptance. Existing deployment workers, policy checks,
 provider verification, and storage are required; no new service is introduced.
+
+## Public interactive demo
+
+`/demo` and the supported `/demo/<view>` pages are public. The landing page,
+product-preview tabs, navigation and sign-in page link to them. They render the
+same workspace components with bundled synthetic fixtures and a lazy-loaded,
+browser-only transport. Ask and council runs show a short scripted progression;
+agent, team, tool, project and workflow edits stay in memory until a refresh.
+The demo notice stays on every screen, and Reset demo clears only demo state.
+
+No backend or provider is involved. `api()` selects the local transport only on
+the dedicated demo path; unsupported operations fail without a network fallback.
+Run feeds use local polling instead of EventSource. Workspace/result links stay
+under `/demo`, and download controls explain that archives are illustrative.
+Uploads are blocked, schedules never execute, and live Product Support is not
+mounted. The Demo guide searches static product guidance instead.
+
+Demo drafts and selections use a separate storage prefix, including when a signed-in
+operator explores the demo. The public proxy allowlist includes exact demo views,
+not `/api` or arbitrary demo subpaths. Existing session and server-side API checks
+remain in force. Bundled examples in `frontend/app/lib/demo/seed.json` come from
+the deterministic synthetic browser fixtures; they are not real research records.
+The sample report's verification display is prewritten, not a new integrity check.
+
+Run `npm --prefix frontend run test:e2e -- public-demo.spec.ts` against the built
+frontend to verify public navigation, local mutations, scripted runs, reset,
+upload refusal, mobile layout and absence of API traffic. These tests abort any
+attempted API request and fail if one occurs; no configured model key is needed.

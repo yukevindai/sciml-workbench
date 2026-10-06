@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import Link from 'next/link';
+import Link from './workspace-link';
 import { Download } from 'lucide-react';
 import type { Workbench } from '../lib/context';
 import type { ReportSummary } from '../lib/generated/http';
@@ -118,7 +118,7 @@ export function ReportCard({ wb, report, focus, autoVerify }: { wb: Workbench; r
   return <Panel id={`report-${report.id}`} tabIndex={-1} className="result report-card"
     title={kind === 'run' ? `Research run export · ${formatDate(report.created_at)}` : `Project export · ${formatDate(report.created_at)}`}
     description={<>Report {report.id} · SHA-256 <span className="mono">{shortId(report.sha256, 16)}</span> · {report.artifact_ids.length} artifacts</>}
-    aside={<a className="button button--secondary button--sm" href={`/api/projects/${report.project_id}/artifacts/${report.id}/download`}><Download size={14} aria-hidden="true" />Download ZIP</a>}>
+    aside={<Link className="button button--secondary button--sm" href={`/api/projects/${report.project_id}/artifacts/${report.id}/download`}><Download size={14} aria-hidden="true" />Download ZIP</Link>}>
     <div className="stack">
       <dl className="audit-config">
         <div><dt>Structural verification</dt><dd>

@@ -1,4 +1,5 @@
 'use client';
+import Link from '../components/workspace-link';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Download } from 'lucide-react';
@@ -81,8 +82,8 @@ export function EvidenceDocument({ wb, document, anchors, focus, citation }: {
   return <Panel id={`evidence-${document.id}`} tabIndex={-1} className="result" title={document.title}
     description={`Evidence ${document.id} · ingested ${formatDate(document.created_at)}`}
     aside={<div className="research-actions">
-      <a className="button button--secondary button--sm" href={`/api/${base}/artifacts/${document.id}/download?representation=original`}><Download size={14} aria-hidden="true" />Original PDF</a>
-      <a className="button button--secondary button--sm" href={`/api/${base}/artifacts/${document.id}/download?representation=bundle`}><Download size={14} aria-hidden="true" />Source bundle</a>
+      <Link className="button button--secondary button--sm" href={`/api/${base}/artifacts/${document.id}/download?representation=original`}><Download size={14} aria-hidden="true" />Original PDF</Link>
+      <Link className="button button--secondary button--sm" href={`/api/${base}/artifacts/${document.id}/download?representation=bundle`}><Download size={14} aria-hidden="true" />Source bundle</Link>
     </div>}>
     <div className="stack">
       {record.issues.length > 0 && <Alert variant="error" title="Ingestion record is inconsistent">{record.issues.join(' ')} Nothing has been filled in. Inspect the complete artifact below.</Alert>}

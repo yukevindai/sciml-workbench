@@ -1,6 +1,6 @@
 'use client';
 
-import Link from 'next/link';
+import Link from './workspace-link';
 import { useEffect } from 'react';
 import type { Workbench } from '../lib/context';
 import { auditDataset, auditHref } from '../lib/audit';
@@ -47,7 +47,7 @@ export function AuditInspection({ wb, requestedAuditId }: { wb: Workbench; reque
             <p className="mono">Original CSV SHA-256: {dataset.sha256}</p>
             <div className="research-actions">
               <Link className="text-link" href={auditHref(wb.projectId, audit.id)}>Direct audit link</Link>
-              <a className="text-link" href={`/api/projects/${wb.projectId}/artifacts/${dataset.id}/download`}>Download audited CSV</a>
+              <Link className="text-link" href={`/api/projects/${wb.projectId}/artifacts/${dataset.id}/download`}>Download audited CSV</Link>
             </div>
           </div> : <Alert variant="error" title="Dataset lineage unavailable">The audit does not resolve to its declared parent dataset in this project. Inspect the original artifact; do not infer its source from the current selection.</Alert>}
           <div>

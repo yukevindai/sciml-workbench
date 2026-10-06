@@ -3,6 +3,7 @@
 import { useEffect, useId, useRef, useState, type DragEvent, type KeyboardEvent } from 'react';
 import { ArrowUp, FileSpreadsheet, FileText, Loader2, Paperclip, X } from 'lucide-react';
 import type { MaterialResponse } from '../lib/generated/http';
+import { useDemo } from './workspace-link';
 import { PendingProgress } from './run-progress';
 import { acceptedFile } from '../lib/ask';
 
@@ -24,6 +25,7 @@ export function AskComposer({ onSend, busy, disabled, projectFiles, placeholder,
   compact?: boolean;
   initial?: string;
 }) {
+  const demo = useDemo();
   const [prompt, setPrompt] = useState(initial ?? '');
   const [files, setFiles] = useState<File[]>([]);
   const [skipped, setSkipped] = useState<string[]>([]);
@@ -65,7 +67,7 @@ export function AskComposer({ onSend, busy, disabled, projectFiles, placeholder,
   };
   const onDrop = (event: DragEvent) => {
     event.preventDefault(); setDragging(false);
-    if (!busy && !disabled) add(Array.from(event.dataTransfer.files));
+    if (!busy && !disabled && !demo) add(Array.from(event.dataTransfer.files));
   };
 
   return (
@@ -104,7 +106,7 @@ export function AskComposer({ onSend, busy, disabled, projectFiles, placeholder,
       <div className="composer-bar">
         <div className="composer-tools">
           <button type="button" className="icon-button" aria-label="Attach a CSV or PDF file" title="Attach a CSV or PDF file"
-            disabled={busy || disabled} onClick={() => picker.current?.click()}>
+            disabled={busy || disabled || demo} onClick={() => picker.current?.click()}>
             <Paperclip size={18} aria-hidden="true" />
           </button>
           <input ref={picker} type="file" multiple hidden accept=".csv,text/csv,.pdf,application/pdf"
@@ -119,7 +121,7 @@ export function AskComposer({ onSend, busy, disabled, projectFiles, placeholder,
         </button>
       </div>
       <p className="composer-hint" id={hintId}>
-        {fileError || (dragging ? 'Drop your files to add them.' : 'Attach CSV spreadsheets or PDFs. Press Enter to send, Shift + Enter for a new line.')}
+        {fileError || (dragging ? 'Drop your files to add them.' : demo ? 'Demo: choose sample files above. Replies are scripted; uploads are disabled.' : 'Attach CSV spreadsheets or PDFs. Press Enter to send, Shift + Enter for a new line.')}
       </p>
     </div>
   );

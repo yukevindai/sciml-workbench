@@ -1,5 +1,5 @@
 'use client';
-import Link from 'next/link';
+import Link from '../components/workspace-link';
 import { useEffect, useState, type FormEvent } from 'react';
 import { Plus, Wrench, Copy } from 'lucide-react';
 import type { Workbench } from '../lib/context';

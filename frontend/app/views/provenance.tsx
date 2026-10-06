@@ -2,7 +2,7 @@
 
 import { Select } from '../components/select';
 import { useEffect, useMemo, useState } from 'react';
-import Link from 'next/link';
+import Link from '../components/workspace-link';
 import { ArrowRight, Layers } from 'lucide-react';
 import type { Workbench } from '../lib/context';
 import { formatDate, shortId } from '../lib/format';

@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import Link from 'next/link';
+import Link from './workspace-link';
 import type { Workbench } from '../lib/context';
 import type { SplitArtifact } from '../lib/types';
 import { auditHref } from '../lib/audit';
@@ -68,7 +68,7 @@ export function SplitInspection({ wb, split, focus }: { wb: Workbench; split: Sp
         <p>{lineage.dataset!.filename} · {lineage.dataset!.rows} original rows</p>
         <p className="mono">Original CSV SHA-256: {lineage.dataset!.sha256}</p>
         <div className="research-actions"><Link className="text-link" href={auditHref(split.project_id, split.audit_id)}>Inspect source audit {split.audit_id}</Link>
-          <a className="text-link" href={`/api/projects/${split.project_id}/artifacts/${split.dataset_id}/download`}>Download original CSV</a></div>
+          <Link className="text-link" href={`/api/projects/${split.project_id}/artifacts/${split.dataset_id}/download`}>Download original CSV</Link></div>
       </> : <Alert variant="error" title="Split lineage unavailable or inconsistent">The declared dataset, audit and parents do not resolve together in this project. Another dataset’s audit cannot stand in for the recorded input.</Alert>}
       <Link className="text-link" href={splitHref(split.project_id, split.id)}>Direct split link</Link>
       </div>

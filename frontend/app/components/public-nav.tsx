@@ -7,7 +7,7 @@ import { ArrowUpRight, FlaskConical, Menu, X } from 'lucide-react';
 import { ThemeToggle } from './theme-toggle';
 import { AdminLogin } from './admin-login';
 
-const links = [['Docs', '/docs'], ['Blog', '/blog'], ['Changelog', '/changelog']];
+const links = [['Demo', '/demo'], ['Docs', '/docs'], ['Blog', '/blog'], ['Changelog', '/changelog']];
 export function PublicNav() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);

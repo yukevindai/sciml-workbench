@@ -1,6 +1,6 @@
 'use client';
 import { Select } from './select';
-import Link from 'next/link';
+import Link from './workspace-link';
 import { useEffect, useId, useState } from 'react';
 import { loadMarket, loadAssignment, assignProject, selectionKey, fromKey, type AgentMarket, type AgentSelection } from '../lib/agent-market';
 

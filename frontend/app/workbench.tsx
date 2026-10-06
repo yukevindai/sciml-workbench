@@ -1,6 +1,8 @@
 'use client';
 
-import Link from 'next/link';
+import { workspaceStorage } from './lib/demo-mode';
+
+import Link from './components/workspace-link';
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { api } from './lib/api';
 import { parseArtifactPreviews, parseProjects } from './lib/decode';
@@ -11,6 +13,7 @@ import type { Workbench as WorkbenchModel } from './lib/context';
 import { kinds, type Artifact, type Job, type Project } from './lib/types';
 import { Sidebar, TopBar } from './components/shell';
 import { JobActivity } from './components/jobs';
+import { DemoNotice } from './components/demo-notice';
 import { Alert } from './components/ui';
 import type { ShellFixture } from './lib/shell-fixture';
 import dynamic from 'next/dynamic';
@@ -38,7 +41,7 @@ const READ_TIMEOUT = 30_000;
 const INDEPENDENT_VIEWS = new Set<View>(['ask', 'workflows', 'tools', 'agent-market', 'stress-test']);
 const CATALOG_VIEWS = new Set<View>(['workflows', 'tools', 'agent-market']);
 
-export default function Workbench({ view, fixture, children, requestedProjectId, requestedAuditId, requestedSplitId, requestedBenchmarkId, requestedEvidenceId, requestedClaimSetId, requestedFailureId, requestedArtifactId, requestedReportId }: { view: View; fixture?: ShellFixture; children?: ReactNode; requestedProjectId?: string; requestedAuditId?: string; requestedSplitId?: string; requestedBenchmarkId?: string; requestedEvidenceId?: string; requestedClaimSetId?: string; requestedFailureId?: string; requestedArtifactId?: string; requestedReportId?: string }) {
+export default function Workbench({ view, fixture, demo = false, children, requestedProjectId, requestedAuditId, requestedSplitId, requestedBenchmarkId, requestedEvidenceId, requestedClaimSetId, requestedFailureId, requestedArtifactId, requestedReportId }: { view: View; fixture?: ShellFixture; demo?: boolean; children?: ReactNode; requestedProjectId?: string; requestedAuditId?: string; requestedSplitId?: string; requestedBenchmarkId?: string; requestedEvidenceId?: string; requestedClaimSetId?: string; requestedFailureId?: string; requestedArtifactId?: string; requestedReportId?: string }) {
   const [projects, setProjects] = useState<Project[]>(fixture?.projects ?? []);
   const [projectId, updateProjectId] = useState(fixture?.projects[0]?.id ?? '');
   const [artifacts, setArtifacts] = useState<Artifact[]>(fixture?.artifacts ?? []);
@@ -79,13 +82,13 @@ export default function Workbench({ view, fixture, children, requestedProjectId,
     setError(''); setNotice(''); setProjectError(''); setProjectLoaded(false);
     setProjectLoading(Boolean(id));
     updateProjectId(id);
-    try { localStorage.setItem(PROJECT_STORAGE_KEY, id); } catch { /* storage unavailable */ }
+    try { workspaceStorage.setItem(PROJECT_STORAGE_KEY, id); } catch { /* storage unavailable */ }
   }, [fixture]);
 
   const setDatasetId = useCallback((id: string) => {
     updateDatasetId(id); setSplitId(''); setRunId('');
     if (fixture) return;
-    try { localStorage.setItem(`sciml-dataset:${activeProject.current}`, id); } catch { /* storage unavailable */ }
+    try { workspaceStorage.setItem(`sciml-dataset:${activeProject.current}`, id); } catch { /* storage unavailable */ }
   }, [fixture]);
 
   const applyLinks = useCallback((nextArtifacts: Artifact[]) => {
@@ -169,7 +172,7 @@ export default function Workbench({ view, fixture, children, requestedProjectId,
           return;
         }
         let saved: string | null = null;
-        try { saved = localStorage.getItem(PROJECT_STORAGE_KEY); } catch { /* storage unavailable */ }
+        try { saved = workspaceStorage.getItem(PROJECT_STORAGE_KEY); } catch { /* storage unavailable */ }
         setProjectId(list.find(p => p.id === saved)?.id || list[0]?.id || '');
       })
       .catch(e => { if (!controller.signal.aborted) setProjectsError(e instanceof Error ? e.message : 'Could not load projects'); })
@@ -179,7 +182,7 @@ export default function Workbench({ view, fixture, children, requestedProjectId,
 
   useEffect(() => {
     if (fixture || !projectId) return;
-    try { updateDatasetId(localStorage.getItem(`sciml-dataset:${projectId}`) || ''); } catch { /* storage unavailable */ }
+    try { updateDatasetId(workspaceStorage.getItem(`sciml-dataset:${projectId}`) || ''); } catch { /* storage unavailable */ }
     let disposed = false;
     let polling = false;
     let failures = 0;
@@ -282,10 +285,12 @@ export default function Workbench({ view, fixture, children, requestedProjectId,
           onDatasetChange={setDatasetId}
           loading={projectsLoading}
           preview={Boolean(fixture)}
+          demo={demo}
           locked={busy}
           simple={true}
         />
 
+        {demo && <DemoNotice />}
         <main className={`page${simple ? ' page--simple' : ''}`} id="main" tabIndex={-1}>
           {!simple && <div className="page-head">
             <div className="page-head-text">
@@ -350,7 +355,7 @@ export default function Workbench({ view, fixture, children, requestedProjectId,
             <span>Every result keeps a link to the files and steps it came from.</span>
           </footer>}
         </main>
-        <SupportAgent key={projectId} projectId={projectId} view={view} preview={!!fixture} />
+        {!demo && <SupportAgent key={projectId} projectId={projectId} view={view} preview={!!fixture} />}
       </div>
     </div>
   );

@@ -3,7 +3,7 @@
 import { Select } from './select';
 import { useState } from 'react';
 import { AlertTriangle, Loader2 } from 'lucide-react';
-import Link from 'next/link';
+import Link from './workspace-link';
 import type { Workbench } from '../lib/context';
 import { failureHref, receiptStatus } from '../lib/failure';
 import { JOB_KIND_LABEL, isActive, recoveryStatus, resultLink } from '../lib/jobs';

@@ -4,7 +4,7 @@ import { configuredLogin, loginRequired, SESSION_COOKIE, validBasic, validSessio
 // Public without signing in: the landing page, the sign-in page and its form
 // handler, liveness, and the static assets those pages need.
 const PUBLIC = new Set([
-  '/', '/sign-in', '/auth/session', '/favicon.ico', '/robots.txt',
+  '/', '/demo', '/sign-in', '/auth/session', '/favicon.ico', '/robots.txt',
   // Bundled marketing assets only. Uploaded research files stay behind /api/.
   '/images/lab-orbitals.png',
   ...['ask', 'workflows', 'stress-test'].flatMap(view =>
@@ -13,7 +13,8 @@ const PUBLIC = new Set([
     ['dark', 'light'].map(theme => `/images/workspace-${view}-${theme}.png`)),
 ]);
 const PUBLIC_CONTENT = ['/docs', '/blog', '/changelog'];
-const isPublic = (path: string) => PUBLIC.has(path) || PUBLIC_CONTENT.some(root => path === root || path.startsWith(root + '/')) || path.startsWith('/_next/') || path.startsWith('/icon');
+const DEMO_VIEWS = new Set(['ask', 'projects', 'workflows', 'stress-test', 'agent-market', 'tools', 'research', 'dataset-audit', 'split-designer', 'benchmark', 'evidence', 'failure-memory', 'provenance', 'report'].map(view => `/demo/${view}`));
+const isPublic = (path: string) => DEMO_VIEWS.has(path) || PUBLIC.has(path) || PUBLIC_CONTENT.some(root => path === root || path.startsWith(root + '/')) || path.startsWith('/_next/') || path.startsWith('/icon');
 
 export function proxy(request: NextRequest) {
   const path = request.nextUrl.pathname;

@@ -15,13 +15,14 @@ export const metadata = {
 };
 
 const CAPABILITIES = [
-  { title: 'Build the lab group you need.', body: 'Start with integrated agents, customize a copy, or create your own specialists. Give small teams a shared task and a lead.', link: '/agent-market', label: 'Meet your agents' },
-  { title: 'Connect a research process.', body: 'Turn a good investigation into a repeatable workflow. Connect agents, reusable tools, review steps and decisions on a visual canvas.', link: '/workflows', label: 'Design a workflow' },
-  { title: 'Challenge what you believe.', body: 'Stress-test an idea, paper or result with a curated specialist or council. Inspect the evidence, uncertainty and suggested tests.', link: '/stress-test', label: 'Explore stress testing' },
-  { title: 'Make your methods reusable.', body: 'Create named research tools with clear instructions and permitted capabilities. Give them to your agents or use them in a workflow.', link: '/tools', label: 'Explore research tools' },
+  { title: 'Build the lab group you need.', body: 'Start with integrated agents, customize a copy, or create your own specialists. Give small teams a shared task and a lead.', link: '/demo/agent-market', label: 'Meet your agents' },
+  { title: 'Connect a research process.', body: 'Turn a good investigation into a repeatable workflow. Connect agents, reusable tools, review steps and decisions on a visual canvas.', link: '/demo/workflows', label: 'Design a workflow' },
+  { title: 'Challenge what you believe.', body: 'Stress-test an idea, paper or result with a curated specialist or council. Inspect the evidence, uncertainty and suggested tests.', link: '/demo/stress-test', label: 'Explore stress testing' },
+  { title: 'Make your methods reusable.', body: 'Create named research tools with clear instructions and permitted capabilities. Give them to your agents or use them in a workflow.', link: '/demo/tools', label: 'Explore research tools' },
 ];
 
 const FAQ = [
+  { q: 'Can I try it without signing in?', a: 'Yes. The interactive demo uses the real workspace screens with synthetic sample data and scripted responses. Explore agents, workflows, stress tests and results without an account or any AI API calls. Demo edits reset when you refresh; uploads and live research require sign-in.' },
   { q: 'Do I need to know how to code?', a: 'No. Describe what you want in plain language. Customize your agents and connect research steps in a visual workflow when you want a repeatable process.' },
   { q: 'Which files can I work with?', a: 'Add CSV datasets and PDF research papers. Your original files are preserved, and derived results remain connected to their sources.' },
   { q: 'What if I need help with a control?', a: 'Product Support is always available inside the signed-in workspace. Ask how a button works, explore the workflow guides, or get help choosing your next step.' },
@@ -43,7 +44,7 @@ export default function Landing() {
         <div className="hero-content">
           <h1 id="hero-title" className="hero-title">Your personal <br />AI lab group</h1>
           <p className="hero-lede">Build your team. Follow the evidence. Put your ideas to the test.</p>
-          <div className="hero-cta"><Link href="/ask" className="button button--lg">Get started <ArrowRight size={17} aria-hidden="true" /></Link><a href="#how" className="button button--lg button--secondary">Explore the workspace</a></div>
+          <div className="hero-cta"><Link href="/ask" className="button button--lg">Get started <ArrowRight size={17} aria-hidden="true" /></Link><Link href="/demo" className="button button--lg button--secondary">Try the demo</Link></div>
         </div>
       </section>
 

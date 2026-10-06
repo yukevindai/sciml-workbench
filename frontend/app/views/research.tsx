@@ -1,6 +1,6 @@
 'use client';
 
-import Link from 'next/link';
+import Link from '../components/workspace-link';
 import { useCallback, useEffect, useState } from 'react';
 import { Database } from 'lucide-react';
 import type { Workbench } from '../lib/context';

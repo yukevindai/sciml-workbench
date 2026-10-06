@@ -2,7 +2,7 @@
 
 import { Select } from '../components/select';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import Link from 'next/link';
+import Link from '../components/workspace-link';
 import { FlaskConical, Search } from 'lucide-react';
 import type { Workbench } from '../lib/context';
 import type { JobDetail, JobPage } from '../lib/generated/http';

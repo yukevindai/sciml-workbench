@@ -1,3 +1,4 @@
+import { isDemo } from './demo-mode';
 /** A response the server actually sent; `status` separates a refusal from an outage. */
 export class ApiError extends Error {
   constructor(message: string, readonly status: number) { super(message); }
@@ -7,6 +8,13 @@ export class ApiError extends Error {
  *  backend bearer credential server-side. No token is ever visible to the browser.
  *  `timeoutMs` bounds requests whose callers hold a busy state or a poll slot. */
 export async function api<T>(path: string, decode: (value: unknown) => T, init?: RequestInit, timeoutMs?: number): Promise<T> {
+  if (isDemo()) {
+    init?.signal?.throwIfAborted();
+    const { demoRequest } = await import('./demo/transport');
+    const value = await demoRequest(path, init);
+    init?.signal?.throwIfAborted();
+    return decode(value);
+  }
   const signal = timeoutMs ? (init?.signal ? AbortSignal.any([init.signal, AbortSignal.timeout(timeoutMs)]) : AbortSignal.timeout(timeoutMs)) : init?.signal;
   let response: Response;
   try {

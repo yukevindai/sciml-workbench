@@ -1,5 +1,7 @@
 'use client';
-import Link from 'next/link';
+
+import { workspaceSession } from '../lib/demo-mode';
+import Link from './workspace-link';
 import { useEffect, useRef, useState } from 'react';
 import { LifeBuoy, Send, X } from 'lucide-react';
 import { api, json } from '../lib/api';
@@ -19,7 +21,7 @@ export function SupportAgent({projectId,view,preview=false}:{projectId:string;vi
   const [accepted,setAccepted]=useState<ResearchRun|null>(null),[lastRead,setLastRead]=useState(''),[readError,setReadError]=useState('');
   const key=`support-request:${projectId}`;
   const active=!!runId&&(!detail||!isTerminalRun(detail.run));
-  useEffect(()=>{setPending(hasRetainedRequest(key)); try{setRunId(sessionStorage.getItem(`support-run:${projectId}`)??'');}catch{}},[key,projectId]);
+  useEffect(()=>{setPending(hasRetainedRequest(key)); try{setRunId(workspaceSession.getItem(`support-run:${projectId}`)??'');}catch{}},[key,projectId]);
   useEffect(()=>{
     if(!open||!runId||!projectId)return;
     const c=new AbortController();let timer:ReturnType<typeof setTimeout>;
@@ -34,7 +36,7 @@ export function SupportAgent({projectId,view,preview=false}:{projectId:string;vi
         return {...runInput(`Product support question (page: ${view}): ${question.trim()}`,[],policy,'autopilot'),agent_selection:{kind:'agent',id:'support-guide',exclusive:true}};
       },parseResearchRun);
       if(run.project_id!==projectId)throw new Error('Support response belongs to another project.');
-      setDetail(null);setAccepted(run);setReadError('');setLastRead('');setRunId(run.id);sessionStorage.setItem(`support-run:${projectId}`,run.id);
+      setDetail(null);setAccepted(run);setReadError('');setLastRead('');setRunId(run.id);workspaceSession.setItem(`support-run:${projectId}`,run.id);
     }catch(e){setError(e instanceof Error?e.message:'Support could not start. The guides below are still available.');}
     finally{flight.current=false;setBusy(false);setPending(hasRetainedRequest(key));}
   };
