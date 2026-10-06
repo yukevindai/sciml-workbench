@@ -53,7 +53,21 @@ test(`anonymous visitors explore every product screen without API requests${dela
     // destination before reading the newly mounted disclosure's open state.
     await expect(page).toHaveURL(`/demo/${view}?project=demo-project`);
     await expect(page.locator('#main').getByRole('heading',{name:title,level:1,exact:true})).toBeVisible();
-    await expect(page.locator('.alert--error')).toHaveCount(0);
+    if (view === 'benchmark') {
+      // The bundled dataset includes a failed run alongside a successful one.
+      // Wait for both inspections: checking for zero errors before the lazy
+      // view renders can pass early or reject the intended scientific outcome.
+      const failed = page.locator('#benchmark-demo-e98dad9b-2a58-454c-b1aa-27cb084d9673');
+      const succeeded = page.locator('#benchmark-demo-0b01855d-a790-4e2b-8b9d-99da20ae2311');
+      await expect(failed.locator('.alert--error')).toContainText('Admission or evaluation failed');
+      await expect(failed.locator('.alert--error')).toContainText('No metrics were produced; missing metrics are not zero.');
+      await expect(succeeded.getByRole('heading',{name:'Validation results',exact:true})).toBeVisible();
+      // Exactly the expected failed-run alert is allowed, not loading, lineage,
+      // missing-artifact, or other application errors.
+      await expect(page.locator('.alert--error')).toHaveCount(1);
+    } else {
+      await expect(page.locator('.alert--error')).toHaveCount(0);
+    }
   }
   await expect(page.getByRole('button',{name:'Open product support'})).toHaveCount(0);
   await page.getByRole('button',{name:'Download ZIP',exact:true}).click();
