@@ -6,7 +6,15 @@ test.beforeEach(async ({page})=>{
   await page.route('**/api/**',route=>route.abort());
 });
 
-test('anonymous visitors explore every product screen without API requests', async ({page})=>{
+for (const delayedNavigation of [false, true]) {
+test(`anonymous visitors explore every product screen without API requests${delayedNavigation ? ' with delayed navigation' : ''}`, async ({page})=>{
+  if (delayedNavigation) {
+    // Keep the previous screen visible while the next route is in flight.
+    await page.route('**/demo/**', async route=>{
+      if (route.request().headers().rsc === '1') await new Promise(resolve=>setTimeout(resolve,350));
+      await route.continue();
+    });
+  }
   const calls:string[]=[], errors:string[]=[];
   page.on('request',r=>{if(new URL(r.url()).pathname.startsWith('/api/'))calls.push(r.url());});
   page.on('pageerror',e=>errors.push(e.message));
@@ -15,16 +23,36 @@ test('anonymous visitors explore every product screen without API requests', asy
   await expect(page).toHaveURL(/\/demo$/);
   await expect(page.getByRole('heading',{name:'What would you like to find out?'})).toBeVisible();
   await expect(page.getByRole('button',{name:/Example: audit/})).toBeVisible();
-  for(const label of ['Projects','Workflows','Stress test','Agent market','Tools','Ask']) {
+  for(const [label,view,title] of [
+    ['Projects','projects','Projects'],
+    ['Workflows','workflows','Research workflows'],
+    ['Stress test','stress-test','Scientific stress tests'],
+    ['Agent market','agent-market','Agent market'],
+    ['Tools','tools','Research tools'],
+    ['Ask','ask','What would you like to find out?'],
+  ]) {
     await page.getByRole('navigation',{name:'Workbench sections'}).getByRole('link',{name:label,exact:true}).click();
-    await expect(page).toHaveURL(/\/demo\//);
+    await expect(page).toHaveURL(`/demo/${view}`);
+    await expect(page.locator('#main').getByRole('heading',{name:title,level:1,exact:true})).toBeVisible();
     await expect(page.getByRole('region',{name:'Demo workspace'})).toBeVisible();
     await expect(page.locator('.alert--error')).toHaveCount(0);
   }
-  for(const label of ['Research activity','Check data','Split data','Test models','Papers & sources','Lessons learned','History','Export']) {
+  for(const [label,view,title] of [
+    ['Research activity','research','Research activity'],
+    ['Check data','dataset-audit','Data quality results'],
+    ['Split data','split-designer','Data partitions'],
+    ['Test models','benchmark','Model evaluation results'],
+    ['Papers & sources','evidence','Papers & sources'],
+    ['Lessons learned','failure-memory','Lessons learned'],
+    ['History','provenance','History'],
+    ['Export','report','Export'],
+  ]) {
     if(!await page.locator('.demo-explore').getAttribute('open').then(value=>value!==null)) await page.getByText('Explore sample results & product guidance',{exact:true}).click();
     await page.getByRole('region',{name:'Demo workspace'}).getByRole('link',{name:label,exact:true}).click();
-    await expect(page.locator('#main h1')).toBeVisible();
+    // A generic heading can still belong to the previous route. Wait for this
+    // destination before reading the newly mounted disclosure's open state.
+    await expect(page).toHaveURL(`/demo/${view}?project=demo-project`);
+    await expect(page.locator('#main').getByRole('heading',{name:title,level:1,exact:true})).toBeVisible();
     await expect(page.locator('.alert--error')).toHaveCount(0);
   }
   await expect(page.getByRole('button',{name:'Open product support'})).toHaveCount(0);
@@ -33,6 +61,7 @@ test('anonymous visitors explore every product screen without API requests', asy
   await page.getByRole('button',{name:'Keep exploring'}).click();
   expect(calls).toEqual([]);expect(errors).toEqual([]);
 });
+}
 
 test('Ask simulates progress, review and completion without model traffic',async({page})=>{
   const calls:string[]=[];page.on('request',r=>{if(new URL(r.url()).pathname.startsWith('/api/'))calls.push(r.url());});

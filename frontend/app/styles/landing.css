@@ -37,6 +37,10 @@
 .preview-tabs button { display: flex; align-items: center; justify-content: center; gap: 9px; min-height: 46px; padding: 12px 18px; border: 1px solid transparent; border-radius: 8px; background: transparent; color: var(--color-text-secondary); font: inherit; cursor: pointer; transition: background 180ms, color 180ms, border-color 180ms; }
 .preview-tabs button:hover { background: var(--color-bg-subtle); }
 .preview-tabs button[aria-selected='true'] { color: var(--color-text-primary); background: var(--color-bg-surface); border-color: var(--color-border); }
+.preview-stage { position: relative; margin-top: 40px; }
+.preview-launch { position: absolute; top: 0; left: 50%; translate: -50% -50%; z-index: 1; min-width: 184px; white-space: nowrap; box-shadow: var(--shadow-lg); }
+.preview-caption .preview-access { flex-shrink: 0; display: grid; gap: 4px; text-align: right; font-size: 13px; }
+.preview-access strong { color: var(--color-text-primary); font-weight: 500; }
 .preview-image { overflow: hidden; border: 1px solid var(--color-border); border-radius: 12px; background: var(--color-bg-surface); box-shadow: var(--shadow-lg); }
 .preview-image img { display: block; width: 100%; height: auto; }
 .preview-image .preview-light { display: none; }
@@ -134,6 +138,7 @@
   .section-lede { font-size: 16px; }
   .preview-tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
   .preview-tabs button { flex-direction: column; padding: 12px 6px; font-size: 12px; gap: 7px; }
+  .preview-caption .preview-access { text-align: left; }
   .preview-caption { flex-direction: column; align-items: flex-start; gap: 12px; font-size: 14px; }
   .capabilities, .workflow-section, .principles, .faq-section { grid-template-columns: 1fr; gap: 36px; }
   .capabilities { gap: 0; margin-top: 16px; }
