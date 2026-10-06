@@ -1,3 +1,4 @@
+import { isDemo } from './demo-mode';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { api } from './api';
 import { parseRunDetail, parseRunEvents } from './decode';
@@ -129,7 +130,7 @@ export function useRunFeed(projectId: string, runId: string, disabled: boolean) 
 
     const open = () => {
       if (disposed || terminal || mode !== 'stream') return;
-      if (typeof EventSource === 'undefined') { fallBack(); return; }
+      if (isDemo() || typeof EventSource === 'undefined') { fallBack(); return; }
       // The client owns the cursor: each connection asks for events after the last one merged,
       // so a reconnect never depends on a proxy forwarding Last-Event-ID.
       const current = new EventSource(`/api/${base}/stream?after=${cursor}`);

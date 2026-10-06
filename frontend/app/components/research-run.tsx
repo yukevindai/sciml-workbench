@@ -1,6 +1,6 @@
 'use client';
 
-import Link from 'next/link';
+import Link from './workspace-link';
 import { useCallback, useEffect, useRef } from 'react';
 import { api } from '../lib/api';
 import { parseResearchRun } from '../lib/decode';

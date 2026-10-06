@@ -183,7 +183,7 @@ test('public copy, credits, numbered history and distinct pixel studies', async 
     await checkScenes();
   }
   await page.goto('/changelog');
-  await expect(page.locator('.release-meta p')).toHaveText(['0.2.0Latest', '0.1.3', '0.1.2', '0.1.1', '0.1.0']);
+  await expect(page.locator('.release-meta p')).toHaveText(['0.2.1Latest', '0.2.0', '0.1.3', '0.1.2', '0.1.1', '0.1.0']);
   await expect(page.getByText('Development update', { exact: true })).toHaveCount(0);
   await page.screenshot({ path: info.outputPath('changelog.png'), fullPage: true });
 });

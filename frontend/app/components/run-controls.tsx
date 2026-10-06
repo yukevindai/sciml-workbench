@@ -1,5 +1,7 @@
 'use client';
 
+import { workspaceStorage } from '../lib/demo-mode';
+
 import { useEffect, useRef, useState } from 'react';
 import { api, ApiError } from '../lib/api';
 import { parseResearchRun } from '../lib/decode';
@@ -116,7 +118,7 @@ const draftKey = (runId: string, question: ResearchQuestion) => `sciml-answer:${
 
 function loadDraft(runId: string, question: ResearchQuestion): Record<string, string> {
   try {
-    const value: unknown = JSON.parse(localStorage.getItem(draftKey(runId, question)) ?? '{}');
+    const value: unknown = JSON.parse(workspaceStorage.getItem(draftKey(runId, question)) ?? '{}');
     if (value && typeof value === 'object' && !Array.isArray(value)) {
       return Object.fromEntries(Object.entries(value).filter((entry): entry is [string, string] => typeof entry[1] === 'string'));
     }
@@ -158,7 +160,7 @@ function QuestionForm({ wb, run, question, steps, onUpdated }: {
 
   const update = (next: Record<string, string>) => {
     setDraft(next);
-    try { localStorage.setItem(draftKey(run.id, question), JSON.stringify(next)); } catch { /* storage unavailable */ }
+    try { workspaceStorage.setItem(draftKey(run.id, question), JSON.stringify(next)); } catch { /* storage unavailable */ }
   };
   const answerFor = (id: string, options: { id: string; label: string }[]) => {
     const choice = draft[`choice:${id}`];
@@ -179,7 +181,7 @@ function QuestionForm({ wb, run, question, steps, onUpdated }: {
       const updated = await api(`projects/${wb.projectId}/agent-runs/${run.id}/questions/${question.id}/answer`, parseResearchRun, {
         method: 'POST', headers: { 'Content-Type': 'application/json', 'Idempotency-Key': key }, body: identity,
       }, CONTROL_TIMEOUT);
-      try { localStorage.removeItem(draftKey(run.id, question)); } catch { /* storage unavailable */ }
+      try { workspaceStorage.removeItem(draftKey(run.id, question)); } catch { /* storage unavailable */ }
       wb.setNotice(`Answer recorded; the run now reads ${executionStatus(updated.state)?.label ?? updated.state}.`);
       onUpdated(updated);
     } catch (e) {

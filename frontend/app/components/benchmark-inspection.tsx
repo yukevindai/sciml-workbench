@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import Link from 'next/link';
+import Link from './workspace-link';
 import { ArrowUpRight, EyeOff } from 'lucide-react';
 import type { Workbench } from '../lib/context';
 import type { EvaluationStatusView } from '../lib/generated/http';
@@ -169,7 +169,7 @@ export function RunInspection({ wb, run, focus, revealed, onReveal }: {
           <Alert variant="warning" title="Test results revealed · exposure recorded">These scores are for reporting a completed evaluation, not for choosing or tuning a model.</Alert>
           <MetricTable label="Test metrics" metrics={test.metrics} caption="Held-out test partition, scored once by upstream" />
           <p>Group MAE 95% interval: {test.interval ? `${formatMetric(test.interval[0])} to ${formatMetric(test.interval[1])}` : 'Not reported'}.{test.intervalScope ? ` ${test.intervalScope}` : ''}</p>
-          <a className="text-link" href={`/api/projects/${run.project_id}/artifacts/${run.id}/download?representation=bundle`}>Download upstream run bundle</a>
+          <Link className="text-link" href={`/api/projects/${run.project_id}/artifacts/${run.id}/download?representation=bundle`}>Download upstream run bundle</Link>
           <p className="field-hint">The bundle contains the complete dataset, partitions and predictions; downloading it also records raw-data exposure.</p>
           <JsonBox value={revealed} summary="Inspect complete benchmark artifact" />
         </>}

@@ -23,7 +23,9 @@ Ask a research question, assemble your agents, design a visual workflow, or chal
 
 ## What’s new
 
-**Product version: 0.2.0**, plus the improvements merged through **October 5, 2026** ([PR #19](https://github.com/yukevindai/sciml-workbench/pull/19)). The [product changelog](frontend/app/changelog/page.tsx) tracks UI milestones; the frontend/backend package version and release compatibility inventory remain **0.1.0**. These are separate from live deployment and release acceptance.
+**Try without an account:** choose **Try the demo** on the landing page, or open `/demo` on your deployment. Explore the real workspace with synthetic inputs, scripted Ask/council responses, editable agents and workflows, and linked sample results. No DeepSeek or other model calls are made. Demo edits reset on refresh; uploads, real schedules and research downloads require the live workspace.
+
+**Product version: 0.2.1** adds the public interactive demo, following the research studio and October 5 responsiveness and progress updates ([PR #19](https://github.com/yukevindai/sciml-workbench/pull/19)). The [product changelog](frontend/app/changelog/page.tsx) tracks UI milestones; the frontend/backend package version and release compatibility inventory remain **0.1.0**. These are separate from live deployment and release acceptance.
 
 | Update | What changed |
 |---|---|
@@ -352,7 +354,7 @@ The default backend tests use temporary SQLite metadata; PostgreSQL locking and 
 
 ## Release status
 
-The latest product milestone is **0.2.0**, with subsequent responsiveness, progress, and preview updates merged on October 5. Package metadata and the [release handoff](docs/release-handoff.md) still identify the **0.1.0 candidate**. The handoff separates implementation and local evidence from acceptance of a live model or hosted deployment; the product changelog does not certify those gates.
+The latest product milestone is **0.2.1**, adding the public demo to the research studio, responsiveness, progress, and preview updates. Package metadata and the [release handoff](docs/release-handoff.md) still identify the **0.1.0 candidate**. The handoff separates implementation and local evidence from acceptance of a live model or hosted deployment; the product changelog does not certify those gates.
 
 | Area | Recorded status |
 |---|---|

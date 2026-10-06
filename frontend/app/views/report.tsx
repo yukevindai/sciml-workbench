@@ -1,6 +1,6 @@
 'use client';
 
-import Link from 'next/link';
+import Link from '../components/workspace-link';
 import { Check, Download, FileCheck } from 'lucide-react';
 import type { Workbench } from '../lib/context';
 import { submitOperation } from '../lib/submissions';

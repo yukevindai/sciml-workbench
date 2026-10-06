@@ -1,5 +1,7 @@
 'use client';
-import Link from 'next/link';
+
+import { workspaceStorage } from '../lib/demo-mode';
+import Link from '../components/workspace-link';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { ArrowDownToLine, Bot, Check, Copy, GitBranch, Grip, Merge, Play, Plus, Repeat2, Save, Trash2, Wrench, X, ZoomIn, ZoomOut } from 'lucide-react';
 import type { Workbench } from '../lib/context';
@@ -124,17 +126,17 @@ export function WorkflowsView({ wb }: { wb: Workbench }) {
     const storageKey = `workflow-request:${pid}:${selected.id}`;
     try {
       let pending: { key: string; body: unknown } | null = null;
-      try { const stored = localStorage.getItem(storageKey); if (stored) pending = JSON.parse(stored); } catch { /* unavailable */ }
+      try { const stored = workspaceStorage.getItem(storageKey); if (stored) pending = JSON.parse(stored); } catch { /* unavailable */ }
       if (!pending) {
         const chosen = items.filter(i => inputs.includes(i.id));
         const policy = perRun(await permissions(pid, chosen));
         pending = { key: crypto.randomUUID(), body: { expected_revision: selected.revision, request: runInput(prompt,chosen,policy,review ? 'review_plan' : 'autopilot'), enable_schedule: schedule && selected.trigger === 'daily' } };
-        localStorage.setItem(storageKey, JSON.stringify(pending));
+        workspaceStorage.setItem(storageKey, JSON.stringify(pending));
       }
       const started = await api(`projects/${pid}/workflows/${selected.id}/run`,parseWorkflowRun,{ ...json(pending.body), headers: { 'Content-Type': 'application/json', 'Idempotency-Key': pending.key } },60000);
-      localStorage.removeItem(storageKey); setActivity(current => ({ ...current,runs:[started,...current.runs.filter(r=>r.id!==started.id)] })); setRunOpen(false); setNotice('Workflow started. You can leave this page; your research group will keep working.');
+      workspaceStorage.removeItem(storageKey); setActivity(current => ({ ...current,runs:[started,...current.runs.filter(r=>r.id!==started.id)] })); setRunOpen(false); setNotice('Workflow started. You can leave this page; your research group will keep working.');
     } catch(e) {
-      if (e instanceof ApiError && e.status >= 400 && e.status < 500 && ![408,429].includes(e.status)) localStorage.removeItem(storageKey);
+      if (e instanceof ApiError && e.status >= 400 && e.status < 500 && ![408,429].includes(e.status)) workspaceStorage.removeItem(storageKey);
       setError((e instanceof Error ? e.message : 'Could not start workflow.')+' Retry uses the same saved request if acceptance is uncertain.');
     } finally { setBusy(false); }
   };

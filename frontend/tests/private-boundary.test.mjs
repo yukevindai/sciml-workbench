@@ -97,16 +97,18 @@ test('production operator gate and server proxy enforce the private boundary', a
       assert.equal(redirect.headers.get('location'), 'https://private.example/sign-in?next=' + encodeURIComponent(path + '?project=p'));
     }
     // The landing and sign-in pages are public.
-    for (const path of ['/', '/sign-in', '/auth/session', '/docs', '/docs/getting-started', '/blog', '/blog/a-better-first-question', '/changelog']) assert.equal(proxy(request(path)).status, 200);
+    for (const path of ['/', '/demo', '/demo/ask', '/demo/workflows', '/demo/stress-test', '/demo/agent-market', '/demo/tools', '/demo/report', '/sign-in', '/auth/session', '/docs', '/docs/getting-started', '/blog', '/blog/a-better-first-question', '/changelog']) assert.equal(proxy(request(path)).status, 200);
     for (const path of ['/images/lab-orbitals.png', '/images/workspace-ask-dark.png', '/images/workspace-audit-light.png', '/images/product-ask-dark-desktop.jpg', '/images/product-stress-test-light-mobile.jpg']) {
       assert.equal(proxy(request(path)).status, 200);
     }
     assert.equal(proxy(request('/images/private-research.png')).status, 303);
-    for (const path of ['/docs-private', '/blogger', '/changelog-private']) assert.equal(proxy(request(path)).status, 303);
+    for (const path of ['/docs-private', '/blogger', '/changelog-private', '/demo-private', '/demo/api/projects', '/demo/ask/private']) assert.equal(proxy(request(path)).status, 303);
     assert.equal(proxy(request('/ask', { authorization: auth })).status, 200);
     assert.deepEqual(await proxy(request('/healthz')).json(), { status: 'ok' });
     delete process.env.WB_LOGIN_PASSWORD;
     assert.equal(proxy(request('/ask')).status, 503);
+    assert.equal(proxy(request('/demo')).status, 200);
+    assert.equal(proxy(request('/demo/ask')).status, 200);
     process.env.WB_LOGIN_PASSWORD = 'a-private-password-for-tests';
     let calls = 0;
     globalThis.fetch = async (url, init) => {

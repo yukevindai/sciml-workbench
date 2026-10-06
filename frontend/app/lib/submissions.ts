@@ -1,3 +1,5 @@
+
+import { workspaceStorage } from './demo-mode';
 import { useEffect, useState } from 'react';
 import { api, ApiError } from './api';
 import { parseJob } from './decode';
@@ -56,7 +58,7 @@ function valid(value: unknown, projectId: string): value is PendingSubmission {
 export function pendingSubmissions(projectId: string): PendingSubmission[] {
   if (!projectId) return [];
   try {
-    const raw = localStorage.getItem(STORAGE_PREFIX + projectId);
+    const raw = workspaceStorage.getItem(STORAGE_PREFIX + projectId);
     if (raw !== null) {
       const parsed: unknown = JSON.parse(raw);
       return Array.isArray(parsed) ? parsed.filter(entry => valid(entry, projectId)).map(entry => ({ ...entry, detail: typeof entry.detail === 'string' ? entry.detail : '' })) : [];
@@ -69,8 +71,8 @@ function store(projectId: string, entries: PendingSubmission[]) {
   const kept = entries.slice(-MAX_PENDING);
   memory.set(projectId, kept);
   try {
-    if (kept.length) localStorage.setItem(STORAGE_PREFIX + projectId, JSON.stringify(kept));
-    else localStorage.removeItem(STORAGE_PREFIX + projectId);
+    if (kept.length) workspaceStorage.setItem(STORAGE_PREFIX + projectId, JSON.stringify(kept));
+    else workspaceStorage.removeItem(STORAGE_PREFIX + projectId);
   } catch { /* storage unavailable: keys survive only while this page stays open */ }
   window.dispatchEvent(new Event(CHANGE_EVENT));
 }

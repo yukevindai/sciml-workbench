@@ -1,6 +1,6 @@
 'use client';
 import { Select } from '../components/select';
-import Link from 'next/link';
+import Link from '../components/workspace-link';
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { Bot, Copy, Plus, Users, X } from 'lucide-react';
 import type { Workbench } from '../lib/context';

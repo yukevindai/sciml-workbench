@@ -1,4 +1,5 @@
 'use client';
+import Link from '../components/workspace-link';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { api } from '../lib/api';
@@ -80,7 +81,7 @@ export function PdfAttachments({ wb }: { wb: Workbench }) {
           <h3>{material.filename}</h3>
           <p className="field-hint">Original preserved · {material.id}</p>
           <div className="research-actions">
-            <a className="button button--secondary" href={`/api/projects/${wb.projectId}/research-materials/${material.id}/download`}>Download original PDF</a>
+            <Link className="button button--secondary" href={`/api/projects/${wb.projectId}/research-materials/${material.id}/download`}>Download original PDF</Link>
             <button type="button" className="button" disabled={wb.busy || Boolean(ingested[material.id])} onClick={() => void wb.act(async () => {
               let key = ingestKeys.current.get(material.id);
               if (!key) { key = crypto.randomUUID(); ingestKeys.current.set(material.id, key); }

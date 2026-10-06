@@ -35,8 +35,8 @@ export function ProductPreview() {
             alt={view.id === 'ask' ? 'Actual Ask interface: project selector, lab-group sidebar, agent assignment and question composer.' : view.id === 'workflows' ? 'Actual workflow designer: Evidence to insight template, canvas, step inspector and workflow controls.' : 'Actual stress-test interface: specialist or independent council selection, claim, supporting evidence and review rubric.'} />
         </picture>)}
       </div>
-      <div className="preview-caption"><p>{view.description}</p><Link href={`/${view.id}`} className="text-link">Open workspace <ArrowUpRight size={16} aria-hidden="true" /></Link></div>
+      <div className="preview-caption"><p>{view.description}</p><Link href={`/demo/${view.id}`} className="text-link">Try this in the demo <ArrowUpRight size={16} aria-hidden="true" /></Link></div>
     </div>
-    <p className="preview-note">Actual workspace screenshots with example data. Sign in to use the controls and in-app support.</p>
+    <p className="preview-note">Actual workspace screenshots with example data. Explore the interactive demo without signing in; responses are scripted.</p>
   </div>;
 }

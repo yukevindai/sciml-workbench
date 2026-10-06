@@ -31,6 +31,7 @@ export default async function SignIn({ searchParams }: { searchParams: Promise<R
             <div className="field"><label className="field-label" htmlFor="password">Password</label><input className="input" id="password" name="password" type="password" autoComplete="current-password" required aria-describedby={error ? 'sign-in-error' : undefined} aria-invalid={query.error === 'invalid' || undefined} /></div>
             <button type="submit" className="button button--lg button--block">Sign in<ArrowRight size={16} aria-hidden="true" /></button>
           </form>
+          <p className="field-hint"><Link href="/demo" className="text-link">Try the interactive demo without signing in</Link></p>
           <p className="field-hint">Don’t have a login? Ask the person who set up this workspace. <Link href="/docs/getting-started" className="text-link">Read the getting started guide</Link></p>
         </div>
       </section>

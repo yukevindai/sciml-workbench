@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import Link from 'next/link';
+import Link from './workspace-link';
 import type { Workbench } from '../lib/context';
 import type { JobDetail } from '../lib/generated/http';
 import type { FailureArtifact } from '../lib/types';

@@ -4,6 +4,10 @@ import { Reveal } from '../components/reveal';
 
 export const metadata = { title: 'Changelog · SciML Workbench', description: 'Product improvements, development history, and release information for SciML Workbench.' };
 const updates = [
+  { id: '0.2.1', version: '0.2.1', date: '2026-10-05', title: 'Try your lab before signing in.', groups: [
+    { label: 'New', items: ['A public interactive demo using the real workspace screens, synthetic data and scripted responses. No account or model API calls required.', 'Explore sample results, edit agents and tools, design workflows and run a simulated scientific council. Reset the demo at any time.'] },
+    { label: 'Improved', items: ['Visible elapsed time and recorded activity for research, support, workflows and stress tests.', 'Faster feature loading, a smaller support request path, and public previews captured from the real product.'] },
+  ], commit: null },
   { id: '0.2.0', version: '0.2.0', date: '2026-10-04', title: 'Build your lab. Challenge your research.', groups: [
     { label: 'New', items: ['Custom agents, teams, and reusable research tools, with built-in originals preserved when customized.', 'A visual workflow designer with templates, agent assignments, parallel paths, and recurring research.', 'Curated specialist and independent council stress tests for ideas, papers, and scientific results.', 'Product Support inside the signed-in workspace, with AI answers and searchable guidance.'] },
     { label: 'Improved', items: ['Cancel a new workflow and drag empty canvas space to pan.', 'Consistent compact selectors and an agent-led workspace navigation.', 'Updated public product previews and guides. Motion follows your system preference automatically.'] },
