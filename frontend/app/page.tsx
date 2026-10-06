@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowRight, ArrowUpRight, FlaskConical, Layers3, ShieldCheck } from 'lucide-react';
+import { ArrowRight, ArrowUpRight, FlaskConical, Layers3, Play, ShieldCheck } from 'lucide-react';
 import { PublicNav } from './components/public-nav';
 import { PublicFooter } from './components/public-shell';
 import { PixelScene, type PixelVariant } from './components/pixel-scene';
@@ -44,7 +44,7 @@ export default function Landing() {
         <div className="hero-content">
           <h1 id="hero-title" className="hero-title">Your personal <br />AI lab group</h1>
           <p className="hero-lede">Build your team. Follow the evidence. Put your ideas to the test.</p>
-          <div className="hero-cta"><Link href="/ask" className="button button--lg">Get started <ArrowRight size={17} aria-hidden="true" /></Link><Link href="/demo" className="button button--lg button--secondary">Try the demo</Link></div>
+          <div className="hero-cta"><Link href="/demo" className="button button--lg"><Play size={16} fill="currentColor" aria-hidden="true" />Try the demo</Link><Link href="/ask" className="button button--lg button--secondary">Get started <ArrowRight size={17} aria-hidden="true" /></Link></div>
         </div>
       </section>
 
@@ -52,7 +52,7 @@ export default function Landing() {
 
       <section className="landing-section" id="how" aria-labelledby="how-title">
         <h2 id="how-title" className="section-title">Good research takes a team.<br /><span>Meet yours.</span></h2>
-        <p className="section-lede">From the first question to the final result, keep your files, analysis, and decisions in one place.</p>
+        <p className="section-lede">Explore agents, workflows, and scientific reviews in a ready-to-use demo. No account needed.</p>
         <Reveal className="preview-reveal"><ProductPreview /></Reveal>
       </section>
 

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { ArrowUpRight, GitBranch, MessageSquareText, ShieldCheck } from 'lucide-react';
+import { GitBranch, MessageSquareText, Play, ShieldCheck } from 'lucide-react';
 import Link from 'next/link';
 
 const VIEWS = [
@@ -28,14 +28,17 @@ export function ProductPreview() {
         }}><Icon size={17} aria-hidden="true" />{label}</button>)}
     </div>
     <div id="preview-panel" role="tabpanel" aria-labelledby={`preview-tab-${view.id}`} tabIndex={0}>
-      <div className="preview-image">
-        {['dark', 'light'].map(theme => <picture key={theme} className={`preview-${theme}`}>
-          <source media="(max-width: 600px)" srcSet={`/images/product-${view.id}-${theme}-mobile.jpg`} />
-          <img src={`/images/product-${view.id}-${theme}-desktop.jpg`} width={1440} height={1050} loading="lazy"
-            alt={view.id === 'ask' ? 'Actual Ask interface: project selector, lab-group sidebar, agent assignment and question composer.' : view.id === 'workflows' ? 'Actual workflow designer: Evidence to insight template, canvas, step inspector and workflow controls.' : 'Actual stress-test interface: specialist or independent council selection, claim, supporting evidence and review rubric.'} />
-        </picture>)}
+      <div className="preview-stage">
+        <Link href={`/demo/${view.id}`} className="button button--lg preview-launch" prefetch={false} aria-describedby="preview-access"><Play size={16} fill="currentColor" aria-hidden="true" />Open demo</Link>
+        <div className="preview-image">
+          {['dark', 'light'].map(theme => <picture key={theme} className={`preview-${theme}`}>
+            <source media="(max-width: 600px)" srcSet={`/images/product-${view.id}-${theme}-mobile.jpg`} />
+            <img src={`/images/product-${view.id}-${theme}-desktop.jpg`} width={1440} height={1050} loading="lazy"
+              alt={view.id === 'ask' ? 'Actual Ask interface: project selector, lab-group sidebar, agent assignment and question composer.' : view.id === 'workflows' ? 'Actual workflow designer: Evidence to insight template, canvas, step inspector and workflow controls.' : 'Actual stress-test interface: specialist or independent council selection, claim, supporting evidence and review rubric.'} />
+          </picture>)}
+        </div>
       </div>
-      <div className="preview-caption"><p>{view.description}</p><Link href={`/demo/${view.id}`} className="text-link">Try this in the demo <ArrowUpRight size={16} aria-hidden="true" /></Link></div>
+      <div className="preview-caption"><p>{view.description}</p><p className="preview-access" id="preview-access"><strong>No sign-in needed</strong><span>Sample data. No AI calls.</span></p></div>
     </div>
     <p className="preview-note">Actual workspace screenshots with example data. Explore the interactive demo without signing in; responses are scripted.</p>
   </div>;
