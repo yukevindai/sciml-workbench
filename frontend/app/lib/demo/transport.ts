@@ -1,6 +1,7 @@
 /** Browser-only simulation. No fetch, provider SDK, backend import, or network fallback. */
 import seed from './seed.json';
 import { ApiError } from '../api';
+import { SAMPLE_TOOL_DRAFT } from '../tool-draft';
 import { parseAgentMarket, parseArtifactPreviews, parseExecutionPolicy, parseMaterials, parseProjects, parseRunDetail, parseWorkflowCatalog, parseResearchWorkflow, parseAgentProfile, parseAgentTeam, parseResearchTool } from '../decode';
 import type { AgentSelection, RunDetail, WorkflowRun, WorkflowActivity, ResearchWorkflow } from '../generated/http';
 
@@ -23,6 +24,7 @@ function initial() {
     readyAt: {} as Record<string, number>,
     responses: {} as Record<string, string>,
     requests: {} as Record<string, unknown>,
+    draftRuns: new Set<string>(),
   };
 }
 let state: ReturnType<typeof initial> | undefined;
@@ -66,7 +68,7 @@ function advance() {
     const d=s.details[rid];
     if(d?.run.state==='running' && Date.now()>=deadline) {
       d.run.state='completed'; d.run.finished_at=now(); d.run.control_revision++;
-      d.run.result_artifact_ids=s.artifacts.filter(a=>a.project_id===d.run.project_id && ['audit','split','benchmark_preview','evidence','failure','report'].includes(a.kind)).map(a=>a.id).slice(0,20);
+      d.run.result_artifact_ids=s.draftRuns.has(rid)?[]:s.artifacts.filter(a=>a.project_id===d.run.project_id && ['audit','split','benchmark_preview','evidence','failure','report'].includes(a.kind)).map(a=>a.id).slice(0,20);
       d.answer=s.responses[rid]; d.plan?.steps.forEach(step=>{step.status='completed';});
       delete s.readyAt[rid];
     }
@@ -167,7 +169,9 @@ export async function demoRequest(path:string, init?:RequestInit):Promise<unknow
       if(!rid) {
         if(method==='GET')return Object.values(s.details).filter(d=>d.run.project_id===pid).map(d=>d.run).sort((a,b)=>b.created_at.localeCompare(a.created_at));
         if(method==='POST') {
-          const detail=newRun(pid,String(body.objective??'Sample research'),answer,body.mode==='review_plan');
+          const toolDraft=(body.agent_selection as AgentSelection|undefined)?.id==='tool-builder';
+          const detail=newRun(pid,String(body.objective??'Sample research'),toolDraft?JSON.stringify(SAMPLE_TOOL_DRAFT):answer,body.mode==='review_plan');
+          if(toolDraft) { detail.plan=null; detail.run.plan_revision=0; s.draftRuns.add(detail.run.id); s.readyAt[detail.run.id]=Date.now()+1500; }
           const inputs=body.inputs as {material_ids?:string[];artifact_ids?:string[]}|undefined;
           detail.run.inputs.material_ids=inputs?.material_ids??[]; detail.run.inputs.artifact_ids=inputs?.artifact_ids??[];
           return detail.run;

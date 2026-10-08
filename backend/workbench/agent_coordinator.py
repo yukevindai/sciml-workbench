@@ -97,6 +97,13 @@ Do not include markdown around the JSON. The summary is plain user-facing text.
 '''
 
 
+TOOL_BUILDER_INSTRUCTIONS = '''Design an unsaved research tool using the supplied tool-design reference.
+Do not plan research, delegate, execute tools, or inspect data. Return exactly one JSON object:
+{"kind":"answer","summary":"A JSON-encoded tool draft with name, description, instructions, capabilities"}.
+The summary must itself be valid JSON with those four fields, without markdown fences.
+'''
+
+
 class Coordinator:
     def __init__(self, db, store, settings, provider, *, model, bounds, prices=None, max_tokens=1024, specialist_model=None):
         self.db, self.store, self.settings = db, store, settings
@@ -104,7 +111,7 @@ class Coordinator:
         self.bounds, self.prices, self.max_tokens = bounds, prices, max_tokens
         self.specialist_model = specialist_model or model
         from .agent_finalization import execution_versions
-        self.versions = execution_versions(model, provider, INSTRUCTIONS + OPENING_INSTRUCTIONS + SUPPORT_INSTRUCTIONS)
+        self.versions = execution_versions(model, provider, INSTRUCTIONS + OPENING_INSTRUCTIONS + SUPPORT_INSTRUCTIONS + TOOL_BUILDER_INSTRUCTIONS)
 
     def __call__(self, snapshot, previous, runs):
         pid, rid = snapshot['run']['project_id'], snapshot['run']['id']
@@ -166,6 +173,14 @@ class Coordinator:
                 decision = Decision.model_validate_json(''.join(response.text))
                 if self.support_only(snapshot) and decision.kind != 'answer':
                     raise ValueError('Product support requires a direct answer')
+                if self.direct_profile(snapshot, 'tool-builder'):
+                    from .market_contracts import ResearchToolInput
+                    from .tool_registry import DESCRIPTORS
+                    if decision.kind != 'answer':
+                        raise ValueError('Tool builder requires a draft answer')
+                    draft = ResearchToolInput.model_validate_json(decision.summary)
+                    if not draft.instructions.strip() or not set(draft.capabilities) <= DESCRIPTORS.keys():
+                        raise ValueError('Tool draft requires currently integrated capabilities and instructions')
                 if decision.kind == 'answer' and not self.can_answer(snapshot):
                     raise ValueError('Direct answers require a new, unscoped general question')
                 if decision.kind == 'plan':
@@ -197,11 +212,15 @@ class Coordinator:
 
     @classmethod
     def support_only(cls, snapshot):
+        return cls.direct_profile(snapshot, 'support-guide')
+
+    @classmethod
+    def direct_profile(cls, snapshot, ident):
         roster = snapshot['run'].get('agent_roster') or {}
         selection = roster.get('selection') or {}
         return (cls.can_answer(snapshot) and selection.get('kind') == 'agent'
-            and selection.get('id') == 'support-guide' and selection.get('exclusive') is True
-            and [agent['id'] for agent in roster.get('agents', [])] == ['support-guide'])
+            and selection.get('id') == ident and selection.get('exclusive') is True
+            and [agent['id'] for agent in roster.get('agents', [])] == [ident])
 
     def context(self, snapshot):
         run = snapshot['run']
@@ -211,13 +230,14 @@ class Coordinator:
         scope = run['inputs']
         policy = AuthorityPolicy.model_validate(snapshot['policy'])
         message_class = 'operator' if policy.share_operator_messages else 'raw'
-        if self.support_only(snapshot):
+        if self.support_only(snapshot) or self.direct_profile(snapshot, 'tool-builder'):
             # The immutable roster already retains the product reference. Avoid
             # sending research-plan schemas and querying unrelated run history.
             # Provider budgets, egress, checkpoints and publication fences below
             # are unchanged; a model response is still durably accepted first.
             guide = run['agent_roster']['agents'][0]['instructions']
-            return [ContextPart(pid, 'schema', SUPPORT_INSTRUCTIONS),
+            instructions = SUPPORT_INSTRUCTIONS if self.support_only(snapshot) else TOOL_BUILDER_INSTRUCTIONS
+            return [ContextPart(pid, 'schema', instructions),
                 ContextPart(pid, message_class, guide),
                 ContextPart(pid, message_class, run['objective'])]
         instructions = INSTRUCTIONS if run['plan_revision'] and not snapshot['plan_dirty'] else OPENING_INSTRUCTIONS

@@ -59,6 +59,8 @@ These are captures of the real interface using synthetic example data. The publi
 
 Customize the built-in research agents or create your own with names, roles, skills, instructions and integrated tools. Build reusable teams, assign prompts to them, and save a default agent or team for each project. Exclusive assignments enforce the chosen roster and tool limits on the backend. See the [agent market guide](docs/agent-market.md) for behavior and the required database migration.
 
+In **Tools**, choose **Create with AI** to describe a reusable tool in plain language. Review and edit the generated instructions and suggested capabilities before saving. Generation shows elapsed progress, can be stopped, and uses your configured provider and project budget. **Create tool** retains the manual builder; the public demo provides a labeled sample without AI calls. See the [tool-building guide](docs/research-workflows.md#agents-and-reusable-tools).
+
 ## Research with less orchestration
 
 Scientific ML involves more than fitting a model: checking source data, choosing a defensible split, tracking evidence, understanding unsuccessful runs, and preserving enough context to reproduce a result.

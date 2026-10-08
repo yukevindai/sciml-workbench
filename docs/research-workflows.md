@@ -7,6 +7,19 @@ reduced-motion preference.
 
 ## Agents and reusable tools
 
+In **Tools**, choose **Create with AI** to describe a tool's purpose, inputs,
+output format and constraints. A selected project and configured agent provider
+are required. **Generate draft** starts a durable, budgeted request without
+research attachments or executable capabilities; progress includes elapsed time.
+**Stop generation** cancels it. You can reopen the builder to restore its activity,
+and an uncertain submission retries the same request key.
+
+Choose **Review and edit draft**, adjust the suggested instructions and integrated
+capabilities, then **Save tool**. Generating never saves or executes a tool.
+Unsupported capabilities are rejected; arbitrary code and new external services
+are not created. **Create tool** keeps the manual form available without AI.
+The public demo simulates this flow with a labeled prewritten example and no API calls.
+
 Customizing a built-in agent creates a new profile. The API rejects attempts to
 update or archive built-ins. Existing runs retain immutable profile and tool
 snapshots. Custom research tools combine named instructions with a subset of the
