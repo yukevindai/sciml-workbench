@@ -18,7 +18,7 @@ const CAPABILITIES = [
   { title: 'Build the lab group you need.', body: 'Start with integrated agents, customize a copy, or create your own specialists. Give small teams a shared task and a lead.', link: '/demo/agent-market', label: 'Meet your agents' },
   { title: 'Connect a research process.', body: 'Turn a good investigation into a repeatable workflow. Connect agents, reusable tools, review steps and decisions on a visual canvas.', link: '/demo/workflows', label: 'Design a workflow' },
   { title: 'Challenge what you believe.', body: 'Stress-test an idea, paper or result with a curated specialist or council. Inspect the evidence, uncertainty and suggested tests.', link: '/demo/stress-test', label: 'Explore stress testing' },
-  { title: 'Make your methods reusable.', body: 'Create named research tools with clear instructions and permitted capabilities. Give them to your agents or use them in a workflow.', link: '/demo/tools', label: 'Explore research tools' },
+  { title: 'Make your methods reusable.', body: 'Describe a research tool in your own words, review its AI-drafted instructions and capabilities, then give it to your agents or use it in a workflow.', link: '/demo/tools', label: 'Explore research tools' },
 ];
 
 const FAQ = [

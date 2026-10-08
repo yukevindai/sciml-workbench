@@ -1,11 +1,12 @@
 'use client';
 import Link from '../components/workspace-link';
 import { useEffect, useState, type FormEvent } from 'react';
-import { Plus, Wrench, Copy } from 'lucide-react';
+import { Plus, Wrench, Copy, WandSparkles } from 'lucide-react';
 import type { Workbench } from '../lib/context';
 import type { AgentMarket, ResearchTool } from '../lib/generated/http';
 import { loadMarket, saveTool, archiveTool } from '../lib/agent-market';
 import { Alert, Panel, Badge } from '../components/ui';
+import { ToolPromptBuilder } from '../components/tool-prompt-builder';
 
 type Draft = Pick<ResearchTool, 'name' | 'description' | 'instructions' | 'capabilities'>;
 const blank = (): Draft => ({ name: '', description: '', instructions: '', capabilities: [] });
@@ -18,6 +19,7 @@ export function ToolsView({ wb }: { wb: Workbench }) {
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
   const [busy, setBusy] = useState(false);
+  const [prompting, setPrompting] = useState(false);
   const reload = async () => setMarket(await loadMarket());
   useEffect(() => { const c = new AbortController(); if (!wb.preview) loadMarket(c.signal).then(setMarket).catch(e => { if (!c.signal.aborted) setError(e.message); }); return () => c.abort(); }, [wb.preview]);
   const open = (tool?: ResearchTool, copy = false) => {
@@ -30,10 +32,11 @@ export function ToolsView({ wb }: { wb: Workbench }) {
   };
   const matches = (name: string, description: string) => `${name} ${description}`.toLowerCase().includes(search.toLowerCase());
   return <div className="stack market">
-    <div className="market-intro"><div><p className="page-eyebrow">A toolkit for your research group</p><h2>Teach your agents how you work.</h2><p>Create reusable research tools with your instructions and the capabilities they need.</p></div><button className="button button--primary" disabled={!market || busy} onClick={() => open()}><Plus size={16} aria-hidden="true" />Create tool</button></div>
+    <div className="market-intro"><div><p className="page-eyebrow">A toolkit for your research group</p><h2>Teach your agents how you work.</h2><p>Describe a tool in your own words, or build it yourself with instructions and integrated capabilities.</p></div><div className="market-actions"><button className="button button--primary" disabled={!market || busy || prompting || !!draft || wb.preview} onClick={() => { setPrompting(true); setError(''); setNotice(''); }}><WandSparkles size={16} aria-hidden="true" />Create with AI</button><button className="button button--secondary" disabled={!market || busy || prompting || !!draft} onClick={() => open()}><Plus size={16} aria-hidden="true" />Create tool</button></div></div>
     {error && <Alert variant="error" role="alert">{error}{!market && <button className="text-link" onClick={() => void reload().catch(e => setError(e.message))}>Retry</button>}</Alert>}
     {notice && <Alert variant="success" role="status">{notice}</Alert>}
     {!market && !error && <p role="status">Loading tools…</p>}
+    {prompting && market && <ToolPromptBuilder key={wb.projectId} projectId={wb.projectId} capabilities={market.tools} onClose={() => setPrompting(false)} onDraft={value => { setEditing(null); setDraft(value); setPrompting(false); setNotice('Draft ready. Review the instructions and capabilities, then save your tool.'); }} />}
     {draft && market && <Panel title={editing ? 'Edit research tool' : 'Create research tool'}><form onSubmit={save}><fieldset disabled={busy} className="market-fieldset stack">
       <label>Name<input className="input" autoFocus required maxLength={80} value={draft.name} onChange={e => setDraft({ ...draft, name: e.target.value })} placeholder="e.g. Battery paper comparison" /></label>
       <label>Description<input className="input" maxLength={500} value={draft.description} onChange={e => setDraft({ ...draft, description: e.target.value })} placeholder="When should an agent use this tool?" /></label>

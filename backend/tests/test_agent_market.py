@@ -1,5 +1,6 @@
 """Catalog persistence, request assignment and hard runtime ceilings (no paid IO)."""
 from dataclasses import replace
+import json
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import select
@@ -36,7 +37,7 @@ def test_catalog_crud_defaults_and_revision_conflict(registry):
         assert client.get('/api/v1/agent-market').status_code == 401
         client.headers['Authorization'] = 'Bearer ' + 'a' * 48
         initial = client.get('/api/v1/agent-market').json()
-        assert len(initial['agents']) == 10 and initial['teams'] == []
+        assert len(initial['agents']) == 11 and initial['teams'] == []
         body = researcher().model_dump()
         created = client.post('/api/v1/agent-market/agents', json=body)
         assert created.status_code == 201, created.text
@@ -48,7 +49,7 @@ def test_catalog_crud_defaults_and_revision_conflict(registry):
         assert client.post('/api/v1/agent-market/agents/default-pi', json={**body, 'expected_revision': 1}).status_code == 409
         assert client.post('/api/v1/agent-market/agents', json={**body, 'tools': ['search_evidence']}).status_code == 422
         assert client.post(path + '/archive', json={'expected_revision': 2}).status_code == 200
-        assert len(client.get('/api/v1/agent-market').json()['agents']) == 10
+        assert len(client.get('/api/v1/agent-market').json()['agents']) == 11
 
 
 def test_team_and_project_assignment_persist_and_override(registry):
@@ -140,7 +141,7 @@ def test_support_has_no_tools_and_curated_profiles_cannot_be_overwritten(registr
     assert [a['id'] for a in run['agent_roster']['agents']] == ['support-guide']
     with tool.db.session.begin() as s:
         assert not tool.runs.effective_policy(s, s.get(RunRow, run['id'])).allowed_tools
-        for ident in ['support-guide', 'stress-general', 'stress-methods', 'stress-statistics', 'stress-evidence']:
+        for ident in ['support-guide', 'tool-builder', 'stress-general', 'stress-methods', 'stress-statistics', 'stress-evidence']:
             with pytest.raises(DomainError):
                 market.save_entry(s, 'agent', AgentUpdate(**researcher().model_dump(), expected_revision=1), ident)
 
@@ -165,3 +166,30 @@ def test_support_uses_compact_context_with_durable_single_call_answer(registry):
         response = client.get(f"/api/v1/projects/p/agent-runs/{run['id']}", headers={'Authorization':'Bearer ' + 'a' * 48})
         assert response.status_code == 200 and response.json()['answer'] == answer
         assert response.json()['run']['usage']['model_requests'] == 1
+
+
+@pytest.mark.parametrize('capabilities,expected', [(['inspect_project'], 'completed'), (['search_evidence'], 'waiting_for_input'), (['shell_exec'], 'waiting_for_input'), ([], 'waiting_for_input')])
+def test_tool_builder_validates_draft_without_execution_or_saving(registry, capabilities, expected):
+    from test_agent_coordinator import setup, advance
+    from workbench.market_db import MarketEntryRow
+    tool, ctx, data, foreign = registry
+    run = start(tool, AgentSelection(kind='agent', id='tool-builder', exclusive=True))
+    draft = {'name': 'Paper comparison', 'description': 'Compare supplied evidence.',
+             'instructions': 'Inspect the project and report missing inputs.', 'capabilities': capabilities}
+    answer = json.dumps(draft)
+    coordinator, scheduler, saver, provider = setup((tool, replace(ctx, run_id=run['id']), data, foreign),
+        [{'kind': 'answer', 'summary': answer}])
+    with tool.db.session.begin() as s:
+        tool.runs.finish(s, 'p', ctx.run_id, 1, state='completed', artifact_ids=[])
+        assert not tool.runs.effective_policy(s, s.get(RunRow, run['id'])).allowed_tools
+    first = advance(scheduler, saver, coordinator)
+    assert (advance(scheduler, saver, coordinator) if first == 'queued' else first) == expected
+    assert len(provider.contexts) == 1 and provider.requests[0]['tools'] == []
+    sent = '\n'.join(part.text for part in provider.contexts[0])
+    assert 'Integrated capabilities:' in sent and 'OpeningDecision' not in sent
+    with tool.db.session() as s:
+        assert s.scalar(select(MarketEntryRow)) is None
+    with TestClient(create_app(tool.settings)) as client:
+        response = client.get(f"/api/v1/projects/p/agent-runs/{run['id']}", headers={'Authorization':'Bearer ' + 'a' * 48})
+        assert response.status_code == 200
+        assert response.json()['answer'] == (answer if expected == 'completed' else None)
