@@ -44,7 +44,7 @@ def create_app(settings=None):
     settings = settings or load_settings()
     settings.validate_secrets()
     app = FastAPI(
-        title="SciML Workbench",
+        title="Colattice",
         version="1.0.0",
         docs_url=None,
         redoc_url=None,

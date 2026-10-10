@@ -10,7 +10,7 @@
 
 Ask a research question, assemble your agents, design a visual workflow, or challenge an idea with a scientific review council. Keep the data, evidence, results, and reasoning behind each investigation together.
 
-[![CI](https://github.com/yukevindai/sciml-workbench/actions/workflows/ci.yml/badge.svg)](https://github.com/yukevindai/sciml-workbench/actions/workflows/ci.yml)
+[![CI](https://github.com/yukevindai/colattice/actions/workflows/ci.yml/badge.svg)](https://github.com/yukevindai/colattice/actions/workflows/ci.yml)
 [![Python](https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white)](backend/pyproject.toml)
 [![Next.js](https://img.shields.io/badge/Next.js-TypeScript-111827?logo=nextdotjs&logoColor=white)](frontend/package.json)
 [![FastAPI](https://img.shields.io/badge/FastAPI-Orchestration-009688?logo=fastapi&logoColor=white)](docs/architecture.md)
@@ -27,7 +27,7 @@ Ask a research question, assemble your agents, design a visual workflow, or chal
 
 **Try without an account:** choose **Try the demo** on the landing page, or open `/demo` on your deployment. Explore the real workspace with synthetic inputs, scripted Ask/council responses, editable agents and workflows, and linked sample results. No DeepSeek or other model calls are made. Demo edits reset on refresh; uploads, real schedules and research downloads require the live workspace.
 
-**Product version: 0.2.2** introduces the Colattice name, modular C logo, and shared forest-green and lime identity across the public site and workspace. Version 0.2.1 added the public interactive demo, following the research studio and October 5 responsiveness and progress updates ([PR #19](https://github.com/yukevindai/sciml-workbench/pull/19)). The [product changelog](frontend/app/changelog/page.tsx) tracks UI milestones; the frontend/backend package version and release compatibility inventory remain **0.1.0**. These are separate from live deployment and release acceptance.
+**Product version: 0.2.2** introduces the Colattice name, modular C logo, and shared forest-green and lime identity across the public site and workspace. Version 0.2.1 added the public interactive demo, following the research studio and October 5 responsiveness and progress updates ([PR #19](https://github.com/yukevindai/colattice/pull/19)). The [product changelog](frontend/app/changelog/page.tsx) tracks UI milestones; the frontend/backend package version and release compatibility inventory remain **0.1.0**. These are separate from live deployment and release acceptance.
 
 | Update | What changed |
 |---|---|
@@ -44,16 +44,25 @@ These changes reduce avoidable waits and make ongoing work visible; model respon
 
 ### Inside the workspace
 
-These are captures of the real interface using synthetic example data. The public preview is illustrative; research runs require signing in and configuring the runtime.
+These are captures of the real Colattice interface using synthetic example data. Images match your light or dark theme; the landing page also includes mobile captures. The public preview is illustrative; research runs require signing in and configuring the runtime.
 
-![Ask with research activity and elapsed time](frontend/public/images/product-ask-dark-desktop.jpg)
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="frontend/public/images/product-ask-dark-desktop.jpg" />
+  <img src="frontend/public/images/product-ask-light-desktop.jpg" alt="Colattice Ask: agent selection and research question composer" />
+</picture>
 
 <details>
 <summary><strong>Visual workflows and scientific stress tests</strong></summary>
 
-![Visual workflow designer](frontend/public/images/product-workflows-dark-desktop.jpg)
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="frontend/public/images/product-workflows-dark-desktop.jpg" />
+  <img src="frontend/public/images/product-workflows-light-desktop.jpg" alt="Colattice visual workflow designer" />
+</picture>
 
-![Scientific stress-test setup](frontend/public/images/product-stress-test-dark-desktop.jpg)
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="frontend/public/images/product-stress-test-dark-desktop.jpg" />
+  <img src="frontend/public/images/product-stress-test-light-desktop.jpg" alt="Colattice scientific stress-test council setup" />
+</picture>
 
 </details>
 
@@ -153,8 +162,8 @@ Use Docker Engine with Compose v2 and network access to GitHub, PyPI, and npm du
 From a Linux/WSL shell:
 
 ```bash
-git clone https://github.com/yukevindai/sciml-workbench.git
-cd sciml-workbench
+git clone https://github.com/yukevindai/colattice.git
+cd colattice
 cp .env.example .env
 ```
 
@@ -358,7 +367,7 @@ The default backend tests use temporary SQLite metadata; PostgreSQL locking and 
 
 ## Release status
 
-The latest product milestone is **0.2.1**, adding the public demo to the research studio, responsiveness, progress, and preview updates. Package metadata and the [release handoff](docs/release-handoff.md) still identify the **0.1.0 candidate**. The handoff separates implementation and local evidence from acceptance of a live model or hosted deployment; the product changelog does not certify those gates.
+The latest product milestone is **0.2.2**, introducing the Colattice identity and refreshed product previews alongside the public demo and research studio. Package metadata and the [release handoff](docs/release-handoff.md) still identify the **0.1.0 candidate**. The handoff separates implementation and local evidence from acceptance of a live model or hosted deployment; the product changelog does not certify those gates.
 
 | Area | Recorded status |
 |---|---|
@@ -367,7 +376,7 @@ The latest product milestone is **0.2.1**, adding the public demo to the researc
 | Agent coordinator, specialists, controls, and reports | Implemented; exercised with deterministic provider/transport fixtures and real scientific integrations. |
 | Live account/model walkthrough and quality evaluation | Pending in the handoff; requires configured models, reviewed bounds/policies, and recorded live outcomes. |
 | Hosted access, redeploy, and production restore | Remain open acceptance gates in the handoff. |
-| Full release-revision CI | Must be verified at the accepted revision; consult the live workflow badge and [Actions](https://github.com/yukevindai/sciml-workbench/actions). |
+| Full release-revision CI | Must be verified at the accepted revision; consult the live workflow badge and [Actions](https://github.com/yukevindai/colattice/actions). |
 
 Historical test counts remain in their original evidence records. A passed test at an earlier revision, a scripted coordinator demo, or a successful container build does not establish current live-agent or hosted acceptance.
 
@@ -387,7 +396,7 @@ Historical test counts remain in their original evidence records. A passed test 
 | Operate and troubleshoot | [Operations](docs/operations.md) · [Diagnostics](docs/diagnostics.md) |
 | Preserve and restore a workspace | [Backup and restore](docs/backup-restore.md) |
 | Verify and replay a report | [Report reproduction](docs/report-replay.md) |
-| Review the design and delivery scope | [Blueprint: five workstreams, 64 tickets](sciml-workbench-mvp-design.md) |
+| Review the design and delivery scope | [Blueprint: five workstreams, 64 tickets](colattice-mvp-design.md) |
 
 <details>
 <summary><strong>Engineering reference: contracts, integrations, and agent internals</strong></summary>

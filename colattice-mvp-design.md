@@ -1,4 +1,4 @@
-# SciML Workbench
+# Colattice
 ## Agent operated research workspace design and implementation blueprint
 
 Revised September 19, 2026. Draft 0.3.1. Supersedes the manual-first Draft 0.2; reconciles Draft 0.3 with the current checkout and implementation handoffs.
@@ -1962,21 +1962,21 @@ A missing capability is a documented implementation constraint, not permission t
 
 This blueprint's existing-state claims use the following files at the inspected workbench commit. Proposed guarantees, additional routes, claim fencing, operation receipts, and report snapshot behavior are requirements to implement/verify, not claims that a fresh audit found them complete.
 
-- [Repository overview and setup](https://github.com/yukevindai/sciml-workbench/blob/d5c1520d03448fb917a10790b4c116f266014c06/README.md)
-- [Architecture](https://github.com/yukevindai/sciml-workbench/blob/d5c1520d03448fb917a10790b4c116f266014c06/docs/architecture.md)
-- [Inspected integration boundaries and dependency policy](https://github.com/yukevindai/sciml-workbench/blob/d5c1520d03448fb917a10790b4c116f266014c06/docs/integrations.md)
-- [Artifact and request models](https://github.com/yukevindai/sciml-workbench/blob/d5c1520d03448fb917a10790b4c116f266014c06/backend/workbench/contracts.py)
-- [Existing API routes](https://github.com/yukevindai/sciml-workbench/blob/d5c1520d03448fb917a10790b4c116f266014c06/backend/workbench/api.py)
-- [Relational model](https://github.com/yukevindai/sciml-workbench/blob/d5c1520d03448fb917a10790b4c116f266014c06/backend/workbench/db.py)
-- [Worker claim and subprocess behavior](https://github.com/yukevindai/sciml-workbench/blob/d5c1520d03448fb917a10790b4c116f266014c06/backend/workbench/worker.py)
-- [Artifact execution and existing report assembly](https://github.com/yukevindai/sciml-workbench/blob/d5c1520d03448fb917a10790b4c116f266014c06/backend/workbench/services.py)
-- [Public scientific adapters](https://github.com/yukevindai/sciml-workbench/blob/d5c1520d03448fb917a10790b4c116f266014c06/backend/workbench/adapters.py)
-- [Configuration and exact pins](https://github.com/yukevindai/sciml-workbench/blob/d5c1520d03448fb917a10790b4c116f266014c06/backend/workbench/config.py)
-- [Frontend view inventory and workflow state](https://github.com/yukevindai/sciml-workbench/blob/d5c1520d03448fb917a10790b4c116f266014c06/frontend/app/lib/pipeline.ts)
-- [Existing frontend contract types](https://github.com/yukevindai/sciml-workbench/blob/d5c1520d03448fb917a10790b4c116f266014c06/frontend/app/lib/types.ts)
-- [Private Render setup](https://github.com/yukevindai/sciml-workbench/blob/d5c1520d03448fb917a10790b4c116f266014c06/docs/render-setup.md)
-- [Operations and recovery](https://github.com/yukevindai/sciml-workbench/blob/d5c1520d03448fb917a10790b4c116f266014c06/docs/operations.md)
-- [Continuous integration workflow](https://github.com/yukevindai/sciml-workbench/blob/d5c1520d03448fb917a10790b4c116f266014c06/.github/workflows/ci.yml)
+- [Repository overview and setup](https://github.com/yukevindai/colattice/blob/d5c1520d03448fb917a10790b4c116f266014c06/README.md)
+- [Architecture](https://github.com/yukevindai/colattice/blob/d5c1520d03448fb917a10790b4c116f266014c06/docs/architecture.md)
+- [Inspected integration boundaries and dependency policy](https://github.com/yukevindai/colattice/blob/d5c1520d03448fb917a10790b4c116f266014c06/docs/integrations.md)
+- [Artifact and request models](https://github.com/yukevindai/colattice/blob/d5c1520d03448fb917a10790b4c116f266014c06/backend/workbench/contracts.py)
+- [Existing API routes](https://github.com/yukevindai/colattice/blob/d5c1520d03448fb917a10790b4c116f266014c06/backend/workbench/api.py)
+- [Relational model](https://github.com/yukevindai/colattice/blob/d5c1520d03448fb917a10790b4c116f266014c06/backend/workbench/db.py)
+- [Worker claim and subprocess behavior](https://github.com/yukevindai/colattice/blob/d5c1520d03448fb917a10790b4c116f266014c06/backend/workbench/worker.py)
+- [Artifact execution and existing report assembly](https://github.com/yukevindai/colattice/blob/d5c1520d03448fb917a10790b4c116f266014c06/backend/workbench/services.py)
+- [Public scientific adapters](https://github.com/yukevindai/colattice/blob/d5c1520d03448fb917a10790b4c116f266014c06/backend/workbench/adapters.py)
+- [Configuration and exact pins](https://github.com/yukevindai/colattice/blob/d5c1520d03448fb917a10790b4c116f266014c06/backend/workbench/config.py)
+- [Frontend view inventory and workflow state](https://github.com/yukevindai/colattice/blob/d5c1520d03448fb917a10790b4c116f266014c06/frontend/app/lib/pipeline.ts)
+- [Existing frontend contract types](https://github.com/yukevindai/colattice/blob/d5c1520d03448fb917a10790b4c116f266014c06/frontend/app/lib/types.ts)
+- [Private Render setup](https://github.com/yukevindai/colattice/blob/d5c1520d03448fb917a10790b4c116f266014c06/docs/render-setup.md)
+- [Operations and recovery](https://github.com/yukevindai/colattice/blob/d5c1520d03448fb917a10790b4c116f266014c06/docs/operations.md)
+- [Continuous integration workflow](https://github.com/yukevindai/colattice/blob/d5c1520d03448fb917a10790b4c116f266014c06/.github/workflows/ci.yml)
 
 Pinned upstream source roots:
 

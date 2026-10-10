@@ -1,7 +1,7 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "SciML Workbench",
+    "title": "Colattice",
     "version": "1.0.0"
   },
   "paths": {

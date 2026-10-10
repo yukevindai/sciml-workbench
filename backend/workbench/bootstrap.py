@@ -27,7 +27,7 @@ def main(settings=None):
                 "create-user",
                 s.efm_username,
                 "--display-name",
-                "SciML Workbench",
+                "Colattice",
                 "--password-env",
                 "WB_PROVISION_PASSWORD",
             ],

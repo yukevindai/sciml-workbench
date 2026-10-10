@@ -152,7 +152,7 @@ def report_bundle(snapshot, store):
             model.model_json_schema()
         )
     files["README.md"] = (
-        "# Reproducible SciML Workbench report\n\n"
+        "# Reproducible Colattice report\n\n"
         "All results are local task results; no official leaderboard admission is implied.\n"
         "Dataset declarations may be unresolved; supplied declarations are assertions. Audit findings do not certify validity.\n"
         "Failed runs are retained; software failure is not an experimental outcome.\n\n"

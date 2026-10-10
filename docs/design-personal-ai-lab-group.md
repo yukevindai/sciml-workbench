@@ -4,7 +4,7 @@ The follow-up [living pixel lab update](design-living-pixel-lab.md) adds the
 full-height hero, persistent motion controls, and public content pages. The
 measurements below describe the original redesign revision.
 
-The landing page takes composition cues from the supplied Amoeba reference: restrained monochrome surfaces, prominent typography, dotted scientific artwork, generous spacing, and actual product previews. All artwork and copy are specific to SciML Workbench.
+The landing page takes composition cues from the supplied Amoeba reference: warm ivory and forest-green surfaces with lime accents, prominent typography, dotted scientific artwork, generous spacing, and actual product previews. All artwork and copy are specific to Colattice.
 
 ## Shared system
 
@@ -34,3 +34,12 @@ Automated axe checks found no WCAG A/AA violations on the landing and sign-in pa
 Local Lighthouse mobile run: performance 97, accessibility 100, best practices 100, SEO 100; CLS 0 and total blocking time 20 ms. These are local measurements, not deployed Vercel performance guarantees.
 
 The production checks found and corrected two integration issues: bundled public images needed explicit access through the login gate, and the theme boot string needed a server-safe module to run on direct dynamic page loads. Research files and API paths retain their authentication protection.
+
+## Colattice naming and preview maintenance
+
+The product is **Colattice**, and the repository is `yukevindai/colattice`.
+Public links, API documentation, support instructions, and newly generated report headings use that name. Existing Python distribution names, `WB_*` settings, schema URIs, connector IDs, browser storage keys, and Failure Memory lab identifiers retain their legacy values for compatibility with saved data and deployed installations. A repository rename does not rename an existing Vercel project or its deployment domain.
+
+The landing page and README share the 12 `frontend/public/images/product-*.jpg` files: Ask, workflows, and stress tests, in light/dark themes and desktop/mobile layouts. Capture them from a local production build with `npm run preview:capture` in `frontend`, setting `E2E_BASE_URL`, `WB_LOGIN_USERNAME`, and `WB_LOGIN_PASSWORD` to the local test server. The capture script intercepts API reads with synthetic fixtures and refuses mutations; it never calls an AI provider.
+
+The **Colattice product previews** GitHub Actions workflow builds the frontend, captures the images, runs public-page/demo browser checks, and uploads the images and browser evidence for review. Review and commit the refreshed images when the UI changes; the workflow has read-only repository permissions and does not commit automatically.

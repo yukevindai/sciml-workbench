@@ -1,0 +1,56 @@
+name: Colattice product previews
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'frontend/app/**'
+      - 'frontend/scripts/capture-product-preview.mjs'
+      - 'frontend/package*.json'
+      - '.github/workflows/product-previews.yml'
+permissions:
+  contents: read
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: frontend
+    env:
+      WB_REQUIRE_LOGIN: '1'
+      WB_LOGIN_USERNAME: preview-user
+      WB_LOGIN_PASSWORD: preview-only-local-password
+      WB_PUBLIC_ORIGIN: http://localhost:3100
+      E2E_BASE_URL: http://localhost:3100
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm run build
+      - name: Start local production frontend
+        run: |
+          npm run start -- --port 3100 > /tmp/colattice-preview.log 2>&1 &
+          for i in $(seq 1 60); do
+            if curl -fsS http://localhost:3100/healthz >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/colattice-preview.log
+          exit 1
+      - name: Capture real product screens with synthetic data
+        run: npm run preview:capture
+      - name: Check public pages and interactive demo
+        run: npx playwright test tests/public-content.spec.ts tests/public-demo.spec.ts
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: colattice-product-previews
+          path: |
+            frontend/public/images/product-*.jpg
+            frontend/test-results
+            /tmp/colattice-preview.log
+          retention-days: 7

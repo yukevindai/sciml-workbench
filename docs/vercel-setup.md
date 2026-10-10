@@ -49,7 +49,7 @@ No credentials use `NEXT_PUBLIC_`. Only the API bearer token and web login crede
 
 ## 2. Create the backend project
 
-Import `yukevindai/sciml-workbench` as, for example, `sciml-workbench-api`.
+Import `yukevindai/colattice` as, for example, `colattice-api`.
 
 | Setting | Value |
 |---|---|
@@ -81,7 +81,7 @@ The API is internet reachable and enforces bearer authentication on research rou
 
 ## 3. Create the frontend project
 
-Import the same repository again as, for example, `sciml-workbench`.
+Import the same repository again as, for example, `colattice`.
 
 | Setting | Value |
 |---|---|
