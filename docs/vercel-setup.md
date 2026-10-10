@@ -161,3 +161,13 @@ Checked against Vercel documentation on 2026-09-27:
 - [Cron scheduling by plan](https://vercel.com/docs/cron-jobs/usage-and-pricing)
 - [Cron authentication and management](https://vercel.com/docs/cron-jobs/manage-cron-jobs)
 - [Streaming Python functions](https://vercel.com/docs/functions/streaming-functions)
+
+### Diagnosing an origin rejection after updating the domain
+
+The login and authenticated API rejection response includes `expectedOrigin` (the active deployment's normalized configuration), `receivedOrigin` (the browser's origin, not its full URL), a `reason`, and the deployment environment/source revision. No login fields, cookies, authorization headers, or query strings are included. The response is not cached.
+
+- `origin_mismatch`: compare the two origins. A different `expectedOrigin` means the request reached a deployment with different configuration, even if the dashboard value has since been edited. Check the frontend project, Production scope, assigned domain, and deployed revision. Also check for `www`/apex, HTTP/HTTPS, or preview-domain redirects.
+- `missing_origin`: no Origin header reached the handler. Inspect the browser Network entry for `POST /auth/session` and any intermediary that removes request headers.
+- `opaque_origin`: the browser sent the literal `Origin: null`. Sandboxed frames, cross-origin redirect chains, or a restrictive Referrer-Policy on a native form POST can cause this. Open the canonical HTTPS sign-in page directly, outside an embedded preview, and inspect that request's redirect chain and headers.
+
+If the response only contains the old one-line error without `code: ORIGIN_REJECTED`, this diagnostic change is not running on that deployment yet. Do not disable the origin check or accept `null` as a workaround.
