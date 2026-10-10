@@ -2,8 +2,11 @@ import { PublicShell } from '../components/public-shell';
 import { PixelScene } from '../components/pixel-scene';
 import { Reveal } from '../components/reveal';
 
-export const metadata = { title: 'Changelog · SciML Workbench', description: 'Product improvements, development history, and release information for SciML Workbench.' };
+export const metadata = { title: 'Changelog · Colattice', description: 'Product improvements, development history, and release information for Colattice.' };
 const updates = [
+  { id: '0.2.2', version: '0.2.2', date: '2026-10-10', title: 'Meet Colattice.', groups: [
+    { label: 'Improved', items: ['SciML Workbench is now Colattice, your personal AI lab group by Feidy AI.', 'A modular C logo, matching browser and home-screen icons, and a forest-green, lime and ivory palette across the landing page, sign-in, demo and workspace.', 'Coordinated buttons, selected states, focus indicators and pixel artwork in light and dark themes.'] },
+  ], commit: null },
   { id: '0.2.1', version: '0.2.1', date: '2026-10-05', title: 'Try your lab before signing in.', groups: [
     { label: 'New', items: ['A public interactive demo using the real workspace screens, synthetic data and scripted responses. No account or model API calls required.', 'Explore sample results, edit agents and tools, design workflows and run a simulated scientific council. Reset the demo at any time.'] },
     { label: 'Improved', items: ['Visible elapsed time and recorded activity for research, support, workflows and stress tests.', 'Faster feature loading, a smaller support request path, and public previews captured from the real product.'] },

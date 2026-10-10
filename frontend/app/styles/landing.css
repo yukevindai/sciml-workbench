@@ -1,4 +1,4 @@
-/* Amoeba-inspired composition, original artwork and SciML's shared UI tokens.
+/* Amoeba-inspired composition, original artwork and Colattice's shared UI tokens.
    The same theme persists across marketing, authentication and the workspace. */
 .landing { background: var(--color-bg-canvas); }
 /* A stable wrapper keeps the hero in place while the header contracts. */
@@ -9,7 +9,7 @@
 
 .landing-brand { display: inline-flex; align-items: center; gap: 10px; flex-shrink: 0; font-size: 17px; font-weight: 600; letter-spacing: -.035em; }
 .landing-brand:hover { text-decoration: none; }
-.landing .brand-mark, .auth-page .brand-mark { background: transparent; color: var(--color-text-primary); border: 1px solid var(--color-border); }
+
 .landing-links { display: flex; align-items: center; gap: 28px; }
 .landing-links a, .landing-signin { color: var(--color-text-secondary); font-size: 14px; padding-block: 12px; transition: color 160ms; }
 .landing-links a:hover, .landing-signin:hover { color: var(--color-text-primary); text-decoration: none; }
@@ -158,7 +158,8 @@
   .auth-card { gap: 24px; max-width: 440px; }
 }
 @media (max-width: 390px) {
-  .landing-nav .brand-mark { display: none; }
+  .landing-actions { gap: 4px; }
+  .landing-nav .nav-start { display: none; }
   .hero-cta { flex-direction: column; align-items: center; }
   .hero-cta .button { min-width: 220px; }
 }
@@ -172,3 +173,12 @@
 :root[data-theme='light'] .preview-image .preview-light { display: block; }
 .preview-image img { aspect-ratio: 1440 / 1050; object-fit: contain; }
 @media(max-width:600px) { .preview-image img { aspect-ratio: 390 / 1150; } }
+
+/* The mark's lime tile is echoed at the main entry points. */
+.hero-title span { color: var(--color-accent-text); }
+.hero-cta .button:not(.button--secondary), .nav-start, .landing-cta > .button {
+  background: var(--brand-lime); color: var(--brand-forest);
+  border-color: color-mix(in srgb, var(--brand-forest) 55%, var(--brand-lime));
+}
+.hero-cta .button:not(.button--secondary):hover, .nav-start:hover, .landing-cta > .button:hover { background: var(--brand-lime-hover); }
+.preview-tabs button[aria-selected='true'] { background: var(--color-accent-bg); color: var(--color-accent-text); border-color: var(--color-accent-border); }

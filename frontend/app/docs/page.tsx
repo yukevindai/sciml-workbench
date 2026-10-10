@@ -5,7 +5,7 @@ import { PixelScene } from '../components/pixel-scene';
 import { Reveal } from '../components/reveal';
 import { guides } from '../lib/public-content';
 
-export const metadata = { title: 'Docs · SciML Workbench', description: 'Learn how to ask questions, manage research materials, review agents, evaluate models, and export evidence.' };
+export const metadata = { title: 'Docs · Colattice', description: 'Learn how to ask questions, manage research materials, review agents, evaluate models, and export evidence.' };
 export default function Docs() {
   return <PublicShell><div className="public-container"><header className="public-heading public-heading--art" data-pixel-interactive><div><p className="section-eyebrow">Documentation</p><h1>From your first question<br /><span>to a result you understand.</span></h1><p>Learn the workspace, guide your AI lab group, and follow the evidence. Start here, then go deeper.</p><Link href="/docs/getting-started" className="text-link">Start your first investigation<ArrowRight size={17} aria-hidden="true" /></Link></div><div className="heading-art"><PixelScene variant="document" /></div></header>
     <Reveal><div className="guide-grid">{guides.map((guide, i) => <Link className="guide-card" key={guide.slug} href={`/docs/${guide.slug}`}><span className="guide-number">0{i + 1}</span><h2>{guide.title}</h2><p>{guide.description}</p><span className="text-link">Read guide<ArrowUpRight size={16} aria-hidden="true" /></span></Link>)}</div></Reveal>

@@ -184,7 +184,7 @@
 .page--simple { max-width: 59rem; padding-top: clamp(40px, 9vh, 100px); }
 .ask { gap: 28px; }
 .ask-hero { gap: 16px; margin-bottom: 10px; }
-.ask-emblem { display: grid; place-items: center; width: 56px; height: 56px; border: 1px solid var(--color-border); border-radius: 16px; background: var(--color-bg-surface); margin-bottom: 4px; }
+.ask-emblem { width: 64px; height: 64px; margin-bottom: 4px; }
 .ask-kicker { font-size: 13px; color: var(--color-text-tertiary); }
 .ask-title { font-weight: 400; font-size: clamp(28px, 3.4vw, 43px); letter-spacing: -.045em; line-height: 1.15; }
 .ask-lede { max-width: 46ch; font-size: 15px; }

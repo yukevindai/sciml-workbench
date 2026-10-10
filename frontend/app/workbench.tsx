@@ -351,7 +351,7 @@ export default function Workbench({ view, fixture, demo = false, children, reque
           </div>
 
           {!simple && <footer className="page-foot">
-            <span className="page-foot-brand">SciML Workbench</span>
+            <span className="page-foot-brand">Colattice</span>
             <span>Every result keeps a link to the files and steps it came from.</span>
           </footer>}
         </main>

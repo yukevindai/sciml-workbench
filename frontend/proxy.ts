@@ -6,7 +6,7 @@ import { configuredLogin, loginRequired, SESSION_COOKIE, validBasic, validSessio
 const PUBLIC = new Set([
   '/', '/demo', '/sign-in', '/auth/session', '/favicon.ico', '/robots.txt',
   // Bundled marketing assets only. Uploaded research files stay behind /api/.
-  '/images/lab-orbitals.png',
+  '/images/lab-orbitals.png', '/brand/colattice-icon.webp', '/apple-icon.png',
   ...['ask', 'workflows', 'stress-test'].flatMap(view =>
     ['dark', 'light'].flatMap(theme => ['desktop', 'mobile'].map(size => `/images/product-${view}-${theme}-${size}.jpg`))),
   ...['ask', 'research', 'audit'].flatMap(view =>

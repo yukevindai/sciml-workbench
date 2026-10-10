@@ -1,5 +1,5 @@
 /* Shared public site and motion system. Decorative motion never drives state. */
-.pixel-scene { display: block; width: 100%; height: 100%; color: var(--color-text-primary); pointer-events: none; }
+.pixel-scene { display: block; width: 100%; height: 100%; color: var(--color-accent-text); pointer-events: none; }
 .hero-pixels { position: absolute; inset: 0; z-index: -2; }
 .hero .hero-art, .auth-story .hero-art { opacity: .1; }
 .hero-scrim { background: radial-gradient(ellipse at center, var(--color-bg-canvas) 0%, color-mix(in srgb, var(--color-bg-canvas) 90%, transparent) 24%, transparent 75%); pointer-events: none; }

@@ -1,8 +1,9 @@
 'use client';
 
+import { BrandMark, BrandWordmark } from './brand';
 import { Select } from './select';
 import Link from './workspace-link';
-import { FlaskConical, ChevronRight, ArrowUpRight, Loader2, LogOut, ShieldCheck } from 'lucide-react';
+import { ChevronRight, ArrowUpRight, Loader2, LogOut, ShieldCheck } from 'lucide-react';
 import { NAV_GROUPS, navItem, type Stage, type View } from '../lib/pipeline';
 import type { DatasetArtifact, Project } from '../lib/types';
 import { ThemeToggle } from './theme-toggle';
@@ -15,10 +16,10 @@ export function Sidebar({ view, stages }: { view: string; stages: Stage[] }) {
 
   return (
     <aside className="sidebar">
-      <Link href="/ask" className="brand" aria-label="SciML Workbench home">
-        <span className="brand-mark" aria-hidden="true"><FlaskConical size={19} /></span>
+      <Link href="/ask" className="brand" aria-label="Colattice home">
+        <BrandMark />
         <span className="brand-text">
-          <span className="brand-name">SciML Workbench</span>
+          <BrandWordmark className="brand-name" />
           <span className="brand-sub">Your personal AI lab group</span>
         </span>
       </Link>
@@ -65,7 +66,7 @@ export function Sidebar({ view, stages }: { view: string; stages: Stage[] }) {
       </div>
 
       <div className="sidebar-foot"><Link href="/docs" className="sidebar-home">Documentation <ArrowUpRight size={14} aria-hidden="true" /></Link>
-        <Link href="/" className="sidebar-home">About SciML Workbench <ArrowUpRight size={14} aria-hidden="true" /></Link>
+        <Link href="/" className="sidebar-home">About Colattice <ArrowUpRight size={14} aria-hidden="true" /></Link>
       </div>
     </aside>
   );

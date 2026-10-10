@@ -1,6 +1,7 @@
+import { BrandMark } from './components/brand';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowRight, ArrowUpRight, FlaskConical, Layers3, Play, ShieldCheck } from 'lucide-react';
+import { ArrowRight, ArrowUpRight, Layers3, Play, ShieldCheck } from 'lucide-react';
 import { PublicNav } from './components/public-nav';
 import { PublicFooter } from './components/public-shell';
 import { PixelScene, type PixelVariant } from './components/pixel-scene';
@@ -10,7 +11,7 @@ import { posts } from './lib/public-content';
 import { ProductPreview } from './components/product-preview';
 
 export const metadata = {
-  title: 'SciML Workbench · Your personal AI lab group',
+  title: 'Colattice · Your personal AI lab group',
   description: 'Your personal AI lab group. Explore your data, evaluate models, and trace every result back to its evidence.',
 };
 
@@ -42,7 +43,7 @@ export default function Landing() {
         <Image className="hero-art" src="/images/lab-orbitals.png" alt="" fill priority sizes="100vw" />
         <PixelScene className="hero-pixels" variant="orbit" /><div className="hero-scrim" aria-hidden="true" />
         <div className="hero-content">
-          <h1 id="hero-title" className="hero-title">Your personal <br />AI lab group</h1>
+          <h1 id="hero-title" className="hero-title">Your personal <br /><span>AI lab group</span></h1>
           <p className="hero-lede">Build your team. Follow the evidence. Put your ideas to the test.</p>
           <div className="hero-cta"><Link href="/demo" className="button button--lg"><Play size={16} fill="currentColor" aria-hidden="true" />Try the demo</Link><Link href="/ask" className="button button--lg button--secondary">Get started <ArrowRight size={17} aria-hidden="true" /></Link></div>
         </div>
@@ -87,7 +88,7 @@ export default function Landing() {
         <div className="faq">{FAQ.map(({ q, a }) => <details key={q} className="faq-item"><summary>{q}<span className="faq-plus" aria-hidden="true">+</span></summary><p>{a}</p></details>)}</div>
       </section>
 
-      <section className="landing-cta" aria-labelledby="cta-title" data-pixel-interactive><PixelScene className="cta-pixels" variant="ripple" /><FlaskConical size={32} strokeWidth={1.3} aria-hidden="true" /><h2 id="cta-title">Your next question<br />starts here.</h2><p>Your data. Your direction. Your personal AI lab group.</p><Link href="/ask" className="button button--lg">Get started<ArrowRight size={17} aria-hidden="true" /></Link></section>
+      <section className="landing-cta" aria-labelledby="cta-title" data-pixel-interactive><PixelScene className="cta-pixels" variant="ripple" /><BrandMark size={64} /><h2 id="cta-title">Your next question<br />starts here.</h2><p>Your data. Your direction. Your personal AI lab group.</p><Link href="/ask" className="button button--lg">Get started<ArrowRight size={17} aria-hidden="true" /></Link></section>
     </main>
     <PublicFooter />
   </div>;
