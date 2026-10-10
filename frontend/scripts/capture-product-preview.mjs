@@ -51,6 +51,7 @@ try {
         // Support exists only inside the product; do not put even its launcher in public previews.
         await page.addStyleTag({content:'.support-launcher { visibility:hidden !important; }'});
         await page.evaluate(() => document.fonts.ready);
+        await page.waitForFunction(() => Array.from(document.images).every(image => image.complete && image.naturalWidth > 0));
         await page.screenshot({path:new URL(`product-${view}-${theme}-${size}.jpg`,destination).pathname,type:'jpeg',quality:88,animations:'disabled'});
       }
       if (failures.length) throw Error(failures.join('\n'));

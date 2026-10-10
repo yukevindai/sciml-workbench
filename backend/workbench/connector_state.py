@@ -48,7 +48,7 @@ def failure_workspace(settings):
                 else:
                     base = [sys.executable, '-m', 'failure_memory.cli', '--database', str(database)]
                     subprocess.run(base + ['init'], check=True, capture_output=True, timeout=30)
-                    subprocess.run(base + ['create-user', settings.efm_username, '--display-name', 'SciML Workbench', '--password-env', 'WB_PROVISION_PASSWORD'],
+                    subprocess.run(base + ['create-user', settings.efm_username, '--display-name', 'Colattice', '--password-env', 'WB_PROVISION_PASSWORD'],
                         env=dict(os.environ, WB_PROVISION_PASSWORD=settings.efm_password.get_secret_value()),
                         check=True, capture_output=True, timeout=30)
                 yield root

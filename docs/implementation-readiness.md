@@ -4,7 +4,7 @@ Inspected September 19, 2026. This is a repository and planning baseline, not re
 
 ## Synchronized source
 
-- Remote: `https://github.com/yukevindai/sciml-workbench.git`.
+- Remote: `https://github.com/yukevindai/colattice.git`.
 - Current branch: `fix/windows-crlf-install-and-python-pin`.
 - Fetched all configured remote branches and pruned stale references.
 - Merged `origin/main` at `8128559` into the current branch, producing `efea1532fb7edf7ec498ddde2a431eb0a79f6c60` without conflicts. The merge contains the guided forms and Draft 0.3 blueprint, while retaining `bac705e` (Python 3.12 pin and Windows CRLF installation guidance).
@@ -14,7 +14,7 @@ Inspected September 19, 2026. This is a repository and planning baseline, not re
 
 ## Design and ticket audit
 
-Read the complete [blueprint](../sciml-workbench-mvp-design.md), including all 29 numbered sections and the A–E workstreams. Draft 0.3.1 adds this baseline, corrects the existing report-route description, defines conversation-history reads and revision-bound optional plan acceptance, and makes missing implementation prerequisites explicit.
+Read the complete [blueprint](../colattice-mvp-design.md), including all 29 numbered sections and the A–E workstreams. Draft 0.3.1 adds this baseline, corrects the existing report-route description, defines conversation-history reads and revision-bound optional plan acceptance, and makes missing implementation prerequisites explicit.
 
 | Workstream | Tickets | Current starting point |
 |---|---:|---|

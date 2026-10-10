@@ -28,7 +28,7 @@ After it becomes available, open **Connect → Internal** and copy the internal 
 
 ## 3. Create the backend
 
-Choose **New → Private Service**, connect GitHub, and select `yukevindai/sciml-workbench`.
+Choose **New → Private Service**, connect GitHub, and select `yukevindai/colattice`.
 
 | Setting | Value |
 |---|---|
