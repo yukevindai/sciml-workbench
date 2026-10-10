@@ -367,7 +367,7 @@ The default backend tests use temporary SQLite metadata; PostgreSQL locking and 
 
 ## Release status
 
-The latest product milestone is **0.2.1**, adding the public demo to the research studio, responsiveness, progress, and preview updates. Package metadata and the [release handoff](docs/release-handoff.md) still identify the **0.1.0 candidate**. The handoff separates implementation and local evidence from acceptance of a live model or hosted deployment; the product changelog does not certify those gates.
+The latest product milestone is **0.2.2**, introducing the Colattice identity and refreshed product previews alongside the public demo and research studio. Package metadata and the [release handoff](docs/release-handoff.md) still identify the **0.1.0 candidate**. The handoff separates implementation and local evidence from acceptance of a live model or hosted deployment; the product changelog does not certify those gates.
 
 | Area | Recorded status |
 |---|---|
