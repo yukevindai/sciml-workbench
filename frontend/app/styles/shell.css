@@ -25,13 +25,6 @@
   border-radius: var(--radius-md);
 }
 .brand:hover { text-decoration: none; }
-.brand-mark {
-  display: grid; place-items: center;
-  width: 2.25rem; height: 2.25rem;
-  border-radius: var(--radius-md);
-  background: var(--color-accent-solid);
-  color: var(--color-accent-on-solid);
-}
 .brand-name {
   display: block; font-size: var(--text-md); font-weight: var(--weight-bold);
   letter-spacing: var(--tracking-tight); line-height: 1.1;
@@ -194,12 +187,12 @@
 }
 
 /* Shared lab-group identity: quiet chrome, generous working area. */
-.brand-mark { border: 1px solid var(--color-border); background: var(--color-bg-surface); color: var(--color-text-primary); }
+
 .brand-sub { text-transform: none; letter-spacing: 0; font-size: 11px; line-height: 1.4; }
 .sidebar { padding-top: 24px; gap: 32px; }
 .sidebar-home { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 12px 8px; color: var(--color-text-tertiary); font-size: 12px; }
 .nav-item { min-height: 44px; border: 1px solid transparent; }
-.nav-item[aria-current='page'] { border-color: var(--color-border); }
+.nav-item[aria-current='page'] { border-color: var(--color-accent-border); box-shadow: inset 3px 0 var(--color-accent-text); }
 .topbar { min-height: 72px; }
 .page-head h1 { font-weight: 500; letter-spacing: -.04em; font-size: clamp(26px, 2.6vw, 34px); }
 .page-head { margin-bottom: 32px; }
@@ -208,3 +201,10 @@
   .topbar { align-items: flex-start; }
   .topbar-right { margin-left: auto; }
 }
+
+/* One shared identity across the public site, sign-in and research workspace. */
+.colattice-mark { display: block; flex-shrink: 0; object-fit: contain; border-radius: 22%; }
+.colattice-wordmark { font-weight: 600; letter-spacing: -.045em; line-height: 1.1; }
+.brand-name.colattice-wordmark { font-size: 23px; }
+.landing-brand .colattice-wordmark { font-size: 25px; }
+@media (max-width: 768px) { .landing-brand .colattice-wordmark { font-size: 21px; } }

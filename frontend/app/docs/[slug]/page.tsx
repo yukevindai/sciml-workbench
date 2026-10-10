@@ -7,7 +7,7 @@ export function generateStaticParams() { return guides.map(({ slug }) => ({ slug
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const item = guides.find(g => g.slug === slug);
-  return { title: `${item?.title ?? 'Guide not found'} · SciML Docs`, description: item?.description };
+  return { title: `${item?.title ?? 'Guide not found'} · Colattice Docs`, description: item?.description };
 }
 export default async function GuidePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;

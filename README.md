@@ -1,6 +1,8 @@
 <div align="center">
 
-# SciML Workbench
+# Colattice
+
+<img src="frontend/public/brand/colattice-icon.webp" alt="Colattice logo" width="96" height="96" />
 
 ### Your personal AI lab group.
 
@@ -25,7 +27,7 @@ Ask a research question, assemble your agents, design a visual workflow, or chal
 
 **Try without an account:** choose **Try the demo** on the landing page, or open `/demo` on your deployment. Explore the real workspace with synthetic inputs, scripted Ask/council responses, editable agents and workflows, and linked sample results. No DeepSeek or other model calls are made. Demo edits reset on refresh; uploads, real schedules and research downloads require the live workspace.
 
-**Product version: 0.2.1** adds the public interactive demo, following the research studio and October 5 responsiveness and progress updates ([PR #19](https://github.com/yukevindai/sciml-workbench/pull/19)). The [product changelog](frontend/app/changelog/page.tsx) tracks UI milestones; the frontend/backend package version and release compatibility inventory remain **0.1.0**. These are separate from live deployment and release acceptance.
+**Product version: 0.2.2** introduces the Colattice name, modular C logo, and shared forest-green and lime identity across the public site and workspace. Version 0.2.1 added the public interactive demo, following the research studio and October 5 responsiveness and progress updates ([PR #19](https://github.com/yukevindai/sciml-workbench/pull/19)). The [product changelog](frontend/app/changelog/page.tsx) tracks UI milestones; the frontend/backend package version and release compatibility inventory remain **0.1.0**. These are separate from live deployment and release acceptance.
 
 | Update | What changed |
 |---|---|
@@ -65,7 +67,7 @@ In **Tools**, choose **Create with AI** to describe a reusable tool in plain lan
 
 Scientific ML involves more than fitting a model: checking source data, choosing a defensible split, tracking evidence, understanding unsuccessful runs, and preserving enough context to reproduce a result.
 
-**SciML Workbench connects those steps.** Its coordinator interprets a research goal, proposes and revises a plan, invokes supported scientific tools, and delegates scoped questions to specialists when useful. Researchers can inspect the underlying artifacts, answer material questions, and pause or cancel a run.
+**Colattice connects those steps.** Its coordinator interprets a research goal, proposes and revises a plan, invokes supported scientific tools, and delegates scoped questions to specialists when useful. Researchers can inspect the underlying artifacts, answer material questions, and pause or cancel a run.
 
 The scientific methods stay in four independently usable upstream projects. The workbench adds the interface, durable execution, agent coordination, and reproducibility layer.
 

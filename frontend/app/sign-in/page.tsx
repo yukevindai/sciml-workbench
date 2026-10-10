@@ -1,11 +1,12 @@
+import { BrandMark, BrandWordmark } from '../components/brand';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowLeft, ArrowRight, FlaskConical } from 'lucide-react';
+import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { safeNext } from '../lib/session';
 import { PixelScene } from '../components/pixel-scene';
 import { ThemeToggle } from '../components/theme-toggle';
 
-export const metadata = { title: 'Sign in · SciML Workbench' };
+export const metadata = { title: 'Sign in · Colattice' };
 const ERRORS: Record<string, string> = {
   invalid: 'That username or password is not right. Please try again.',
   setup: 'Sign-in is not set up on this server yet. Ask the person who runs this workspace to set a username and password.',
@@ -17,7 +18,7 @@ export default async function SignIn({ searchParams }: { searchParams: Promise<R
   const error = typeof query.error === 'string' ? ERRORS[query.error] : undefined;
   return <div className="auth-page">
     <a className="skip-link" href="#sign-in-form">Skip to sign in</a>
-    <header className="auth-nav"><Link href="/" className="landing-brand" aria-label="SciML Workbench home"><span className="brand-mark" aria-hidden="true"><FlaskConical size={20} /></span>SciML Workbench</Link><div className="auth-nav-actions"><ThemeToggle /></div></header>
+    <header className="auth-nav"><Link href="/" className="landing-brand" aria-label="Colattice home"><BrandMark /><BrandWordmark /></Link><div className="auth-nav-actions"><ThemeToggle /></div></header>
     <main className="auth-layout">
       <section className="auth-story" aria-label="Your research workspace" data-pixel-interactive><Image className="hero-art" src="/images/lab-orbitals.png" alt="" fill sizes="(max-width: 900px) 100vw, 55vw" priority /><PixelScene className="hero-pixels" variant="helix" /><div className="hero-scrim" aria-hidden="true" /><div><h2>Your personal<br />AI lab group</h2><p>Your agents, your workflows,<br />and a fresh perspective on your research.</p></div></section>
       <section className="auth-form-side">

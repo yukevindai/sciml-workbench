@@ -29,12 +29,12 @@ const mono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: 'SciML Workbench',
+  title: 'Colattice',
   description: 'Your personal AI lab group. Explore your data, evaluate models, and trace every result back to its evidence.',
 };
 
 export const viewport: Viewport = {
-  themeColor: '#0b0b0c',
+  themeColor: [{ media: '(prefers-color-scheme: light)', color: '#F5F3EC' }, { media: '(prefers-color-scheme: dark)', color: '#0C1915' }],
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
