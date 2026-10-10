@@ -1083,7 +1083,544 @@ Do not generate generic justifications for every warning. No matching rule means
 
 ### 12.5 Sealed evaluation and test exposure
 
-Create an evaluation protocol with dataset hash, tar…13457 tokens truncated…tage deliberately supports a narrow real audit request. The second adds the complete scientific workflow. Conditional specialists then improve appropriately scoped tasks; they are not a prerequisite for doing useful research.
+Create an evaluation protocol with dataset hash, target, features, preprocessing declaration, independent groups, full split digest, candidate models/seeds, primary metric, success criterion if supplied, and model-selection rule. Seal candidates and scientifically consequential choices before any agent sees test outputs. Scientific computations remain upstream-owned.
+
+If a verified public upstream API supports validation-only training and separate final test evaluation, use it. If the pinned baseline call returns test results immediately, keep the complete result server-side and expose only permitted validation projections until the predeclared comparison is complete. This is a visibility boundary, not a claim that test computation occurred later.
+
+Every access path used by agents—including artifact JSON, predictions, bundles, reports, memory, reviewer context, and reused artifacts—respects this boundary. A direct manual inspection can reveal test results but records an exposure event and prevents a later run from claiming an untouched test estimate. Masking one metric card is insufficient.
+
+Select by validation information where supported. If validation output is unavailable through supported interfaces, use a predeclared fixed comparison without post-hoc winner selection, or report the capability gap. Do not compute replacement metrics locally or choose the lowest test error and call that validation.
+
+Release test results once the comparison protocol is sealed and accepted jobs settle. No automated test-informed tuning follows. A subsequent exploratory analysis is a new labeled protocol retaining exposure history. Fingerprint equivalent datasets/splits rather than allowing duplicate upload IDs to reset this history; retain only authorized exposure metadata across permitted scope.
+
+Automatic replays verify recorded computations and do not create new model-selection opportunities. Describe conclusions narrowly for repeated formulations, composition aliasing, small independent sample counts, and other upstream findings.
+
+### 12.6 Reproducibility claims
+
+Exact original-byte hashes and identical split assignments are hard verification criteria. Floating-point predictions and metrics use documented tolerances in the tested pinned environment.
+
+Do not promise bitwise-identical model outputs on every CPU, operating system, or dependency resolver. Record Python, package versions, upstream commits, workbench commit, configuration, and seed so a mismatch can be investigated.
+
+## 13. Evidence grounding and failure record semantics
+
+### 13.1 Supported evidence retrieval
+
+Use original PDFs and the exact supported extracted representation. Retrieve relevant spans with stable locators, source artifact IDs, document and representation hashes, and excerpt hashes. A page number is shown only when extraction provides a reliable mapping; otherwise show the precise text locator.
+
+Locally indexing extracted text is allowed. Inventing quotations, equations, measurements, calibration, OCR, or page locations is not. Scanned or inaccessible evidence produces an explicit extraction gap while the data/evaluation branch can continue.
+
+### 13.2 Claim validation and review
+
+First, code validates that references exist in authorized scope, locators resolve, excerpt hashes match, and metric values/partitions match their source artifacts. Second, the evidence specialist or read-only reviewer assesses whether the cited content actually supports the statement and whether its scope is appropriate.
+
+Use statuses such as `supported`, `partially_supported`, `unsupported`, `conflicting`, and `not_reviewed`. A valid pointer is not semantic proof. Conflicting sources remain visible; the coordinator cannot resolve disagreement by counting agent votes.
+
+Generated reports distinguish computed results, source-supported claims, interpretations, and hypotheses. A hypothesis about degradation chemistry is not an experimentally observed mechanism. A model score across correlated digitized rows is not evidence of unseen-formulation prediction unless the protocol supports that inference.
+
+### 13.3 Provenance without inferred extraction history
+
+An attached paper and dataset do not automatically share an extraction lineage. A declaration can cite source references supporting its units or meaning without claiming that the values were digitized from that paper. Explicit evidence-to-dataset relations require a source-backed extraction/derivation record.
+
+Unknown provenance does not stop unrelated useful work, but it remains a limitation and cannot be silently “completed” by the agent. Consequential unsupported claims are removed or qualified before final publication.
+
+### 13.4 Automatic outcome recording
+
+Eligible automatic records include an objective admission rejection, an actual execution failure, or a failed success criterion explicitly defined by the user/project policy before observing the result. Their Failure 2.0 record names the agent actor, source run/action/job, observed error/criterion, policy rule, benchmark context, and uncertainty.
+
+A provider outage, user cancellation, or tool-policy denial belongs in operational history rather than automatically becoming a failed scientific experiment. A high error metric without a criterion remains a result. Suspected causes and possible fixes are labeled hypotheses/recommendations and never populated as established laboratory facts.
+
+The agent may draft a subjective assessment for later user confirmation when useful, but that must not block an otherwise complete analysis/report. The report can honestly say no eligible unsuccessful record was created.
+
+### 13.5 Retrieval and lessons
+
+Retrieve relevant prior failures using supported upstream APIs or clearly scoped workbench snapshots. Record the search scope and source versions. A prior attempt is applicable only when its conditions, dataset/protocol context, and limitations are relevant; semantic similarity alone does not prove transferability.
+
+Saved failures are untrusted input to the agent, just like paper text. An instruction embedded in a memory cannot change permissions or authorize data export. The system can learn a user's confirmed preferences; it must not promote a previous agent's speculation to an experimental fact.
+
+### 13.6 Snapshot consistency and reconciliation
+
+Failure artifacts retain a point-in-time upstream receipt. Independent upstream edits do not rewrite workbench snapshots or old reports. Bidirectional synchronization remains deferred.
+
+Resolve/project-map through supported APIs and stable workbench IDs. Persist original external IDs before importing. Automatically reconcile uncertain outcomes using the same exact idempotent request where supported; never allocate a new import identity merely because the coordinator resumed. Preserve unresolved uncertainty in final/partial results.
+
+## 14. Automatic reports and reproducibility
+
+### 14.1 Two export scopes
+
+The default agent report captures the accepted run's selected input/output closure and relevant job/assessment/claim records. It does not wait for unrelated jobs in the same project. Manual project-wide export remains available and requires a settled project-wide scientific snapshot.
+
+For a run report, first freeze a completion/capture revision, the selected artifact IDs, required producer jobs, job snapshots, claims, policy/evaluation references, and a sanitized execution-record cutoff. All included producers must be terminal. A blocked branch may be represented as an explicit limitation in a partial report; it cannot be silently omitted from a claimed complete result.
+
+Capture under a short project/run barrier after resolving the action's idempotency key. New unrelated work after capture is excluded. The coordinator waiting for its own report is not a scientific producer that blocks capture. Report assembly executes outside locks.
+
+### 14.2 Avoiding circular execution records
+
+Freeze the included agent execution record before submitting report generation. It states that export/verification are pending at its cutoff and includes planned operation IDs. The report and verifier receipts are then linked in the final run result and durable events. Do not recursively regenerate the archive to embed its own checksum or final event.
+
+The archive is self-contained for its scientific snapshot. The final run result separately names the report artifact and its verification status. A later complete execution-log export can reference the report by checksum rather than nesting it recursively.
+
+### 14.3 Archive contents
+
+| Entry | Contents |
+|---|---|
+| `README.md` | Supported verification/replay commands, source checkout, limitations |
+| `report.md` | Readable results, grounded claims, uncertainties, and blocked/skipped work |
+| `project.json`, `snapshot.json` | Project metadata, run/scope/cutoff, exact selected artifact set |
+| `artifacts.json`, `jobs.json` | Scientific payloads and safe terminal outcomes |
+| `claims.json`, `evidence-references.json` | Versioned claims and resolvable source/metric references |
+| `evaluation-protocol.json` | Sealed candidates/configuration, selection rule, exposure history |
+| `agent-execution.json` | Sanitized objective, plan/decisions, actions/delegation, policy, usage and cutoff |
+| `software.json`, `environment.json` | Exact workbench/upstream/runtime/prompt/tool versions and reproducibility inputs |
+| `contracts/` | Every schema required by the included records, with version-specific names |
+| `blobs/` | Original bytes and referenced upstream result/evidence bundles |
+| `manifest.json` | Versioned entry inventory and SHA256 digests |
+
+Introduce manifest 2.0 for the expanded records and keep a 1.0 reader. A legacy reader must fail clearly on an unsupported contract, not reinterpret it. Existing scientific artifacts need not all change version merely because an agent invoked them.
+
+### 14.4 Grounded summary generation
+
+The agent drafts conclusions from validated claim objects and actual artifacts. Deterministic assembly checks required sections, links, numeric consistency, and coverage of the accepted objective. If the provider is unavailable during finalization, produce a factual template report from stored results and mark missing narrative/review explicitly.
+
+The report states what was computed, what is source-supported, what is interpreted, what was unsuccessful under which criterion, what remains unknown, and what the analysis cannot establish. No output is labeled verified/replayed because a model says so.
+
+### 14.5 Automatic verification and optional scientific replay
+
+Every requested report is structurally verified automatically: inventory, digests, schemas, reference closure, source locators, safe paths, and expected files. Scientific replay is a separate bounded operation that can run automatically when requested or included in policy/budget; a verification-only report is not labeled numerically replayed.
+
+The supported CLI remains `python -m workbench.replay /path/to/report.zip /new/output-directory`. A typed runtime wrapper uses that trusted implementation/public service boundary with fixed arguments and managed output paths, not a model-generated shell command.
+
+Scientific replay verifies original inputs, reruns supported audits/splits/successful baselines, checks identical assignments and documented numeric tolerances, and writes a structured comparison. It never reimports failure records or mutates the original archive. Unsafe paths, duplicate archive members, missing/corrupt files, or incompatible contracts fail before consuming payloads.
+
+### 14.6 Agent execution is not deterministic scientific replay
+
+Preserve provider/model identifiers, prompt/tool-schema versions, selected inputs, action requests, returned artifact IDs, usage, policy, and concise decision explanations. Replaying those scientific tool inputs can reproduce supported calculations. Re-running an LLM may choose different actions or prose; do not promise deterministic agent reasoning.
+
+Exact replay of recorded actions is a supported audit/evaluation mode, not permission to perform side effects again. Failure imports resolve stored receipts; paid model calls are not reissued unless a new authorized evaluation explicitly requests them.
+
+### 14.7 Export failure and minimal manual recovery
+
+A failed archive build retains its frozen snapshot. Policy-controlled retry reuses that intended snapshot with a new execution attempt, not a silently recaptured later project. Missing files or unresolved required references produce an integrity failure and partial deliverable, never a complete archive missing evidence.
+
+On exhausted model budget, stop billable calls and use a reserved bounded finalization allowance for factual partial output where possible. Budget policy must separately bound this allowance; it is not unlimited emergency work. Completed artifacts remain accessible even if storage or verification prevents an archive.
+
+## 15. Data exposure and security boundaries
+
+### 15.1 Provider exposure policy
+
+During setup, the operator selects `schema_aggregates`, `selected_excerpts`, or `raw_project_content` exposure, with allowed content classes and size limits. Default to the least data sufficient for the configured workflow; a selected-excerpts policy can support literature grounding without sending entire PDFs. No external telemetry is enabled implicitly.
+
+Filter every outgoing model prompt, tool result, retrieved memory, specialist handoff, summary, trace, and retry context. The model never chooses its own data classification. A tool's full local result can be stored while its provider-facing projection omits raw rows or disallowed text.
+
+If exposure policy prevents a requested interpretation, continue local scientific work and explain the limitation. An explicit request to broaden sharing becomes one policy question; ordinary tool use under existing policy does not trigger repeated approvals. Material already sent to a provider cannot be recalled by a later policy restriction.
+
+### 15.2 Secrets and logs
+
+Provider keys, database URLs, upstream credentials, backend bearer tokens, session cookies, and claim tokens stay outside browser code and model context. The model adapter accesses credentials directly from the server environment; no tool returns them.
+
+Persist only the context needed for recovery under the retention policy. User-visible events/exports use safe whitelisted fields. Raw provider errors and exception traces are redacted; diagnostics identify request/run/action IDs and safe classes. Do not collect hidden reasoning as an observability feature.
+
+### 15.3 Prompt injection and untrusted content
+
+CSV cells, PDFs, source snippets, prior failure notes, and tool outputs are data. Instructions inside them cannot redefine roles, add tools, expand project scope, alter budgets, expose credentials, or overwrite the accepted objective.
+
+Enforce those boundaries in the dispatcher, storage readers, egress filter, and budget service rather than relying only on a system prompt. Test malicious content that asks to exfiltrate files, search another project, waive errors, invoke shell, or spend beyond budget. A model attempting a forbidden call must receive a safe denial without performing the action.
+
+### 15.4 Narrow execution tools
+
+No unrestricted filesystem, shell, generated-code execution, arbitrary remote browsing, or uploaded pickle/model execution is required. Tools resolve server-controlled artifact IDs and supported configurations; paths and credentials are never model-selected.
+
+Any later external-source retrieval tool needs its own URL/data-sharing/SSRF boundary and acceptance cases. It is not silently available because the underlying provider offers a browsing tool.
+
+### 15.5 Consistent access and evaluation filters
+
+Use the same project checks on HTTP reads, downloads, SSE, memory retrieval, tool calls, and source locators. Apply held-back test-result filtering on every agent-facing path. Future user permissions must be enforced server-side rather than inferred from possession of an artifact ID.
+
+### 15.6 Policy changes during a run
+
+Capture policy at acceptance for reproducibility, but enforce any later restrictive server/project change before dispatch. The effective policy cannot become broader merely because a saved checkpoint used an older permissive policy. An explicit expansion is an amendment with attribution and a new policy revision; previously denied actions are revalidated.
+
+Cancel/pause and egress restriction changes use the same control-generation check as dispatch. A request already sent may finish and incur usage; block new sends and reconcile the old call. State that boundary honestly in the UI and audit log.
+
+## 16. Setup, backups, and operations
+
+### 16.1 Local setup deliverable
+
+The README and environment template must support this sequence from a fresh checkout:
+
+1. Install the documented Docker/Compose prerequisites, or follow the supported native Python/Node path.
+2. Copy the environment template and generate separate operator/API/upstream credentials.
+3. Start PostgreSQL, controlled setup/migrations, API, scientific worker, agent worker, and Next.js using Compose.
+4. Open the web URL, sign in, configure the provider/project policy once, and run the synthetic goal through automatic verified export. Also exercise manual mode with agents disabled.
+5. Stop and restart without losing datasets, jobs, or upstream records.
+
+Document which commands run from the repository root and which run from `frontend`. Explain that `docker compose down` preserves named volumes, while removing volumes is destructive. Native Windows setup should either be exercised explicitly or direct the user to the supported container/WSL path rather than promise unverified parity.
+
+### 16.2 Hosted setup deliverable
+
+Follow and update `docs/render-setup.md` for the accepted release commit. It must identify service types, root directories, build/start commands, private address wiring, disk mount, environment ownership, health checks, and post-deployment verification.
+
+Use the same release revision for frontend and backend. Record the deployed revision in diagnostics and release evidence. A successful build is not sufficient: create a project, execute the workflow, redeploy, and verify persistence.
+
+### 16.3 Consistent backup
+
+For the small pilot, prefer a documented maintenance window:
+
+1. Stop accepting mutations and pause coordinator/specialist dispatch and new scientific worker claims.
+2. Let active operations settle or mark them interrupted; reconcile uncertain imports and retain reservations for provider calls with unknown usage. Snapshot agent checkpoints, operation intents, policy, and budget state consistently.
+3. Stop processes that may write the file store or upstream SQLite database.
+4. Back up PostgreSQL and the matching entire persistent data volume.
+5. Record backup time, application revision, migration revision, and matching backup identifiers.
+6. Resume only after the backup operation is complete.
+
+The volume includes blobs, `failure-memory.sqlite`, and provisioning state. A PostgreSQL dump alone is not a complete backup. An upstream Failure Memory-only backup is also not a complete workbench backup.
+
+### 16.4 Restore drill
+
+Restore into an isolated test environment before relying on the procedure. Restore matching metadata and files, configure fresh deployment secrets appropriately, start the compatible code revision, and verify:
+
+- Project and artifact counts match the backup snapshot.
+- Representative original files and report hashes resolve.
+- Failure Memory records remain accessible through its supported API.
+- A preserved report verifies and replays.
+- Coordinator state resumes without duplicate committed scientific operations; uncertain provider execution retains its reservation and bounded replacement policy. Scientific retries obey the retained policy and remaining budget.
+
+Record observed restore time and backup frequency. The operator chooses acceptable data loss and downtime; this document does not invent a production SLA.
+
+### 16.5 Credential rotation and migrations
+
+Rotate the API token on both Next.js and FastAPI together. Rotate provider credentials in the agent worker environment and validate the configured model without exposing the key. Rotate the operator login on the web service. Changing `WB_EFM_PASSWORD` alone does not update an existing upstream account; use Failure Memory's supported password-reset command, then restart the consuming processes.
+
+Back up before a schema or dependency upgrade. Apply migrations through the controlled setup path, once. Prefer backward-compatible migrations. A code rollback cannot undo an incompatible data migration; restore or use a tested forward fix rather than assuming Git checkout repairs the database.
+
+### 16.6 Operational acceptance
+
+Verify unauthorized reads/downloads fail, mutation origin checks work, storage survives restart, queue progress is observable, and a worker failure does not leave the UI indefinitely running. Keep redacted diagnostic evidence tied to the deployed commit.
+
+No separate message broker, S3 bucket, Kubernetes cluster, or distributed worker fleet is required for the first release. Introduce those only when their storage and correctness implications are covered by new acceptance criteria.
+
+
+### 16.7 Agent runtime operations
+
+Bootstrap the pinned PostgreSQL checkpointer through its supported setup path, with separate operational ownership from application migrations. Back up checkpoint tables, action ledgers, pending reservations, events, and policy alongside the scientific metadata and files.
+
+Monitor coordinator claim age, specialist activity, model request latency/failures, outstanding usage reservations, scientific queue age, unresolved imports, disk capacity, and blocked questions. A running API is not proof the coordinator or scientific worker is progressing.
+
+Missing provider credentials or an unavailable model disable agent admission with a clear message. A provider outage during an accepted run preserves completed work and follows bounded recovery. Deployment resource sizing must account for API, agent scheduling, scientific worker/subprocesses, and upstream store; a new process is not assumed to fit the old instance without measurement.
+
+Restore tests include a run waiting on a scientific job, a submitted action whose checkpoint was not saved, a pending clarification, a paused run, and an uncertain provider/import receipt. Old runtime checkpoints may require a compatible runtime version; a code rollback does not guarantee checkpoint compatibility.
+
+## 17. Autonomy policy and interruption rules
+
+### 17.1 Default policy behavior
+
+Autopilot permits routine local analysis and artifacts needed for the accepted goal, supported baselines, deterministic seeds, bounded transient recovery, policy-eligible computational outcome recording, and requested report verification. Set these once per project rather than prompting for each operation.
+
+Review plan is opt-in. It permits inexpensive configured context inspection before presenting a plan, then waits for one approval before execution. It is not a hidden prerequisite in Autopilot and does not authorize actions beyond the saved policy.
+
+### 17.2 Policy contract
+
+Policy includes version, allowed tool actions, allowed scientific/model-provider models, exposure class and limits, artifact reuse rules, warning allowlist with conditions/justifications, automatic failure eligibility, spend/token/call/job/time ceilings, retry limits, delegation limits, and report/replay preferences. User instructions can narrow it for a run.
+
+Server capability restrictions override project settings. For example, setting `allow_generated_code=true` in untrusted JSON cannot create a tool that the server never exposes. The policy editor rejects unknown fields and invalid combinations.
+
+### 17.3 Configuration origins
+
+| Configuration type | Automatic handling | Recorded provenance |
+|---|---|---|
+| Seed, bounded preview size, permitted baseline | Choose a supported reproducible default | Policy/default rule and chosen value |
+| Target explicitly named by user | Resolve to the unambiguous actual column | User message and column reference |
+| Units defined in metadata or reliable source span | Reuse if applicable to the exact column | Declaration/source reference and interpretation |
+| Target inferred from several plausible outcomes | Do not choose silently when it changes the question | Consolidated clarification |
+| Independent unit | Use documented declaration and evidence; flag repeated measurements | Unit/rationale/source and limits |
+| License, empirical/synthetic status | Preserve supplied/source assertion or unknown | Declaration origin; never a convenient fabricated value |
+| Warning acceptance | Match explicit supported rule and conditions | Policy revision, code, justification, evidence |
+
+### 17.4 Interruption decision
+
+Ask only if an unresolved fact materially changes scientific meaning, the requested action exceeds authority/resources, or the user selected Review plan. First check the objective, supplied metadata, confirmed preferences, existing artifacts, and supported sources.
+
+Do not interrupt for an ordinary framework choice, routine local file write, known default seed, permitted baseline, already authorized retry, report export, or a warning with an applicable preauthorized rule. Do not use a blanket “scientific task” category to ask approval for every step.
+
+When information is missing, combine the known questions and state the best-supported option plus its consequence. The question record lists blocked steps and accepts structured answers. The coordinator continues independent authorized work and can produce a partial report rather than making the researcher restart the workflow.
+
+### 17.5 Completion criteria match intent
+
+An audit request completes after actual findings and requested explanation. A full analysis request requires its planned scientific outputs, grounded conclusions, eligible outcomes, and verified report. If no eligible failure occurred, completion records that fact rather than manufacturing a failure record.
+
+A completed run satisfies its accepted criteria or an explicit user amendment. The agent cannot quietly redefine success as “I explained how you could do it.” Missing requested outputs are `partially_completed` with reasons, or `failed` if no useful work could be delivered.
+
+## 18. Coordinator and adaptive plan execution
+
+### 18.1 Decision loop
+
+The coordinator repeatedly observes current run/artifact state, determines the next useful action, validates that proposal through server policy, dispatches it, inspects the result, and updates the plan or finalizes. The graph supplies durable control flow; it does not prescribe that every user request run every scientific tool.
+
+Each decision records a concise explanation, references to the observations used, plan revision, and proposed action. Do not store hidden reasoning or ask specialists to reveal it. Replanning is visible as changed steps and reasons.
+
+### 18.2 Plan validation
+
+Validate stable step IDs, dependency existence, acyclicity, supported tools/artifact kinds, permitted inputs, estimated resource fit, and objective coverage. The model cannot mark prerequisites complete without corresponding artifacts/receipts or satisfy a benchmark by inventing a metric in prose.
+
+Plan revisions preserve old versions. Completed actions stay associated with the revision and inputs that authorized them. A revision can add a supported analysis or skip an irrelevant branch; changing the target, intended generalization, or success criterion needs a user-supplied amendment unless the original request explicitly authorized that choice.
+
+### 18.3 Action classes
+
+- **Read:** inspect authorized metadata, artifacts, job state, or source spans.
+- **Compute:** submit a supported scientific job with immutable inputs.
+- **External supported write:** import a failure record through the idempotent upstream API.
+- **Control:** propose plan changes, delegate, request clarification, or finish; server validates authority.
+- **Report:** capture/assemble/verify the specified output; no new scientific parameters are chosen by export.
+
+The dispatcher, not the prompt, assigns side-effect and retry classifications. Model-provided `read_only` labels are ignored.
+
+### 18.4 Reuse and no-progress detection
+
+Reuse only when original data digest, parent graph, configuration, upstream/software versions, outcome validity, source availability, policy permissions, and evaluation exposure are compatible. Record reuse as an action referencing the original artifact; do not pretend it was freshly executed.
+
+Detect repeated failed request digests, repeated unsupported tool calls, unchanged plans with no new information, and review loops. Return a bounded repair opportunity or stop with useful partial results. More model calls without progress are not autonomy.
+
+### 18.5 Runtime behavior
+
+Prefer a small LangGraph graph with explicit nodes for context, decision, validated dispatch, observation, questions, review, and finalization, plus scoped specialist subgraphs or equivalent contexts. Use its supported persistent checkpointer and interrupt/resume APIs; avoid a custom graph persistence framework.
+
+An interrupted node may restart from its beginning on resume. Therefore side effects before an interrupt must already have stable operation identities and recorded receipts; do not place an unguarded submit/import in replayed node code. [LangGraph interrupts](https://docs.langchain.com/oss/python/langgraph/interrupts)
+
+Checkpoint state references artifact/action IDs instead of repeatedly embedding complete datasets. The authoritative ledger is reconciled before advancing after restart, even when the checkpoint appears to be one step behind the last accepted scientific job.
+
+## 19. Typed scientific tool registry
+
+### 19.1 Registry descriptor
+
+Each tool declares a version, purpose, input/output Pydantic schemas, allowed roles, prerequisites, accepted artifact versions, project/exposure checks, side-effect class, retry class, resource estimate, and expected outputs. An execution wrapper returns `completed`, `submitted` with job ID, `blocked` with a typed reason, or `failed` with a safe error.
+
+Tool names below are target internal contracts, not claims that those endpoints already exist. The registry binds them to the existing scoped services/adapters and new validated projections.
+
+| Tool | Purpose and boundary | Effect/retry behavior |
+|---|---|---|
+| `inspect_project` | Read authorized project state, policy summary, capabilities, selected inputs | Read; bounded retry |
+| `inspect_dataset` | Local schema/profile and declaration status; no replacement scientific audit | Read; exposure-filtered projection |
+| `list_artifacts`, `read_artifact` | Resolve typed artifacts by allowed IDs; enforce test-result masking | Read; never raw arbitrary file access |
+| `read_job` | Observe an already accepted job and receipt/result | Read; never resubmit as a polling side effect |
+| `run_audit` | Call installed ChemData Auditor through scientific queue | Idempotent submission; bounded new attempt after classified failure |
+| `generate_split` | Call installed SciSplit with admitted chain/configuration | Idempotent submission; full immutable assignments |
+| `seal_evaluation` | Validate and store the exact candidate/selection protocol | Idempotent controlled write; no post-test mutation |
+| `run_baseline` | Submit documented ChemE card/frozen split under protocol | Idempotent submission; no private training/metric code |
+| `read_evaluation` | Return validation or authorized released test projection | Read; exposure recorded, mask across all paths |
+| `ingest_evidence` | Invoke supported PDF ingestion | Idempotent submission; preserve original/extracted hashes |
+| `search_evidence`, `read_evidence_span` | Retrieve actual extracted content and resolvable locators | Read; data-sharing and scope filters |
+| `search_failures`, `read_failure` | Supported upstream reads or labeled workbench snapshots | Read; scope and source version explicit |
+| `record_outcome` | Save policy-eligible Failure 2.0 assessment and supported upstream record | Journaled idempotent external effect |
+| `reconcile_outcome` | Resolve original uncertain import using original request identity | Trusted bounded reconciliation; no new assessment |
+| `validate_claims` | Check source/metric reference integrity and report discrepancies | Read/validation; semantic support still reviewed |
+| `build_report` | Capture selected scientific/claim closure and execution cutoff | Idempotent snapshot and job submission |
+| `verify_report` | Verify paths, manifest, schemas, references and required files | Bounded local job; no model truth claim |
+| `replay_science` | Run trusted replay against recorded scientific inputs | Bounded compute; no Failure Memory mutation |
+| `read_memory` | Retrieve permitted confirmed preferences and sourced prior findings | Read; provisional versus confirmed preserved |
+
+Clarification, delegation, and final-result publication are coordinator control operations with their own schemas, not arbitrary scientific tools. Specialist roles receive only their relevant subset.
+
+### 19.2 Dispatch validation
+
+Resolve authenticated project/run/assignment context server-side. Check control generation and policy, validate arguments, resolve artifact ownership/versions, enforce prerequisites/evaluation boundary, reserve resources, persist the action key/digest, and then perform the action. The model cannot supply a trusted actor, claim token, quota exemption, or project membership assertion.
+
+Invalid arguments get a safe structured error suitable for bounded repair. Unknown tools and unsupported capabilities do not return empty successful data. A denied call consumes its actual model usage but performs no forbidden side effect.
+
+### 19.3 Output projection
+
+Store complete scientific output locally, then construct a role-specific, exposure-compliant model result. Prefer summaries and artifact references over rows or entire PDFs. Detect oversized results and retrieve bounded relevant slices. Output projection must not change the underlying scientific artifact.
+
+Even tool output is untrusted content to the model. The dispatcher returns data with provenance; text inside that data cannot define a subsequent permission or change the accepted goal.
+
+## 20. Agent run lifecycle and durable recovery
+
+### 20.1 States
+
+| State | Meaning | Normal next states |
+|---|---|---|
+| `queued` | Durable accepted goal awaiting coordinator claim | running, cancelled, failed |
+| `running` | Coordinator or authorized assignments have eligible work | waiting_for_job, waiting_for_input, paused, completed, partially_completed, failed, cancelled |
+| `waiting_for_job` | No immediately eligible branch; accepted scientific work is pending | running, waiting_for_input, paused, partially_completed, failed, cancelled |
+| `waiting_for_input` | Remaining useful progress needs a recorded user answer or optional plan review | running, queued, paused, partially_completed, cancelled |
+| `paused` | User requested no new dispatch; prior work may settle | queued, running, waiting_for_job, waiting_for_input, cancelled, partially_completed |
+| `completed` | Accepted deliverables and required verification satisfied | Terminal |
+| `partially_completed` | Useful work delivered with explicit unmet criteria/stop reason | Terminal |
+| `failed` | Execution cannot produce a useful accepted result | Terminal |
+| `cancelled` | Further dispatch prohibited; prior effects retained/reconciled | Terminal |
+
+When one branch needs input but another can work, the run stays running with an open-question indicator. Waiting states describe lack of eligible run work, not merely the existence of one pending branch. After inputs answer or jobs settle, the scheduler re-evaluates eligible steps from authoritative records.
+
+### 20.2 Single advancement owner
+
+Acquire a short renewable coordinator lease with fencing token and expected run revision. Specialists have their own assignment claims but cannot modify the coordinator plan directly. Only one valid coordinator advances a run at a time.
+
+A lease expiring does not make an in-flight provider request free to repeat. Its action/usage record remains pending or unknown until reconciled. A replacement coordinator reads receipts/actions before deciding what to dispatch. Terminal state and control generation checks reject late attempts to restart work.
+
+### 20.3 Logical actions and execution attempts
+
+Use a server-created stable action key for a logical planned operation, independent of model-generated tool-call IDs. Bind it to canonical arguments and the intended input/policy/protocol revision before the call. Re-executing a checkpoint resolves that action's ledger entry.
+
+If the call accepted a scientific job but checkpoint saving failed, read the persisted action/job mapping and wait for that job. If acceptance is unknown, replay the same idempotent submission key. A known failed attempt can get a new attempt ID/key under retry policy; it must not overwrite the previous attempt or reset usage.
+
+Provider calls may not support server idempotency. When a response is lost, preserve the uncertain reservation; use supported status/retrieval if available, otherwise record unknown usage and apply a bounded replacement-call policy within conservative remaining limits. Do not claim the provider executed exactly once.
+
+### 20.4 Dispatch and cancellation boundary
+
+In one transaction, check run/control generation and lease, reserve resources, and mark an action ready for dispatch. Immediately before sending, recheck cancellation/policy under the dispatch protocol. A cancel racing with an already dispatched external call cannot recall it; the ledger records that boundary.
+
+Cancel blocks new actions, resolves open questions as cancelled, and signals active assignments. Queued/running solely owned scientific work receives a cancellation request and publication fence; shared/reused jobs are detached. A model response arriving afterward can settle usage but cannot initiate tools or publish new claims. Already committed Failure Memory records remain and are reported.
+
+Pause differs from cancel: it suspends future actions and preserves the same resumable run. Accepted jobs may finish, and their receipts are collected without launching dependent steps. Resume rechecks current restrictive policy and uses remaining budget rather than reinitializing it.
+
+### 20.5 Checkpoint and relational reconciliation
+
+Every externally visible action has an intent/receipt in application tables before graph state advances. On resume, reconcile checkpoint action references against those tables. Never infer that an action did not happen merely because its graph checkpoint is older.
+
+Completion/finalization writes guarded run state, deliverable references, and the completion event in one application transaction. A checkpoint that resumes after that terminal commit observes terminal state and stops. A crash before final commit resumes only the missing guarded finalization, not the scientific workflow.
+
+### 20.6 Recovery cases
+
+| Interruption | Automatic recovery |
+|---|---|
+| Browser reload/SSE disconnect | Fetch same run and events after last durable sequence |
+| Agent worker restarts before call | Reclaim/checkpoint and dispatch only unissued permitted action |
+| Scientific submission response lost | Reuse original request key and attach to original job |
+| Scientific job failed transiently | Inspect error and create bounded new attempt if policy permits |
+| Import committed, receipt lost | Reconcile exact original external ID/body |
+| Provider response/usage unknown | Retain reservation; supported reconciliation or bounded conservative replacement |
+| Question answered twice | First compatible answer wins by version/idempotency; stale conflicting answer rejected |
+| Cancel overlaps model/tool response | Settle known usage/receipts; prohibit subsequent actions |
+| Final result commit precedes checkpoint | Observe terminal run; do not regenerate/import/export again |
+
+### 20.7 Continuations
+
+A terminal partial result may offer Continue with additional input/budget. This creates a new linked run with explicit authorization and preserves prior history, project-level spend, exposure, and compatible reuse. It is not a hidden reset of the previous run's hard limits.
+
+## 21. Conditional specialist delegation
+
+### 21.1 Roles
+
+| Application agent | Purpose | Allowed effects |
+|---|---|---|
+| Research coordinator | Interpret objective, plan, allocate, delegate, reconcile, and finalize | Scoped tools and control operations permitted by run policy |
+| Data and evaluation specialist | Investigate schema/findings, propose scientific configuration, execute permitted audits/splits/baselines | Only assigned scientific actions; no invented algorithms or independence |
+| Evidence specialist | Locate actual support, contradictions, and extraction gaps | Read/ingest authorized evidence if assigned; no unrelated browse |
+| Failure-memory specialist | Retrieve related attempts and record eligible computational outcomes | Scoped reads and policy-authorized journaled imports |
+| Scientific reviewer | Evaluate claims, leakage, protocol alignment and limits independently | Read-only; no writes, waivers, training or permission changes |
+
+Developer owner roles A–E later in this document are implementation responsibilities, not these runtime agent roles.
+
+### 21.2 When to delegate
+
+Delegate when there are distinct investigations, a large evidence context, independent branches whose overlap is useful, or a consequential claim needing separate review. A schema explanation or simple audit uses the coordinator and direct tools.
+
+The coordinator chooses roles from actual task needs, not a fixed “spawn all” template. Specialists use separate contexts and scoped permissions; they can share one provider/model and run in the same agent-worker service. More agents are a resource/quality tradeoff, not a claim of inherently better science. Selective delegation and concise handoffs follow the general pattern described in [Anthropic's research-system engineering account](https://www.anthropic.com/engineering/multi-agent-research-system); the concrete rules here are workbench design decisions.
+
+### 21.3 Assignment and return
+
+Each assignment contains objective, plan revision, allowed artifacts/materials, permitted tools, allocation, deadlines, completion criteria, and output schema. Return findings, supporting references, uncertainty, unresolved issues, and recommended next actions. Do not send a full raw dataset just to provide context when schema/results suffice.
+
+Specialists cannot recursively spawn further agents. They may recommend another investigation; the coordinator decides under its existing limits. Default maximum delegation depth is one. Shared outputs become artifacts or structured assignment returns, not edits to a shared unversioned prompt.
+
+### 21.4 Parallelism and conflicts
+
+Run independent evidence retrieval and failure search concurrently where allowed. Scientific dependencies remain ordered. The scientific worker may still execute one job at a time even when model investigations run concurrently; the UI must distinguish parallel reasoning from parallel numerical computation.
+
+If specialists disagree, retain both references and explain the uncertainty. The coordinator can request a bounded targeted follow-up or qualify the conclusion. It cannot treat consensus as permission to overrule a deterministic admission or reference check.
+
+### 21.5 Read-only review
+
+Review an exact candidate claim set, evaluation protocol, artifact hashes, and source-reference versions. Reviewer findings identify the snapshot reviewed. A modified conclusion needs fresh validation and, for material changes, review within the configured round limit.
+
+On an unsupported claim, remove it, qualify it, or report the gap. Do not repeat reviewer calls until one agrees. Simple factual output may use deterministic validation plus coordinator explanation; the complex acceptance fixture must exercise a useful independent reviewer.
+
+## 22. Budgets, memory, and learning from prior work
+
+### 22.1 Resource ceilings
+
+Bound aggregate tokens, model requests, tool calls, coordinator iterations, specialist assignments/concurrency, review rounds, scientific jobs, active elapsed time, and estimated spending. Policy values are configurable below server ceilings; the model cannot increase them.
+
+Suggested conservative starting defaults for testing, not measured capacity or a promised cost:
+
+| Limit per run | Initial policy value |
+|---|---|
+| Aggregate model tokens including provider-billed categories | 150,000 reserved/settled total |
+| Model requests | 40 |
+| Tool calls | 120, including validation failures/retries where executed |
+| Coordinator decision iterations | 20 |
+| Specialist assignments | 4; maximum 2 active specialists |
+| Delegation depth | 1 |
+| Material review rounds | 1 initial plus 1 targeted revision |
+| Scientific execution attempts | 8, including retries; reused artifacts do not count as new executions |
+| Active elapsed time | 60 minutes; child calls/jobs retain their own tighter deadlines |
+| Transient retries | At most 2 per classified logical action, subject to all other ceilings |
+
+Tune with live evaluation, not by silently inflating defaults to make a demo pass. Configure response-token caps for each model role and fixed per-call deadlines. Waiting for a researcher can use a separate expiry/retention period; it consumes no active worker slot or ongoing provider call. Pausing does not restore used tokens or reset child deadlines.
+
+### 22.2 Atomic reservation
+
+Before each model request, reserve a conservative input-plus-maximum-output amount using a supported token counter or safe upper bound, accounting for provider protocol/tool overhead and any billed categories. Enforce project, run, and assignment remaining limits atomically. If a reliable bound cannot be established, reject that dispatch rather than claiming a hard cap it cannot enforce.
+
+Specialist allocations are slices of the parent allowance; all calls settle into the same project ledger. Reserve scientific execution/job count and optional bounded finalization allowance as well. Two parallel agents must not each spend the same remaining allowance.
+
+After completion, settle actual reported usage and release unused reservation. Unknown outcomes retain a conservative reservation until supported reconciliation or an explicit operator settlement policy resolves them. Retrying cannot erase uncertain usage.
+
+### 22.3 Dollar estimates
+
+Keep a versioned provider pricing configuration with currency, model/category rates, and effective date when available. Report observed tokens and estimated cost separately. If rates or billed usage are unknown, dollar cost is `unknown`; enforce token/call/time limits and do not claim an exact dollar cap.
+
+If the operator explicitly requires a strict financial cap, agent admission requires a suitable conservative pricing bound. Ask once to supply/adjust that setup constraint rather than claiming unknown-priced calls are free. No specific current model price is assumed by this document.
+
+### 22.4 Depletion and finalization
+
+When any hard limit is reached, stop new actions and produce a saved partial outcome with reason, completed artifacts, and bounded factual finalization if reserved. A warning that budget is nearly spent should lead the coordinator to prioritize completion, not spawn extra reviewers.
+
+Unused specialist allowance returns to the run, but project/run totals never reset on checkpoint resume or browser reconnect. A user-authorized continuation has its own run limit and consumes the same project budget.
+
+### 22.5 Persistent knowledge
+
+Use existing project artifacts and Failure Memory as the scientific history. Separate confirmed preferences (for example, a user-stated target unit or preferred report scope) from provisional findings and hypotheses. Store source references, actor, timestamps, validity, and supersession.
+
+The agent may save a provisional lesson automatically under policy but cannot promote it to a confirmed experimental fact. Corrections supersede memory records without rewriting old reports. Retrieval respects project scope and current exposure policy; cross-project reuse requires explicit authorized scope.
+
+### 22.6 Compatible artifact reuse
+
+An exact reuse key includes dataset byte identity, required parent artifact semantics, normalized configuration, upstream/workbench scientific adapter versions, relevant policy/protocol constraints, and exposure status. Reading an old completed artifact is cheaper than rerunning, but compatibility must be checked rather than assumed.
+
+Failed deterministic attempts are useful memory for avoiding identical wasted work. They are not successful cached outputs. A changed scientific configuration produces a new key and new provenance; semantically similar goals do not collapse unrelated datasets into one result.
+
+## 23. Component ownership and implementation handoffs
+
+Use five implementation roles to organize responsibility. These are workstream owners, not the runtime specialists described in section 21. They can be filled by one implementer or several; this plan does not require five people or authorize automatic code-writing agents.
+
+| Role | Owns | Required boundary |
+|---|---|---|
+| A — Frontend and research UX | Next.js research workspace, eight inspection views, stream/reconnect, controls, browser checks | Uses typed backend responses through the server proxy; no provider secrets or scientific logic |
+| B — API and data | Pydantic/JSON contracts, PostgreSQL migrations, project/artifact/job/agent APIs, durable ledgers | Owns relational constraints and atomic publication; exposes scoped services to tools |
+| C — Scientific integration | Four pinned public integrations, capability inventory, evaluation protocol, evidence references, report/replay | Preserves upstream semantics and scientific independence; surfaces unsupported capabilities |
+| D — Runtime and delivery | Storage, separate schedulers, subprocess limits, deployment, observability, restore, CI | Enforces leases, process lifecycle, access boundaries, and reproducible environments |
+| E — Agent orchestration | Provider interface, policies, typed tools, coordinator, specialists, memory, budgets, agent evaluations | Calls B/C/D services; never bypasses authorization, queueing, or scientific admission |
+
+### 23.1 Source organization
+
+Adapt the inspected checkout rather than moving working files for aesthetic consistency. Add an agent package within the existing backend application, with distinct modules for provider access, graph/coordinator, policy, typed tool registry, specialists, budget accounting, memory, checkpoints, and event projection. Keep scientific adapters in their existing integration boundary.
+
+Keep prompt templates and schemas versioned beside the agent code. Every deployed run records their versions and the workbench revision. Put PostgreSQL migrations under the existing migration system; use the selected checkpoint package's supported migration/setup interface for its own tables. Generate TypeScript types from the agreed API schemas and preserve artifact-version discriminators.
+
+The frontend gains a primary project research route and shared conversation/plan/activity/result components. Existing project, evidence, dataset-audit, split-designer, benchmark, failure-memory, provenance, and report routes remain usable and deep-link to exact artifacts.
+
+### 23.2 Merge discipline and handoff evidence
+
+Every ticket ends with its ID, exact commit, changed behavior, limitations, interface/schema changes, migrations/configuration, and relevant verification commands/results. Mark unrun checks explicitly. Consumers take the accepted interface and migration before connecting dependent components; they do not work around missing interfaces through private imports.
+
+B01 owns contract names and version compatibility. E01 owns authority semantics; B and D enforce them transactionally. C12 owns evaluation semantics; E12 consumes them. C08 owns scientific report assembly; E13 owns agent completion and the execution record. These ownership distinctions prevent two sources of truth.
+
+Existing A/B/C/D ticket identifiers remain planning identifiers, not GitHub issue numbers. The revised tables supersede their earlier wording. Added E tickets and A11–D12 cover the new agent behavior. No repository issue has been created or renamed by this document.
+
+## 24. Deliverable stages
+
+All 64 tickets are in scope for this revised release. Existing working behavior is verified or hardened rather than rebuilt. Each stage ends in executable evidence tied to a commit. A stage is not complete when only its screens or mocked responses exist.
+
+The first stage deliberately supports a narrow real audit request. The second adds the complete scientific workflow. Conditional specialists then improve appropriately scoped tasks; they are not a prerequisite for doing useful research.
 
 ### Stage 1 — Real coordinator and durable foundations
 
