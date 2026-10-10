@@ -58,6 +58,39 @@ test('login and API accept equivalent configured origins without trusting other 
   }
 });
 
+test('origin failures identify missing, opaque and mismatched origins without reading credentials', async () => {
+  const { POST: signIn } = load('app/auth/session/route.ts');
+  try {
+    Object.assign(process.env, { NODE_ENV: 'production', WB_PUBLIC_ORIGIN: 'https://www.colattice.ca',
+      WB_LOGIN_USERNAME: 'operator', WB_LOGIN_PASSWORD: 'a-private-password-for-tests',
+      VERCEL_ENV: 'production', VERCEL_GIT_COMMIT_SHA: '1234567890abcdef1234567890abcdef12345678' });
+    for (const [origin, reason, receivedOrigin] of [
+      [undefined, 'missing_origin', null],
+      ['null', 'opaque_origin', 'null'],
+      ['https://colattice.ca', 'origin_mismatch', 'https://colattice.ca'],
+      ['https://user:do-not-reflect@evil.example/private?token=secret', 'origin_mismatch', 'invalid'],
+    ]) {
+      for (const api of [false, true]) {
+        const headers = { authorization: auth, ...(origin === undefined ? {} : { origin }) };
+        const req = request(api ? '/api/private' : '/auth/session', headers, 'POST');
+        req.formData = async () => { throw new Error('Must reject before reading credentials'); };
+        const response = api ? await POST(req, params) : await signIn(req);
+        assert.equal(response.status, 403);
+        assert.equal(response.headers.get('cache-control'), 'no-store');
+        assert.equal(response.headers.get('set-cookie'), null);
+        assert.deepEqual(await response.json(), {
+          error: 'Cross-origin request rejected', code: 'ORIGIN_REJECTED', reason,
+          expectedOrigin: 'https://www.colattice.ca', receivedOrigin,
+          deployment: { environment: 'production', revision: '1234567890ab' },
+        });
+      }
+    }
+  } finally {
+    for (const key of Object.keys(process.env)) if (!(key in original)) delete process.env[key];
+    Object.assign(process.env, original);
+  }
+});
+
 test('missing or invalid production origin is a setup error and fails closed', async () => {
   const { POST: signIn } = load('app/auth/session/route.ts');
   try {

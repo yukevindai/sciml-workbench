@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server';
 import { proxy as operatorGate } from '../../../proxy';
-import { publicOrigin as configuredPublicOrigin } from '../../lib/public-origin';
+import { publicOrigin as configuredPublicOrigin, originRejection } from '../../lib/public-origin';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 async function proxy(request: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
@@ -11,7 +11,7 @@ async function proxy(request: NextRequest, { params }: { params: Promise<{ path:
   const publicOrigin = configuredPublicOrigin();
   if (!publicOrigin) return Response.json({ error: 'Public origin is not configured' }, { status: 503 });
   if ((request.method !== 'GET' || request.headers.has('origin')) && request.headers.get('origin') !== publicOrigin)
-    return Response.json({ error: 'Cross-origin request rejected' }, { status: 403 });
+    return originRejection(request, publicOrigin);
   const token = process.env.WB_API_TOKEN;
   if (!token || (process.env.NODE_ENV === 'production' && (token.trim().length < 32 || token.startsWith('replace-with-'))))
     return Response.json({ error: 'Server API connection is not configured' }, { status: 503 });

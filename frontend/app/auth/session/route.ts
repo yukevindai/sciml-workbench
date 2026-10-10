@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { configuredLogin, cookieOptions, createSession, equal, loginRequired, safeNext, SESSION_COOKIE } from '../../lib/session';
-import { publicOrigin } from '../../lib/public-origin';
+import { publicOrigin, originRejection } from '../../lib/public-origin';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'The workspace address is not configured. Set WB_PUBLIC_ORIGIN to the frontend site origin and redeploy.' }, { status: 503 });
   }
   if (request.headers.get('origin') !== expected) {
-    return NextResponse.json({ error: 'Cross-origin request rejected' }, { status: 403 });
+    return originRejection(request, expected);
   }
   let form: FormData;
   try { form = await request.formData(); } catch { return NextResponse.json({ error: 'Invalid form' }, { status: 400 }); }
