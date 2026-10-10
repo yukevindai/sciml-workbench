@@ -43,7 +43,7 @@ python -m workbench.setup
 python -m workbench.serve
 ```
 
-The configuration check contacts no database or provider and prints no values. The setup command is repeatable after successful provisioning. The launcher also performs setup, then supervises API and scientific worker on their shared disk. If either child exits, the launcher terminates its peer's process group and exits so the host can restart the service. Run a single launcher. For development, API and worker can instead be started separately after setup using the README commands.
+The configuration check contacts no database or provider and prints no values. The setup command is repeatable after successful provisioning. The launcher also performs setup, then supervises API and scientific worker on their shared disk. If either child exits, the launcher terminates its peer's process group and exits so the host can restart the service. Run a single launcher. For development, API and worker can instead be started separately after setup using the [development setup commands](development.md).
 
 Copy `frontend/.env.example` to `frontend/.env.local`; set its API token to the backend's token and its independent web login password. Run `npm --prefix frontend run dev` in a separate terminal. Never copy the root environment file into `frontend/`. Docker excludes all private `.env` files and virtual environments from build context.
 
